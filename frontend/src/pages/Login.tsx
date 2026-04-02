@@ -11,6 +11,7 @@ export function Login() {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -20,7 +21,7 @@ export function Login() {
     setIsLoading(true);
 
     try {
-      await login(email, password);
+      await login(email, password, rememberMe);
       navigate('/dashboard');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed');
@@ -41,24 +42,24 @@ export function Login() {
               <img src="/logo.png" alt="Octolio" className="w-20 h-20 object-contain"
                 style={{ filter: 'drop-shadow(0 4px 16px hsl(160, 55%, 55%, 0.3))' }} />
             </div>
-            <h1 className="text-2xl font-bold" style={{ color: 'hsl(210, 40%, 96%)' }}>
+            <h1 className="text-2xl font-bold" style={{ color: 'hsl(var(--c-fg))' }}>
               Octolio
             </h1>
-            <p className="text-sm mt-1" style={{ color: 'hsl(215, 20%, 55%)' }}>
+            <p className="text-sm mt-1" style={{ color: 'hsl(var(--c-fg-muted))' }}>
               {ui.sign_in}
             </p>
           </div>
 
           {error && (
             <div className="rounded-xl p-3.5 mb-5 text-sm"
-              style={{ background: 'hsl(0, 72%, 58%, 0.1)', border: '1px solid hsl(0, 72%, 58%, 0.3)', color: 'hsl(0, 72%, 70%)' }}>
+              style={{ background: 'hsl(var(--c-red)/0.1)', border: '1px solid hsl(var(--c-red)/0.3)', color: 'hsl(var(--c-red))' }}>
               ⚠ {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-1.5" style={{ color: 'hsl(215, 20%, 70%)' }}>
+              <label className="block text-sm font-medium mb-1.5" style={{ color: 'hsl(var(--c-fg-muted))' }}>
                 {ui.email}
               </label>
               <input
@@ -73,7 +74,7 @@ export function Login() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1.5" style={{ color: 'hsl(215, 20%, 70%)' }}>
+              <label className="block text-sm font-medium mb-1.5" style={{ color: 'hsl(var(--c-fg-muted))' }}>
                 {ui.password}
               </label>
               <input
@@ -86,6 +87,19 @@ export function Login() {
                 autoComplete="current-password"
               />
             </div>
+
+            {/* Remember me */}
+            <label className="flex items-center gap-2.5 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="w-4 h-4 rounded accent-[hsl(var(--c-primary))] cursor-pointer"
+              />
+              <span className="text-sm" style={{ color: 'hsl(var(--c-fg-muted))' }}>
+                {ui.remember_me ?? 'Remember me'}
+              </span>
+            </label>
 
             <button
               type="submit"
@@ -101,10 +115,10 @@ export function Login() {
             </button>
           </form>
 
-          <p className="text-center text-sm mt-6" style={{ color: 'hsl(215, 20%, 55%)' }}>
+          <p className="text-center text-sm mt-6" style={{ color: 'hsl(var(--c-fg-muted))' }}>
             {ui.no_account}{' '}
             <Link to="/register" className="font-semibold transition-colors"
-              style={{ color: 'hsl(160, 55%, 60%)' }}>
+              style={{ color: 'hsl(var(--c-green))' }}>
               {ui.create_account}
             </Link>
           </p>

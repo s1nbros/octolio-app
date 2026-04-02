@@ -3,17 +3,17 @@ import { FloatingOrbs } from '../components/FloatingOrbs';
 import { useLang } from '../contexts/LanguageContext';
 
 const FEATURES = [
-  { icon: '🎮', titleKey: 'feature1_title', descKey: 'feature1_desc', color: 'hsl(239, 84%, 67%)' },
-  { icon: '📚', titleKey: 'feature2_title', descKey: 'feature2_desc', color: 'hsl(160, 55%, 55%)' },
-  { icon: '🌍', titleKey: 'feature3_title', descKey: 'feature3_desc', color: 'hsl(280, 70%, 65%)' },
-  { icon: '📊', titleKey: 'feature4_title', descKey: 'feature4_desc', color: 'hsl(28, 85%, 60%)' },
+  { icon: '🎮', titleKey: 'feature1_title', descKey: 'feature1_desc', color: 'hsl(var(--c-primary))' },
+  { icon: '📚', titleKey: 'feature2_title', descKey: 'feature2_desc', color: 'hsl(var(--c-green))' },
+  { icon: '🌍', titleKey: 'feature3_title', descKey: 'feature3_desc', color: 'hsl(var(--c-purple))' },
+  { icon: '📊', titleKey: 'feature4_title', descKey: 'feature4_desc', color: 'hsl(var(--c-orange))' },
 ] as const;
 
 const MODULES_PREVIEW = [
-  { icon: '💰', en: 'Budgeting Basics', bg: 'Основи на бюджетирането', color: 'hsl(160, 55%, 55%)' },
-  { icon: '💎', en: 'Saving Smart', bg: 'Умно спестяване', color: 'hsl(239, 84%, 67%)' },
-  { icon: '📈', en: 'Investing 101', bg: 'Инвестиции 101', color: 'hsl(280, 70%, 65%)' },
-  { icon: '🏦', en: 'Credit & Debt', bg: 'Кредити и дългове', color: 'hsl(28, 85%, 60%)' },
+  { icon: '💰', en: 'Budgeting Basics', bg: 'Основи на бюджетирането', colorVar: 'var(--c-green)' },
+  { icon: '💎', en: 'Saving Smart', bg: 'Умно спестяване', colorVar: 'var(--c-primary)' },
+  { icon: '📈', en: 'Investing 101', bg: 'Инвестиции 101', colorVar: 'var(--c-purple)' },
+  { icon: '🏦', en: 'Credit & Debt', bg: 'Кредити и дългове', colorVar: 'var(--c-orange)' },
 ];
 
 export function Landing() {
@@ -32,26 +32,26 @@ export function Landing() {
               src="/logo.png"
               alt="Octolio mascot"
               className="w-28 h-28 object-contain"
-              style={{ filter: 'drop-shadow(0 8px 24px hsl(160, 55%, 55%, 0.35))' }}
+              style={{ filter: 'drop-shadow(0 8px 24px hsl(var(--c-green)/0.35))' }}
             />
           </div>
 
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-8 animate-fade-up delay-100"
             style={{
-              background: 'rgba(160, 220, 180, 0.08)',
-              border: '1px solid hsl(160, 55%, 55%, 0.2)',
+              background: 'hsl(var(--c-green)/0.08)',
+              border: '1px solid hsl(var(--c-green)/0.2)',
             }}>
-            <span className="text-xs font-semibold" style={{ color: 'hsl(160, 55%, 65%)' }}>
+            <span className="text-xs font-semibold" style={{ color: 'hsl(var(--c-green))' }}>
               🎓 {lang === 'en' ? 'Financial literacy, gamified' : 'Финансова грамотност, геймифицирана'}
             </span>
           </div>
 
           <h1 className="text-5xl sm:text-6xl md:text-7xl font-extrabold leading-tight tracking-tight mb-6 animate-fade-up delay-100">
-            <span style={{ color: 'hsl(210, 40%, 96%)' }}>{ui.hero_title}</span>
+            <span style={{ color: 'hsl(var(--c-fg))' }}>{ui.hero_title}</span>
             <br />
             <span style={{
-              background: 'linear-gradient(135deg, hsl(160, 55%, 60%), hsl(239, 84%, 70%))',
+              background: 'linear-gradient(135deg, hsl(var(--c-green)), hsl(var(--c-primary)))',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
@@ -61,7 +61,7 @@ export function Landing() {
           </h1>
 
           <p className="text-lg sm:text-xl max-w-2xl mx-auto mb-10 animate-fade-up delay-200"
-            style={{ color: 'hsl(215, 20%, 65%)', lineHeight: 1.7 }}>
+            style={{ color: 'hsl(var(--c-fg-muted))', lineHeight: 1.7 }}>
             {ui.hero_sub}
           </p>
 
@@ -86,8 +86,8 @@ export function Landing() {
               { value: '48+', label: lang === 'en' ? 'Exercises' : 'Упражнения' },
             ].map(({ value, label }) => (
               <div key={label} className="text-center">
-                <div className="text-2xl font-bold" style={{ color: 'hsl(160, 55%, 60%)' }}>{value}</div>
-                <div className="text-xs" style={{ color: 'hsl(215, 20%, 55%)' }}>{label}</div>
+                <div className="text-2xl font-bold" style={{ color: 'hsl(var(--c-green))' }}>{value}</div>
+                <div className="text-xs" style={{ color: 'hsl(var(--c-fg-muted))' }}>{label}</div>
               </div>
             ))}
           </div>
@@ -103,7 +103,7 @@ export function Landing() {
                 style={{ animationDelay: `${i * 80}ms` }}
               >
                 <div className="text-3xl mb-2">{m.icon}</div>
-                <p className="text-sm font-semibold" style={{ color: m.color }}>
+                <p className="text-sm font-semibold" style={{ color: `hsl(${m.colorVar})` }}>
                   {lang === 'en' ? m.en : m.bg}
                 </p>
               </div>
@@ -113,10 +113,10 @@ export function Landing() {
 
         {/* Features */}
         <section className="max-w-5xl mx-auto px-4 sm:px-6 mb-24">
-          <h2 className="text-3xl font-bold text-center mb-3" style={{ color: 'hsl(210, 40%, 96%)' }}>
+          <h2 className="text-3xl font-bold text-center mb-3" style={{ color: 'hsl(var(--c-fg))' }}>
             {lang === 'en' ? 'Why Octolio?' : 'Защо Octolio?'}
           </h2>
-          <p className="text-center mb-12" style={{ color: 'hsl(215, 20%, 60%)' }}>
+          <p className="text-center mb-12" style={{ color: 'hsl(var(--c-fg-muted))' }}>
             {lang === 'en'
               ? 'Everything you need to build lasting financial habits.'
               : 'Всичко необходимо за изграждане на трайни финансови навици.'}
@@ -136,10 +136,10 @@ export function Landing() {
                     {f.icon}
                   </div>
                   <div>
-                    <h3 className="font-bold text-base mb-1.5" style={{ color: 'hsl(210, 40%, 96%)' }}>
+                    <h3 className="font-bold text-base mb-1.5" style={{ color: 'hsl(var(--c-fg))' }}>
                       {ui[f.titleKey]}
                     </h3>
-                    <p className="text-sm leading-relaxed" style={{ color: 'hsl(215, 20%, 60%)' }}>
+                    <p className="text-sm leading-relaxed" style={{ color: 'hsl(var(--c-fg-muted))' }}>
                       {ui[f.descKey]}
                     </p>
                   </div>
@@ -152,15 +152,15 @@ export function Landing() {
         {/* CTA */}
         <section className="max-w-3xl mx-auto px-4 sm:px-6 pb-24 text-center">
           <div className="glass-card rounded-3xl p-10"
-            style={{ border: '1px solid hsl(160, 55%, 55%, 0.2)' }}>
+            style={{ border: '1px solid hsl(var(--c-green)/0.2)' }}>
             <div className="flex justify-center mb-4">
               <img src="/logo.png" alt="Octolio" className="w-20 h-20 object-contain"
-                style={{ filter: 'drop-shadow(0 4px 16px hsl(160, 55%, 55%, 0.3))' }} />
+                style={{ filter: 'drop-shadow(0 4px 16px hsl(var(--c-green)/0.3))' }} />
             </div>
-            <h2 className="text-3xl font-bold mb-3" style={{ color: 'hsl(210, 40%, 96%)' }}>
+            <h2 className="text-3xl font-bold mb-3" style={{ color: 'hsl(var(--c-fg))' }}>
               {lang === 'en' ? 'Ready to level up your finances?' : 'Готов ли си да подобриш финансите си?'}
             </h2>
-            <p className="mb-8" style={{ color: 'hsl(215, 20%, 60%)' }}>
+            <p className="mb-8" style={{ color: 'hsl(var(--c-fg-muted))' }}>
               {lang === 'en'
                 ? 'Join Octolio today and start your journey to financial freedom.'
                 : 'Присъедини се към Octolio днес и започни пътуването към финансова свобода.'}

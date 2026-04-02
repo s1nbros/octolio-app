@@ -54,7 +54,7 @@ authRouter.post('/register', async (req: Request, res: Response): Promise<void> 
 });
 
 authRouter.post('/login', async (req: Request, res: Response): Promise<void> => {
-  const { email, password } = req.body;
+  const { email, password, rememberMe } = req.body;
 
   if (!email || !password) {
     res.status(400).json({ error: 'Email and password are required' });
@@ -99,9 +99,10 @@ authRouter.post('/login', async (req: Request, res: Response): Promise<void> => 
 
     db.prepare('UPDATE users SET streak = ?, last_active = ? WHERE id = ?').run(newStreak, today, user.id);
 
-    const token = signToken(user.id);
+    const token = signToken(user.id, !!rememberMe);
     res.json({
       token,
+      rememberMe: !!rememberMe,
       user: { id: user.id, name: user.name, email: user.email, xp: user.xp, streak: newStreak },
     });
   } catch (err) {

@@ -123,33 +123,33 @@ export function Lesson() {
         <div className="relative max-w-lg w-full animate-scale-in" style={{ zIndex: 1 }}>
           <div className="glass-card rounded-3xl p-8 text-center">
             <div className="text-6xl mb-4">{lesson.icon}</div>
-            <h1 className="text-2xl font-bold mb-2" style={{ color: 'hsl(210, 40%, 96%)' }}>
+            <h1 className="text-2xl font-bold mb-2" style={{ color: 'hsl(var(--c-fg))' }}>
               {lesson.title[lang]}
             </h1>
-            <p className="mb-6" style={{ color: 'hsl(215, 20%, 60%)' }}>
+            <p className="mb-6" style={{ color: 'hsl(var(--c-fg-muted))' }}>
               {lesson.description[lang]}
             </p>
 
             <div className="flex items-center justify-center gap-6 mb-8">
               <div className="text-center">
-                <div className="text-2xl font-bold" style={{ color: 'hsl(239, 84%, 67%)' }}>
+                <div className="text-2xl font-bold" style={{ color: 'hsl(var(--c-primary))' }}>
                   {lesson.exercises.length}
                 </div>
-                <div className="text-xs" style={{ color: 'hsl(215, 20%, 55%)' }}>
+                <div className="text-xs" style={{ color: 'hsl(var(--c-fg-muted))' }}>
                   {lang === 'en' ? 'exercises' : 'упражнения'}
                 </div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold" style={{ color: 'hsl(160, 55%, 55%)' }}>
+                <div className="text-2xl font-bold" style={{ color: 'hsl(var(--c-green))' }}>
                   +{lesson.xpReward}
                 </div>
-                <div className="text-xs" style={{ color: 'hsl(215, 20%, 55%)' }}>XP</div>
+                <div className="text-xs" style={{ color: 'hsl(var(--c-fg-muted))' }}>XP</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold" style={{ color: 'hsl(28, 85%, 60%)' }}>
+                <div className="text-2xl font-bold" style={{ color: 'hsl(var(--c-orange))' }}>
                   {'❤'.repeat(3)}
                 </div>
-                <div className="text-xs" style={{ color: 'hsl(215, 20%, 55%)' }}>
+                <div className="text-xs" style={{ color: 'hsl(var(--c-fg-muted))' }}>
                   {lang === 'en' ? 'lives' : 'животи'}
                 </div>
               </div>
@@ -157,7 +157,7 @@ export function Lesson() {
 
             {alreadyCompleted && (
               <p className="text-sm mb-4 px-4 py-2 rounded-lg"
-                style={{ background: 'hsl(160, 55%, 55%, 0.1)', color: 'hsl(160, 55%, 65%)', border: '1px solid hsl(160, 55%, 55%, 0.2)' }}>
+                style={{ background: 'hsl(var(--c-green)/0.1)', color: 'hsl(var(--c-green))', border: '1px solid hsl(var(--c-green)/0.2)' }}>
                 ✓ {lang === 'en' ? 'You already completed this lesson!' : 'Вече завърши този урок!'} {lang === 'en' ? 'Practice again?' : 'Практикувай отново?'}
               </p>
             )}
@@ -189,7 +189,7 @@ export function Lesson() {
             {/* Back */}
             <button
               className="text-sm p-2 rounded-lg transition-all"
-              style={{ color: 'hsl(215, 20%, 55%)', background: 'rgba(255,255,255,0.04)' }}
+              style={{ color: 'hsl(var(--c-fg-muted))', background: 'var(--c-glass)' }}
               onClick={() => navigate('/modules')}
             >
               ✕
@@ -211,11 +211,11 @@ export function Lesson() {
 
             {/* XP */}
             <div className="px-3 py-1 rounded-full text-sm font-semibold relative"
-              style={{ background: 'hsl(239, 84%, 67%, 0.12)', color: 'hsl(239, 84%, 72%)', border: '1px solid hsl(239,84%,67%,0.2)' }}>
+              style={{ background: 'hsl(var(--c-primary)/0.12)', color: 'hsl(var(--c-primary))', border: '1px solid hsl(var(--c-primary)/0.2)' }}>
               ⚡ {xpEarned}
               {xpPopVisible && (
                 <span className="absolute -top-8 left-1/2 -translate-x-1/2 text-sm font-bold animate-xp-pop whitespace-nowrap"
-                  style={{ color: 'hsl(160, 55%, 60%)' }}>
+                  style={{ color: 'hsl(var(--c-green))' }}>
                   +{lastXp} XP!
                 </span>
               )}
@@ -244,23 +244,23 @@ export function Lesson() {
         <FloatingOrbs />
         <div className="relative max-w-lg w-full animate-scale-in" style={{ zIndex: 1 }}>
           <div className="glass-card rounded-3xl p-8 text-center"
-            style={{ border: '1px solid hsl(160, 55%, 55%, 0.3)' }}>
+            style={{ border: '1px solid hsl(var(--c-green)/0.3)' }}>
             {/* Celebration */}
             <div className="text-6xl mb-4 animate-bounce-soft">🎉</div>
-            <h1 className="text-2xl font-bold mb-2" style={{ color: 'hsl(210, 40%, 96%)' }}>
+            <h1 className="text-2xl font-bold mb-2" style={{ color: 'hsl(var(--c-fg))' }}>
               {ui.lesson_complete}
             </h1>
-            <p className="mb-6" style={{ color: 'hsl(215, 20%, 60%)' }}>
+            <p className="mb-6" style={{ color: 'hsl(var(--c-fg-muted))' }}>
               {lesson.title[lang]}
             </p>
 
             {/* XP earned */}
             <div className="inline-flex items-center gap-3 px-6 py-4 rounded-2xl mb-8"
-              style={{ background: 'hsl(160, 55%, 55%, 0.1)', border: '1px solid hsl(160, 55%, 55%, 0.25)' }}>
+              style={{ background: 'hsl(var(--c-green)/0.1)', border: '1px solid hsl(var(--c-green)/0.25)' }}>
               <span className="text-3xl">⚡</span>
               <div className="text-left">
-                <p className="text-xs" style={{ color: 'hsl(160, 55%, 60%)' }}>{ui.xp_earned}</p>
-                <p className="text-3xl font-black" style={{ color: 'hsl(160, 55%, 65%)' }}>
+                <p className="text-xs" style={{ color: 'hsl(var(--c-green))' }}>{ui.xp_earned}</p>
+                <p className="text-3xl font-black" style={{ color: 'hsl(var(--c-green))' }}>
                   +{lesson.xpReward} XP
                 </p>
               </div>

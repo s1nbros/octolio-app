@@ -31,7 +31,7 @@ export function Modules() {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="w-10 h-10 rounded-full border-2 border-t-transparent animate-spin"
-          style={{ borderColor: 'hsl(239, 84%, 67%)', borderTopColor: 'transparent' }} />
+          style={{ borderColor: 'hsl(var(--c-primary))', borderTopColor: 'transparent' }} />
       </div>
     );
   }
@@ -43,10 +43,10 @@ export function Modules() {
       <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-10" style={{ zIndex: 1 }}>
         {/* Header */}
         <div className="mb-10 animate-fade-up">
-          <h1 className="text-3xl font-bold mb-2" style={{ color: 'hsl(210, 40%, 96%)' }}>
+          <h1 className="text-3xl font-bold mb-2" style={{ color: 'hsl(var(--c-fg))' }}>
             {ui.modules_title}
           </h1>
-          <p style={{ color: 'hsl(215, 20%, 60%)' }}>{ui.modules_sub}</p>
+          <p style={{ color: 'hsl(var(--c-fg-muted))' }}>{ui.modules_sub}</p>
         </div>
 
         {/* Progress overview */}
@@ -60,13 +60,13 @@ export function Modules() {
                 <div key={mod.id} className="flex items-center gap-2">
                   <span className="text-lg">{locked ? '🔒' : mod.icon}</span>
                   <div>
-                    <p className="text-xs font-medium" style={{ color: locked ? 'hsl(215, 20%, 40%)' : 'hsl(210, 40%, 90%)' }}>
+                    <p className="text-xs font-medium" style={{ color: locked ? 'hsl(var(--c-fg-subtle))' : 'hsl(var(--c-fg))' }}>
                       {mod.title[lang]}
                     </p>
-                    <p className="text-xs" style={{ color: 'hsl(215, 20%, 50%)' }}>{done}/{total}</p>
+                    <p className="text-xs" style={{ color: 'hsl(var(--c-fg-subtle))' }}>{done}/{total}</p>
                   </div>
                   {i < modules.length - 1 && (
-                    <span className="ml-2 text-xs" style={{ color: 'hsl(215, 20%, 30%)' }}>→</span>
+                    <span className="ml-2 text-xs" style={{ color: 'hsl(var(--c-fg-subtle))' }}>→</span>
                   )}
                 </div>
               );

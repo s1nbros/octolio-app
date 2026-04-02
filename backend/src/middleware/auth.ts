@@ -26,6 +26,6 @@ export function authenticate(req: AuthRequest, res: Response, next: NextFunction
   }
 }
 
-export function signToken(userId: number): string {
-  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: '7d' });
+export function signToken(userId: number, rememberMe = false): string {
+  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: rememberMe ? '30d' : '1d' });
 }

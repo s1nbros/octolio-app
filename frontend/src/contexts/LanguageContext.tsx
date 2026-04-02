@@ -38,6 +38,7 @@ const UI_EN = {
   create_account: 'Create account',
   no_account: "Don't have an account?",
   have_account: 'Already have an account?',
+  remember_me: 'Remember me',
   // Dashboard
   welcome_back: 'Welcome back',
   your_progress: 'Your Progress',
@@ -100,6 +101,7 @@ const UI_BG: typeof UI_EN = {
   create_account: 'Създай акаунт',
   no_account: 'Нямаш акаунт?',
   have_account: 'Вече имаш акаунт?',
+  remember_me: 'Запомни ме',
   welcome_back: 'Добре дошъл',
   your_progress: 'Твоят напредък',
   current_streak: 'Поредни дни',

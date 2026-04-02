@@ -49,9 +49,8 @@ export function ModuleCard({ module, isLocked, index }: Props) {
     <div
       className={`glass-card rounded-2xl p-6 transition-all duration-300 animate-fade-up delay-${Math.min(index * 100, 400)}`}
       style={{
-        borderColor: isLocked ? 'rgba(255,255,255,0.05)' : colors.border,
+        borderColor: isLocked ? 'var(--c-border)' : colors.border,
         opacity: isLocked ? 0.55 : 1,
-        background: isLocked ? 'rgba(255,255,255,0.02)' : undefined,
       }}
     >
       {/* Header */}
@@ -59,15 +58,15 @@ export function ModuleCard({ module, isLocked, index }: Props) {
         <div className="flex items-center gap-3">
           <div
             className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl"
-            style={{ background: isLocked ? 'rgba(255,255,255,0.05)' : colors.bg }}
+            style={{ background: isLocked ? 'var(--c-glass)' : colors.bg }}
           >
             {isLocked ? '🔒' : module.icon}
           </div>
           <div>
-            <h3 className="font-bold text-base" style={{ color: isLocked ? 'hsl(215, 20%, 45%)' : 'hsl(210, 40%, 96%)' }}>
+            <h3 className="font-bold text-base" style={{ color: isLocked ? 'hsl(var(--c-fg-subtle))' : 'hsl(var(--c-fg))' }}>
               {t(module.title)}
             </h3>
-            <p className="text-xs mt-0.5" style={{ color: 'hsl(215, 20%, 50%)' }}>
+            <p className="text-xs mt-0.5" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
               {completedCount}/{totalLessons} {ui.lessons}
             </p>
           </div>
@@ -81,14 +80,14 @@ export function ModuleCard({ module, isLocked, index }: Props) {
         )}
         {isLocked && (
           <span className="text-xs font-medium px-2.5 py-1 rounded-full"
-            style={{ background: 'rgba(255,255,255,0.04)', color: 'hsl(215, 20%, 45%)', border: '1px solid rgba(255,255,255,0.06)' }}>
+            style={{ background: 'var(--c-glass)', color: 'hsl(var(--c-fg-subtle))', border: '1px solid var(--c-border)' }}>
             🔒 {ui.locked}
           </span>
         )}
       </div>
 
       {/* Description */}
-      <p className="text-sm mb-4" style={{ color: 'hsl(215, 20%, 60%)' }}>
+      <p className="text-sm mb-4" style={{ color: 'hsl(var(--c-fg-muted))' }}>
         {t(module.description)}
       </p>
 
@@ -100,7 +99,7 @@ export function ModuleCard({ module, isLocked, index }: Props) {
             style={{
               width: `${progress}%`,
               background: isLocked
-                ? 'rgba(255,255,255,0.1)'
+                ? 'var(--c-border)'
                 : `linear-gradient(90deg, ${colors.badge}, ${colors.badge})`,
             }}
           />
@@ -113,11 +112,11 @@ export function ModuleCard({ module, isLocked, index }: Props) {
           <div
             key={lesson.id}
             className="flex items-center gap-2.5 px-3 py-2 rounded-lg"
-            style={{ background: 'rgba(255,255,255,0.03)' }}
+            style={{ background: 'var(--c-glass)' }}
           >
             <span className="text-sm">{lesson.completed ? '✅' : lesson.icon}</span>
             <span className="text-sm flex-1 truncate" style={{
-              color: lesson.completed ? 'hsl(215, 20%, 55%)' : 'hsl(210, 40%, 90%)',
+              color: lesson.completed ? 'hsl(var(--c-fg-subtle))' : 'hsl(var(--c-fg))',
               textDecoration: lesson.completed ? 'line-through' : 'none',
             }}>
               {t(lesson.title)}

@@ -47,24 +47,24 @@ export function Register() {
               <img src="/logo.png" alt="Octolio" className="w-20 h-20 object-contain"
                 style={{ filter: 'drop-shadow(0 4px 16px hsl(160, 55%, 55%, 0.3))' }} />
             </div>
-            <h1 className="text-2xl font-bold" style={{ color: 'hsl(210, 40%, 96%)' }}>
+            <h1 className="text-2xl font-bold" style={{ color: 'hsl(var(--c-fg))' }}>
               {ui.create_account}
             </h1>
-            <p className="text-sm mt-1" style={{ color: 'hsl(215, 20%, 55%)' }}>
+            <p className="text-sm mt-1" style={{ color: 'hsl(var(--c-fg-muted))' }}>
               {ui.hero_sub.split('.')[0]}.
             </p>
           </div>
 
           {error && (
             <div className="rounded-xl p-3.5 mb-5 text-sm"
-              style={{ background: 'hsl(0, 72%, 58%, 0.1)', border: '1px solid hsl(0, 72%, 58%, 0.3)', color: 'hsl(0, 72%, 70%)' }}>
+              style={{ background: 'hsl(var(--c-red)/0.1)', border: '1px solid hsl(var(--c-red)/0.3)', color: 'hsl(var(--c-red))' }}>
               ⚠ {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-1.5" style={{ color: 'hsl(215, 20%, 70%)' }}>
+              <label className="block text-sm font-medium mb-1.5" style={{ color: 'hsl(var(--c-fg-muted))' }}>
                 {ui.full_name}
               </label>
               <input
@@ -79,7 +79,7 @@ export function Register() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1.5" style={{ color: 'hsl(215, 20%, 70%)' }}>
+              <label className="block text-sm font-medium mb-1.5" style={{ color: 'hsl(var(--c-fg-muted))' }}>
                 {ui.email}
               </label>
               <input
@@ -94,7 +94,7 @@ export function Register() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1.5" style={{ color: 'hsl(215, 20%, 70%)' }}>
+              <label className="block text-sm font-medium mb-1.5" style={{ color: 'hsl(var(--c-fg-muted))' }}>
                 {ui.password}
               </label>
               <input
@@ -107,7 +107,7 @@ export function Register() {
                 autoComplete="new-password"
                 minLength={6}
               />
-              <p className="text-xs mt-1" style={{ color: 'hsl(215, 20%, 45%)' }}>
+              <p className="text-xs mt-1" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
                 Minimum 6 characters
               </p>
             </div>
@@ -126,10 +126,10 @@ export function Register() {
             </button>
           </form>
 
-          <p className="text-center text-sm mt-6" style={{ color: 'hsl(215, 20%, 55%)' }}>
+          <p className="text-center text-sm mt-6" style={{ color: 'hsl(var(--c-fg-muted))' }}>
             {ui.have_account}{' '}
             <Link to="/login" className="font-semibold transition-colors"
-              style={{ color: 'hsl(239, 84%, 72%)' }}>
+              style={{ color: 'hsl(var(--c-primary))' }}>
               {ui.sign_in}
             </Link>
           </p>

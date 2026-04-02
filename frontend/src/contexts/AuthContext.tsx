@@ -1,11 +1,38 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import type { User } from '../types';
 
+const TOKEN_KEY = 'octolio_token';
+const STORAGE_KEY = 'octolio_storage'; // 'local' | 'session'
+
+/** Read token from whichever storage it was saved to. */
+function readToken(): string | null {
+  return localStorage.getItem(TOKEN_KEY) ?? sessionStorage.getItem(TOKEN_KEY);
+}
+
+/** Persist token: localStorage when rememberMe, sessionStorage otherwise. */
+function saveToken(token: string, rememberMe: boolean) {
+  if (rememberMe) {
+    localStorage.setItem(TOKEN_KEY, token);
+    localStorage.setItem(STORAGE_KEY, 'local');
+    sessionStorage.removeItem(TOKEN_KEY);
+  } else {
+    sessionStorage.setItem(TOKEN_KEY, token);
+    localStorage.setItem(STORAGE_KEY, 'session');
+    localStorage.removeItem(TOKEN_KEY);
+  }
+}
+
+function clearToken() {
+  localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(STORAGE_KEY);
+  sessionStorage.removeItem(TOKEN_KEY);
+}
+
 interface AuthContextType {
   user: User | null;
   token: string | null;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string, rememberMe: boolean) => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => void;
   updateUser: (updates: Partial<User>) => void;
@@ -15,7 +42,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(() => localStorage.getItem('octolio_token'));
+  const [token, setToken] = useState<string | null>(() => readToken());
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchMe = useCallback(async (t: string) => {
@@ -27,7 +54,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const data = await res.json();
         setUser(data.user);
       } else {
-        localStorage.removeItem('octolio_token');
+        clearToken();
         setToken(null);
         setUser(null);
       }
@@ -44,17 +71,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [token, fetchMe]);
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string, rememberMe: boolean) => {
     const res = await fetch('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, password, rememberMe }),
     });
 
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Login failed');
 
-    localStorage.setItem('octolio_token', data.token);
+    saveToken(data.token, rememberMe);
     setToken(data.token);
     setUser(data.user);
   };
@@ -69,13 +96,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Registration failed');
 
-    localStorage.setItem('octolio_token', data.token);
+    // Always remember on registration
+    saveToken(data.token, true);
     setToken(data.token);
     setUser(data.user);
   };
 
   const logout = () => {
-    localStorage.removeItem('octolio_token');
+    clearToken();
     setToken(null);
     setUser(null);
   };
