@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://octolio-backend.onrender.com/api/:path*"
+      "destination": "https://octolio-app-2.onrender.com/api/:path*"
     }
   ]
 }
