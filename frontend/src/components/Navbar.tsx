@@ -68,11 +68,13 @@ export function Navbar() {
               </div>
               <button
                 onClick={() => navigate('/profile')}
-                className="w-9 h-9 rounded-full flex items-center justify-center text-xl transition-all"
+                className="w-9 h-9 rounded-full flex items-center justify-center text-xl transition-all overflow-hidden"
                 style={{ background: 'var(--c-glass)', border: `2px solid ${isActive('/profile') ? 'hsl(var(--c-primary))' : 'var(--c-border)'}` }}
                 title={lang === 'en' ? 'Profile' : 'Профил'}
               >
-                {user.avatar ?? '🦊'}
+                {user.avatar?.startsWith('data:')
+                  ? <img src={user.avatar} alt="avatar" className="w-full h-full object-cover" />
+                  : (user.avatar ?? '🦊')}
               </button>
               <button onClick={logout} className="btn-ghost text-sm py-1.5 px-3">{ui.logout}</button>
             </>
