@@ -24,8 +24,14 @@ export async function initDb(): Promise<void> {
       xp INTEGER DEFAULT 0,
       streak INTEGER DEFAULT 0,
       last_active TEXT,
+      avatar TEXT DEFAULT '🦊',
       created_at TIMESTAMP DEFAULT NOW()
     )
+  `);
+
+  // Add avatar column to existing tables that predate this migration
+  await pool.query(`
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar TEXT DEFAULT '🦊'
   `);
 
   await pool.query(`

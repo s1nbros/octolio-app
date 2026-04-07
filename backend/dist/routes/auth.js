@@ -38,7 +38,7 @@ exports.authRouter.post('/register', async (req, res) => {
         const token = (0, auth_1.signToken)(userId);
         res.status(201).json({
             token,
-            user: { id: userId, name: name.trim(), email: email.toLowerCase(), xp: 0, streak: 1 },
+            user: { id: userId, name: name.trim(), email: email.toLowerCase(), xp: 0, streak: 1, avatar: '🦊' },
         });
     }
     catch (err) {
@@ -93,7 +93,7 @@ exports.authRouter.post('/login', async (req, res) => {
 exports.authRouter.get('/me', auth_1.authenticate, async (req, res) => {
     try {
         const pool = (0, db_1.getPool)();
-        const result = await pool.query('SELECT id, name, email, xp, streak, last_active, created_at FROM users WHERE id = $1', [req.userId]);
+        const result = await pool.query('SELECT id, name, email, xp, streak, last_active, created_at, avatar FROM users WHERE id = $1', [req.userId]);
         const user = result.rows[0];
         if (!user) {
             res.status(404).json({ error: 'User not found' });
@@ -103,6 +103,66 @@ exports.authRouter.get('/me', auth_1.authenticate, async (req, res) => {
     }
     catch (err) {
         console.error('Me error:', err);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+exports.authRouter.patch('/profile', auth_1.authenticate, async (req, res) => {
+    const { name, avatar } = req.body;
+    if (!name && !avatar) {
+        res.status(400).json({ error: 'Nothing to update' });
+        return;
+    }
+    if (name !== undefined && (typeof name !== 'string' || name.trim().length < 2)) {
+        res.status(400).json({ error: 'Name must be at least 2 characters' });
+        return;
+    }
+    try {
+        const pool = (0, db_1.getPool)();
+        const fields = [];
+        const values = [];
+        let idx = 1;
+        if (name) {
+            fields.push(`name = $${idx++}`);
+            values.push(name.trim());
+        }
+        if (avatar) {
+            fields.push(`avatar = $${idx++}`);
+            values.push(avatar);
+        }
+        values.push(req.userId);
+        const result = await pool.query(`UPDATE users SET ${fields.join(', ')} WHERE id = $${idx} RETURNING id, name, email, xp, streak, avatar`, values);
+        res.json({ user: result.rows[0] });
+    }
+    catch (err) {
+        console.error('Profile update error:', err);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+exports.authRouter.patch('/password', auth_1.authenticate, async (req, res) => {
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) {
+        res.status(400).json({ error: 'Current and new password are required' });
+        return;
+    }
+    if (newPassword.length < 6) {
+        res.status(400).json({ error: 'New password must be at least 6 characters' });
+        return;
+    }
+    try {
+        const pool = (0, db_1.getPool)();
+        const result = await pool.query('SELECT password_hash FROM users WHERE id = $1', [req.userId]);
+        const user = result.rows[0];
+        const valid = await bcryptjs_1.default.compare(currentPassword, user.password_hash);
+        if (!valid) {
+            res.status(401).json({ error: 'Current password is incorrect' });
+            return;
+        }
+        const newHash = await bcryptjs_1.default.hash(newPassword, 12);
+        await pool.query('UPDATE users SET password_hash = $1 WHERE id = $2', [newHash, req.userId]);
+        res.json({ success: true });
+    }
+    catch (err) {
+        console.error('Password change error:', err);
         res.status(500).json({ error: 'Server error' });
     }
 });

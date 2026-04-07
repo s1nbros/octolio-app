@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLang } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -9,6 +9,7 @@ export function Navbar() {
   const { lang, setLang, ui } = useLang();
   const { isDark, toggleTheme } = useTheme();
   const location = useLocation();
+  const navigate = useNavigate();
   const isActive = (p: string) => location.pathname === p;
 
   return (
@@ -65,6 +66,14 @@ export function Navbar() {
                 <span className="text-sm">🔥</span>
                 <span className="text-sm font-bold" style={{ color: 'hsl(var(--c-orange))' }}>{user.streak}</span>
               </div>
+              <button
+                onClick={() => navigate('/profile')}
+                className="w-9 h-9 rounded-full flex items-center justify-center text-xl transition-all"
+                style={{ background: 'var(--c-glass)', border: `2px solid ${isActive('/profile') ? 'hsl(var(--c-primary))' : 'var(--c-border)'}` }}
+                title={lang === 'en' ? 'Profile' : 'Профил'}
+              >
+                {user.avatar ?? '🦊'}
+              </button>
               <button onClick={logout} className="btn-ghost text-sm py-1.5 px-3">{ui.logout}</button>
             </>
           ) : (

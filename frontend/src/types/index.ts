@@ -83,6 +83,7 @@ export interface User {
   email: string;
   xp: number;
   streak: number;
+  avatar?: string;
 }
 
 export const LEVELS = [
