@@ -3,6 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getPool = getPool;
 exports.initDb = initDb;
 const pg_1 = require("pg");
+if (!process.env.DATABASE_URL) {
+    console.error('ERROR: DATABASE_URL environment variable is not set');
+    process.exit(1);
+}
 const pool = new pg_1.Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false },
