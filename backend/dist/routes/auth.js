@@ -15,8 +15,8 @@ exports.authRouter.post('/register', async (req, res) => {
         res.status(400).json({ error: 'Name, email, and password are required' });
         return;
     }
-    if (password.length < 6) {
-        res.status(400).json({ error: 'Password must be at least 6 characters' });
+    if (password.length < 8) {
+        res.status(400).json({ error: 'Password must be at least 8 characters' });
         return;
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -106,6 +106,21 @@ exports.authRouter.get('/me', auth_1.authenticate, async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 });
+exports.authRouter.get('/check-name', auth_1.authenticate, async (req, res) => {
+    const name = req.query.name?.trim();
+    if (!name || name.length < 2) {
+        res.json({ available: false });
+        return;
+    }
+    try {
+        const pool = (0, db_1.getPool)();
+        const result = await pool.query('SELECT id FROM users WHERE LOWER(name) = LOWER($1) AND id != $2', [name, req.userId]);
+        res.json({ available: result.rows.length === 0 });
+    }
+    catch (err) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
 exports.authRouter.patch('/profile', auth_1.authenticate, async (req, res) => {
     const { name, avatar } = req.body;
     if (!name && !avatar) {
@@ -118,6 +133,13 @@ exports.authRouter.patch('/profile', auth_1.authenticate, async (req, res) => {
     }
     try {
         const pool = (0, db_1.getPool)();
+        if (name) {
+            const taken = await pool.query('SELECT id FROM users WHERE LOWER(name) = LOWER($1) AND id != $2', [name.trim(), req.userId]);
+            if (taken.rows.length > 0) {
+                res.status(409).json({ error: 'Name already taken' });
+                return;
+            }
+        }
         const fields = [];
         const values = [];
         let idx = 1;
@@ -144,8 +166,8 @@ exports.authRouter.patch('/password', auth_1.authenticate, async (req, res) => {
         res.status(400).json({ error: 'Current and new password are required' });
         return;
     }
-    if (newPassword.length < 6) {
-        res.status(400).json({ error: 'New password must be at least 6 characters' });
+    if (newPassword.length < 8) {
+        res.status(400).json({ error: 'New password must be at least 8 characters' });
         return;
     }
     try {

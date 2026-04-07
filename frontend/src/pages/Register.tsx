@@ -13,18 +13,19 @@ export function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  const nameOk = name.trim().length >= 2;
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const passwordOk = password.length >= 8;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitted(true);
     setError('');
-
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters');
-      return;
-    }
-
+    if (!nameOk || !emailOk || !passwordOk) return;
     setIsLoading(true);
     try {
       await register(name, email, password);
@@ -36,17 +37,23 @@ export function Register() {
     }
   };
 
+  const hint = (show: boolean, ok: boolean, msg: string) =>
+    show ? (
+      <p className="text-xs mt-1.5 font-medium" style={{ color: ok ? 'hsl(var(--c-green))' : 'hsl(var(--c-red))' }}>
+        {ok ? '✓' : '✗'} {msg}
+      </p>
+    ) : null;
+
   return (
     <div className="relative min-h-screen flex items-center justify-center px-4 py-12">
       <FloatingOrbs />
 
       <div className="relative w-full max-w-md animate-scale-in" style={{ zIndex: 1 }}>
         <div className="glass-card rounded-3xl p-8">
-          {/* Logo */}
           <div className="text-center mb-8">
             <div className="flex justify-center mb-2">
               <img src="/logo.png" alt="Octolio" className="w-20 h-20 object-contain"
-                style={{ filter: 'drop-shadow(0 4px 16px hsl(160, 55%, 55%, 0.3))' }} />
+                style={{ filter: 'drop-shadow(0 4px 16px hsl(var(--c-green)/0.3))' }} />
             </div>
             <h1 className="text-2xl font-bold" style={{ color: 'hsl(var(--c-fg))' }}>
               {ui.create_account}
@@ -57,15 +64,15 @@ export function Register() {
           </div>
 
           {error && (
-            <div className="rounded-xl p-3.5 mb-5 text-sm"
-              style={{ background: 'hsl(var(--c-red)/0.1)', border: '1px solid hsl(var(--c-red)/0.3)', color: 'hsl(var(--c-red))' }}>
-              ⚠ {error}
-            </div>
+            <p className="text-sm mb-4 font-medium" style={{ color: 'hsl(var(--c-red))' }}>
+              ✗ {error}
+            </p>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             <div>
-              <label className="block text-sm font-medium mb-1.5" style={{ color: 'hsl(var(--c-fg-muted))' }}>
+              <label className="block text-xs font-semibold uppercase tracking-wide mb-2"
+                style={{ color: 'hsl(var(--c-fg-subtle))' }}>
                 {ui.full_name}
               </label>
               <input
@@ -73,14 +80,16 @@ export function Register() {
                 className="input-field"
                 placeholder="Alex Johnson"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
+                onChange={e => setName(e.target.value)}
                 autoComplete="name"
               />
+              {hint(submitted || name.length > 0, nameOk,
+                nameOk ? 'Looks good' : 'At least 2 characters')}
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1.5" style={{ color: 'hsl(var(--c-fg-muted))' }}>
+              <label className="block text-xs font-semibold uppercase tracking-wide mb-2"
+                style={{ color: 'hsl(var(--c-fg-subtle))' }}>
                 {ui.email}
               </label>
               <input
@@ -88,56 +97,53 @@ export function Register() {
                 className="input-field"
                 placeholder="you@example.com"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
+                onChange={e => setEmail(e.target.value)}
                 autoComplete="email"
               />
+              {hint(submitted || email.length > 0, emailOk,
+                emailOk ? 'Valid email' : 'Enter a valid email address')}
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1.5" style={{ color: 'hsl(var(--c-fg-muted))' }}>
+              <label className="block text-xs font-semibold uppercase tracking-wide mb-2"
+                style={{ color: 'hsl(var(--c-fg-subtle))' }}>
                 {ui.password}
               </label>
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
-                  className="input-field pr-10"
+                  className="input-field pr-11"
                   placeholder="••••••••"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
+                  onChange={e => setPassword(e.target.value)}
                   autoComplete="new-password"
-                  minLength={6}
                 />
                 <button type="button" onClick={() => setShowPassword(p => !p)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-sm"
+                  className="absolute right-3 top-1/2 -translate-y-1/2"
                   style={{ color: 'hsl(var(--c-fg-muted))' }}>
                   {showPassword ? '🙈' : '👁️'}
                 </button>
               </div>
-              <p className="text-xs mt-1" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
-                Minimum 6 characters
-              </p>
+              {password.length > 0 && (
+                <p className="text-xs mt-1.5 font-medium" style={{ color: passwordOk ? 'hsl(var(--c-green))' : 'hsl(var(--c-red))' }}>
+                  {passwordOk ? '✓ Strong password' : `✗ ${8 - password.length} more character${8 - password.length !== 1 ? 's' : ''} needed`}
+                </p>
+              )}
             </div>
 
-            <button
-              type="submit"
-              className="btn-green w-full mt-2"
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <span className="flex items-center gap-2">
-                  <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                  {ui.create_account}...
-                </span>
-              ) : ui.create_account + ' →'}
+            <button type="submit" className="btn-green w-full mt-2" disabled={isLoading}>
+              {isLoading
+                ? <span className="flex items-center gap-2">
+                    <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                    {ui.create_account}...
+                  </span>
+                : ui.create_account + ' →'}
             </button>
           </form>
 
           <p className="text-center text-sm mt-6" style={{ color: 'hsl(var(--c-fg-muted))' }}>
             {ui.have_account}{' '}
-            <Link to="/login" className="font-semibold transition-colors"
-              style={{ color: 'hsl(var(--c-primary))' }}>
+            <Link to="/login" className="font-semibold" style={{ color: 'hsl(var(--c-primary))' }}>
               {ui.sign_in}
             </Link>
           </p>

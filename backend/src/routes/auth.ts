@@ -12,8 +12,8 @@ authRouter.post('/register', async (req: Request, res: Response): Promise<void> 
     res.status(400).json({ error: 'Name, email, and password are required' });
     return;
   }
-  if (password.length < 6) {
-    res.status(400).json({ error: 'Password must be at least 6 characters' });
+  if (password.length < 8) {
+    res.status(400).json({ error: 'Password must be at least 8 characters' });
     return;
   }
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -126,6 +126,21 @@ authRouter.get('/me', authenticate, async (req: AuthRequest, res: Response): Pro
   }
 });
 
+authRouter.get('/check-name', authenticate, async (req: AuthRequest, res: Response): Promise<void> => {
+  const name = (req.query.name as string)?.trim();
+  if (!name || name.length < 2) { res.json({ available: false }); return; }
+  try {
+    const pool = getPool();
+    const result = await pool.query(
+      'SELECT id FROM users WHERE LOWER(name) = LOWER($1) AND id != $2',
+      [name, req.userId]
+    );
+    res.json({ available: result.rows.length === 0 });
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 authRouter.patch('/profile', authenticate, async (req: AuthRequest, res: Response): Promise<void> => {
   const { name, avatar } = req.body;
 
@@ -141,6 +156,18 @@ authRouter.patch('/profile', authenticate, async (req: AuthRequest, res: Respons
 
   try {
     const pool = getPool();
+
+    if (name) {
+      const taken = await pool.query(
+        'SELECT id FROM users WHERE LOWER(name) = LOWER($1) AND id != $2',
+        [name.trim(), req.userId]
+      );
+      if (taken.rows.length > 0) {
+        res.status(409).json({ error: 'Name already taken' });
+        return;
+      }
+    }
+
     const fields: string[] = [];
     const values: (string | number)[] = [];
     let idx = 1;
@@ -169,8 +196,8 @@ authRouter.patch('/password', authenticate, async (req: AuthRequest, res: Respon
     return;
   }
 
-  if (newPassword.length < 6) {
-    res.status(400).json({ error: 'New password must be at least 6 characters' });
+  if (newPassword.length < 8) {
+    res.status(400).json({ error: 'New password must be at least 8 characters' });
     return;
   }
 
