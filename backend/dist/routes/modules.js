@@ -6,15 +6,12 @@ const lessons_1 = require("../data/lessons");
 const auth_1 = require("../middleware/auth");
 const db_1 = require("../db");
 exports.modulesRouter = (0, express_1.Router)();
-// Get all modules (strip exercises for the list view)
-exports.modulesRouter.get('/', auth_1.authenticate, (req, res) => {
+exports.modulesRouter.get('/', auth_1.authenticate, async (req, res) => {
     try {
-        const db = (0, db_1.getDb)();
-        const completedLessons = db
-            .prepare('SELECT lesson_id FROM progress WHERE user_id = ?')
-            .all(req.userId);
-        const completedSet = new Set(completedLessons.map((r) => r.lesson_id));
-        const result = lessons_1.modules.map((mod) => ({
+        const pool = (0, db_1.getPool)();
+        const result = await pool.query('SELECT lesson_id FROM progress WHERE user_id = $1', [req.userId]);
+        const completedSet = new Set(result.rows.map((r) => r.lesson_id));
+        const output = lessons_1.modules.map((mod) => ({
             id: mod.id,
             title: mod.title,
             description: mod.description,
@@ -33,15 +30,14 @@ exports.modulesRouter.get('/', auth_1.authenticate, (req, res) => {
                 completed: completedSet.has(lesson.id),
             })),
         }));
-        res.json({ modules: result });
+        res.json({ modules: output });
     }
     catch (err) {
         console.error('Modules error:', err);
         res.status(500).json({ error: 'Server error' });
     }
 });
-// Get a specific lesson with exercises
-exports.modulesRouter.get('/:moduleId/lessons/:lessonId', auth_1.authenticate, (req, res) => {
+exports.modulesRouter.get('/:moduleId/lessons/:lessonId', auth_1.authenticate, async (req, res) => {
     const { moduleId, lessonId } = req.params;
     const mod = lessons_1.modules.find((m) => m.id === moduleId);
     if (!mod) {
@@ -54,11 +50,9 @@ exports.modulesRouter.get('/:moduleId/lessons/:lessonId', auth_1.authenticate, (
         return;
     }
     try {
-        const db = (0, db_1.getDb)();
-        const completed = db
-            .prepare('SELECT id FROM progress WHERE user_id = ? AND lesson_id = ?')
-            .get(req.userId, lessonId);
-        res.json({ lesson, completed: !!completed });
+        const pool = (0, db_1.getPool)();
+        const result = await pool.query('SELECT id FROM progress WHERE user_id = $1 AND lesson_id = $2', [req.userId, lessonId]);
+        res.json({ lesson, completed: result.rows.length > 0 });
     }
     catch (err) {
         console.error('Lesson error:', err);

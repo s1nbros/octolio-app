@@ -25,16 +25,16 @@ exports.authRouter.post('/register', async (req, res) => {
         return;
     }
     try {
-        const db = (0, db_1.getDb)();
-        const existing = db.prepare('SELECT id FROM users WHERE email = ?').get(email.toLowerCase());
-        if (existing) {
+        const pool = (0, db_1.getPool)();
+        const existing = await pool.query('SELECT id FROM users WHERE email = $1', [email.toLowerCase()]);
+        if (existing.rows.length > 0) {
             res.status(409).json({ error: 'Email already registered' });
             return;
         }
         const passwordHash = await bcryptjs_1.default.hash(password, 12);
         const today = new Date().toISOString().split('T')[0];
-        const result = db.prepare('INSERT INTO users (name, email, password_hash, xp, streak, last_active) VALUES (?, ?, ?, 0, 1, ?)').run(name.trim(), email.toLowerCase(), passwordHash, today);
-        const userId = result.lastInsertRowid;
+        const result = await pool.query('INSERT INTO users (name, email, password_hash, xp, streak, last_active) VALUES ($1, $2, $3, 0, 1, $4) RETURNING id', [name.trim(), email.toLowerCase(), passwordHash, today]);
+        const userId = result.rows[0].id;
         const token = (0, auth_1.signToken)(userId);
         res.status(201).json({
             token,
@@ -53,8 +53,9 @@ exports.authRouter.post('/login', async (req, res) => {
         return;
     }
     try {
-        const db = (0, db_1.getDb)();
-        const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email.toLowerCase());
+        const pool = (0, db_1.getPool)();
+        const result = await pool.query('SELECT * FROM users WHERE email = $1', [email.toLowerCase()]);
+        const user = result.rows[0];
         if (!user) {
             res.status(401).json({ error: 'Invalid email or password' });
             return;
@@ -64,20 +65,19 @@ exports.authRouter.post('/login', async (req, res) => {
             res.status(401).json({ error: 'Invalid email or password' });
             return;
         }
-        // Update streak logic
         const today = new Date().toISOString().split('T')[0];
         const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
         let newStreak = user.streak;
         if (user.last_active === today) {
-            // Already active today, streak unchanged
+            // already active today
         }
         else if (user.last_active === yesterday) {
             newStreak += 1;
         }
         else {
-            newStreak = 1; // Reset streak
+            newStreak = 1;
         }
-        db.prepare('UPDATE users SET streak = ?, last_active = ? WHERE id = ?').run(newStreak, today, user.id);
+        await pool.query('UPDATE users SET streak = $1, last_active = $2 WHERE id = $3', [newStreak, today, user.id]);
         const token = (0, auth_1.signToken)(user.id, !!rememberMe);
         res.json({
             token,
@@ -90,10 +90,11 @@ exports.authRouter.post('/login', async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 });
-exports.authRouter.get('/me', auth_1.authenticate, (req, res) => {
+exports.authRouter.get('/me', auth_1.authenticate, async (req, res) => {
     try {
-        const db = (0, db_1.getDb)();
-        const user = db.prepare('SELECT id, name, email, xp, streak, last_active, created_at FROM users WHERE id = ?').get(req.userId);
+        const pool = (0, db_1.getPool)();
+        const result = await pool.query('SELECT id, name, email, xp, streak, last_active, created_at FROM users WHERE id = $1', [req.userId]);
+        const user = result.rows[0];
         if (!user) {
             res.status(404).json({ error: 'User not found' });
             return;

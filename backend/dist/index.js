@@ -21,22 +21,27 @@ app.use((0, cors_1.default)({
     credentials: true,
 }));
 app.use(express_1.default.json());
-(0, db_1.initDb)();
 app.use('/api/auth', auth_1.authRouter);
 app.use('/api/modules', modules_1.modulesRouter);
 app.use('/api/progress', progress_1.progressRouter);
 app.get('/api/health', (_req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
-// Serve frontend static build if it exists
+// Serve frontend static build if it exists (local dev)
 const frontendDist = path_1.default.resolve(__dirname, '../../frontend/dist');
 if (fs_1.default.existsSync(frontendDist)) {
     app.use(express_1.default.static(frontendDist));
-    // SPA fallback — serve index.html for any non-API route
     app.get('*', (_req, res) => {
         res.sendFile(path_1.default.join(frontendDist, 'index.html'));
     });
 }
-app.listen(PORT, () => {
-    console.log(`🚀 Octolio backend running on http://localhost:${PORT}`);
+(0, db_1.initDb)()
+    .then(() => {
+    app.listen(PORT, () => {
+        console.log(`🚀 Octolio backend running on http://localhost:${PORT}`);
+    });
+})
+    .catch((err) => {
+    console.error('Failed to initialize database:', err);
+    process.exit(1);
 });

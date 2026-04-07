@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
-import { getDb } from '../db';
+import { getPool } from '../db';
 import { signToken, authenticate, AuthRequest } from '../middleware/auth';
 
 export const authRouter = Router();
@@ -12,12 +12,10 @@ authRouter.post('/register', async (req: Request, res: Response): Promise<void> 
     res.status(400).json({ error: 'Name, email, and password are required' });
     return;
   }
-
   if (password.length < 6) {
     res.status(400).json({ error: 'Password must be at least 6 characters' });
     return;
   }
-
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
     res.status(400).json({ error: 'Invalid email address' });
@@ -25,10 +23,10 @@ authRouter.post('/register', async (req: Request, res: Response): Promise<void> 
   }
 
   try {
-    const db = getDb();
-    const existing = db.prepare('SELECT id FROM users WHERE email = ?').get(email.toLowerCase());
+    const pool = getPool();
 
-    if (existing) {
+    const existing = await pool.query('SELECT id FROM users WHERE email = $1', [email.toLowerCase()]);
+    if (existing.rows.length > 0) {
       res.status(409).json({ error: 'Email already registered' });
       return;
     }
@@ -36,11 +34,12 @@ authRouter.post('/register', async (req: Request, res: Response): Promise<void> 
     const passwordHash = await bcrypt.hash(password, 12);
     const today = new Date().toISOString().split('T')[0];
 
-    const result = db.prepare(
-      'INSERT INTO users (name, email, password_hash, xp, streak, last_active) VALUES (?, ?, ?, 0, 1, ?)'
-    ).run(name.trim(), email.toLowerCase(), passwordHash, today);
+    const result = await pool.query(
+      'INSERT INTO users (name, email, password_hash, xp, streak, last_active) VALUES ($1, $2, $3, 0, 1, $4) RETURNING id',
+      [name.trim(), email.toLowerCase(), passwordHash, today]
+    );
 
-    const userId = result.lastInsertRowid as number;
+    const userId = result.rows[0].id;
     const token = signToken(userId);
 
     res.status(201).json({
@@ -62,15 +61,11 @@ authRouter.post('/login', async (req: Request, res: Response): Promise<void> => 
   }
 
   try {
-    const db = getDb();
-    const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email.toLowerCase()) as {
-      id: number;
-      name: string;
-      email: string;
-      password_hash: string;
-      xp: number;
-      streak: number;
-      last_active: string;
+    const pool = getPool();
+    const result = await pool.query('SELECT * FROM users WHERE email = $1', [email.toLowerCase()]);
+    const user = result.rows[0] as {
+      id: number; name: string; email: string; password_hash: string;
+      xp: number; streak: number; last_active: string;
     } | undefined;
 
     if (!user) {
@@ -84,20 +79,19 @@ authRouter.post('/login', async (req: Request, res: Response): Promise<void> => 
       return;
     }
 
-    // Update streak logic
     const today = new Date().toISOString().split('T')[0];
     const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
     let newStreak = user.streak;
 
     if (user.last_active === today) {
-      // Already active today, streak unchanged
+      // already active today
     } else if (user.last_active === yesterday) {
       newStreak += 1;
     } else {
-      newStreak = 1; // Reset streak
+      newStreak = 1;
     }
 
-    db.prepare('UPDATE users SET streak = ?, last_active = ? WHERE id = ?').run(newStreak, today, user.id);
+    await pool.query('UPDATE users SET streak = $1, last_active = $2 WHERE id = $3', [newStreak, today, user.id]);
 
     const token = signToken(user.id, !!rememberMe);
     res.json({
@@ -111,18 +105,14 @@ authRouter.post('/login', async (req: Request, res: Response): Promise<void> => 
   }
 });
 
-authRouter.get('/me', authenticate, (req: AuthRequest, res: Response): void => {
+authRouter.get('/me', authenticate, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const db = getDb();
-    const user = db.prepare('SELECT id, name, email, xp, streak, last_active, created_at FROM users WHERE id = ?').get(req.userId) as {
-      id: number;
-      name: string;
-      email: string;
-      xp: number;
-      streak: number;
-      last_active: string;
-      created_at: string;
-    } | undefined;
+    const pool = getPool();
+    const result = await pool.query(
+      'SELECT id, name, email, xp, streak, last_active, created_at FROM users WHERE id = $1',
+      [req.userId]
+    );
+    const user = result.rows[0];
 
     if (!user) {
       res.status(404).json({ error: 'User not found' });

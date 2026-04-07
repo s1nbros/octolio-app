@@ -1,21 +1,21 @@
 import { Router, Response } from 'express';
 import { modules } from '../data/lessons';
 import { authenticate, AuthRequest } from '../middleware/auth';
-import { getDb } from '../db';
+import { getPool } from '../db';
 
 export const modulesRouter = Router();
 
-// Get all modules (strip exercises for the list view)
-modulesRouter.get('/', authenticate, (req: AuthRequest, res: Response): void => {
+modulesRouter.get('/', authenticate, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const db = getDb();
-    const completedLessons = db
-      .prepare('SELECT lesson_id FROM progress WHERE user_id = ?')
-      .all(req.userId) as { lesson_id: string }[];
+    const pool = getPool();
+    const result = await pool.query(
+      'SELECT lesson_id FROM progress WHERE user_id = $1',
+      [req.userId]
+    );
 
-    const completedSet = new Set(completedLessons.map((r) => r.lesson_id));
+    const completedSet = new Set(result.rows.map((r: { lesson_id: string }) => r.lesson_id));
 
-    const result = modules.map((mod) => ({
+    const output = modules.map((mod) => ({
       id: mod.id,
       title: mod.title,
       description: mod.description,
@@ -35,36 +35,30 @@ modulesRouter.get('/', authenticate, (req: AuthRequest, res: Response): void => 
       })),
     }));
 
-    res.json({ modules: result });
+    res.json({ modules: output });
   } catch (err) {
     console.error('Modules error:', err);
     res.status(500).json({ error: 'Server error' });
   }
 });
 
-// Get a specific lesson with exercises
-modulesRouter.get('/:moduleId/lessons/:lessonId', authenticate, (req: AuthRequest, res: Response): void => {
+modulesRouter.get('/:moduleId/lessons/:lessonId', authenticate, async (req: AuthRequest, res: Response): Promise<void> => {
   const { moduleId, lessonId } = req.params;
 
   const mod = modules.find((m) => m.id === moduleId);
-  if (!mod) {
-    res.status(404).json({ error: 'Module not found' });
-    return;
-  }
+  if (!mod) { res.status(404).json({ error: 'Module not found' }); return; }
 
   const lesson = mod.lessons.find((l) => l.id === lessonId);
-  if (!lesson) {
-    res.status(404).json({ error: 'Lesson not found' });
-    return;
-  }
+  if (!lesson) { res.status(404).json({ error: 'Lesson not found' }); return; }
 
   try {
-    const db = getDb();
-    const completed = db
-      .prepare('SELECT id FROM progress WHERE user_id = ? AND lesson_id = ?')
-      .get(req.userId, lessonId);
+    const pool = getPool();
+    const result = await pool.query(
+      'SELECT id FROM progress WHERE user_id = $1 AND lesson_id = $2',
+      [req.userId, lessonId]
+    );
 
-    res.json({ lesson, completed: !!completed });
+    res.json({ lesson, completed: result.rows.length > 0 });
   } catch (err) {
     console.error('Lesson error:', err);
     res.status(500).json({ error: 'Server error' });
