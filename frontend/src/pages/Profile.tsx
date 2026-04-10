@@ -174,7 +174,7 @@ export function Profile() {
 
           <div className="px-6 pb-6">
             {/* Avatar row */}
-            <div className="flex items-end gap-4 -mt-10 mb-5">
+            <div className="flex items-start gap-4 -mt-10 mb-5">
               <div className="relative flex-shrink-0">
                 <div
                   className="w-20 h-20 rounded-full overflow-hidden cursor-pointer group relative"
@@ -194,7 +194,7 @@ export function Profile() {
                 <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
               </div>
 
-              <div className="pb-1 flex-1 min-w-0">
+              <div className="flex-1 min-w-0 pt-12">
                 <h1 className="text-xl font-extrabold truncate" style={{ color: 'hsl(var(--c-fg))' }}>
                   {user?.name}
                 </h1>
