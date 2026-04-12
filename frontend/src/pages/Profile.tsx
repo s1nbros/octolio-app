@@ -3,7 +3,6 @@ import { useAuth } from '../contexts/AuthContext';
 import { useLang } from '../contexts/LanguageContext';
 import { getLevel, getLevelProgress, LEVELS } from '../types';
 
-/* Resize & crop image to a square JPEG base64 string */
 function resizeImage(file: File, size = 240): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -35,16 +34,38 @@ function Hint({ ok, text }: { ok: boolean; text: string }) {
   );
 }
 
-/* Safe avatar display — never renders base64 as text */
-function Avatar({ src, name, className = '' }: { src?: string; name?: string; className?: string }) {
+function Avatar({ src, name }: { src?: string; name?: string }) {
   if (src?.startsWith('data:')) {
-    return <img src={src} alt="avatar" className={`w-full h-full object-cover ${className}`} />;
+    return <img src={src} alt="avatar" className="w-full h-full object-cover" />;
   }
   return (
-    <div className={`w-full h-full flex items-center justify-center text-4xl font-bold select-none ${className}`}
-      style={{ background: 'linear-gradient(135deg, hsl(var(--c-primary)/0.2), hsl(var(--c-green)/0.15))' }}>
+    <div className="w-full h-full flex items-center justify-center font-bold select-none"
+      style={{
+        background: 'linear-gradient(135deg, hsl(var(--c-primary)/0.25), hsl(var(--c-green)/0.2))',
+        fontSize: 'inherit',
+        color: 'hsl(var(--c-fg))',
+      }}>
       {name?.[0]?.toUpperCase() ?? '?'}
     </div>
+  );
+}
+
+// Pencil icon SVG
+function PencilIcon() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+    </svg>
+  );
+}
+
+function ChevronIcon({ open }: { open: boolean }) {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+      style={{ transform: open ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s ease' }}>
+      <polyline points="6 9 12 15 18 9" />
+    </svg>
   );
 }
 
@@ -53,7 +74,6 @@ export function Profile() {
   const { lang } = useLang();
   const fileRef = useRef<HTMLInputElement>(null);
 
-  /* profile state */
   const [name, setName] = useState(user?.name ?? '');
   const [pendingAvatar, setPendingAvatar] = useState<string | null>(null);
   const [nameStatus, setNameStatus] = useState<NameStatus>('idle');
@@ -61,7 +81,8 @@ export function Profile() {
   const [saveOk, setSaveOk] = useState('');
   const [saveErr, setSaveErr] = useState('');
 
-  /* password state */
+  // password — hidden by default, revealed on button click
+  const [pwOpen, setPwOpen] = useState(false);
   const [currentPw, setCurrentPw] = useState('');
   const [newPw, setNewPw] = useState('');
   const [showCurrent, setShowCurrent] = useState(false);
@@ -76,7 +97,6 @@ export function Profile() {
   const levelPct = getLevelProgress(xp);
   const nextLevel = LEVELS.find(l => l.level === level.level + 1);
 
-  /* live name check */
   const checkName = useCallback(async (val: string) => {
     if (!val.trim() || val.trim() === user?.name || val.trim().length < 2) {
       setNameStatus('idle'); return;
@@ -96,7 +116,6 @@ export function Profile() {
     return () => clearTimeout(t);
   }, [name, checkName]);
 
-  /* image upload */
   const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = '';
@@ -107,7 +126,6 @@ export function Profile() {
     setPendingAvatar(await resizeImage(file));
   };
 
-  /* save profile */
   const handleSave = async () => {
     if (nameStatus === 'taken') return;
     setSaveOk(''); setSaveErr('');
@@ -116,7 +134,10 @@ export function Profile() {
       const updates: { name?: string; avatar?: string } = {};
       if (name.trim() && name.trim() !== user?.name) updates.name = name.trim();
       if (pendingAvatar) updates.avatar = pendingAvatar;
-      if (!updates.name && !updates.avatar) { setSaveErr(lang === 'en' ? 'No changes to save' : 'Няма промени'); setSaving(false); return; }
+      if (!updates.name && !updates.avatar) {
+        setSaveErr(lang === 'en' ? 'No changes to save' : 'Няма промени');
+        setSaving(false); return;
+      }
       await updateProfile(updates);
       setPendingAvatar(null);
       setSaveOk(lang === 'en' ? 'Profile saved!' : 'Профилът е запазен!');
@@ -125,7 +146,6 @@ export function Profile() {
     } finally { setSaving(false); }
   };
 
-  /* change password */
   const handleChangePw = async () => {
     setPwOk(''); setPwErr('');
     if (newPw.length < 8) { setPwErr(lang === 'en' ? 'Minimum 8 characters' : 'Минимум 8 символа'); return; }
@@ -134,6 +154,7 @@ export function Profile() {
       await changePassword(currentPw, newPw);
       setPwOk(lang === 'en' ? 'Password changed!' : 'Паролата е сменена!');
       setCurrentPw(''); setNewPw('');
+      setTimeout(() => setPwOpen(false), 1500);
     } catch (err) {
       setPwErr(err instanceof Error ? err.message : 'Error');
     } finally { setPwSaving(false); }
@@ -144,16 +165,15 @@ export function Profile() {
   );
   const displayAvatar = pendingAvatar ?? user?.avatar;
 
-  /* achievements */
   const achievements = [
-    { icon: '🌱', en: 'First Steps',   bg: 'Първи стъпки',     sub: xp > 0 ? `${xp} XP` : '0 XP',             unlocked: xp > 0 },
-    { icon: '⚡', en: 'Power User',    bg: 'Активен',           sub: '500 XP',                                   unlocked: xp >= 500 },
-    { icon: '📚', en: 'Scholar',       bg: 'Учен',              sub: '1 000 XP',                                 unlocked: xp >= 1000 },
-    { icon: '🏆', en: 'Champion',      bg: 'Шампион',           sub: '2 500 XP',                                 unlocked: xp >= 2500 },
-    { icon: '🔥', en: 'On Fire',       bg: 'В огъня',           sub: '3-day streak',                             unlocked: streak >= 3 },
-    { icon: '💫', en: 'Week Warrior',  bg: 'Седмичен воин',     sub: '7-day streak',                             unlocked: streak >= 7 },
-    { icon: '💎', en: 'Diamond',       bg: 'Диамант',           sub: '30-day streak',                            unlocked: streak >= 30 },
-    { icon: '🚀', en: 'Max Level',     bg: 'Макс. ниво',        sub: 'Level 5',                                  unlocked: level.level >= 5 },
+    { icon: '🌱', en: 'First Steps',  bg: 'Първи стъпки',  sub: '1+ XP',         unlocked: xp > 0 },
+    { icon: '⚡', en: 'Power User',   bg: 'Активен',        sub: '500 XP',        unlocked: xp >= 500 },
+    { icon: '📚', en: 'Scholar',      bg: 'Учен',           sub: '1 000 XP',      unlocked: xp >= 1000 },
+    { icon: '🏆', en: 'Champion',     bg: 'Шампион',        sub: '2 500 XP',      unlocked: xp >= 2500 },
+    { icon: '🔥', en: 'On Fire',      bg: 'В огъня',        sub: '3-day streak',  unlocked: streak >= 3 },
+    { icon: '💫', en: 'Week Warrior', bg: 'Седмичен воин',  sub: '7-day streak',  unlocked: streak >= 7 },
+    { icon: '💎', en: 'Diamond',      bg: 'Диамант',        sub: '30-day streak', unlocked: streak >= 30 },
+    { icon: '🚀', en: 'Max Level',    bg: 'Макс. ниво',     sub: 'Level 5',       unlocked: level.level >= 5 },
   ];
   const earnedCount = achievements.filter(a => a.unlocked).length;
 
@@ -165,7 +185,7 @@ export function Profile() {
     <div className="min-h-screen" style={{ background: 'hsl(var(--c-bg))' }}>
       <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8 space-y-4">
 
-        {/* ── Profile header ── */}
+        {/* ── Profile header card ── */}
         <div className="glass-card rounded-2xl overflow-hidden">
           {/* Banner */}
           <div className="h-28 w-full" style={{
@@ -173,24 +193,28 @@ export function Profile() {
           }} />
 
           <div className="px-6 pb-6">
-            {/* Avatar row */}
             <div className="flex items-start gap-4 -mt-10 mb-5">
-              <div className="relative flex-shrink-0">
+              {/* Avatar with inline pencil badge */}
+              <div className="relative flex-shrink-0 group">
                 <div
-                  className="w-20 h-20 rounded-full overflow-hidden cursor-pointer group relative"
+                  className="w-20 h-20 rounded-full overflow-hidden cursor-pointer text-4xl"
                   style={{ border: '4px solid hsl(var(--c-bg))' }}
                   onClick={() => fileRef.current?.click()}
-                  title={lang === 'en' ? 'Change photo' : 'Смени снимка'}
                 >
                   <Avatar src={displayAvatar} name={user?.name} />
-                  <div className="absolute inset-0 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                    style={{ background: 'rgba(0,0,0,0.5)' }}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-                      <circle cx="12" cy="13" r="4"/>
-                    </svg>
-                  </div>
                 </div>
+                {/* Pencil badge — always visible, bottom-right */}
+                <button
+                  onClick={() => fileRef.current?.click()}
+                  title={lang === 'en' ? 'Change photo' : 'Смени снимка'}
+                  className="absolute bottom-0.5 right-0.5 w-6 h-6 rounded-full flex items-center justify-center shadow-md transition-transform group-hover:scale-110"
+                  style={{
+                    background: 'hsl(var(--c-bg-elevated))',
+                    border: '2px solid hsl(var(--c-bg))',
+                    color: 'hsl(var(--c-fg-muted))',
+                  }}>
+                  <PencilIcon />
+                </button>
                 <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
               </div>
 
@@ -209,7 +233,7 @@ export function Profile() {
               </div>
             </div>
 
-            {/* Stats row — Duolingo-style */}
+            {/* Stats */}
             <div className="grid grid-cols-4 gap-2">
               {[
                 { icon: '🔥', value: `${streak}`, label: lang === 'en' ? 'Day Streak' : 'Поред', color: 'hsl(var(--c-orange))' },
@@ -228,7 +252,7 @@ export function Profile() {
 
             {/* Level progress */}
             <div className="mt-4">
-              <div className="flex justify-between text-xs mb-1" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+              <div className="flex justify-between text-xs mb-1.5" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
                 <span>{level.label[lang]}</span>
                 <span>{nextLevel ? `${nextLevel.minXp - xp} XP to Lv.${nextLevel.level}` : '🎉 Max level!'}</span>
               </div>
@@ -254,11 +278,11 @@ export function Profile() {
           <div className="grid grid-cols-4 gap-2.5">
             {achievements.map(a => (
               <div key={a.en}
-                className="flex flex-col items-center gap-1 rounded-xl p-2.5 text-center transition-all"
+                className="flex flex-col items-center gap-1 rounded-xl p-2.5 text-center"
                 style={{
-                  background: a.unlocked ? 'hsl(var(--c-green)/0.1)' : 'var(--c-glass)',
-                  border: `1.5px solid ${a.unlocked ? 'hsl(var(--c-green)/0.3)' : 'var(--c-border)'}`,
-                  opacity: a.unlocked ? 1 : 0.4,
+                  background: a.unlocked ? 'hsl(var(--c-green)/0.08)' : 'var(--c-glass)',
+                  border: `1.5px solid ${a.unlocked ? 'hsl(var(--c-green)/0.25)' : 'var(--c-border)'}`,
+                  opacity: a.unlocked ? 1 : 0.38,
                 }}>
                 <span className="text-2xl">{a.unlocked ? a.icon : '🔒'}</span>
                 <span className="text-xs font-bold leading-tight" style={{ color: 'hsl(var(--c-fg))' }}>
@@ -270,141 +294,182 @@ export function Profile() {
           </div>
         </div>
 
-        {/* ── Edit Profile ── */}
-        <div className="glass-card rounded-2xl p-5">
-          <h2 className="font-extrabold text-base mb-4" style={{ color: 'hsl(var(--c-fg))' }}>
-            {lang === 'en' ? 'Edit Profile' : 'Редактирай профил'}
-          </h2>
+        {/* ── Account settings ── */}
+        <div className="glass-card rounded-2xl overflow-hidden">
+          {/* Section header */}
+          <div className="px-5 py-4" style={{ borderBottom: '1px solid var(--c-border)' }}>
+            <h2 className="font-extrabold text-base" style={{ color: 'hsl(var(--c-fg))' }}>
+              {lang === 'en' ? 'Account Settings' : 'Настройки на акаунта'}
+            </h2>
+          </div>
 
-          {/* Photo upload row */}
-          <div className="flex items-center gap-4 mb-5 p-3 rounded-xl"
-            style={{ background: 'var(--c-glass)', border: '1px solid var(--c-border)' }}>
-            <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0"
-              style={{ border: '2px solid var(--c-border)' }}>
-              <Avatar src={displayAvatar} name={user?.name} />
+          {/* Display name row */}
+          <div className="px-5 py-4" style={{ borderBottom: '1px solid var(--c-border)' }}>
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex-1 min-w-0">
+                <label className="block text-sm font-semibold mb-0.5" style={{ color: 'hsl(var(--c-fg))' }}>
+                  {lang === 'en' ? 'Display name' : 'Показвано име'}
+                </label>
+                <input
+                  className="input-field mt-1.5"
+                  value={name}
+                  onChange={e => { setName(e.target.value); setSaveOk(''); setSaveErr(''); }}
+                  placeholder={lang === 'en' ? 'Your name' : 'Твоето име'}
+                />
+                {nameStatus === 'checking' && (
+                  <p className="text-xs mt-1.5" style={{ color: 'hsl(var(--c-fg-subtle))' }}>· Checking…</p>
+                )}
+                {nameStatus === 'available' && name.trim() !== user?.name && (
+                  <Hint ok text={lang === 'en' ? 'Name is available' : 'Името е свободно'} />
+                )}
+                {nameStatus === 'taken' && (
+                  <Hint ok={false} text={lang === 'en' ? 'Name already taken' : 'Името вече е заето'} />
+                )}
+                {name.trim().length > 0 && name.trim().length < 2 && (
+                  <Hint ok={false} text={lang === 'en' ? 'At least 2 characters' : 'Минимум 2 символа'} />
+                )}
+                {saveOk && <Hint ok text={saveOk} />}
+                {saveErr && <Hint ok={false} text={saveErr} />}
+              </div>
+              <button
+                className="mt-1 flex-shrink-0 text-sm font-semibold px-4 py-2 rounded-lg transition-all disabled:opacity-40"
+                style={{
+                  background: canSave ? 'hsl(var(--c-green))' : 'var(--c-glass)',
+                  color: canSave ? '#fff' : 'hsl(var(--c-fg-subtle))',
+                  border: '1px solid transparent',
+                  cursor: canSave ? 'pointer' : 'default',
+                }}
+                onClick={handleSave}
+                disabled={saving || !canSave}
+              >
+                {saving
+                  ? <span className="flex items-center gap-1.5">
+                      <span className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                      {lang === 'en' ? 'Saving' : 'Запазва'}
+                    </span>
+                  : (lang === 'en' ? 'Save' : 'Запази')
+                }
+              </button>
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold" style={{ color: 'hsl(var(--c-fg))' }}>
-                {lang === 'en' ? 'Profile photo' : 'Снимка на профила'}
-              </p>
-              <p className="text-xs" style={{ color: 'hsl(var(--c-fg-muted))' }}>
-                {pendingAvatar
-                  ? (lang === 'en' ? 'New photo selected — save to apply' : 'Нова снимка — запази за да приложиш')
-                  : (lang === 'en' ? 'JPG or PNG, max 8 MB' : 'JPG или PNG, макс 8 MB')}
-              </p>
+          </div>
+
+          {/* Photo row */}
+          <div className="px-5 py-4" style={{ borderBottom: '1px solid var(--c-border)' }}>
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-sm font-semibold" style={{ color: 'hsl(var(--c-fg))' }}>
+                  {lang === 'en' ? 'Profile photo' : 'Снимка на профила'}
+                </p>
+                <p className="text-xs mt-0.5" style={{ color: 'hsl(var(--c-fg-muted))' }}>
+                  {pendingAvatar
+                    ? (lang === 'en' ? 'New photo ready — save name to apply' : 'Готово — запази за да приложиш')
+                    : (lang === 'en' ? 'JPG or PNG, max 8 MB' : 'JPG или PNG, макс 8 MB')}
+                </p>
+              </div>
+              <div className="flex items-center gap-3 flex-shrink-0">
+                <div className="w-10 h-10 rounded-full overflow-hidden text-lg" style={{ border: '2px solid var(--c-border)' }}>
+                  <Avatar src={displayAvatar} name={user?.name} />
+                </div>
+                <button
+                  onClick={() => fileRef.current?.click()}
+                  className="text-sm font-semibold px-4 py-2 rounded-lg transition-all"
+                  style={{
+                    background: 'var(--c-glass)',
+                    color: 'hsl(var(--c-fg))',
+                    border: '1px solid var(--c-border)',
+                  }}>
+                  {lang === 'en' ? 'Upload' : 'Качи'}
+                </button>
+              </div>
             </div>
+          </div>
+
+          {/* Password row — collapsed by default */}
+          <div className="px-5 py-4">
             <button
-              onClick={() => fileRef.current?.click()}
-              className="text-xs font-semibold px-3 py-1.5 rounded-lg transition-all flex-shrink-0"
-              style={{ background: 'hsl(var(--c-primary)/0.12)', color: 'hsl(var(--c-primary))', border: '1px solid hsl(var(--c-primary)/0.25)' }}>
-              {lang === 'en' ? 'Upload' : 'Качи'}
+              className="w-full flex items-center justify-between text-left"
+              onClick={() => { setPwOpen(p => !p); setPwErr(''); setPwOk(''); }}
+            >
+              <div>
+                <p className="text-sm font-semibold" style={{ color: 'hsl(var(--c-fg))' }}>
+                  {lang === 'en' ? 'Password' : 'Парола'}
+                </p>
+                <p className="text-xs mt-0.5" style={{ color: 'hsl(var(--c-fg-muted))' }}>
+                  {lang === 'en' ? 'Change your account password' : 'Смени паролата на акаунта'}
+                </p>
+              </div>
+              <span style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+                <ChevronIcon open={pwOpen} />
+              </span>
             </button>
-          </div>
 
-          {/* Display name */}
-          <div className="mb-4">
-            <label className="block text-xs font-semibold uppercase tracking-wide mb-2"
-              style={{ color: 'hsl(var(--c-fg-subtle))' }}>
-              {lang === 'en' ? 'Display name' : 'Показвано име'}
-            </label>
-            <input
-              className="input-field"
-              value={name}
-              onChange={e => { setName(e.target.value); setSaveOk(''); setSaveErr(''); }}
-              placeholder={lang === 'en' ? 'Your name' : 'Твоето име'}
-            />
-            {nameStatus === 'checking' && (
-              <p className="text-xs mt-1.5" style={{ color: 'hsl(var(--c-fg-subtle))' }}>· Checking…</p>
-            )}
-            {nameStatus === 'available' && name.trim() !== user?.name && (
-              <Hint ok text={lang === 'en' ? 'Name is available' : 'Името е свободно'} />
-            )}
-            {nameStatus === 'taken' && (
-              <Hint ok={false} text={lang === 'en' ? 'Name already taken' : 'Името вече е заето'} />
-            )}
-            {name.trim().length > 0 && name.trim().length < 2 && (
-              <Hint ok={false} text={lang === 'en' ? 'At least 2 characters' : 'Минимум 2 символа'} />
-            )}
-          </div>
+            {/* Expandable password fields */}
+            {pwOpen && (
+              <div className="mt-4 space-y-3 pt-4" style={{ borderTop: '1px solid var(--c-border)' }}>
+                {[
+                  { label: lang === 'en' ? 'Current password' : 'Текуща парола', value: currentPw, set: setCurrentPw, show: showCurrent, toggle: setShowCurrent, ac: 'current-password' },
+                  { label: lang === 'en' ? 'New password' : 'Нова парола',      value: newPw,     set: setNewPw,     show: showNew,     toggle: setShowNew,     ac: 'new-password' },
+                ].map(f => (
+                  <div key={f.label}>
+                    <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5"
+                      style={{ color: 'hsl(var(--c-fg-subtle))' }}>{f.label}</label>
+                    <div className="relative">
+                      <input
+                        type={f.show ? 'text' : 'password'}
+                        className="input-field pr-11"
+                        value={f.value}
+                        onChange={e => { f.set(e.target.value); setPwErr(''); setPwOk(''); }}
+                        placeholder="••••••••"
+                        autoComplete={f.ac}
+                      />
+                      <button type="button" onClick={() => f.toggle(p => !p)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center"
+                        style={{ color: 'hsl(var(--c-fg-muted))' }}>
+                        {f.show ? '🙈' : '👁️'}
+                      </button>
+                    </div>
+                  </div>
+                ))}
 
-          {saveOk && <Hint ok text={saveOk} />}
-          {saveErr && <Hint ok={false} text={saveErr} />}
-
-          <button
-            className="btn-green w-full mt-1"
-            onClick={handleSave}
-            disabled={saving || !canSave}
-          >
-            {saving
-              ? <span className="flex items-center gap-2 justify-center">
-                  <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                  {lang === 'en' ? 'Saving…' : 'Запазване…'}
-                </span>
-              : (lang === 'en' ? 'Save changes' : 'Запази промените')
-            }
-          </button>
-        </div>
-
-        {/* ── Change password ── */}
-        <div className="glass-card rounded-2xl p-5">
-          <h2 className="font-extrabold text-base mb-4" style={{ color: 'hsl(var(--c-fg))' }}>
-            {lang === 'en' ? 'Change Password' : 'Смени парола'}
-          </h2>
-
-          <div className="space-y-3 mb-2">
-            {[
-              { label: lang === 'en' ? 'Current password' : 'Текуща парола', value: currentPw, set: setCurrentPw, show: showCurrent, toggle: setShowCurrent, ac: 'current-password' },
-              { label: lang === 'en' ? 'New password' : 'Нова парола', value: newPw, set: setNewPw, show: showNew, toggle: setShowNew, ac: 'new-password' },
-            ].map(f => (
-              <div key={f.label}>
-                <label className="block text-xs font-semibold uppercase tracking-wide mb-2"
-                  style={{ color: 'hsl(var(--c-fg-subtle))' }}>{f.label}</label>
-                <div className="relative">
-                  <input
-                    type={f.show ? 'text' : 'password'}
-                    className="input-field pr-11"
-                    value={f.value}
-                    onChange={e => { f.set(e.target.value); setPwErr(''); setPwOk(''); }}
-                    placeholder="••••••••"
-                    autoComplete={f.ac}
+                {newPw.length > 0 && (
+                  <Hint
+                    ok={newPw.length >= 8}
+                    text={newPw.length >= 8
+                      ? (lang === 'en' ? 'Password strength is good' : 'Паролата е достатъчно силна')
+                      : (lang === 'en' ? `${8 - newPw.length} more character${8 - newPw.length !== 1 ? 's' : ''} needed` : `Нужни са още ${8 - newPw.length} символа`)}
                   />
-                  <button type="button" onClick={() => f.toggle(p => !p)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center"
-                    style={{ color: 'hsl(var(--c-fg-muted))' }}>
-                    {f.show ? '🙈' : '👁️'}
+                )}
+                {currentPw && pwErr?.includes('incorrect') && (
+                  <Hint ok={false} text={lang === 'en' ? 'Current password is incorrect' : 'Текущата парола е грешна'} />
+                )}
+                {pwOk && <Hint ok text={pwOk} />}
+                {pwErr && !pwErr.includes('incorrect') && <Hint ok={false} text={pwErr} />}
+
+                <div className="flex gap-2 pt-1">
+                  <button
+                    className="btn-primary flex-1"
+                    onClick={handleChangePw}
+                    disabled={pwSaving || !currentPw || newPw.length < 8}
+                  >
+                    {pwSaving
+                      ? <span className="flex items-center gap-2 justify-center">
+                          <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          {lang === 'en' ? 'Changing…' : 'Смяна…'}
+                        </span>
+                      : (lang === 'en' ? 'Update password' : 'Обнови паролата')
+                    }
+                  </button>
+                  <button
+                    className="px-4 py-2 rounded-lg text-sm font-semibold transition-all"
+                    style={{ background: 'var(--c-glass)', color: 'hsl(var(--c-fg-muted))', border: '1px solid var(--c-border)' }}
+                    onClick={() => { setPwOpen(false); setCurrentPw(''); setNewPw(''); setPwErr(''); setPwOk(''); }}
+                  >
+                    {lang === 'en' ? 'Cancel' : 'Отказ'}
                   </button>
                 </div>
               </div>
-            ))}
+            )}
           </div>
-
-          {newPw.length > 0 && (
-            <Hint
-              ok={newPw.length >= 8}
-              text={newPw.length >= 8
-                ? (lang === 'en' ? 'Password strength is good' : 'Паролата е достатъчно силна')
-                : (lang === 'en' ? `${8 - newPw.length} more character${8 - newPw.length !== 1 ? 's' : ''} needed` : `Нужни са още ${8 - newPw.length} символа`)}
-            />
-          )}
-          {currentPw && pwErr?.includes('incorrect') && (
-            <Hint ok={false} text={lang === 'en' ? 'Current password is incorrect' : 'Текущата парола е грешна'} />
-          )}
-          {pwOk && <Hint ok text={pwOk} />}
-          {pwErr && !pwErr.includes('incorrect') && <Hint ok={false} text={pwErr} />}
-
-          <button
-            className="btn-primary w-full mt-4"
-            onClick={handleChangePw}
-            disabled={pwSaving || !currentPw || newPw.length < 8}
-          >
-            {pwSaving
-              ? <span className="flex items-center gap-2 justify-center">
-                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  {lang === 'en' ? 'Changing…' : 'Смяна…'}
-                </span>
-              : (lang === 'en' ? 'Change password' : 'Смени паролата')
-            }
-          </button>
         </div>
 
       </div>
