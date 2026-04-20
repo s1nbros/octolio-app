@@ -20,10 +20,8 @@ export function Navbar() {
 
         {/* Logo */}
         <Link to={user ? '/dashboard' : '/'} className="flex items-center gap-2 flex-shrink-0">
-          <div className="w-8 h-8 rounded-xl flex items-center justify-center text-lg"
-            style={{ background: 'linear-gradient(135deg, hsl(var(--c-primary)/0.9), hsl(var(--c-green)/0.8))' }}>
-            ◆
-          </div>
+          <img src="/logo.png" alt="Octolio" className="w-9 h-9 object-contain"
+            style={{ filter: 'drop-shadow(0 0 6px hsl(var(--c-green)/0.4))' }} />
           <span className="font-extrabold text-base tracking-tight hidden sm:block" style={{ color: 'hsl(var(--c-fg))' }}>
             Octolio
           </span>
@@ -51,24 +49,13 @@ export function Navbar() {
 
           {user ? (
             <>
-              {/* Both flags — click to toggle */}
-              <div className="hidden sm:flex items-center rounded-lg overflow-hidden"
-                style={{ border: '1px solid var(--c-border)' }}>
-                <button
-                  onClick={() => setLang('bg')}
-                  className="px-2 py-1.5 text-sm transition-all"
-                  style={{ background: lang === 'bg' ? 'hsl(var(--c-primary)/0.15)' : 'var(--c-glass)' }}
-                  title="Български">
-                  🇧🇬
-                </button>
-                <button
-                  onClick={() => setLang('en')}
-                  className="px-2 py-1.5 text-sm transition-all"
-                  style={{ background: lang === 'en' ? 'hsl(var(--c-primary)/0.15)' : 'var(--c-glass)' }}
-                  title="English">
-                  🇬🇧
-                </button>
-              </div>
+              {/* Language toggle — single button */}
+              <button onClick={() => setLang(lang === 'en' ? 'bg' : 'en')}
+                className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-semibold transition-all"
+                style={{ background: 'var(--c-glass)', border: '1px solid var(--c-border)', color: 'hsl(var(--c-fg-muted))' }}>
+                <span>{lang === 'en' ? '🇬🇧' : '🇧🇬'}</span>
+                <span>{lang === 'en' ? 'EN' : 'BG'}</span>
+              </button>
 
               {/* XP pill */}
               <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full"

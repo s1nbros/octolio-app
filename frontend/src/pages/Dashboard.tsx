@@ -132,15 +132,21 @@ function ProWidget() {
   );
 }
 
-/* ─── Sidebar: League ─── */
-function LeagueWidget({ userName }: { userName: string }) {
-  const leaderboard = [
-    { name: 'Marta K.', xp: 1240 },
-    { name: 'Devon A.', xp: 980 },
-    { name: userName, xp: 0, isYou: true },
-    { name: 'Priya R.', xp: 80 },
-    { name: 'Leo V.',   xp: 60 },
-  ];
+/* ─── Sidebar: League (live data) ─── */
+interface LeagueEntry { rank: number; id: number; name: string; xp: number; isYou: boolean; }
+
+function LeagueWidget({ token }: { token: string | null }) {
+  const [rows, setRows] = useState<LeagueEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!token) return;
+    fetch('/api/auth/league', { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.json())
+      .then(d => setRows(d.leaderboard ?? []))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [token]);
 
   return (
     <div className="glass-card rounded-2xl p-4">
@@ -154,36 +160,43 @@ function LeagueWidget({ userName }: { userName: string }) {
         Weekly race
       </h3>
       <p className="text-xs mb-4" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
-        Top 3 promote · ends in 3d 14h
+        Top 3 promote · ranked by XP
       </p>
 
-      <div className="space-y-2">
-        {leaderboard.map((u, i) => (
-          <div key={i} className="flex items-center gap-3 py-1.5 px-2 rounded-xl"
-            style={{
-              background: u.isYou ? 'hsl(var(--c-primary)/0.1)' : 'transparent',
-              border: u.isYou ? '1px solid hsl(var(--c-primary)/0.2)' : '1px solid transparent',
-            }}>
-            <span className="mono text-sm w-4 text-center flex-shrink-0"
-              style={{ color: i < 3 ? 'hsl(var(--c-gold))' : 'hsl(var(--c-fg-subtle))' }}>
-              {i + 1}
-            </span>
-            <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+      {loading ? (
+        <div className="space-y-2">
+          {[1,2,3,4,5].map(i => <div key={i} className="skeleton h-9 rounded-xl" />)}
+        </div>
+      ) : (
+        <div className="space-y-1.5">
+          {rows.map(u => (
+            <div key={u.id} className="flex items-center gap-3 py-1.5 px-2 rounded-xl"
               style={{
-                background: u.isYou ? 'hsl(var(--c-primary)/0.25)' : 'hsl(var(--c-fg-subtle)/0.15)',
-                color: u.isYou ? 'hsl(var(--c-primary))' : 'hsl(var(--c-fg-muted))',
+                background: u.isYou ? 'hsl(var(--c-primary)/0.1)' : 'transparent',
+                border: u.isYou ? '1px solid hsl(var(--c-primary)/0.2)' : '1px solid transparent',
               }}>
-              {u.name[0]}
+              <span className="mono text-sm w-5 text-center flex-shrink-0 font-bold"
+                style={{ color: u.rank <= 3 ? 'hsl(var(--c-gold))' : 'hsl(var(--c-fg-subtle))' }}>
+                {u.rank}
+              </span>
+              <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+                style={{
+                  background: u.isYou ? 'hsl(var(--c-primary)/0.25)' : 'hsl(var(--c-fg-subtle)/0.15)',
+                  color: u.isYou ? 'hsl(var(--c-primary))' : 'hsl(var(--c-fg-muted))',
+                }}>
+                {u.name[0]?.toUpperCase()}
+              </div>
+              <span className="flex-1 text-sm font-medium truncate"
+                style={{ color: u.isYou ? 'hsl(var(--c-fg))' : 'hsl(var(--c-fg-muted))' }}>
+                {u.name}{u.isYou && <span style={{ color: 'hsl(var(--c-fg-subtle))' }}> · you</span>}
+              </span>
+              <span className="mono text-sm font-semibold flex-shrink-0" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+                {u.xp.toLocaleString()} XP
+              </span>
             </div>
-            <span className="flex-1 text-sm font-medium" style={{ color: u.isYou ? 'hsl(var(--c-fg))' : 'hsl(var(--c-fg-muted))' }}>
-              {u.name}{u.isYou && <span style={{ color: 'hsl(var(--c-fg-subtle))' }}> · you</span>}
-            </span>
-            <span className="mono text-sm font-semibold" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
-              {u.xp} XP
-            </span>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -263,27 +276,28 @@ export function Dashboard() {
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-6" style={{ zIndex: 1 }}>
 
         {/* ── Hero card ── */}
-        <div className="glass-card rounded-2xl p-6 mb-5 animate-fade-up"
+        <div className="glass-card rounded-2xl p-5 mb-5 animate-fade-up overflow-hidden"
           style={{ background: 'linear-gradient(135deg, hsl(var(--c-bg-card)), hsl(var(--c-primary)/0.06))' }}>
-          <div className="flex items-center gap-6 flex-wrap">
-            {/* Ring */}
-            <LevelRing level={level.level} pct={levelPct} />
+          {/* Single row — ring · text · button, never wraps */}
+          <div className="flex items-center gap-5" style={{ minWidth: 0 }}>
+            {/* Ring — fixed width, never shrinks */}
+            <div className="flex-shrink-0">
+              <LevelRing level={level.level} pct={levelPct} />
+            </div>
 
-            {/* Text */}
+            {/* Text — grows, clips long names */}
             <div className="flex-1 min-w-0">
               <p className="text-xs font-semibold uppercase tracking-widest mb-1"
                 style={{ color: 'hsl(var(--c-fg-subtle))' }}>
                 {lang === 'en' ? 'Welcome back' : 'Добре дошъл'}
               </p>
-              <h1 className="text-3xl font-extrabold mb-2" style={{ color: 'hsl(var(--c-fg))' }}>
-                {user?.name} <span style={{ opacity: 0.85 }}>👋</span>
+              <h1 className="text-2xl font-extrabold truncate mb-1.5" style={{ color: 'hsl(var(--c-fg))' }}>
+                {user?.name} 👋
               </h1>
               <p className="text-sm" style={{ color: 'hsl(var(--c-fg-muted))' }}>
                 <span className="mono font-bold" style={{ color: 'hsl(var(--c-primary))' }}>{xp.toLocaleString()}</span>
                 {' / '}
-                <span className="mono font-bold" style={{ color: 'hsl(var(--c-fg-muted))' }}>
-                  {nextLevel ? nextLevel.minXp.toLocaleString() : '∞'}
-                </span>
+                <span className="mono font-bold">{nextLevel ? nextLevel.minXp.toLocaleString() : '∞'}</span>
                 {' XP toward '}
                 <span className="font-bold" style={{ color: 'hsl(var(--c-green))' }}>
                   {nextLevel ? nextLevel.label[lang] : level.label[lang]}
@@ -291,10 +305,10 @@ export function Dashboard() {
               </p>
             </div>
 
-            {/* CTA */}
+            {/* CTA — fixed, never shrinks */}
             {nextLesson && (
-              <Link to={`/lesson/${nextLesson.module.id}/${nextLesson.lesson.id}`} className="flex-shrink-0">
-                <button className="btn-green px-6 py-3 text-base">
+              <Link to={`/lesson/${nextLesson.module.id}/${nextLesson.lesson.id}`} className="flex-shrink-0 hidden sm:block">
+                <button className="btn-green px-5 py-2.5 text-sm whitespace-nowrap">
                   {lang === 'en' ? 'Continue' : 'Продължи'} →
                 </button>
               </Link>
@@ -427,7 +441,7 @@ export function Dashboard() {
           <div className="w-72 flex-shrink-0 space-y-4 hidden lg:block animate-fade-up delay-200">
             <StreakWidget streak={streak} />
             <ProWidget />
-            <LeagueWidget userName={user?.name ?? 'You'} />
+            <LeagueWidget token={token} />
             <MoneyFactWidget />
           </div>
 

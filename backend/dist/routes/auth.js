@@ -160,6 +160,38 @@ exports.authRouter.patch('/profile', auth_1.authenticate, async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 });
+/* League — top 10 users by XP, current user always included */
+exports.authRouter.get('/league', auth_1.authenticate, async (req, res) => {
+    try {
+        const pool = (0, db_1.getPool)();
+        const result = await pool.query('SELECT id, name, xp FROM users ORDER BY xp DESC LIMIT 10');
+        const leaderboard = result.rows.map((row, i) => ({
+            rank: i + 1,
+            id: row.id,
+            name: row.name,
+            xp: row.xp,
+            isYou: row.id === req.userId,
+        }));
+        // If current user not in top 10, append their row with real rank
+        const inTop = leaderboard.some((r) => r.isYou);
+        if (!inTop) {
+            const me = await pool.query('SELECT id, name, xp FROM users WHERE id = $1', [req.userId]);
+            const rankRow = await pool.query('SELECT COUNT(*) FROM users WHERE xp > $1', [me.rows[0].xp]);
+            leaderboard.push({
+                rank: parseInt(rankRow.rows[0].count, 10) + 1,
+                id: me.rows[0].id,
+                name: me.rows[0].name,
+                xp: me.rows[0].xp,
+                isYou: true,
+            });
+        }
+        res.json({ leaderboard });
+    }
+    catch (err) {
+        console.error('League error:', err);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
 exports.authRouter.patch('/password', auth_1.authenticate, async (req, res) => {
     const { currentPassword, newPassword } = req.body;
     if (!currentPassword || !newPassword) {
