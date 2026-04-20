@@ -132,63 +132,55 @@ export function DailyQuests({ completedLessons, streak, xp }: Props) {
           const pct  = Math.round((q.current / q.total) * 100);
 
           const inner = (
-            <div className="flex items-center gap-3 p-3 rounded-xl transition-all"
+            <div className="p-3 rounded-xl transition-all"
               style={{
                 background: done ? 'hsl(var(--c-green)/0.06)' : 'var(--c-glass)',
                 border: `1px solid ${done ? 'hsl(var(--c-green)/0.18)' : 'var(--c-border)'}`,
                 cursor: q.link && !done ? 'pointer' : 'default',
               }}>
 
-              {/* Icon box */}
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-lg"
-                style={{ background: done ? 'hsl(var(--c-green)/0.15)' : `${q.color}22` }}>
-                {done ? '✓' : q.icon}
-              </div>
+              {/* Top row: icon · title+desc · xp pill — all items-start so nothing stretches */}
+              <div className="flex items-start gap-3">
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-lg mt-0.5"
+                  style={{ background: done ? 'hsl(var(--c-green)/0.18)' : `${q.color}22` }}>
+                  {done ? '✓' : q.icon}
+                </div>
 
-              {/* Text */}
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold leading-tight"
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold leading-tight"
+                    style={{
+                      color: 'hsl(var(--c-fg))',
+                      textDecoration: done ? 'line-through' : 'none',
+                      opacity: done ? 0.55 : 1,
+                    }}>
+                    {q.label[lang]}
+                  </p>
+                  <p className="text-xs mt-0.5" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+                    {q.description[lang]}
+                  </p>
+                </div>
+
+                <span className="flex items-center gap-0.5 text-xs font-bold px-2.5 py-1 rounded-full flex-shrink-0"
                   style={{
-                    color: 'hsl(var(--c-fg))',
-                    textDecoration: done ? 'line-through' : 'none',
-                    opacity: done ? 0.6 : 1,
+                    background: done ? 'hsl(var(--c-green)/0.15)' : 'hsl(var(--c-primary)/0.14)',
+                    color: done ? 'hsl(var(--c-green))' : 'hsl(var(--c-primary))',
                   }}>
-                  {q.label[lang]}
-                </p>
-                <p className="text-xs mt-0.5" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
-                  {q.description[lang]}
-                </p>
-                {/* Mini progress */}
-                {!done && q.total > 1 && (
-                  <div className="flex items-center gap-2 mt-1.5">
-                    <div className="flex-1 h-1 rounded-full" style={{ background: 'var(--c-border)' }}>
-                      <div className="h-full rounded-full" style={{ width: `${pct}%`, background: q.color }} />
-                    </div>
-                    <span className="mono text-xs" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
-                      {q.current}/{q.total}
-                    </span>
-                  </div>
-                )}
-                {!done && q.total === 1 && (
-                  <div className="flex items-center gap-2 mt-1.5">
-                    <div className="flex-1 h-1 rounded-full" style={{ background: 'var(--c-border)' }}>
-                      <div className="h-full rounded-full" style={{ width: `${pct}%`, background: q.color }} />
-                    </div>
-                    <span className="mono text-xs" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
-                      {q.current}/{q.total}
-                    </span>
-                  </div>
-                )}
+                  ⚡ +{q.xp} XP
+                </span>
               </div>
 
-              {/* XP pill */}
-              <span className="flex items-center gap-0.5 text-xs font-bold px-2 py-1 rounded-full flex-shrink-0"
-                style={{
-                  background: done ? 'hsl(var(--c-green)/0.12)' : 'hsl(var(--c-primary)/0.12)',
-                  color: done ? 'hsl(var(--c-green))' : 'hsl(var(--c-primary))',
-                }}>
-                ⚡ +{q.xp} XP
-              </span>
+              {/* Progress bar — full width below the row, only when not done */}
+              {!done && (
+                <div className="flex items-center gap-2 mt-2.5">
+                  <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ background: 'var(--c-border)' }}>
+                    <div className="h-full rounded-full transition-all duration-500"
+                      style={{ width: `${pct}%`, background: q.color }} />
+                  </div>
+                  <span className="mono text-xs flex-shrink-0" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+                    {q.current}/{q.total}
+                  </span>
+                </div>
+              )}
             </div>
           );
 
