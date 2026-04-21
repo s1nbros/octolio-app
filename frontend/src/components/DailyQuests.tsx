@@ -185,7 +185,7 @@ export function DailyQuests({ completedLessons, streak, xp }: Props) {
           );
 
           return q.link && !done
-            ? <Link key={q.id} to={q.link}>{inner}</Link>
+            ? <Link key={q.id} to={q.link} className="block">{inner}</Link>
             : <div key={q.id}>{inner}</div>;
         })}
       </div>

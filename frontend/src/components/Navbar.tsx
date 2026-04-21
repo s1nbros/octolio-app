@@ -32,8 +32,7 @@ export function Navbar() {
           <nav className="hidden sm:flex items-center gap-0.5 flex-1">
             <NavTab to="/dashboard" active={isActive('/dashboard')} label="Dashboard" />
             <NavTab to="/modules"   active={isActive('/modules') || isActive('/lesson')} label="Learn" />
-            <NavTab to="#"          active={false} label="League" />
-            <NavTab to="#"          active={false} label="Shop" />
+            <NavTab to="/league"    active={isActive('/league')} label="League" />
           </nav>
         )}
 
