@@ -241,6 +241,103 @@ function MoneyFactWidget() {
   );
 }
 
+/* ─── Dashboard module mini-card with hover glow ─── */
+const COLOR_HEX: Record<string, string> = {
+  green:  'hsl(162, 52%, 62%)',
+  blue:   'hsl(239, 84%, 67%)',
+  purple: 'hsl(280, 70%, 65%)',
+  orange: 'hsl(28,  85%, 60%)',
+};
+
+function DashModuleCard({ mod, idx, prevMod, lang }: {
+  mod: ModuleMeta;
+  idx: number;
+  prevMod: ModuleMeta | null;
+  lang: 'en' | 'bg';
+}) {
+  const [hovered, setHovered] = useState(false);
+  const locked = prevMod !== null && prevMod.lessons.some(l => !l.completed);
+  const done  = mod.lessons.filter(l => l.completed).length;
+  const total = mod.lessons.length;
+  const pct   = total > 0 ? Math.round((done / total) * 100) : 0;
+  const nextL = mod.lessons.find(l => !l.completed);
+  const color = COLOR_HEX[mod.color] ?? COLOR_HEX.blue;
+
+  const card = (
+    <div
+      className="rounded-2xl p-4 relative overflow-hidden"
+      style={{
+        background: locked ? 'hsl(var(--c-bg-card)/0.5)' : 'hsl(var(--c-bg-card))',
+        border: `1px solid ${locked ? 'var(--c-border)' : hovered ? color : `${color}44`}`,
+        boxShadow: !locked && hovered ? `0 0 0 1px ${color}55, 0 8px 28px ${color}22` : undefined,
+        minHeight: '180px',
+        opacity: locked ? 0.6 : 1,
+        cursor: locked ? 'default' : 'pointer',
+        transform: !locked && hovered ? 'translateY(-2px)' : undefined,
+        transition: 'border-color 0.2s, box-shadow 0.2s, transform 0.2s',
+      }}
+      onMouseEnter={() => !locked && setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      {/* Colour glow bottom-left */}
+      {!locked && (
+        <div className="absolute bottom-0 left-0 w-32 h-32 rounded-full pointer-events-none"
+          style={{ background: `${color}22`, filter: 'blur(24px)', transform: 'translate(-25%, 25%)',
+            opacity: hovered ? 1 : 0.6, transition: 'opacity 0.2s' }} />
+      )}
+
+      {/* Top row: icon + progress % or lock */}
+      <div className="flex items-start justify-between mb-3 relative">
+        <div className="w-11 h-11 rounded-xl flex items-center justify-center text-2xl"
+          style={{ background: locked ? 'hsl(var(--c-fg-subtle)/0.08)' : `${color}25` }}>
+          {locked ? '🔒' : mod.icon}
+        </div>
+        <span className="mono text-xs font-semibold" style={{ color: hovered && !locked ? color : 'hsl(var(--c-fg-subtle))' }}>
+          {locked ? '' : `${pct}%`}
+        </span>
+      </div>
+
+      {/* Name + desc */}
+      <h3 className="font-bold text-base mb-0.5 relative" style={{ color: 'hsl(var(--c-fg))' }}>
+        {mod.title[lang]}
+      </h3>
+      <p className="text-xs mb-4 relative leading-snug" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+        {locked
+          ? (lang === 'en' ? `Complete "${prevMod!.title.en}" to unlock` : `Завърши "${prevMod!.title.bg}" за достъп`)
+          : mod.description[lang]}
+      </p>
+
+      {/* Bottom row */}
+      <div className="flex items-center justify-between relative">
+        <span className="text-xs" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+          {locked
+            ? (lang === 'en' ? 'Locked' : 'Заключено')
+            : <><span className="mono">{done}/{total}</span> {lang === 'en' ? 'lessons' : 'урока'}</>}
+        </span>
+        {!locked && (nextL ? (
+          <button className="text-xs font-bold px-3 py-1.5 rounded-lg transition-all"
+            style={{
+              background: done > 0 ? `${color}30` : `${color}20`,
+              color: color,
+              border: `1px solid ${color}50`,
+            }}>
+            {done > 0 ? (lang === 'en' ? 'Continue' : 'Продължи') : (lang === 'en' ? 'Start' : 'Започни')} →
+          </button>
+        ) : (
+          <span className="text-xs font-bold px-3 py-1.5 rounded-lg"
+            style={{ background: 'hsl(var(--c-green)/0.1)', color: 'hsl(var(--c-green))' }}>
+            ✓ {lang === 'en' ? 'Done' : 'Готово'}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+
+  return locked || !nextL
+    ? card
+    : <Link to={`/lesson/${mod.id}/${nextL.id}`} className="block">{card}</Link>;
+}
+
 /* ─── Main ─── */
 export function Dashboard() {
   const { user, token, updateUser } = useAuth();
@@ -383,80 +480,9 @@ export function Dashboard() {
               </div>
 
               <div className="grid sm:grid-cols-3 gap-3">
-                {modules.map((mod, idx) => {
-                  const done  = mod.lessons.filter(l => l.completed).length;
-                  const total = mod.lessons.length;
-                  const pct   = total > 0 ? Math.round((done / total) * 100) : 0;
-                  const nextL = mod.lessons.find(l => !l.completed);
-                  const color = mod.color ?? '#6c6fef';
-
-                  // Lock modules 2+ until previous module is 100% complete
-                  const prevMod = idx > 0 ? modules[idx - 1] : null;
-                  const locked = prevMod !== null && prevMod.lessons.some(l => !l.completed);
-
-                  return (
-                    <div key={mod.id} className="rounded-2xl p-4 relative overflow-hidden group"
-                      style={{
-                        background: locked ? 'hsl(var(--c-bg-card)/0.5)' : 'hsl(var(--c-bg-card))',
-                        border: `1px solid ${locked ? 'var(--c-border)' : 'var(--c-border)'}`,
-                        minHeight: '180px',
-                        opacity: locked ? 0.6 : 1,
-                      }}>
-                      {/* Colour glow bottom-left */}
-                      {!locked && (
-                        <div className="absolute bottom-0 left-0 w-32 h-32 rounded-full pointer-events-none"
-                          style={{ background: `${color}22`, filter: 'blur(24px)', transform: 'translate(-25%, 25%)' }} />
-                      )}
-
-                      {/* Top row: icon + progress % or lock */}
-                      <div className="flex items-start justify-between mb-3 relative">
-                        <div className="w-11 h-11 rounded-xl flex items-center justify-center text-2xl"
-                          style={{ background: locked ? 'hsl(var(--c-fg-subtle)/0.08)' : `${color}25` }}>
-                          {locked ? '🔒' : mod.icon}
-                        </div>
-                        <span className="mono text-xs font-semibold" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
-                          {locked ? '' : `${pct}%`}
-                        </span>
-                      </div>
-
-                      {/* Name + desc */}
-                      <h3 className="font-bold text-base mb-0.5 relative" style={{ color: 'hsl(var(--c-fg))' }}>
-                        {mod.title[lang]}
-                      </h3>
-                      <p className="text-xs mb-4 relative leading-snug" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
-                        {locked
-                          ? (lang === 'en' ? `Complete "${prevMod!.title.en}" to unlock` : `Завърши "${prevMod!.title.bg}" за достъп`)
-                          : mod.description[lang]}
-                      </p>
-
-                      {/* Bottom row */}
-                      <div className="flex items-center justify-between relative">
-                        <span className="text-xs" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
-                          {locked
-                            ? (lang === 'en' ? 'Locked' : 'Заключено')
-                            : <><span className="mono">{done}/{total}</span> {lang === 'en' ? 'lessons' : 'урока'}</>}
-                        </span>
-                        {!locked && (nextL ? (
-                          <Link to={`/lesson/${mod.id}/${nextL.id}`}>
-                            <button className="text-xs font-bold px-3 py-1.5 rounded-lg transition-all hover:brightness-110"
-                              style={{
-                                background: done > 0 ? `${color}30` : `${color}20`,
-                                color: color,
-                                border: `1px solid ${color}40`,
-                              }}>
-                              {done > 0 ? (lang === 'en' ? 'Continue' : 'Продължи') : (lang === 'en' ? 'Start' : 'Започни')} →
-                            </button>
-                          </Link>
-                        ) : (
-                          <span className="text-xs font-bold px-3 py-1.5 rounded-lg"
-                            style={{ background: 'hsl(var(--c-green)/0.1)', color: 'hsl(var(--c-green))' }}>
-                            ✓ {lang === 'en' ? 'Done' : 'Готово'}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  );
-                })}
+                {modules.map((mod, idx) => (
+                  <DashModuleCard key={mod.id} mod={mod} idx={idx} prevMod={idx > 0 ? modules[idx - 1] : null} lang={lang} />
+                ))}
               </div>
             </div>
 

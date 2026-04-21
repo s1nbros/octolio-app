@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { ModuleMeta } from '../types';
 import { useLang } from '../contexts/LanguageContext';
@@ -37,6 +38,7 @@ interface Props {
 
 export function ModuleCard({ module, isLocked, index }: Props) {
   const { t, ui } = useLang();
+  const [hovered, setHovered] = useState(false);
   const colors = COLOR_MAP[module.color] ?? COLOR_MAP.blue;
   const completedCount = module.lessons.filter((l) => l.completed).length;
   const totalLessons = module.lessons.length;
@@ -49,9 +51,20 @@ export function ModuleCard({ module, isLocked, index }: Props) {
     <div
       className={`glass-card rounded-2xl p-6 transition-all duration-300 animate-fade-up delay-${Math.min(index * 100, 400)}`}
       style={{
-        borderColor: isLocked ? 'var(--c-border)' : colors.border,
+        borderColor: isLocked
+          ? 'var(--c-border)'
+          : hovered
+            ? colors.badge
+            : colors.border,
+        boxShadow: !isLocked && hovered
+          ? `0 0 0 1px ${colors.badge}, 0 8px 32px ${colors.glow}`
+          : undefined,
         opacity: isLocked ? 0.55 : 1,
+        cursor: isLocked ? 'default' : 'pointer',
+        transform: !isLocked && hovered ? 'translateY(-2px)' : undefined,
       }}
+      onMouseEnter={() => !isLocked && setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
