@@ -123,7 +123,12 @@ export function Profile() {
     if (!file.type.startsWith('image/')) { setSaveErr('Please upload an image file'); return; }
     if (file.size > 8 * 1024 * 1024) { setSaveErr('Image must be under 8 MB'); return; }
     setSaveErr('');
-    setPendingAvatar(await resizeImage(file));
+    try {
+      const dataUrl = await resizeImage(file);
+      setPendingAvatar(dataUrl);
+    } catch {
+      setSaveErr('Could not process image. Please try a different file.');
+    }
   };
 
   const handleSave = async () => {

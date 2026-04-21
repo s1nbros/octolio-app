@@ -133,7 +133,27 @@ function ProWidget() {
 }
 
 /* ─── Sidebar: League (live data) ─── */
-interface LeagueEntry { rank: number; id: number; name: string; xp: number; isYou: boolean; }
+interface LeagueEntry { rank: number; id: number; name: string; xp: number; avatar: string | null; isYou: boolean; }
+
+function LeagueAvatar({ avatar, name, isYou }: { avatar: string | null; name: string; isYou: boolean }) {
+  if (avatar?.startsWith('data:')) {
+    return (
+      <div className="w-7 h-7 rounded-full overflow-hidden flex-shrink-0"
+        style={{ border: isYou ? '1.5px solid hsl(var(--c-primary)/0.5)' : '1.5px solid hsl(var(--c-fg-subtle)/0.2)' }}>
+        <img src={avatar} alt={name} className="w-full h-full object-cover" />
+      </div>
+    );
+  }
+  return (
+    <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+      style={{
+        background: isYou ? 'hsl(var(--c-primary)/0.25)' : 'hsl(var(--c-fg-subtle)/0.15)',
+        color: isYou ? 'hsl(var(--c-primary))' : 'hsl(var(--c-fg-muted))',
+      }}>
+      {name[0]?.toUpperCase()}
+    </div>
+  );
+}
 
 function LeagueWidget({ token }: { token: string | null }) {
   const [rows, setRows] = useState<LeagueEntry[]>([]);
@@ -179,13 +199,7 @@ function LeagueWidget({ token }: { token: string | null }) {
                 style={{ color: u.rank <= 3 ? 'hsl(var(--c-gold))' : 'hsl(var(--c-fg-subtle))' }}>
                 {u.rank}
               </span>
-              <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
-                style={{
-                  background: u.isYou ? 'hsl(var(--c-primary)/0.25)' : 'hsl(var(--c-fg-subtle)/0.15)',
-                  color: u.isYou ? 'hsl(var(--c-primary))' : 'hsl(var(--c-fg-muted))',
-                }}>
-                {u.name[0]?.toUpperCase()}
-              </div>
+              <LeagueAvatar avatar={u.avatar} name={u.name} isYou={u.isYou} />
               <span className="flex-1 text-sm font-medium truncate"
                 style={{ color: u.isYou ? 'hsl(var(--c-fg))' : 'hsl(var(--c-fg-muted))' }}>
                 {u.name}{u.isYou && <span style={{ color: 'hsl(var(--c-fg-subtle))' }}> · you</span>}

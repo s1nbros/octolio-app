@@ -17,9 +17,13 @@ export function Register() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const nameOk = name.trim().length >= 2;
+  const nameNoSpaces = !name.includes(' ');
+  const nameLengthOk = name.trim().length >= 2;
+  const nameOk = nameLengthOk && nameNoSpaces;
   const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  const passwordOk = password.length >= 8;
+  const pwLength = password.length >= 8;
+  const pwUppercase = /[A-Z]/.test(password);
+  const passwordOk = pwLength && pwUppercase;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,13 +82,20 @@ export function Register() {
               <input
                 type="text"
                 className="input-field"
-                placeholder="Alex Johnson"
+                placeholder="AlexJohnson"
                 value={name}
-                onChange={e => setName(e.target.value)}
-                autoComplete="name"
+                onChange={e => setName(e.target.value.replace(/ /g, ''))}
+                autoComplete="username"
               />
-              {hint(submitted || name.length > 0, nameOk,
-                nameOk ? 'Looks good' : 'At least 2 characters')}
+              {(submitted || name.length > 0) && !nameLengthOk && (
+                <p className="text-xs mt-1.5 font-medium" style={{ color: 'hsl(var(--c-red))' }}>✗ At least 2 characters</p>
+              )}
+              {(submitted || name.length > 0) && nameLengthOk && !nameNoSpaces && (
+                <p className="text-xs mt-1.5 font-medium" style={{ color: 'hsl(var(--c-red))' }}>✗ No spaces allowed in username</p>
+              )}
+              {(submitted || name.length > 0) && nameOk && (
+                <p className="text-xs mt-1.5 font-medium" style={{ color: 'hsl(var(--c-green))' }}>✓ Looks good</p>
+              )}
             </div>
 
             <div>
@@ -125,9 +136,14 @@ export function Register() {
                 </button>
               </div>
               {password.length > 0 && (
-                <p className="text-xs mt-1.5 font-medium" style={{ color: passwordOk ? 'hsl(var(--c-green))' : 'hsl(var(--c-red))' }}>
-                  {passwordOk ? '✓ Strong password' : `✗ ${8 - password.length} more character${8 - password.length !== 1 ? 's' : ''} needed`}
-                </p>
+                <div className="mt-1.5 space-y-0.5">
+                  <p className="text-xs font-medium" style={{ color: pwLength ? 'hsl(var(--c-green))' : 'hsl(var(--c-red))' }}>
+                    {pwLength ? '✓' : '✗'} At least 8 characters
+                  </p>
+                  <p className="text-xs font-medium" style={{ color: pwUppercase ? 'hsl(var(--c-green))' : 'hsl(var(--c-red))' }}>
+                    {pwUppercase ? '✓' : '✗'} At least 1 uppercase letter (A–Z)
+                  </p>
+                </div>
               )}
             </div>
 

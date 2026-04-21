@@ -12,8 +12,20 @@ authRouter.post('/register', async (req: Request, res: Response): Promise<void> 
     res.status(400).json({ error: 'Name, email, and password are required' });
     return;
   }
+  if (/\s/.test(name)) {
+    res.status(400).json({ error: 'Username cannot contain spaces' });
+    return;
+  }
+  if (name.trim().length < 2) {
+    res.status(400).json({ error: 'Username must be at least 2 characters' });
+    return;
+  }
   if (password.length < 8) {
     res.status(400).json({ error: 'Password must be at least 8 characters' });
+    return;
+  }
+  if (!/[A-Z]/.test(password)) {
+    res.status(400).json({ error: 'Password must contain at least one uppercase letter' });
     return;
   }
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -193,26 +205,28 @@ authRouter.get('/league', authenticate, async (req: AuthRequest, res: Response):
   try {
     const pool = getPool();
     const result = await pool.query(
-      'SELECT id, name, xp FROM users ORDER BY xp DESC LIMIT 10'
+      'SELECT id, name, xp, avatar FROM users ORDER BY xp DESC LIMIT 10'
     );
-    const leaderboard = result.rows.map((row: { id: number; name: string; xp: number }, i: number) => ({
+    const leaderboard = result.rows.map((row: { id: number; name: string; xp: number; avatar: string | null }, i: number) => ({
       rank: i + 1,
       id: row.id,
       name: row.name,
       xp: row.xp,
+      avatar: row.avatar ?? null,
       isYou: row.id === req.userId,
     }));
 
     // If current user not in top 10, append their row with real rank
     const inTop = leaderboard.some((r: { isYou: boolean }) => r.isYou);
     if (!inTop) {
-      const me = await pool.query('SELECT id, name, xp FROM users WHERE id = $1', [req.userId]);
+      const me = await pool.query('SELECT id, name, xp, avatar FROM users WHERE id = $1', [req.userId]);
       const rankRow = await pool.query('SELECT COUNT(*) FROM users WHERE xp > $1', [me.rows[0].xp]);
       leaderboard.push({
         rank: parseInt(rankRow.rows[0].count, 10) + 1,
         id: me.rows[0].id,
         name: me.rows[0].name,
         xp: me.rows[0].xp,
+        avatar: me.rows[0].avatar ?? null,
         isYou: true,
       });
     }

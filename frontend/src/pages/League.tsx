@@ -8,7 +8,30 @@ interface LeagueEntry {
   id: number;
   name: string;
   xp: number;
+  avatar: string | null;
   isYou: boolean;
+}
+
+function UserAvatar({ avatar, name, isYou, size = 'md' }: { avatar: string | null; name: string; isYou: boolean; size?: 'sm' | 'md' | 'lg' }) {
+  const dim = size === 'lg' ? 'w-12 h-12 text-xl' : size === 'md' ? 'w-8 h-8 text-xs' : 'w-7 h-7 text-xs';
+  if (avatar?.startsWith('data:')) {
+    return (
+      <div className={`${dim} rounded-full overflow-hidden flex-shrink-0`}
+        style={{ border: isYou ? '2px solid hsl(var(--c-primary)/0.5)' : '2px solid hsl(var(--c-fg-subtle)/0.2)' }}>
+        <img src={avatar} alt={name} className="w-full h-full object-cover" />
+      </div>
+    );
+  }
+  return (
+    <div className={`${dim} rounded-full flex items-center justify-center font-bold flex-shrink-0`}
+      style={{
+        background: isYou ? 'hsl(var(--c-primary)/0.25)' : 'hsl(var(--c-fg-subtle)/0.15)',
+        border: isYou ? '2px solid hsl(var(--c-primary)/0.5)' : '2px solid hsl(var(--c-fg-subtle)/0.2)',
+        color: isYou ? 'hsl(var(--c-primary))' : 'hsl(var(--c-fg-muted))',
+      }}>
+      {name[0]?.toUpperCase()}
+    </div>
+  );
 }
 
 export function League() {
@@ -94,15 +117,7 @@ export function League() {
               <div className="flex items-end justify-center gap-3 mb-6 animate-fade-up">
                 {podiumOrder.map((u, pi) => (
                   <div key={u.id} className="flex flex-col items-center gap-2" style={{ width: '96px' }}>
-                    {/* Avatar */}
-                    <div className="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold flex-shrink-0"
-                      style={{
-                        background: u.isYou ? 'hsl(var(--c-primary)/0.25)' : 'hsl(var(--c-fg-subtle)/0.15)',
-                        border: u.isYou ? '2px solid hsl(var(--c-primary)/0.5)' : '2px solid hsl(var(--c-fg-subtle)/0.2)',
-                        color: u.isYou ? 'hsl(var(--c-primary))' : 'hsl(var(--c-fg-muted))',
-                      }}>
-                      {u.name[0]?.toUpperCase()}
-                    </div>
+                    <UserAvatar avatar={u.avatar} name={u.name} isYou={u.isYou} size="lg" />
                     <div className="text-xs font-semibold truncate max-w-full text-center"
                       style={{ color: 'hsl(var(--c-fg-muted))' }}>
                       {u.name}
@@ -139,14 +154,7 @@ export function League() {
                       {u.rank <= 3 ? ['🥇','🥈','🥉'][u.rank - 1] : u.rank}
                     </span>
 
-                    {/* Avatar */}
-                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
-                      style={{
-                        background: u.isYou ? 'hsl(var(--c-primary)/0.25)' : 'hsl(var(--c-fg-subtle)/0.15)',
-                        color: u.isYou ? 'hsl(var(--c-primary))' : 'hsl(var(--c-fg-muted))',
-                      }}>
-                      {u.name[0]?.toUpperCase()}
-                    </div>
+                    <UserAvatar avatar={u.avatar} name={u.name} isYou={u.isYou} size="md" />
 
                     {/* Name */}
                     <span className="flex-1 text-sm font-medium truncate"

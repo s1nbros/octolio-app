@@ -15,6 +15,7 @@ export function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [forgotOpen, setForgotOpen] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -96,18 +97,36 @@ export function Login() {
               </div>
             </div>
 
-            {/* Remember me */}
-            <label className="flex items-center gap-2.5 cursor-pointer select-none">
-              <input
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-                className="w-4 h-4 rounded accent-[hsl(var(--c-primary))] cursor-pointer"
-              />
-              <span className="text-sm" style={{ color: 'hsl(var(--c-fg-muted))' }}>
-                {ui.remember_me ?? 'Remember me'}
-              </span>
-            </label>
+            {/* Remember me + forgot password */}
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-2.5 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="w-4 h-4 rounded accent-[hsl(var(--c-primary))] cursor-pointer"
+                />
+                <span className="text-sm" style={{ color: 'hsl(var(--c-fg-muted))' }}>
+                  {ui.remember_me ?? 'Remember me'}
+                </span>
+              </label>
+              <button
+                type="button"
+                onClick={() => setForgotOpen(o => !o)}
+                className="text-sm font-semibold transition-colors"
+                style={{ color: 'hsl(var(--c-primary))' }}
+              >
+                Forgot password?
+              </button>
+            </div>
+
+            {forgotOpen && (
+              <div className="rounded-xl p-3.5 text-sm"
+                style={{ background: 'hsl(var(--c-primary)/0.08)', border: '1px solid hsl(var(--c-primary)/0.2)', color: 'hsl(var(--c-fg-muted))' }}>
+                To reset your password, go to <strong style={{ color: 'hsl(var(--c-fg))' }}>Profile → Account Settings → Password</strong> after logging in, or contact us at{' '}
+                <span style={{ color: 'hsl(var(--c-primary))' }}>support@octolio.com</span>.
+              </div>
+            )}
 
             <button
               type="submit"
