@@ -187,7 +187,7 @@ export function Profile() {
     : null;
 
   return (
-    <div className="min-h-screen" style={{ background: 'hsl(var(--c-bg))' }}>
+    <div className="min-h-screen pb-20 sm:pb-0" style={{ background: 'hsl(var(--c-bg))' }}>
       <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8 space-y-4">
 
         {/* ── Profile header card ── */}

@@ -68,7 +68,7 @@ export function League() {
   const medalEmoji = ['🥈', '🥇', '🥉'];
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen pb-20 sm:pb-0">
       <FloatingOrbs />
       <div className="relative max-w-2xl mx-auto px-4 sm:px-6 py-8" style={{ zIndex: 1 }}>
 

@@ -4,6 +4,40 @@ import { useLang } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { getLevel } from '../types';
 
+/* SVG icons for the bottom nav */
+function IconHome() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z" />
+      <polyline points="9 21 9 12 15 12 15 21" />
+    </svg>
+  );
+}
+function IconLearn() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+      <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+    </svg>
+  );
+}
+function IconLeague() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="8" r="6" />
+      <path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11" />
+    </svg>
+  );
+}
+function IconProfile() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+      <circle cx="12" cy="7" r="4" />
+    </svg>
+  );
+}
+
 export function Navbar() {
   const { user, logout } = useAuth();
   const { lang, setLang } = useLang();
@@ -15,6 +49,7 @@ export function Navbar() {
   const level = user ? getLevel(user.xp) : null;
 
   return (
+    <>
     <header className="nav-bar sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center gap-4">
 
@@ -79,7 +114,7 @@ export function Navbar() {
               {/* Streak */}
               <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
                 style={{ background: 'hsl(var(--c-orange)/0.1)', border: '1px solid hsl(var(--c-orange)/0.2)' }}>
-                <span className="text-sm">🔔</span>
+                <span className="text-sm">🔥</span>
                 <span className="mono text-sm font-semibold" style={{ color: 'hsl(var(--c-orange))' }}>
                   {user.streak}
                 </span>
@@ -119,6 +154,44 @@ export function Navbar() {
         </div>
       </div>
     </header>
+
+    {/* ── Mobile bottom nav — visible only on small screens ── */}
+    {user && (
+      <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-50"
+        style={{
+          background: 'rgba(14,12,28,0.72)',
+          backdropFilter: 'blur(24px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(24px) saturate(180%)',
+          borderTop: '1px solid rgba(160,140,220,0.18)',
+          boxShadow: '0 -8px 32px rgba(0,0,0,0.4)',
+        }}>
+        {/* Safe-area padding for iPhone home indicator */}
+        <div className="flex items-center justify-around px-2 pt-2 pb-safe"
+          style={{ paddingBottom: 'max(8px, env(safe-area-inset-bottom))' }}>
+
+          <BottomTab to="/dashboard" active={isActive('/dashboard')} icon={<IconHome />} label="Home" />
+          <BottomTab to="/modules"   active={isActive('/modules') || isActive('/lesson')} icon={<IconLearn />} label="Learn" />
+          <BottomTab to="/league"    active={isActive('/league')}    icon={<IconLeague />} label="League" />
+          <BottomTab to="/profile"   active={isActive('/profile')}   icon={<IconProfile />} label="Profile" />
+
+        </div>
+      </nav>
+    )}
+    </>
+  );
+}
+
+function BottomTab({ to, active, icon, label }: { to: string; active: boolean; icon: React.ReactNode; label: string }) {
+  return (
+    <Link to={to} className="flex flex-col items-center gap-0.5 px-4 py-1 rounded-2xl transition-all"
+      style={{ color: active ? 'hsl(var(--c-primary))' : 'hsl(var(--c-fg-subtle))' }}>
+      {/* Active pill highlight behind icon */}
+      <div className="relative flex items-center justify-center w-10 h-7 rounded-full transition-all"
+        style={{ background: active ? 'hsl(var(--c-primary)/0.18)' : 'transparent' }}>
+        {icon}
+      </div>
+      <span className="text-xs font-semibold tracking-wide">{label}</span>
+    </Link>
   );
 }
 

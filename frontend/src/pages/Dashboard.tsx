@@ -382,7 +382,7 @@ export function Dashboard() {
   );
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen pb-20 sm:pb-0">
       <FloatingOrbs />
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-6" style={{ zIndex: 1 }}>
 
@@ -426,6 +426,41 @@ export function Dashboard() {
             )}
           </div>
         </div>
+
+        {/* ── Next lesson CTA card ── */}
+        {nextLesson && (
+          <Link to={`/lesson/${nextLesson.module.id}/${nextLesson.lesson.id}`} className="block mb-5 animate-fade-up">
+            <div className="rounded-2xl px-4 py-3.5 flex items-center gap-4 transition-all hover:brightness-110"
+              style={{
+                background: 'linear-gradient(135deg, hsl(var(--c-green)/0.14) 0%, hsl(var(--c-primary)/0.10) 100%)',
+                border: '1px solid hsl(var(--c-green)/0.25)',
+              }}>
+              {/* Lesson icon */}
+              <div className="w-11 h-11 rounded-xl flex items-center justify-center text-2xl flex-shrink-0"
+                style={{ background: 'hsl(var(--c-green)/0.18)' }}>
+                {nextLesson.lesson.icon}
+              </div>
+
+              {/* Text */}
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-semibold uppercase tracking-widest mb-0.5"
+                  style={{ color: 'hsl(var(--c-green))' }}>
+                  {lang === 'en' ? `${nextLesson.module.title.en}` : `${nextLesson.module.title.bg}`}
+                </p>
+                <p className="text-sm font-bold truncate" style={{ color: 'hsl(var(--c-fg))' }}>
+                  {lang === 'en' ? nextLesson.lesson.title.en : nextLesson.lesson.title.bg}
+                </p>
+              </div>
+
+              {/* Button */}
+              <div className="flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-xl font-semibold text-sm"
+                style={{ background: 'hsl(var(--c-green))', color: 'hsl(228,24%,8%)' }}>
+                {lang === 'en' ? 'Continue' : 'Продължи'}
+                <span>→</span>
+              </div>
+            </div>
+          </Link>
+        )}
 
         {/* ── Two-column layout ── */}
         <div className="flex gap-5">
