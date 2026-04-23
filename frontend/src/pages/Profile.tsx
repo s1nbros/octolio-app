@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLang } from '../contexts/LanguageContext';
+import { FloatingOrbs } from '../components/FloatingOrbs';
 import { getLevel, getLevelProgress, LEVELS } from '../types';
 
 function resizeImage(file: File, size = 240): Promise<string> {
@@ -108,10 +109,10 @@ interface StatCardProps {
 
 function StatCard({ icon, badge, value, label, color }: StatCardProps) {
   const palette = {
-    purple: { bg: 'rgba(110,90,230,0.13)', border: 'rgba(110,90,230,0.22)', text: 'hsl(var(--c-primary))' },
-    orange: { bg: 'rgba(235,140,55,0.13)', border: 'rgba(235,140,55,0.22)', text: 'hsl(var(--c-orange))' },
-    teal:   { bg: 'rgba(32,195,155,0.12)', border: 'rgba(32,195,155,0.22)', text: 'hsl(var(--c-green))' },
-    gold:   { bg: 'rgba(245,200,50,0.11)', border: 'rgba(245,200,50,0.22)', text: 'hsl(var(--c-gold))' },
+    purple: { bg: 'hsl(var(--c-primary)/0.10)', border: 'hsl(var(--c-primary)/0.22)', text: 'hsl(var(--c-primary))' },
+    orange: { bg: 'hsl(var(--c-orange)/0.10)',  border: 'hsl(var(--c-orange)/0.22)',  text: 'hsl(var(--c-orange))' },
+    teal:   { bg: 'hsl(var(--c-green)/0.10)',   border: 'hsl(var(--c-green)/0.22)',   text: 'hsl(var(--c-green))' },
+    gold:   { bg: 'hsl(var(--c-gold)/0.10)',    border: 'hsl(var(--c-gold)/0.22)',    text: 'hsl(var(--c-gold))' },
   };
   const c = palette[color];
   return (
@@ -264,19 +265,13 @@ export function Profile() {
   };
 
   return (
-    <div className="min-h-screen pb-24 sm:pb-8" style={{ background: 'hsl(var(--c-bg))' }}>
+    <div className="relative min-h-screen pb-24 sm:pb-8">
+      <FloatingOrbs />
 
-      {/* ── BANNER ── */}
-      <div style={{
-        height: '160px',
-        background: 'linear-gradient(135deg, #5b21b6 0%, #2563eb 45%, #059669 100%)',
-      }} />
-
-      <div className="max-w-5xl mx-auto px-4 sm:px-6" style={{ marginTop: '-72px', position: 'relative', zIndex: 1 }}>
+      <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-8" style={{ zIndex: 1 }}>
 
         {/* ── PROFILE HEADER ── */}
-        <div className="rounded-2xl p-5 sm:p-6 mb-5 animate-fade-up"
-          style={{ background: 'hsl(var(--c-bg-elevated))', border: '1px solid var(--c-border)' }}>
+        <div className="glass-card rounded-2xl p-5 sm:p-6 mb-5 animate-fade-up">
 
           <div className="flex flex-col sm:flex-row sm:items-start gap-5">
             {/* Square avatar */}
@@ -287,7 +282,7 @@ export function Profile() {
                 {displayAvatar?.startsWith('data:')
                   ? <img src={displayAvatar} alt="avatar" className="w-full h-full object-cover" />
                   : <div className="w-full h-full flex items-center justify-center font-black text-4xl select-none"
-                      style={{ background: 'linear-gradient(135deg, #4f46e5 0%, #0ea5e9 60%, #10b981 100%)', color: '#fff' }}>
+                      style={{ background: 'linear-gradient(135deg, hsl(var(--c-primary)/0.5), hsl(var(--c-green)/0.4))', color: 'hsl(var(--c-fg))' }}>
                       {user?.name?.[0]?.toUpperCase() ?? '?'}
                     </div>}
               </button>
@@ -452,7 +447,7 @@ export function Profile() {
                     <div key={a.en} className="rounded-2xl p-3 flex flex-col items-center gap-1.5 text-center relative overflow-hidden"
                       style={{
                         background: a.unlocked ? `${a.color}1a` : 'rgba(255,255,255,0.03)',
-                        border: `1px solid ${a.unlocked ? `${a.color}40` : 'rgba(160,140,220,0.10)'}`,
+                        border: `1px solid ${a.unlocked ? `${a.color}40` : 'var(--c-border)'}`,
                       }}>
                       {a.unlocked && (
                         <div className="absolute top-1 right-1 text-xs font-bold px-1.5 py-0.5 rounded-full"
@@ -477,49 +472,45 @@ export function Profile() {
             <div className="space-y-4">
 
               {/* Pro card */}
-              <div className="relative overflow-hidden rounded-2xl p-5"
-                style={{
-                  background: 'linear-gradient(160deg, #1e1535 0%, #151228 60%, #0f1a1a 100%)',
-                  border: '1px solid rgba(217,119,6,0.45)',
-                  boxShadow: '0 0 32px rgba(217,119,6,0.12)',
-                }}>
+              <div className="glass-card relative overflow-hidden rounded-2xl p-5"
+                style={{ border: '1px solid hsl(var(--c-gold)/0.35)', boxShadow: '0 0 32px hsl(var(--c-gold)/0.08)' }}>
                 {/* Glow blobs */}
                 <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full pointer-events-none"
-                  style={{ background: 'radial-gradient(circle, rgba(110,90,230,0.20), transparent 70%)', filter: 'blur(20px)' }} />
+                  style={{ background: 'radial-gradient(circle, hsl(var(--c-primary)/0.18), transparent 70%)', filter: 'blur(20px)' }} />
                 <div className="absolute -bottom-10 -left-6 w-36 h-36 rounded-full pointer-events-none"
-                  style={{ background: 'radial-gradient(circle, rgba(217,119,6,0.18), transparent 70%)', filter: 'blur(20px)' }} />
+                  style={{ background: 'radial-gradient(circle, hsl(var(--c-gold)/0.14), transparent 70%)', filter: 'blur(20px)' }} />
 
                 {/* Badge row */}
                 <div className="flex items-center gap-2 mb-3 relative">
                   <span className="text-xs font-black px-2.5 py-1 rounded-full tracking-wider"
-                    style={{ background: 'rgba(110,90,230,0.3)', color: '#a78bfa', border: '1px solid rgba(110,90,230,0.5)' }}>
+                    style={{ background: 'hsl(var(--c-primary)/0.25)', color: 'hsl(var(--c-primary))', border: '1px solid hsl(var(--c-primary)/0.45)' }}>
                     OCTOLIO PRO
                   </span>
-                  <span className="text-xs font-bold" style={{ color: 'rgba(255,255,255,0.4)', letterSpacing: '0.05em' }}>
+                  <span className="text-xs font-bold tracking-wider" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
                     LIMITED · 50% OFF
                   </span>
                 </div>
 
                 {/* Headline */}
-                <p className="font-black text-xl leading-tight mb-0.5 relative" style={{ color: '#fff' }}>
+                <p className="font-black text-xl leading-tight mb-0.5 relative" style={{ color: 'hsl(var(--c-fg))' }}>
                   {lang === 'en' ? 'Unlock everything.' : 'Отключи всичко.'}
                 </p>
                 <p className="font-black text-xl leading-tight mb-4 relative">
-                  <span style={{ color: '#fff' }}>{lang === 'en' ? 'Level up ' : 'Развивай се '}</span>
-                  <span style={{ color: '#fbbf24' }}>2× {lang === 'en' ? 'faster.' : 'по-бързо.'}</span>
+                  <span style={{ color: 'hsl(var(--c-fg))' }}>{lang === 'en' ? 'Level up ' : 'Развивай се '}</span>
+                  <span style={{ color: 'hsl(var(--c-gold))' }}>2× {lang === 'en' ? 'faster.' : 'по-бързо.'}</span>
                 </p>
 
                 {/* Features */}
                 <div className="space-y-2 mb-5 relative">
                   {[
-                    { icon: '❤️', color: '#ef4444', en: 'Unlimited hearts — no waiting', bg: 'Неограничени сърца' },
-                    { icon: '✦',  color: '#a78bfa', en: 'All premium modules unlocked',  bg: 'Всички модули отключени' },
-                    { icon: '⚡', color: '#fbbf24', en: '2× XP on every lesson',         bg: '2× XP за всеки урок' },
-                    { icon: '🤖', color: '#34d399', en: 'Personal money coach AI',       bg: 'Личен AI финансов треньор' },
-                    { icon: '🚫', color: '#34d399', en: 'Ad-free experience',            bg: 'Без реклами' },
+                    { icon: '❤️', en: 'Unlimited hearts — no waiting', bg: 'Неограничени сърца' },
+                    { icon: '✦',  en: 'All premium modules unlocked',  bg: 'Всички модули отключени' },
+                    { icon: '⚡', en: '2× XP on every lesson',         bg: '2× XP за всеки урок' },
+                    { icon: '🤖', en: 'Personal money coach AI',       bg: 'Личен AI финансов треньор' },
+                    { icon: '🚫', en: 'Ad-free experience',            bg: 'Без реклами' },
                   ].map(f => (
-                    <div key={f.en} className="flex items-center gap-2 text-sm" style={{ color: 'rgba(255,255,255,0.75)' }}>
-                      <span style={{ color: f.color, fontSize: '13px', width: '16px', textAlign: 'center', flexShrink: 0 }}>{f.icon}</span>
+                    <div key={f.en} className="flex items-center gap-2 text-sm" style={{ color: 'hsl(var(--c-fg-muted))' }}>
+                      <span style={{ fontSize: '13px', width: '16px', textAlign: 'center', flexShrink: 0 }}>{f.icon}</span>
                       {lang === 'en' ? f.en : f.bg}
                     </div>
                   ))}
@@ -527,15 +518,15 @@ export function Profile() {
 
                 {/* Price */}
                 <div className="flex items-baseline gap-2 mb-4 relative">
-                  <span className="mono font-black text-2xl" style={{ color: '#fff' }}>$4.99</span>
-                  <span className="text-sm line-through" style={{ color: 'rgba(255,255,255,0.35)' }}>$9.99</span>
-                  <span className="text-sm" style={{ color: 'rgba(255,255,255,0.4)' }}>/month</span>
+                  <span className="mono font-black text-2xl" style={{ color: 'hsl(var(--c-fg))' }}>$4.99</span>
+                  <span className="text-sm line-through" style={{ color: 'hsl(var(--c-fg-subtle))' }}>$9.99</span>
+                  <span className="text-sm" style={{ color: 'hsl(var(--c-fg-subtle))' }}>/month</span>
                 </div>
 
                 {/* CTA button */}
                 <button className="w-full py-3 rounded-xl font-bold text-sm relative transition-all"
                   style={{
-                    background: 'linear-gradient(90deg, #7c3aed 0%, #d97706 100%)',
+                    background: 'linear-gradient(90deg, hsl(var(--c-primary)), hsl(var(--c-green)))',
                     color: '#fff',
                     border: 'none',
                     letterSpacing: '0.01em',
@@ -544,14 +535,13 @@ export function Profile() {
                   onMouseLeave={e => (e.currentTarget.style.filter = '')}>
                   ✦ {lang === 'en' ? 'Try Pro free for 7 days' : 'Пробвай Pro безплатно 7 дни'}
                 </button>
-                <p className="text-center text-xs mt-2 relative tracking-wider" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                <p className="text-center text-xs mt-2 relative tracking-wider" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
                   {lang === 'en' ? 'CANCEL ANYTIME · OFFER ENDS IN 2D 14H' : 'ОТКАЖИ ПО ВСЯКО ВРЕМЕ'}
                 </p>
               </div>
 
               {/* League card */}
-              <div className="rounded-2xl p-5"
-                style={{ background: 'hsl(var(--c-bg-elevated))', border: '1px solid var(--c-border)' }}>
+              <div className="glass-card rounded-2xl p-5">
                 <div className="flex items-center gap-2 mb-3">
                   <span className="text-xs font-black px-2.5 py-1 rounded-full tracking-wider"
                     style={{ background: 'rgba(245,200,50,0.15)', color: 'hsl(var(--c-gold))', border: '1px solid rgba(245,200,50,0.3)' }}>
@@ -586,7 +576,7 @@ export function Profile() {
                 <div key={a.en} className="rounded-2xl p-5 flex flex-col items-center gap-2.5 text-center relative overflow-hidden"
                   style={{
                     background: a.unlocked ? `${a.color}1a` : 'rgba(255,255,255,0.03)',
-                    border: `1px solid ${a.unlocked ? `${a.color}40` : 'rgba(160,140,220,0.10)'}`,
+                    border: `1px solid ${a.unlocked ? `${a.color}40` : 'var(--c-border)'}`,
                   }}>
                   {a.unlocked && (
                     <div className="absolute top-2 right-2 text-xs font-bold px-2 py-0.5 rounded-full"
@@ -610,22 +600,16 @@ export function Profile() {
 
         {/* ── SETTINGS TAB ── */}
         {tab === 'settings' && (
-          <div className="max-w-lg animate-fade-up" style={{
-            borderRadius: '20px',
-            background: 'rgba(255,255,255,0.03)',
-            border: '1px solid rgba(160,140,220,0.13)',
-            backdropFilter: 'blur(20px)',
-            overflow: 'hidden',
-          }}>
+          <div className="glass-card max-w-lg animate-fade-up rounded-2xl overflow-hidden">
             {/* Header */}
-            <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(160,140,220,0.13)' }}>
+            <div className="px-5 py-4" style={{ borderBottom: '1px solid var(--c-border)' }}>
               <h2 className="font-extrabold text-base" style={{ color: 'hsl(var(--c-fg))' }}>
                 {lang === 'en' ? 'Account Settings' : 'Настройки на акаунта'}
               </h2>
             </div>
 
             {/* Display name */}
-            <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(160,140,220,0.13)' }}>
+            <div className="px-5 py-4" style={{ borderBottom: '1px solid var(--c-border)' }}>
               <label className="block text-xs font-bold uppercase tracking-widest mb-2" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
                 {lang === 'en' ? 'Display name' : 'Показвано име'}
               </label>
@@ -655,11 +639,11 @@ export function Profile() {
             </div>
 
             {/* Photo upload */}
-            <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(160,140,220,0.13)' }}>
+            <div className="px-5 py-4" style={{ borderBottom: '1px solid var(--c-border)' }}>
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <div className="w-11 h-11 rounded-xl overflow-hidden flex-shrink-0"
-                    style={{ border: '2px solid rgba(160,140,220,0.2)' }}>
+                    style={{ border: '2px solid var(--c-border)' }}>
                     {displayAvatar?.startsWith('data:')
                       ? <img src={displayAvatar} alt="avatar" className="w-full h-full object-cover" />
                       : <div className="w-full h-full flex items-center justify-center font-bold text-lg"
@@ -678,7 +662,7 @@ export function Profile() {
                 </div>
                 <button onClick={() => fileRef.current?.click()}
                   className="flex-shrink-0 text-sm font-semibold px-4 py-2 rounded-xl transition-all"
-                  style={{ background: 'rgba(255,255,255,0.06)', color: 'hsl(var(--c-fg))', border: '1px solid rgba(160,140,220,0.2)' }}>
+                  style={{ background: 'rgba(255,255,255,0.06)', color: 'hsl(var(--c-fg))', border: '1px solid var(--c-border)' }}>
                   {lang === 'en' ? 'Upload' : 'Качи'}
                 </button>
               </div>
@@ -700,7 +684,7 @@ export function Profile() {
               </button>
 
               {pwOpen && (
-                <div className="mt-4 space-y-3 pt-4" style={{ borderTop: '1px solid rgba(160,140,220,0.13)' }}>
+                <div className="mt-4 space-y-3 pt-4" style={{ borderTop: '1px solid var(--c-border)' }}>
                   {[
                     { label: lang === 'en' ? 'Current password' : 'Текуща парола', value: currentPw, set: setCurrentPw, show: showCurrent, toggle: setShowCurrent, ac: 'current-password' },
                     { label: lang === 'en' ? 'New password'     : 'Нова парола',   value: newPw,     set: setNewPw,     show: showNew,     toggle: setShowNew,     ac: 'new-password' },
@@ -729,7 +713,7 @@ export function Profile() {
                         : (lang === 'en' ? 'Update password' : 'Обнови паролата')}
                     </button>
                     <button className="px-4 py-2 rounded-xl text-sm font-semibold"
-                      style={{ background: 'rgba(255,255,255,0.06)', color: 'hsl(var(--c-fg-muted))', border: '1px solid rgba(160,140,220,0.15)' }}
+                      style={{ background: 'rgba(255,255,255,0.06)', color: 'hsl(var(--c-fg-muted))', border: '1px solid var(--c-border)' }}
                       onClick={() => { setPwOpen(false); setCurrentPw(''); setNewPw(''); setPwErr(''); setPwOk(''); }}>
                       {lang === 'en' ? 'Cancel' : 'Отказ'}
                     </button>
