@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLang } from '../contexts/LanguageContext';
-import { FloatingOrbs } from '../components/FloatingOrbs';
 import { getLevel, getLevelProgress, LEVELS } from '../types';
 
 function resizeImage(file: File, size = 240): Promise<string> {
@@ -26,62 +25,13 @@ function resizeImage(file: File, size = 240): Promise<string> {
 }
 
 type NameStatus = 'idle' | 'checking' | 'available' | 'taken';
+type Tab = 'overview' | 'achievements' | 'settings';
 
 function Hint({ ok, text }: { ok: boolean; text: string }) {
   return (
     <p className="text-xs mt-1.5 font-medium" style={{ color: ok ? 'hsl(var(--c-green))' : 'hsl(var(--c-red))' }}>
       {ok ? '✓' : '✗'} {text}
     </p>
-  );
-}
-
-/* SVG ring — avatar is inside, arc shows level % */
-function AvatarRing({ pct, src, name, onClick }: { pct: number; src?: string; name?: string; onClick: () => void }) {
-  const R = 56; const circ = 2 * Math.PI * R;
-  const dash = (pct / 100) * circ;
-  return (
-    <div className="relative inline-flex items-center justify-center cursor-pointer" onClick={onClick}>
-      {/* SVG ring */}
-      <svg width="140" height="140" viewBox="0 0 140 140" style={{ position: 'absolute', top: 0, left: 0 }}>
-        {/* Track */}
-        <circle cx="70" cy="70" r={R} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="6" />
-        {/* Progress arc */}
-        <circle cx="70" cy="70" r={R} fill="none"
-          stroke="url(#ringGrad)" strokeWidth="6"
-          strokeLinecap="round"
-          strokeDasharray={`${dash} ${circ - dash}`}
-          transform="rotate(-90 70 70)"
-          style={{ transition: 'stroke-dasharray 0.8s cubic-bezier(0.34,1.56,0.64,1)' }}
-        />
-        <defs>
-          <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="hsl(var(--c-primary))" />
-            <stop offset="100%" stopColor="hsl(var(--c-green))" />
-          </linearGradient>
-        </defs>
-      </svg>
-      {/* Avatar circle inside ring */}
-      <div className="w-24 h-24 rounded-full overflow-hidden flex-shrink-0"
-        style={{ border: '3px solid hsl(var(--c-bg))' }}>
-        {src?.startsWith('data:')
-          ? <img src={src} alt="avatar" className="w-full h-full object-cover" />
-          : (
-            <div className="w-full h-full flex items-center justify-center font-black text-4xl select-none"
-              style={{ background: 'linear-gradient(135deg, hsl(var(--c-primary)/0.5), hsl(var(--c-green)/0.35))', color: 'hsl(var(--c-fg))' }}>
-              {name?.[0]?.toUpperCase() ?? '?'}
-            </div>
-          )}
-      </div>
-    </div>
-  );
-}
-
-function PencilIcon() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-    </svg>
   );
 }
 
@@ -94,21 +44,85 @@ function ChevronIcon({ open }: { open: boolean }) {
   );
 }
 
-/* Small circular progress — used in stat cards */
-function MiniRing({ pct, color, size = 44 }: { pct: number; color: string; size?: number }) {
-  const r = (size / 2) - 5;
-  const circ = 2 * Math.PI * r;
-  const dash = (pct / 100) * circ;
+function IconBolt() {
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ flexShrink: 0 }}>
-      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="4" />
-      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color} strokeWidth="4"
-        strokeLinecap="round"
-        strokeDasharray={`${dash} ${circ - dash}`}
-        transform={`rotate(-90 ${size/2} ${size/2})`}
-        style={{ transition: 'stroke-dasharray 0.6s ease' }}
-      />
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
     </svg>
+  );
+}
+function IconFlame() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
+    </svg>
+  );
+}
+function IconBook() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+      <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+    </svg>
+  );
+}
+function IconTrophy() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="8 21 12 17 16 21" />
+      <line x1="12" y1="17" x2="12" y2="11" />
+      <path d="M7 4H4a2 2 0 0 0 0 4c0 2.67 1.5 5 5 6" />
+      <path d="M17 4h3a2 2 0 0 1 0 4c0 2.67-1.5 5-5 6" />
+      <rect x="7" y="2" width="10" height="9" rx="2" />
+    </svg>
+  );
+}
+function IconCrown() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M2 20h20M5 20l2-8 5 4 5-4 2 8" />
+      <circle cx="12" cy="8" r="2" />
+      <circle cx="4" cy="10" r="2" />
+      <circle cx="20" cy="10" r="2" />
+    </svg>
+  );
+}
+function IconPeople() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+    </svg>
+  );
+}
+
+interface StatCardProps {
+  icon: React.ReactNode;
+  badge: string;
+  value: string;
+  label: string;
+  color: 'purple' | 'orange' | 'teal' | 'gold';
+}
+
+function StatCard({ icon, badge, value, label, color }: StatCardProps) {
+  const palette = {
+    purple: { bg: 'rgba(110,90,230,0.13)', border: 'rgba(110,90,230,0.22)', text: 'hsl(var(--c-primary))' },
+    orange: { bg: 'rgba(235,140,55,0.13)', border: 'rgba(235,140,55,0.22)', text: 'hsl(var(--c-orange))' },
+    teal:   { bg: 'rgba(32,195,155,0.12)', border: 'rgba(32,195,155,0.22)', text: 'hsl(var(--c-green))' },
+    gold:   { bg: 'rgba(245,200,50,0.11)', border: 'rgba(245,200,50,0.22)', text: 'hsl(var(--c-gold))' },
+  };
+  const c = palette[color];
+  return (
+    <div className="rounded-2xl p-4 flex flex-col gap-1" style={{ background: c.bg, border: `1px solid ${c.border}` }}>
+      <div className="flex items-start justify-between mb-1">
+        <span style={{ color: c.text }}>{icon}</span>
+        {badge && <span className="text-xs font-semibold" style={{ color: 'hsl(var(--c-fg-subtle))' }}>{badge}</span>}
+      </div>
+      <div className="mono font-black text-2xl leading-none" style={{ color: c.text }}>{value}</div>
+      <div className="text-xs mt-0.5" style={{ color: 'hsl(var(--c-fg-subtle))' }}>{label}</div>
+    </div>
   );
 }
 
@@ -117,6 +131,7 @@ export function Profile() {
   const { lang } = useLang();
   const fileRef = useRef<HTMLInputElement>(null);
 
+  const [tab, setTab] = useState<Tab>('overview');
   const [name, setName] = useState(user?.name ?? '');
   const [pendingAvatar, setPendingAvatar] = useState<string | null>(null);
   const [nameStatus, setNameStatus] = useState<NameStatus>('idle');
@@ -133,11 +148,39 @@ export function Profile() {
   const [pwOk, setPwOk] = useState('');
   const [pwErr, setPwErr] = useState('');
 
+  const [lessonsTotal, setLessonsTotal] = useState(0);
+  const [lessonsDone, setLessonsDone] = useState(0);
+  const [leagueRank, setLeagueRank] = useState<number | null>(null);
+
   const xp = user?.xp ?? 0;
   const streak = user?.streak ?? 0;
   const level = getLevel(xp);
   const levelPct = getLevelProgress(xp);
   const nextLevel = LEVELS.find(l => l.level === level.level + 1);
+
+  useEffect(() => {
+    if (!token) return;
+    fetch('/api/modules', { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.json())
+      .then(data => {
+        const mods = data.modules ?? [];
+        let total = 0, done = 0;
+        for (const mod of mods) {
+          total += mod.lessons.length;
+          done += mod.lessons.filter((l: { completed: boolean }) => l.completed).length;
+        }
+        setLessonsTotal(total);
+        setLessonsDone(done);
+      })
+      .catch(() => {});
+    fetch('/api/auth/league', { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.json())
+      .then(d => {
+        const me = (d.leaderboard ?? []).find((u: { isYou: boolean; rank: number }) => u.isYou);
+        if (me) setLeagueRank(me.rank);
+      })
+      .catch(() => {});
+  }, [token]);
 
   const checkName = useCallback(async (val: string) => {
     if (!val.trim() || val.trim() === user?.name || val.trim().length < 2) { setNameStatus('idle'); return; }
@@ -197,14 +240,14 @@ export function Profile() {
   const displayAvatar = pendingAvatar ?? user?.avatar;
 
   const achievements = [
-    { icon: '🌱', en: 'First Steps',  bg: 'Първи стъпки',  sub: '1 XP',          unlocked: xp > 0 },
-    { icon: '⚡', en: 'Power User',   bg: 'Активен',        sub: '500 XP',        unlocked: xp >= 500 },
-    { icon: '📚', en: 'Scholar',      bg: 'Учен',           sub: '1 000 XP',      unlocked: xp >= 1000 },
-    { icon: '🏆', en: 'Champion',     bg: 'Шампион',        sub: '2 500 XP',      unlocked: xp >= 2500 },
-    { icon: '🔥', en: 'On Fire',      bg: 'В огъня',        sub: '3d streak',     unlocked: streak >= 3 },
-    { icon: '💫', en: 'Week Warrior', bg: 'Воин',           sub: '7d streak',     unlocked: streak >= 7 },
-    { icon: '💎', en: 'Diamond',      bg: 'Диамант',        sub: '30d streak',    unlocked: streak >= 30 },
-    { icon: '🚀', en: 'Max Level',    bg: 'Макс. ниво',     sub: 'Level 5',       unlocked: level.level >= 5 },
+    { icon: '🌱', color: '#16a34a', en: 'First Steps',  bg: 'Първи стъпки',  sub: '1 XP',       unlocked: xp > 0 },
+    { icon: '🔥', color: '#ea580c', en: 'On Fire',      bg: 'В огъня',        sub: '3d streak',  unlocked: streak >= 3 },
+    { icon: '⚡', color: '#7c3aed', en: 'Power User',   bg: 'Активен',        sub: '500 XP',     unlocked: xp >= 500 },
+    { icon: '📚', color: '#0369a1', en: 'Scholar',      bg: 'Учен',           sub: '1 000 XP',   unlocked: xp >= 1000 },
+    { icon: '💫', color: '#7c3aed', en: 'Week Warrior', bg: 'Воин',           sub: '7d streak',  unlocked: streak >= 7 },
+    { icon: '🏆', color: '#b45309', en: 'Champion',     bg: 'Шампион',        sub: '2 500 XP',   unlocked: xp >= 2500 },
+    { icon: '💎', color: '#0e7490', en: 'Diamond',      bg: 'Диамант',        sub: '30d streak', unlocked: streak >= 30 },
+    { icon: '🚀', color: '#6d28d9', en: 'Max Level',    bg: 'Макс. ниво',     sub: 'Level 5',    unlocked: level.level >= 5 },
   ];
   const earnedCount = achievements.filter(a => a.unlocked).length;
 
@@ -212,365 +255,490 @@ export function Profile() {
     ? new Date(user.created_at).toLocaleDateString(lang === 'en' ? 'en-GB' : 'bg-BG', { year: 'numeric', month: 'long' })
     : null;
 
-  /* streak % toward 7-day goal for mini ring */
-  const streakPct = Math.min(100, Math.round((streak / 7) * 100));
+  const lessonsPct = lessonsTotal > 0 ? Math.round((lessonsDone / lessonsTotal) * 100) : 0;
+
+  const tabLabels: Record<Tab, { en: string; bg: string }> = {
+    overview:     { en: 'Overview',      bg: 'Преглед' },
+    achievements: { en: 'Achievements',  bg: 'Постижения' },
+    settings:     { en: 'Settings',      bg: 'Настройки' },
+  };
 
   return (
-    <div className="relative min-h-screen pb-24 sm:pb-8">
-      <FloatingOrbs />
-      <div className="relative max-w-lg mx-auto px-4 sm:px-6 py-8 space-y-3" style={{ zIndex: 1 }}>
+    <div className="min-h-screen pb-24 sm:pb-8" style={{ background: 'hsl(var(--c-bg))' }}>
 
-        {/* ━━━ HERO CARD ━━━ */}
-        <div className="animate-fade-up" style={{
-          borderRadius: '20px',
-          background: 'linear-gradient(160deg, rgba(110,90,230,0.18) 0%, rgba(50,195,155,0.10) 60%, rgba(235,140,55,0.07) 100%)',
-          border: '1px solid rgba(160,140,220,0.22)',
-          backdropFilter: 'blur(24px)',
-          overflow: 'hidden',
-        }}>
+      {/* ── BANNER ── */}
+      <div style={{
+        height: '160px',
+        background: 'linear-gradient(135deg, #5b21b6 0%, #2563eb 45%, #059669 100%)',
+      }} />
 
-          {/* Top strip — iris bar */}
-          <div style={{ height: '4px', background: 'linear-gradient(90deg, hsl(var(--c-primary)), hsl(var(--c-green)))' }} />
+      <div className="max-w-5xl mx-auto px-4 sm:px-6" style={{ marginTop: '-72px', position: 'relative', zIndex: 1 }}>
 
-          <div className="p-6">
-            {/* Avatar + name side by side */}
-            <div className="flex items-center gap-5 mb-6">
-              {/* Avatar with ring */}
-              <div className="relative flex-shrink-0">
-                <AvatarRing pct={levelPct} src={displayAvatar} name={user?.name} onClick={() => fileRef.current?.click()} />
-                {/* Level badge — sits bottom-right of ring */}
-                <div className="absolute bottom-0 right-0 flex items-center justify-center rounded-full text-xs font-black"
-                  style={{
-                    width: '28px', height: '28px',
-                    background: 'linear-gradient(135deg, hsl(var(--c-primary)), hsl(var(--c-green)))',
-                    color: '#fff',
-                    border: '2px solid hsl(var(--c-bg))',
-                    fontSize: '11px',
-                  }}>
-                  {level.level}
+        {/* ── PROFILE HEADER ── */}
+        <div className="rounded-2xl p-5 sm:p-6 mb-5 animate-fade-up"
+          style={{ background: 'hsl(var(--c-bg-elevated))', border: '1px solid var(--c-border)' }}>
+
+          <div className="flex flex-col sm:flex-row sm:items-start gap-5">
+            {/* Square avatar */}
+            <div className="relative flex-shrink-0 self-start">
+              <button onClick={() => fileRef.current?.click()}
+                className="block w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden"
+                style={{ border: '3px solid hsl(var(--c-bg-elevated))' }}>
+                {displayAvatar?.startsWith('data:')
+                  ? <img src={displayAvatar} alt="avatar" className="w-full h-full object-cover" />
+                  : <div className="w-full h-full flex items-center justify-center font-black text-4xl select-none"
+                      style={{ background: 'linear-gradient(135deg, #4f46e5 0%, #0ea5e9 60%, #10b981 100%)', color: '#fff' }}>
+                      {user?.name?.[0]?.toUpperCase() ?? '?'}
+                    </div>}
+              </button>
+              {/* Level badge */}
+              <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-black whitespace-nowrap"
+                style={{ background: '#d97706', color: '#fff', fontSize: '11px', border: '2px solid hsl(var(--c-bg-elevated))' }}>
+                🏅 Lv.{level.level}
+              </div>
+              <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
+            </div>
+
+            {/* Info block */}
+            <div className="flex-1 min-w-0 pt-1">
+              {/* Name + level badge + action buttons */}
+              <div className="flex flex-wrap items-start justify-between gap-3 mb-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h1 className="font-black text-2xl leading-tight" style={{ color: 'hsl(var(--c-fg))', letterSpacing: '-0.02em' }}>
+                    {user?.name}
+                  </h1>
+                  <span className="text-xs font-bold px-2.5 py-0.5 rounded-full"
+                    style={{ background: 'hsl(var(--c-green)/0.15)', color: 'hsl(var(--c-green))', border: '1px solid hsl(var(--c-green)/0.3)' }}>
+                    ✦ {level.label[lang]}
+                  </span>
                 </div>
-                {/* Pencil badge */}
-                <button onClick={() => fileRef.current?.click()}
-                  className="absolute top-0 right-0 w-6 h-6 rounded-full flex items-center justify-center"
-                  style={{ background: 'hsl(var(--c-bg-elevated))', border: '2px solid hsl(var(--c-bg))', color: 'hsl(var(--c-fg-muted))' }}>
-                  <PencilIcon />
-                </button>
-                <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
+                <div className="flex gap-2 flex-shrink-0">
+                  <button className="text-sm font-semibold px-3.5 py-1.5 rounded-lg transition-all"
+                    style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid var(--c-border)', color: 'hsl(var(--c-fg-muted))' }}>
+                    {lang === 'en' ? 'Share profile' : 'Сподели'}
+                  </button>
+                  <button onClick={() => setTab('settings')}
+                    className="text-sm font-semibold px-3.5 py-1.5 rounded-lg transition-all"
+                    style={{ background: 'hsl(var(--c-primary))', color: '#fff', border: 'none' }}>
+                    {lang === 'en' ? 'Edit profile' : 'Редактирай'}
+                  </button>
+                </div>
               </div>
 
-              {/* Name / email / join */}
-              <div className="flex-1 min-w-0">
-                <h1 className="font-black text-2xl leading-tight truncate" style={{ color: 'hsl(var(--c-fg))', letterSpacing: '-0.02em' }}>
-                  {user?.name}
-                </h1>
-                <p className="text-sm truncate mt-0.5" style={{ color: 'hsl(var(--c-fg-muted))' }}>{user?.email}</p>
-                {joinedDate && (
-                  <p className="text-xs mt-1" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
-                    {lang === 'en' ? 'Member since' : 'Член от'} {joinedDate}
-                  </p>
-                )}
-                {/* Level progress text */}
-                <div className="flex items-center gap-2 mt-2">
-                  <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.08)' }}>
-                    <div className="h-full rounded-full" style={{ width: `${levelPct}%`, background: 'linear-gradient(90deg, hsl(var(--c-primary)), hsl(var(--c-green)))', transition: 'width 0.7s ease' }} />
+              {/* Email + join date */}
+              <p className="text-sm mb-0.5 truncate" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+                @{user?.name?.toLowerCase()} · {user?.email}
+              </p>
+              {joinedDate && (
+                <p className="text-xs mb-3" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+                  📅 {lang === 'en' ? 'Joined' : 'Присъединил се'} {joinedDate}
+                </p>
+              )}
+
+              {/* Level progress bar */}
+              <div>
+                <div className="flex justify-between text-xs mb-1.5" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+                  <span className="font-semibold" style={{ color: 'hsl(var(--c-fg-muted))' }}>
+                    Level {level.level} · {level.label[lang]}
+                  </span>
+                  <span>
+                    {xp.toLocaleString()} / {nextLevel ? nextLevel.minXp.toLocaleString() : '–'} XP{nextLevel ? ` to Lv.${level.level + 1}` : ' MAX'}
+                  </span>
+                </div>
+                <div className="h-2 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.07)' }}>
+                  <div className="h-full rounded-full"
+                    style={{ width: `${levelPct}%`, background: 'linear-gradient(90deg, hsl(var(--c-primary)), hsl(var(--c-green)))', transition: 'width 0.7s ease' }} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ── TABS ── */}
+        <div className="flex gap-1 mb-6 p-1 rounded-xl animate-fade-up"
+          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid var(--c-border)', width: 'fit-content' }}>
+          {(['overview', 'achievements', 'settings'] as const).map(t => (
+            <button key={t} onClick={() => setTab(t)}
+              className="px-4 py-2 rounded-lg text-sm font-semibold transition-all"
+              style={{
+                background: tab === t ? 'rgba(255,255,255,0.12)' : 'transparent',
+                color: tab === t ? 'hsl(var(--c-fg))' : 'hsl(var(--c-fg-subtle))',
+              }}>
+              {tabLabels[t][lang]}
+            </button>
+          ))}
+        </div>
+
+        {/* ── OVERVIEW TAB ── */}
+        {tab === 'overview' && (
+          <div className="grid lg:grid-cols-3 gap-6 animate-fade-up">
+
+            {/* Left column */}
+            <div className="lg:col-span-2 space-y-6">
+
+              {/* At a glance */}
+              <div>
+                <h2 className="font-extrabold text-xl mb-0.5" style={{ color: 'hsl(var(--c-fg))' }}>
+                  {lang === 'en' ? 'At a glance' : 'С един поглед'}
+                </h2>
+                <p className="text-sm mb-4" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+                  {lang === 'en' ? 'Your lifetime stats on Octolio' : 'Твоята статистика в Octolio'}
+                </p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  <StatCard
+                    icon={<IconBolt />}
+                    badge={lang === 'en' ? '+today' : '+днес'}
+                    value={xp.toLocaleString()}
+                    label={lang === 'en' ? 'Total XP' : 'Общо XP'}
+                    color="purple"
+                  />
+                  <StatCard
+                    icon={<IconFlame />}
+                    badge={`${lang === 'en' ? 'Best' : 'Рекорд'}: ${streak}`}
+                    value={streak.toString()}
+                    label={lang === 'en' ? 'Day streak' : 'Поредни дни'}
+                    color="orange"
+                  />
+                  <StatCard
+                    icon={<IconBook />}
+                    badge={lessonsTotal > 0 ? `${lessonsPct}% ${lang === 'en' ? 'complete' : 'завършени'}` : '–'}
+                    value={`${lessonsDone}/${lessonsTotal}`}
+                    label={lang === 'en' ? 'Lessons done' : 'Урока завършени'}
+                    color="teal"
+                  />
+                  <StatCard
+                    icon={<IconTrophy />}
+                    badge={`${Math.round((earnedCount / achievements.length) * 100)}% ${lang === 'en' ? 'collected' : 'събрани'}`}
+                    value={`${earnedCount}/${achievements.length}`}
+                    label={lang === 'en' ? 'Badges earned' : 'Значки спечелени'}
+                    color="gold"
+                  />
+                  <StatCard
+                    icon={<IconCrown />}
+                    badge={leagueRank ? `Rank #${leagueRank}` : '–'}
+                    value={lang === 'en' ? 'Gold' : 'Злато'}
+                    label={lang === 'en' ? 'League' : 'Лига'}
+                    color="purple"
+                  />
+                  <StatCard
+                    icon={<IconPeople />}
+                    badge={''}
+                    value={'–'}
+                    label={lang === 'en' ? 'Friends' : 'Приятели'}
+                    color="teal"
+                  />
+                </div>
+              </div>
+
+              {/* Achievements */}
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <h2 className="font-extrabold text-xl" style={{ color: 'hsl(var(--c-fg))' }}>
+                      {lang === 'en' ? 'Achievements' : 'Постижения'}
+                    </h2>
+                    <p className="text-sm" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+                      {earnedCount} {lang === 'en' ? 'of' : 'от'} {achievements.length} {lang === 'en' ? 'earned' : 'спечелени'}
+                    </p>
                   </div>
-                  <span className="mono text-xs flex-shrink-0" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
-                    {nextLevel ? `${(nextLevel.minXp - xp).toLocaleString()} XP` : '🎉 MAX'}
-                  </span>
+                  <button className="text-sm font-semibold px-3.5 py-1.5 rounded-full"
+                    style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid var(--c-border)', color: 'hsl(var(--c-fg-muted))' }}
+                    onClick={() => setTab('achievements')}>
+                    {lang === 'en' ? 'View all →' : 'Всички →'}
+                  </button>
+                </div>
+                <div className="grid grid-cols-4 gap-3">
+                  {achievements.map(a => (
+                    <div key={a.en} className="rounded-2xl p-3 flex flex-col items-center gap-1.5 text-center relative overflow-hidden"
+                      style={{
+                        background: a.unlocked ? `${a.color}1a` : 'rgba(255,255,255,0.03)',
+                        border: `1px solid ${a.unlocked ? `${a.color}40` : 'rgba(160,140,220,0.10)'}`,
+                      }}>
+                      {a.unlocked && (
+                        <div className="absolute top-1 right-1 text-xs font-bold px-1.5 py-0.5 rounded-full"
+                          style={{ background: 'hsl(var(--c-green))', color: '#fff', fontSize: '9px', lineHeight: 1.4 }}>
+                          ✓ EARNED
+                        </div>
+                      )}
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl mt-1"
+                        style={{ background: a.unlocked ? `${a.color}30` : 'rgba(255,255,255,0.05)' }}>
+                        {a.unlocked ? a.icon : '🔒'}
+                      </div>
+                      <span className="text-xs font-bold leading-tight" style={{ color: a.unlocked ? 'hsl(var(--c-fg))' : 'hsl(var(--c-fg-subtle))' }}>
+                        {lang === 'en' ? a.en : a.bg}
+                      </span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
 
-            {/* ── Stat cards row ── */}
-            <div className="grid grid-cols-3 gap-3">
-              {/* XP */}
-              <div className="rounded-2xl p-3 flex flex-col gap-1"
-                style={{ background: 'rgba(110,90,230,0.12)', border: '1px solid rgba(110,90,230,0.22)' }}>
-                <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'hsl(var(--c-primary))' }}>XP</span>
-                <span className="mono font-black text-xl leading-none" style={{ color: 'hsl(var(--c-fg))' }}>
-                  {xp >= 1000 ? `${(xp/1000).toFixed(1)}k` : xp}
-                </span>
-                <span className="text-xs" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
-                  {level.label[lang]}
-                </span>
-              </div>
+            {/* Right column */}
+            <div className="space-y-4">
 
-              {/* Streak */}
-              <div className="rounded-2xl p-3 flex flex-col gap-1 relative overflow-hidden"
-                style={{ background: 'rgba(235,140,55,0.12)', border: '1px solid rgba(235,140,55,0.22)' }}>
-                <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'hsl(var(--c-orange))' }}>
-                  {lang === 'en' ? 'Streak' : 'Поред'}
-                </span>
-                <div className="flex items-end justify-between">
-                  <span className="mono font-black text-xl leading-none" style={{ color: 'hsl(var(--c-fg))' }}>
-                    🔥 {streak}
+              {/* Pro card */}
+              <div className="relative overflow-hidden rounded-2xl p-5"
+                style={{
+                  background: 'linear-gradient(160deg, #1e1535 0%, #151228 60%, #0f1a1a 100%)',
+                  border: '1px solid rgba(217,119,6,0.45)',
+                  boxShadow: '0 0 32px rgba(217,119,6,0.12)',
+                }}>
+                {/* Glow blobs */}
+                <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full pointer-events-none"
+                  style={{ background: 'radial-gradient(circle, rgba(110,90,230,0.20), transparent 70%)', filter: 'blur(20px)' }} />
+                <div className="absolute -bottom-10 -left-6 w-36 h-36 rounded-full pointer-events-none"
+                  style={{ background: 'radial-gradient(circle, rgba(217,119,6,0.18), transparent 70%)', filter: 'blur(20px)' }} />
+
+                {/* Badge row */}
+                <div className="flex items-center gap-2 mb-3 relative">
+                  <span className="text-xs font-black px-2.5 py-1 rounded-full tracking-wider"
+                    style={{ background: 'rgba(110,90,230,0.3)', color: '#a78bfa', border: '1px solid rgba(110,90,230,0.5)' }}>
+                    OCTOLIO PRO
                   </span>
-                  <MiniRing pct={streakPct} color="hsl(var(--c-orange))" size={36} />
-                </div>
-                <span className="text-xs" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
-                  {lang === 'en' ? 'days' : 'дни'}
-                </span>
-              </div>
-
-              {/* Badges */}
-              <div className="rounded-2xl p-3 flex flex-col gap-1"
-                style={{ background: 'rgba(245,210,60,0.10)', border: '1px solid rgba(245,210,60,0.20)' }}>
-                <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'hsl(var(--c-gold))' }}>
-                  {lang === 'en' ? 'Badges' : 'Значки'}
-                </span>
-                <div className="flex items-end justify-between">
-                  <span className="mono font-black text-xl leading-none" style={{ color: 'hsl(var(--c-fg))' }}>
-                    {earnedCount}
+                  <span className="text-xs font-bold" style={{ color: 'rgba(255,255,255,0.4)', letterSpacing: '0.05em' }}>
+                    LIMITED · 50% OFF
                   </span>
-                  <MiniRing pct={Math.round((earnedCount / achievements.length) * 100)} color="hsl(var(--c-gold))" size={36} />
                 </div>
-                <span className="text-xs" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
-                  / {achievements.length} {lang === 'en' ? 'total' : 'всичко'}
-                </span>
+
+                {/* Headline */}
+                <p className="font-black text-xl leading-tight mb-0.5 relative" style={{ color: '#fff' }}>
+                  {lang === 'en' ? 'Unlock everything.' : 'Отключи всичко.'}
+                </p>
+                <p className="font-black text-xl leading-tight mb-4 relative">
+                  <span style={{ color: '#fff' }}>{lang === 'en' ? 'Level up ' : 'Развивай се '}</span>
+                  <span style={{ color: '#fbbf24' }}>2× {lang === 'en' ? 'faster.' : 'по-бързо.'}</span>
+                </p>
+
+                {/* Features */}
+                <div className="space-y-2 mb-5 relative">
+                  {[
+                    { icon: '❤️', color: '#ef4444', en: 'Unlimited hearts — no waiting', bg: 'Неограничени сърца' },
+                    { icon: '✦',  color: '#a78bfa', en: 'All premium modules unlocked',  bg: 'Всички модули отключени' },
+                    { icon: '⚡', color: '#fbbf24', en: '2× XP on every lesson',         bg: '2× XP за всеки урок' },
+                    { icon: '🤖', color: '#34d399', en: 'Personal money coach AI',       bg: 'Личен AI финансов треньор' },
+                    { icon: '🚫', color: '#34d399', en: 'Ad-free experience',            bg: 'Без реклами' },
+                  ].map(f => (
+                    <div key={f.en} className="flex items-center gap-2 text-sm" style={{ color: 'rgba(255,255,255,0.75)' }}>
+                      <span style={{ color: f.color, fontSize: '13px', width: '16px', textAlign: 'center', flexShrink: 0 }}>{f.icon}</span>
+                      {lang === 'en' ? f.en : f.bg}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Price */}
+                <div className="flex items-baseline gap-2 mb-4 relative">
+                  <span className="mono font-black text-2xl" style={{ color: '#fff' }}>$4.99</span>
+                  <span className="text-sm line-through" style={{ color: 'rgba(255,255,255,0.35)' }}>$9.99</span>
+                  <span className="text-sm" style={{ color: 'rgba(255,255,255,0.4)' }}>/month</span>
+                </div>
+
+                {/* CTA button */}
+                <button className="w-full py-3 rounded-xl font-bold text-sm relative transition-all"
+                  style={{
+                    background: 'linear-gradient(90deg, #7c3aed 0%, #d97706 100%)',
+                    color: '#fff',
+                    border: 'none',
+                    letterSpacing: '0.01em',
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.filter = 'brightness(1.1)')}
+                  onMouseLeave={e => (e.currentTarget.style.filter = '')}>
+                  ✦ {lang === 'en' ? 'Try Pro free for 7 days' : 'Пробвай Pro безплатно 7 дни'}
+                </button>
+                <p className="text-center text-xs mt-2 relative tracking-wider" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                  {lang === 'en' ? 'CANCEL ANYTIME · OFFER ENDS IN 2D 14H' : 'ОТКАЖИ ПО ВСЯКО ВРЕМЕ'}
+                </p>
               </div>
+
+              {/* League card */}
+              <div className="rounded-2xl p-5"
+                style={{ background: 'hsl(var(--c-bg-elevated))', border: '1px solid var(--c-border)' }}>
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-xs font-black px-2.5 py-1 rounded-full tracking-wider"
+                    style={{ background: 'rgba(245,200,50,0.15)', color: 'hsl(var(--c-gold))', border: '1px solid rgba(245,200,50,0.3)' }}>
+                    🏅 {lang === 'en' ? 'GOLD LEAGUE' : 'ЗЛАТО'}
+                  </span>
+                </div>
+                <p className="font-extrabold text-base" style={{ color: 'hsl(var(--c-fg))' }}>
+                  {leagueRank
+                    ? (lang === 'en' ? `You're #${leagueRank} this week` : `Ти си #${leagueRank} тази седмица`)
+                    : (lang === 'en' ? 'Join the race!' : 'Влез в надбягването!')}
+                </p>
+                <p className="text-xs mt-1" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+                  {lang === 'en' ? 'Top 3 advance to the next league' : 'Топ 3 се качват в следващата лига'}
+                </p>
+              </div>
+
             </div>
           </div>
-        </div>
+        )}
 
-        {/* ━━━ PRO PLAN ━━━ */}
-        <div className="animate-fade-up delay-100 relative overflow-hidden" style={{
-          borderRadius: '20px',
-          background: 'linear-gradient(135deg, rgba(110,90,230,0.25) 0%, rgba(50,195,155,0.14) 50%, rgba(235,140,55,0.10) 100%)',
-          border: '1px solid rgba(110,90,230,0.40)',
-          padding: '1.25rem',
-        }}>
-          {/* glow */}
-          <div className="absolute -top-12 -right-12 w-48 h-48 rounded-full pointer-events-none"
-            style={{ background: 'radial-gradient(circle, rgba(110,90,230,0.22), transparent 70%)', filter: 'blur(24px)' }} />
-          <div className="absolute -bottom-10 -left-8 w-40 h-40 rounded-full pointer-events-none"
-            style={{ background: 'radial-gradient(circle, rgba(235,140,55,0.16), transparent 70%)', filter: 'blur(24px)' }} />
-
-          {/* Header row */}
-          <div className="flex items-start justify-between mb-3 relative">
-            <div>
-              <div className="flex items-center gap-2 mb-1.5">
-                <span className="text-xs font-black px-2.5 py-1 rounded-full tracking-wide"
-                  style={{ background: 'rgba(110,90,230,0.3)', color: 'hsl(var(--c-primary))', border: '1px solid rgba(110,90,230,0.5)' }}>
-                  ✦ PRO
-                </span>
-                <span className="text-xs font-bold px-2 py-0.5 rounded-full"
-                  style={{ background: 'rgba(235,140,55,0.25)', color: 'hsl(var(--c-orange))' }}>
-                  50% OFF
-                </span>
-              </div>
-              <p className="font-black text-lg leading-tight" style={{ color: 'hsl(var(--c-fg))', letterSpacing: '-0.01em' }}>
-                {lang === 'en' ? 'Unlock everything.' : 'Отключи всичко.'}
-              </p>
-              <p className="text-sm font-semibold" style={{ color: 'hsl(var(--c-green))' }}>
-                {lang === 'en' ? 'Level up 2× faster' : 'Развивай се 2× по-бързо'}
-              </p>
-            </div>
-            <div className="text-right flex-shrink-0 ml-4">
-              <div className="mono font-black text-2xl" style={{ color: 'hsl(var(--c-fg))' }}>$4.99</div>
-              <div className="text-xs line-through opacity-50" style={{ color: 'hsl(var(--c-fg-muted))' }}>$9.99</div>
-              <div className="text-xs" style={{ color: 'hsl(var(--c-fg-subtle))' }}>/mo</div>
-            </div>
-          </div>
-
-          {/* Features — 2 col grid fits mobile */}
-          <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 mb-4 relative">
-            {[
-              { en: 'Unlimited hearts',        bg: 'Без ограничения' },
-              { en: '2× XP on every lesson',   bg: '2× XP за урок' },
-              { en: 'All premium modules',     bg: 'Всички модули' },
-              { en: 'AI money coach',          bg: 'AI треньор' },
-            ].map(f => (
-              <div key={f.en} className="flex items-center gap-1.5 text-sm" style={{ color: 'hsl(var(--c-fg-muted))' }}>
-                <span style={{ color: 'hsl(var(--c-green))', fontWeight: 700 }}>✓</span>
-                {lang === 'en' ? f.en : f.bg}
-              </div>
-            ))}
-          </div>
-
-          <button className="w-full relative font-bold text-sm py-3 rounded-xl transition-all"
-            style={{
-              background: 'linear-gradient(90deg, hsl(var(--c-primary)), hsl(var(--c-green)))',
-              color: '#fff',
-              border: 'none',
-              letterSpacing: '0.01em',
-            }}
-            onMouseEnter={e => (e.currentTarget.style.filter = 'brightness(1.1)')}
-            onMouseLeave={e => (e.currentTarget.style.filter = '')}>
-            ⚡ {lang === 'en' ? 'Try Pro free for 7 days' : 'Пробвай Pro безплатно 7 дни'}
-          </button>
-          <p className="text-center text-xs mt-2 relative" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
-            {lang === 'en' ? 'Cancel anytime · Offer ends in 2d 14h' : 'Откажи по всяко време'}
-          </p>
-        </div>
-
-        {/* ━━━ ACHIEVEMENTS ━━━ */}
-        <div className="animate-fade-up delay-200" style={{
-          borderRadius: '20px',
-          background: 'rgba(255,255,255,0.03)',
-          border: '1px solid rgba(160,140,220,0.13)',
-          backdropFilter: 'blur(20px)',
-          padding: '1.25rem',
-        }}>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-extrabold text-base" style={{ color: 'hsl(var(--c-fg))' }}>
+        {/* ── ACHIEVEMENTS TAB ── */}
+        {tab === 'achievements' && (
+          <div className="animate-fade-up">
+            <h2 className="font-extrabold text-xl mb-1" style={{ color: 'hsl(var(--c-fg))' }}>
               {lang === 'en' ? 'Achievements' : 'Постижения'}
             </h2>
-            <div className="flex items-center gap-1.5">
-              <MiniRing pct={Math.round((earnedCount / achievements.length) * 100)} color="hsl(var(--c-green))" size={28} />
-              <span className="mono text-xs font-bold" style={{ color: 'hsl(var(--c-green))' }}>
-                {earnedCount}/{achievements.length}
-              </span>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-4 gap-2">
-            {achievements.map(a => (
-              <div key={a.en} className="flex flex-col items-center gap-1 rounded-2xl p-2.5 text-center transition-all"
-                style={{
-                  background: a.unlocked ? 'rgba(50,195,155,0.10)' : 'rgba(255,255,255,0.03)',
-                  border: `1px solid ${a.unlocked ? 'rgba(50,195,155,0.28)' : 'rgba(160,140,220,0.10)'}`,
-                  opacity: a.unlocked ? 1 : 0.35,
-                  boxShadow: a.unlocked ? '0 2px 12px rgba(50,195,155,0.10)' : 'none',
-                }}>
-                <span className="text-2xl leading-none">{a.unlocked ? a.icon : '🔒'}</span>
-                <span className="text-xs font-bold leading-tight mt-1" style={{ color: 'hsl(var(--c-fg))' }}>
-                  {lang === 'en' ? a.en : a.bg}
-                </span>
-                <span className="text-xs leading-tight" style={{ color: 'hsl(var(--c-fg-subtle))' }}>{a.sub}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* ━━━ ACCOUNT SETTINGS ━━━ */}
-        <div className="animate-fade-up delay-300" style={{
-          borderRadius: '20px',
-          background: 'rgba(255,255,255,0.03)',
-          border: '1px solid rgba(160,140,220,0.13)',
-          backdropFilter: 'blur(20px)',
-          overflow: 'hidden',
-        }}>
-          {/* Header */}
-          <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(160,140,220,0.13)' }}>
-            <h2 className="font-extrabold text-base" style={{ color: 'hsl(var(--c-fg))' }}>
-              {lang === 'en' ? 'Account Settings' : 'Настройки на акаунта'}
-            </h2>
-          </div>
-
-          {/* Display name */}
-          <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(160,140,220,0.13)' }}>
-            <label className="block text-xs font-bold uppercase tracking-widest mb-2" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
-              {lang === 'en' ? 'Display name' : 'Показвано име'}
-            </label>
-            <div className="flex gap-2">
-              <input className="input-field flex-1" value={name}
-                onChange={e => { setName(e.target.value); setSaveOk(''); setSaveErr(''); }}
-                placeholder={lang === 'en' ? 'Your name' : 'Твоето име'} />
-              <button
-                onClick={handleSave} disabled={saving || !canSave}
-                className="flex-shrink-0 text-sm font-bold px-4 py-2 rounded-xl transition-all disabled:opacity-40"
-                style={{
-                  background: canSave ? 'linear-gradient(90deg, hsl(var(--c-primary)), hsl(var(--c-green)))' : 'rgba(255,255,255,0.06)',
-                  color: canSave ? '#fff' : 'hsl(var(--c-fg-subtle))',
-                  border: 'none', cursor: canSave ? 'pointer' : 'default',
-                }}>
-                {saving
-                  ? <span className="flex items-center gap-1.5"><span className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />{lang === 'en' ? 'Saving' : 'Запазва'}</span>
-                  : (lang === 'en' ? 'Save' : 'Запази')}
-              </button>
-            </div>
-            {nameStatus === 'checking' && <p className="text-xs mt-1.5" style={{ color: 'hsl(var(--c-fg-subtle))' }}>· Checking…</p>}
-            {nameStatus === 'available' && name.trim() !== user?.name && <Hint ok text={lang === 'en' ? 'Name is available' : 'Името е свободно'} />}
-            {nameStatus === 'taken' && <Hint ok={false} text={lang === 'en' ? 'Name already taken' : 'Името вече е заето'} />}
-            {saveOk && <Hint ok text={saveOk} />}
-            {saveErr && <Hint ok={false} text={saveErr} />}
-          </div>
-
-          {/* Photo upload */}
-          <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(160,140,220,0.13)' }}>
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
-                {/* Avatar preview */}
-                <div className="w-11 h-11 rounded-xl overflow-hidden flex-shrink-0"
-                  style={{ border: '2px solid rgba(160,140,220,0.2)' }}>
-                  {displayAvatar?.startsWith('data:')
-                    ? <img src={displayAvatar} alt="avatar" className="w-full h-full object-cover" />
-                    : <div className="w-full h-full flex items-center justify-center font-bold text-lg"
-                        style={{ background: 'linear-gradient(135deg, hsl(var(--c-primary)/0.3), hsl(var(--c-green)/0.2))', color: 'hsl(var(--c-fg))' }}>
-                        {user?.name?.[0]?.toUpperCase()}
-                      </div>}
+            <p className="text-sm mb-5" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+              {earnedCount} {lang === 'en' ? 'of' : 'от'} {achievements.length} {lang === 'en' ? 'earned' : 'спечелени'}
+            </p>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {achievements.map(a => (
+                <div key={a.en} className="rounded-2xl p-5 flex flex-col items-center gap-2.5 text-center relative overflow-hidden"
+                  style={{
+                    background: a.unlocked ? `${a.color}1a` : 'rgba(255,255,255,0.03)',
+                    border: `1px solid ${a.unlocked ? `${a.color}40` : 'rgba(160,140,220,0.10)'}`,
+                  }}>
+                  {a.unlocked && (
+                    <div className="absolute top-2 right-2 text-xs font-bold px-2 py-0.5 rounded-full"
+                      style={{ background: 'hsl(var(--c-green))', color: '#fff', fontSize: '10px' }}>
+                      ✓ EARNED
+                    </div>
+                  )}
+                  <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl mt-1"
+                    style={{ background: a.unlocked ? `${a.color}30` : 'rgba(255,255,255,0.05)' }}>
+                    {a.unlocked ? a.icon : '🔒'}
+                  </div>
+                  <span className="font-bold" style={{ color: a.unlocked ? 'hsl(var(--c-fg))' : 'hsl(var(--c-fg-subtle))' }}>
+                    {lang === 'en' ? a.en : a.bg}
+                  </span>
+                  <span className="text-xs" style={{ color: 'hsl(var(--c-fg-subtle))' }}>{a.sub}</span>
                 </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── SETTINGS TAB ── */}
+        {tab === 'settings' && (
+          <div className="max-w-lg animate-fade-up" style={{
+            borderRadius: '20px',
+            background: 'rgba(255,255,255,0.03)',
+            border: '1px solid rgba(160,140,220,0.13)',
+            backdropFilter: 'blur(20px)',
+            overflow: 'hidden',
+          }}>
+            {/* Header */}
+            <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(160,140,220,0.13)' }}>
+              <h2 className="font-extrabold text-base" style={{ color: 'hsl(var(--c-fg))' }}>
+                {lang === 'en' ? 'Account Settings' : 'Настройки на акаунта'}
+              </h2>
+            </div>
+
+            {/* Display name */}
+            <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(160,140,220,0.13)' }}>
+              <label className="block text-xs font-bold uppercase tracking-widest mb-2" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+                {lang === 'en' ? 'Display name' : 'Показвано име'}
+              </label>
+              <div className="flex gap-2">
+                <input className="input-field flex-1" value={name}
+                  onChange={e => { setName(e.target.value); setSaveOk(''); setSaveErr(''); }}
+                  placeholder={lang === 'en' ? 'Your name' : 'Твоето име'} />
+                <button
+                  onClick={handleSave} disabled={saving || !canSave}
+                  className="flex-shrink-0 text-sm font-bold px-4 py-2 rounded-xl transition-all disabled:opacity-40"
+                  style={{
+                    background: canSave ? 'linear-gradient(90deg, hsl(var(--c-primary)), hsl(var(--c-green)))' : 'rgba(255,255,255,0.06)',
+                    color: canSave ? '#fff' : 'hsl(var(--c-fg-subtle))',
+                    border: 'none',
+                    cursor: canSave ? 'pointer' : 'default',
+                  }}>
+                  {saving
+                    ? <span className="flex items-center gap-1.5"><span className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />{lang === 'en' ? 'Saving' : 'Запазва'}</span>
+                    : (lang === 'en' ? 'Save' : 'Запази')}
+                </button>
+              </div>
+              {nameStatus === 'checking' && <p className="text-xs mt-1.5" style={{ color: 'hsl(var(--c-fg-subtle))' }}>· Checking…</p>}
+              {nameStatus === 'available' && name.trim() !== user?.name && <Hint ok text={lang === 'en' ? 'Name is available' : 'Името е свободно'} />}
+              {nameStatus === 'taken' && <Hint ok={false} text={lang === 'en' ? 'Name already taken' : 'Името вече е заето'} />}
+              {saveOk && <Hint ok text={saveOk} />}
+              {saveErr && <Hint ok={false} text={saveErr} />}
+            </div>
+
+            {/* Photo upload */}
+            <div className="px-5 py-4" style={{ borderBottom: '1px solid rgba(160,140,220,0.13)' }}>
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-xl overflow-hidden flex-shrink-0"
+                    style={{ border: '2px solid rgba(160,140,220,0.2)' }}>
+                    {displayAvatar?.startsWith('data:')
+                      ? <img src={displayAvatar} alt="avatar" className="w-full h-full object-cover" />
+                      : <div className="w-full h-full flex items-center justify-center font-bold text-lg"
+                          style={{ background: 'linear-gradient(135deg, hsl(var(--c-primary)/0.3), hsl(var(--c-green)/0.2))', color: 'hsl(var(--c-fg))' }}>
+                          {user?.name?.[0]?.toUpperCase()}
+                        </div>}
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold" style={{ color: 'hsl(var(--c-fg))' }}>
+                      {lang === 'en' ? 'Profile photo' : 'Снимка'}
+                    </p>
+                    <p className="text-xs" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+                      {pendingAvatar ? (lang === 'en' ? 'Ready — press Save' : 'Готово') : 'JPG · PNG · max 8 MB'}
+                    </p>
+                  </div>
+                </div>
+                <button onClick={() => fileRef.current?.click()}
+                  className="flex-shrink-0 text-sm font-semibold px-4 py-2 rounded-xl transition-all"
+                  style={{ background: 'rgba(255,255,255,0.06)', color: 'hsl(var(--c-fg))', border: '1px solid rgba(160,140,220,0.2)' }}>
+                  {lang === 'en' ? 'Upload' : 'Качи'}
+                </button>
+              </div>
+            </div>
+
+            {/* Password */}
+            <div className="px-5 py-4">
+              <button className="w-full flex items-center justify-between text-left"
+                onClick={() => { setPwOpen(p => !p); setPwErr(''); setPwOk(''); }}>
                 <div>
                   <p className="text-sm font-semibold" style={{ color: 'hsl(var(--c-fg))' }}>
-                    {lang === 'en' ? 'Profile photo' : 'Снимка'}
+                    {lang === 'en' ? 'Password' : 'Парола'}
                   </p>
-                  <p className="text-xs" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
-                    {pendingAvatar ? (lang === 'en' ? 'Ready — press Save' : 'Готово') : 'JPG · PNG · max 8 MB'}
+                  <p className="text-xs mt-0.5" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+                    {lang === 'en' ? 'Change your account password' : 'Смени паролата'}
                   </p>
                 </div>
-              </div>
-              <button onClick={() => fileRef.current?.click()}
-                className="flex-shrink-0 text-sm font-semibold px-4 py-2 rounded-xl transition-all"
-                style={{ background: 'rgba(255,255,255,0.06)', color: 'hsl(var(--c-fg))', border: '1px solid rgba(160,140,220,0.2)' }}>
-                {lang === 'en' ? 'Upload' : 'Качи'}
+                <span style={{ color: 'hsl(var(--c-fg-subtle))' }}><ChevronIcon open={pwOpen} /></span>
               </button>
+
+              {pwOpen && (
+                <div className="mt-4 space-y-3 pt-4" style={{ borderTop: '1px solid rgba(160,140,220,0.13)' }}>
+                  {[
+                    { label: lang === 'en' ? 'Current password' : 'Текуща парола', value: currentPw, set: setCurrentPw, show: showCurrent, toggle: setShowCurrent, ac: 'current-password' },
+                    { label: lang === 'en' ? 'New password'     : 'Нова парола',   value: newPw,     set: setNewPw,     show: showNew,     toggle: setShowNew,     ac: 'new-password' },
+                  ].map(f => (
+                    <div key={f.label}>
+                      <label className="block text-xs font-bold uppercase tracking-widest mb-1.5" style={{ color: 'hsl(var(--c-fg-subtle))' }}>{f.label}</label>
+                      <div className="relative">
+                        <input type={f.show ? 'text' : 'password'} className="input-field pr-11"
+                          value={f.value} onChange={e => { f.set(e.target.value); setPwErr(''); setPwOk(''); }}
+                          placeholder="••••••••" autoComplete={f.ac} />
+                        <button type="button" onClick={() => f.toggle(p => !p)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center"
+                          style={{ color: 'hsl(var(--c-fg-muted))' }}>
+                          {f.show ? '🙈' : '👁️'}
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                  {newPw.length > 0 && <Hint ok={newPw.length >= 8} text={newPw.length >= 8 ? (lang === 'en' ? 'Strong password' : 'Силна парола') : (lang === 'en' ? `${8 - newPw.length} more chars` : `Нужни са ${8 - newPw.length} символа`)} />}
+                  {pwOk && <Hint ok text={pwOk} />}
+                  {pwErr && <Hint ok={false} text={pwErr} />}
+                  <div className="flex gap-2 pt-1">
+                    <button className="btn-primary flex-1" onClick={handleChangePw} disabled={pwSaving || !currentPw || newPw.length < 8}>
+                      {pwSaving
+                        ? <span className="flex items-center gap-2 justify-center"><span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />{lang === 'en' ? 'Changing…' : 'Смяна…'}</span>
+                        : (lang === 'en' ? 'Update password' : 'Обнови паролата')}
+                    </button>
+                    <button className="px-4 py-2 rounded-xl text-sm font-semibold"
+                      style={{ background: 'rgba(255,255,255,0.06)', color: 'hsl(var(--c-fg-muted))', border: '1px solid rgba(160,140,220,0.15)' }}
+                      onClick={() => { setPwOpen(false); setCurrentPw(''); setNewPw(''); setPwErr(''); setPwOk(''); }}>
+                      {lang === 'en' ? 'Cancel' : 'Отказ'}
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
-
-          {/* Password */}
-          <div className="px-5 py-4">
-            <button className="w-full flex items-center justify-between text-left"
-              onClick={() => { setPwOpen(p => !p); setPwErr(''); setPwOk(''); }}>
-              <div>
-                <p className="text-sm font-semibold" style={{ color: 'hsl(var(--c-fg))' }}>
-                  {lang === 'en' ? 'Password' : 'Парола'}
-                </p>
-                <p className="text-xs mt-0.5" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
-                  {lang === 'en' ? 'Change your account password' : 'Смени паролата'}
-                </p>
-              </div>
-              <span style={{ color: 'hsl(var(--c-fg-subtle))' }}><ChevronIcon open={pwOpen} /></span>
-            </button>
-
-            {pwOpen && (
-              <div className="mt-4 space-y-3 pt-4" style={{ borderTop: '1px solid rgba(160,140,220,0.13)' }}>
-                {[
-                  { label: lang === 'en' ? 'Current password' : 'Текуща парола', value: currentPw, set: setCurrentPw, show: showCurrent, toggle: setShowCurrent, ac: 'current-password' },
-                  { label: lang === 'en' ? 'New password'     : 'Нова парола',   value: newPw,     set: setNewPw,     show: showNew,     toggle: setShowNew,     ac: 'new-password' },
-                ].map(f => (
-                  <div key={f.label}>
-                    <label className="block text-xs font-bold uppercase tracking-widest mb-1.5" style={{ color: 'hsl(var(--c-fg-subtle))' }}>{f.label}</label>
-                    <div className="relative">
-                      <input type={f.show ? 'text' : 'password'} className="input-field pr-11"
-                        value={f.value} onChange={e => { f.set(e.target.value); setPwErr(''); setPwOk(''); }}
-                        placeholder="••••••••" autoComplete={f.ac} />
-                      <button type="button" onClick={() => f.toggle(p => !p)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center"
-                        style={{ color: 'hsl(var(--c-fg-muted))' }}>
-                        {f.show ? '🙈' : '👁️'}
-                      </button>
-                    </div>
-                  </div>
-                ))}
-                {newPw.length > 0 && <Hint ok={newPw.length >= 8} text={newPw.length >= 8 ? (lang === 'en' ? 'Strong password' : 'Силна парола') : (lang === 'en' ? `${8 - newPw.length} more chars` : `Нужни са ${8 - newPw.length} символа`)} />}
-                {pwOk && <Hint ok text={pwOk} />}
-                {pwErr && <Hint ok={false} text={pwErr} />}
-                <div className="flex gap-2 pt-1">
-                  <button className="btn-primary flex-1" onClick={handleChangePw} disabled={pwSaving || !currentPw || newPw.length < 8}>
-                    {pwSaving
-                      ? <span className="flex items-center gap-2 justify-center"><span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />{lang === 'en' ? 'Changing…' : 'Смяна…'}</span>
-                      : (lang === 'en' ? 'Update password' : 'Обнови паролата')}
-                  </button>
-                  <button className="px-4 py-2 rounded-xl text-sm font-semibold"
-                    style={{ background: 'rgba(255,255,255,0.06)', color: 'hsl(var(--c-fg-muted))', border: '1px solid rgba(160,140,220,0.15)' }}
-                    onClick={() => { setPwOpen(false); setCurrentPw(''); setNewPw(''); setPwErr(''); setPwOk(''); }}>
-                    {lang === 'en' ? 'Cancel' : 'Отказ'}
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
+        )}
 
       </div>
     </div>
