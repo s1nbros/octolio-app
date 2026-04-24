@@ -42,6 +42,12 @@ async function initDb() {
     await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS stripe_customer_id TEXT`);
     await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS stripe_subscription_id TEXT`);
     await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS onboarding_done BOOLEAN DEFAULT FALSE`);
+    // Mark existing users (with any XP or existing activity) as onboarding complete
+    // so they don't get stuck on the plan selection page after the upgrade
+    await pool.query(`
+    UPDATE users SET onboarding_done = TRUE
+    WHERE onboarding_done = FALSE AND (xp > 0 OR last_active IS NOT NULL)
+  `);
     await pool.query(`
     CREATE TABLE IF NOT EXISTS progress (
       id SERIAL PRIMARY KEY,

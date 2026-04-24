@@ -128,7 +128,7 @@ function StatCard({ icon, badge, value, label, color }: StatCardProps) {
 }
 
 export function Profile() {
-  const { user, token, updateProfile, changePassword } = useAuth();
+  const { user, token, updateProfile, changePassword, refreshUser } = useAuth();
   const { lang } = useLang();
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -720,6 +720,36 @@ export function Profile() {
                   </div>
                 </div>
               )}
+            </div>
+
+            {/* DEV — Pro toggle (remove before launch) */}
+            <div className="px-5 py-4" style={{ borderTop: '1px solid var(--c-border)' }}>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-semibold" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+                    🛠 Dev: Pro status
+                  </p>
+                  <p className="text-xs mt-0.5" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+                    {user?.is_pro ? '✦ Currently PRO' : 'Currently Free'}
+                  </p>
+                </div>
+                <button
+                  onClick={async () => {
+                    const res = await fetch('/api/auth/dev/toggle-pro', {
+                      method: 'POST',
+                      headers: { Authorization: `Bearer ${token}` },
+                    });
+                    if (res.ok) refreshUser();
+                  }}
+                  className="text-sm font-bold px-4 py-2 rounded-xl transition-all"
+                  style={{
+                    background: user?.is_pro ? 'hsl(var(--c-orange)/0.15)' : 'hsl(var(--c-primary)/0.15)',
+                    color: user?.is_pro ? 'hsl(var(--c-orange))' : 'hsl(var(--c-primary))',
+                    border: `1px solid ${user?.is_pro ? 'hsl(var(--c-orange)/0.3)' : 'hsl(var(--c-primary)/0.3)'}`,
+                  }}>
+                  {user?.is_pro ? 'Switch to Free' : 'Switch to Pro'}
+                </button>
+              </div>
             </div>
           </div>
         )}
