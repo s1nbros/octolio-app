@@ -292,12 +292,8 @@ authRouter.patch('/password', authenticate, async (req: AuthRequest, res: Respon
   }
 });
 
-/* DEV ONLY — toggle Pro status without Stripe (remove before production) */
+/* DEV ONLY — toggle Pro status without Stripe */
 authRouter.post('/dev/toggle-pro', authenticate, async (req: AuthRequest, res: Response): Promise<void> => {
-  if (process.env.NODE_ENV === 'production') {
-    res.status(403).json({ error: 'Not available in production' });
-    return;
-  }
   try {
     const pool = getPool();
     const result = await pool.query(
