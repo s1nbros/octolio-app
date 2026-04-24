@@ -74,6 +74,7 @@ export interface ModuleMeta {
   icon: string;
   color: string;
   order: number;
+  proOnly: boolean;
   lessons: LessonMeta[];
 }
 
@@ -86,6 +87,10 @@ export interface User {
   avatar?: string;
   created_at?: string;
   last_active?: string;
+  is_pro: boolean;
+  energy: number;
+  energy_refill_at?: string | null;
+  onboarding_done: boolean;
 }
 
 export const LEVELS = [

@@ -120,8 +120,16 @@ authRouter.post('/login', async (req: Request, res: Response): Promise<void> => 
 authRouter.get('/me', authenticate, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const pool = getPool();
+
+    // Auto-refill energy if refill time has passed
+    await pool.query(`
+      UPDATE users
+      SET energy = 12, energy_refill_at = NULL
+      WHERE id = $1 AND energy_refill_at IS NOT NULL AND energy_refill_at <= NOW()
+    `, [req.userId]);
+
     const result = await pool.query(
-      'SELECT id, name, email, xp, streak, last_active, created_at, avatar FROM users WHERE id = $1',
+      'SELECT id, name, email, xp, streak, last_active, created_at, avatar, is_pro, energy, energy_refill_at, onboarding_done FROM users WHERE id = $1',
       [req.userId]
     );
     const user = result.rows[0];
@@ -134,6 +142,18 @@ authRouter.get('/me', authenticate, async (req: AuthRequest, res: Response): Pro
     res.json({ user });
   } catch (err) {
     console.error('Me error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+/* Mark onboarding complete (user chose free plan) */
+authRouter.post('/onboarding', authenticate, async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const pool = getPool();
+    await pool.query('UPDATE users SET onboarding_done = TRUE WHERE id = $1', [req.userId]);
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Onboarding error:', err);
     res.status(500).json({ error: 'Server error' });
   }
 });

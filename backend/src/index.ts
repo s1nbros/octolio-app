@@ -8,6 +8,7 @@ import { initDb } from './db';
 import { authRouter } from './routes/auth';
 import { modulesRouter } from './routes/modules';
 import { progressRouter } from './routes/progress';
+import { stripeRouter, stripeWebhookHandler } from './routes/stripe';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -20,11 +21,16 @@ app.use(cors({
   origin: allowedOrigins,
   credentials: true,
 }));
+
+// Stripe webhook needs raw body — must be registered BEFORE express.json()
+app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), stripeWebhookHandler);
+
 app.use(express.json());
 
 app.use('/api/auth', authRouter);
 app.use('/api/modules', modulesRouter);
 app.use('/api/progress', progressRouter);
+app.use('/api/stripe', stripeRouter);
 
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });

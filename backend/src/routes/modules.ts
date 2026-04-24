@@ -8,12 +8,13 @@ export const modulesRouter = Router();
 modulesRouter.get('/', authenticate, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const pool = getPool();
-    const result = await pool.query(
-      'SELECT lesson_id FROM progress WHERE user_id = $1',
-      [req.userId]
-    );
+    const [progressResult, userResult] = await Promise.all([
+      pool.query('SELECT lesson_id FROM progress WHERE user_id = $1', [req.userId]),
+      pool.query('SELECT is_pro FROM users WHERE id = $1', [req.userId]),
+    ]);
 
-    const completedSet = new Set(result.rows.map((r: { lesson_id: string }) => r.lesson_id));
+    const completedSet = new Set(progressResult.rows.map((r: { lesson_id: string }) => r.lesson_id));
+    const isPro: boolean = userResult.rows[0]?.is_pro ?? false;
 
     const output = modules.map((mod) => ({
       id: mod.id,
@@ -22,6 +23,7 @@ modulesRouter.get('/', authenticate, async (req: AuthRequest, res: Response): Pr
       icon: mod.icon,
       color: mod.color,
       order: mod.order,
+      proOnly: mod.proOnly ?? false,
       lessons: mod.lessons.map((lesson) => ({
         id: lesson.id,
         moduleId: lesson.moduleId,
@@ -35,7 +37,7 @@ modulesRouter.get('/', authenticate, async (req: AuthRequest, res: Response): Pr
       })),
     }));
 
-    res.json({ modules: output });
+    res.json({ modules: output, isPro });
   } catch (err) {
     console.error('Modules error:', err);
     res.status(500).json({ error: 'Server error' });
@@ -53,12 +55,20 @@ modulesRouter.get('/:moduleId/lessons/:lessonId', authenticate, async (req: Auth
 
   try {
     const pool = getPool();
-    const result = await pool.query(
-      'SELECT id FROM progress WHERE user_id = $1 AND lesson_id = $2',
-      [req.userId, lessonId]
-    );
+    const [progressResult, userResult] = await Promise.all([
+      pool.query('SELECT id FROM progress WHERE user_id = $1 AND lesson_id = $2', [req.userId, lessonId]),
+      pool.query('SELECT is_pro FROM users WHERE id = $1', [req.userId]),
+    ]);
 
-    res.json({ lesson, completed: result.rows.length > 0 });
+    const isPro: boolean = userResult.rows[0]?.is_pro ?? false;
+
+    // Block free users from accessing pro-only module lessons
+    if (mod.proOnly && !isPro) {
+      res.status(403).json({ error: 'pro_required' });
+      return;
+    }
+
+    res.json({ lesson, completed: progressResult.rows.length > 0 });
   } catch (err) {
     console.error('Lesson error:', err);
     res.status(500).json({ error: 'Server error' });

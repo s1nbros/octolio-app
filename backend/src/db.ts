@@ -25,14 +25,24 @@ export async function initDb(): Promise<void> {
       streak INTEGER DEFAULT 0,
       last_active TEXT,
       avatar TEXT DEFAULT '🦊',
-      created_at TIMESTAMP DEFAULT NOW()
+      created_at TIMESTAMP DEFAULT NOW(),
+      is_pro BOOLEAN DEFAULT FALSE,
+      energy INTEGER DEFAULT 12,
+      energy_refill_at TIMESTAMP,
+      stripe_customer_id TEXT,
+      stripe_subscription_id TEXT,
+      onboarding_done BOOLEAN DEFAULT FALSE
     )
   `);
 
-  // Add avatar column to existing tables that predate this migration
-  await pool.query(`
-    ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar TEXT DEFAULT '🦊'
-  `);
+  // Migrations for existing tables
+  await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar TEXT DEFAULT '🦊'`);
+  await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS is_pro BOOLEAN DEFAULT FALSE`);
+  await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS energy INTEGER DEFAULT 12`);
+  await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS energy_refill_at TIMESTAMP`);
+  await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS stripe_customer_id TEXT`);
+  await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS stripe_subscription_id TEXT`);
+  await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS onboarding_done BOOLEAN DEFAULT FALSE`);
 
   await pool.query(`
     CREATE TABLE IF NOT EXISTS progress (

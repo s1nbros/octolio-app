@@ -33,17 +33,19 @@ const COLOR_MAP: Record<string, { border: string; glow: string; badge: string; b
 interface Props {
   module: ModuleMeta;
   isLocked: boolean;
+  isProLocked: boolean;
   index: number;
 }
 
-export function ModuleCard({ module, isLocked, index }: Props) {
-  const { t, ui } = useLang();
+export function ModuleCard({ module, isLocked, isProLocked, index }: Props) {
+  const { t, ui, lang } = useLang();
   const [hovered, setHovered] = useState(false);
   const colors = COLOR_MAP[module.color] ?? COLOR_MAP.blue;
   const completedCount = module.lessons.filter((l) => l.completed).length;
   const totalLessons = module.lessons.length;
   const progress = totalLessons > 0 ? (completedCount / totalLessons) * 100 : 0;
-  const isFullyDone = completedCount === totalLessons;
+  const isFullyDone = completedCount === totalLessons && totalLessons > 0;
+  const blocked = isLocked || isProLocked;
 
   const nextLesson = module.lessons.find((l) => !l.completed) ?? module.lessons[0];
 
@@ -51,19 +53,19 @@ export function ModuleCard({ module, isLocked, index }: Props) {
     <div
       className={`glass-card rounded-2xl p-6 transition-all duration-300 animate-fade-up delay-${Math.min(index * 100, 400)}`}
       style={{
-        borderColor: isLocked
-          ? 'var(--c-border)'
+        borderColor: blocked
+          ? (isProLocked ? 'hsl(var(--c-primary)/0.35)' : 'var(--c-border)')
           : hovered
             ? colors.badge
             : colors.border,
-        boxShadow: !isLocked && hovered
+        boxShadow: !blocked && hovered
           ? `0 0 0 1px ${colors.badge}, 0 8px 32px ${colors.glow}`
-          : undefined,
+          : isProLocked ? '0 0 24px hsl(var(--c-primary)/0.08)' : undefined,
         opacity: isLocked ? 0.55 : 1,
-        cursor: isLocked ? 'default' : 'pointer',
-        transform: !isLocked && hovered ? 'translateY(-2px)' : undefined,
+        cursor: blocked ? 'default' : 'pointer',
+        transform: !blocked && hovered ? 'translateY(-2px)' : undefined,
       }}
-      onMouseEnter={() => !isLocked && setHovered(true)}
+      onMouseEnter={() => !blocked && setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
       {/* Header */}
@@ -71,27 +73,35 @@ export function ModuleCard({ module, isLocked, index }: Props) {
         <div className="flex items-center gap-3">
           <div
             className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl"
-            style={{ background: isLocked ? 'var(--c-glass)' : colors.bg }}
+            style={{ background: blocked ? 'var(--c-glass)' : colors.bg }}
           >
-            {isLocked ? '🔒' : module.icon}
+            {isProLocked ? '✦' : isLocked ? '🔒' : module.icon}
           </div>
           <div>
-            <h3 className="font-bold text-base" style={{ color: isLocked ? 'hsl(var(--c-fg-subtle))' : 'hsl(var(--c-fg))' }}>
+            <h3 className="font-bold text-base" style={{ color: blocked ? 'hsl(var(--c-fg-subtle))' : 'hsl(var(--c-fg))' }}>
               {t(module.title)}
             </h3>
             <p className="text-xs mt-0.5" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
-              {completedCount}/{totalLessons} {ui.lessons}
+              {isProLocked
+                ? (lang === 'en' ? 'Pro exclusive' : 'Само за Pro')
+                : `${completedCount}/${totalLessons} ${ui.lessons}`}
             </p>
           </div>
         </div>
 
-        {isFullyDone && (
+        {isFullyDone && !blocked && (
           <span className="text-xs font-semibold px-2.5 py-1 rounded-full"
             style={{ background: colors.bg, color: colors.badge, border: `1px solid ${colors.border}` }}>
             ✓ {ui.completed}
           </span>
         )}
-        {isLocked && (
+        {isProLocked && (
+          <span className="text-xs font-bold px-2.5 py-1 rounded-full"
+            style={{ background: 'hsl(var(--c-primary)/0.15)', color: 'hsl(var(--c-primary))', border: '1px solid hsl(var(--c-primary)/0.35)' }}>
+            ✦ PRO
+          </span>
+        )}
+        {isLocked && !isProLocked && (
           <span className="text-xs font-medium px-2.5 py-1 rounded-full"
             style={{ background: 'var(--c-glass)', color: 'hsl(var(--c-fg-subtle))', border: '1px solid var(--c-border)' }}>
             🔒 {ui.locked}
@@ -105,44 +115,60 @@ export function ModuleCard({ module, isLocked, index }: Props) {
       </p>
 
       {/* Progress bar */}
-      <div className="mb-4">
-        <div className="progress-bar-track">
-          <div
-            className="progress-bar-fill"
-            style={{
-              width: `${progress}%`,
-              background: isLocked
-                ? 'var(--c-border)'
-                : `linear-gradient(90deg, ${colors.badge}, ${colors.badge})`,
-            }}
-          />
+      {!isProLocked && (
+        <div className="mb-4">
+          <div className="progress-bar-track">
+            <div
+              className="progress-bar-fill"
+              style={{
+                width: `${progress}%`,
+                background: isLocked
+                  ? 'var(--c-border)'
+                  : `linear-gradient(90deg, ${colors.badge}, ${colors.badge})`,
+              }}
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Lessons list */}
-      <div className="space-y-2 mb-5">
-        {module.lessons.map((lesson) => (
-          <div
-            key={lesson.id}
-            className="flex items-center gap-2.5 px-3 py-2 rounded-lg"
-            style={{ background: 'var(--c-glass)' }}
-          >
-            <span className="text-sm">{lesson.completed ? '✅' : lesson.icon}</span>
-            <span className="text-sm flex-1 truncate" style={{
-              color: lesson.completed ? 'hsl(var(--c-fg-subtle))' : 'hsl(var(--c-fg))',
-              textDecoration: lesson.completed ? 'line-through' : 'none',
-            }}>
-              {t(lesson.title)}
-            </span>
-            <span className="text-xs font-medium" style={{ color: colors.badge }}>
-              +{lesson.xpReward} XP
-            </span>
-          </div>
-        ))}
-      </div>
+      {!isProLocked && (
+        <div className="space-y-2 mb-5">
+          {module.lessons.map((lesson) => (
+            <div
+              key={lesson.id}
+              className="flex items-center gap-2.5 px-3 py-2 rounded-lg"
+              style={{ background: 'var(--c-glass)' }}
+            >
+              <span className="text-sm">{lesson.completed ? '✅' : lesson.icon}</span>
+              <span className="text-sm flex-1 truncate" style={{
+                color: lesson.completed ? 'hsl(var(--c-fg-subtle))' : 'hsl(var(--c-fg))',
+                textDecoration: lesson.completed ? 'line-through' : 'none',
+              }}>
+                {t(lesson.title)}
+              </span>
+              <span className="text-xs font-medium" style={{ color: colors.badge }}>
+                +{lesson.xpReward} XP
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Pro locked — teaser */}
+      {isProLocked && (
+        <div className="mb-5 p-3 rounded-xl text-center"
+          style={{ background: 'hsl(var(--c-primary)/0.08)', border: '1px solid hsl(var(--c-primary)/0.2)' }}>
+          <p className="text-xs" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+            {lang === 'en'
+              ? `${totalLessons} lessons — unlock with Pro`
+              : `${totalLessons} урока — отключи с Pro`}
+          </p>
+        </div>
+      )}
 
       {/* CTA */}
-      {!isLocked && (
+      {!blocked && (
         <Link to={`/lesson/${module.id}/${nextLesson.id}`}>
           <button
             className="w-full py-2.5 rounded-xl font-semibold text-sm transition-all"
@@ -155,6 +181,19 @@ export function ModuleCard({ module, isLocked, index }: Props) {
             {isFullyDone ? `↻ ${ui.continue}` : completedCount > 0 ? `▶ ${ui.continue}` : `→ ${ui.start}`}
           </button>
         </Link>
+      )}
+
+      {isProLocked && (
+        <a href="/profile">
+          <button className="w-full py-2.5 rounded-xl font-bold text-sm transition-all"
+            style={{
+              background: 'linear-gradient(90deg, hsl(var(--c-primary)), hsl(var(--c-green)))',
+              color: '#fff',
+              border: 'none',
+            }}>
+            ✦ {lang === 'en' ? 'Unlock with Pro' : 'Отключи с Pro'}
+          </button>
+        </a>
       )}
     </div>
   );

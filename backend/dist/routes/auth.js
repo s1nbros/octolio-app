@@ -105,7 +105,13 @@ exports.authRouter.post('/login', async (req, res) => {
 exports.authRouter.get('/me', auth_1.authenticate, async (req, res) => {
     try {
         const pool = (0, db_1.getPool)();
-        const result = await pool.query('SELECT id, name, email, xp, streak, last_active, created_at, avatar FROM users WHERE id = $1', [req.userId]);
+        // Auto-refill energy if refill time has passed
+        await pool.query(`
+      UPDATE users
+      SET energy = 12, energy_refill_at = NULL
+      WHERE id = $1 AND energy_refill_at IS NOT NULL AND energy_refill_at <= NOW()
+    `, [req.userId]);
+        const result = await pool.query('SELECT id, name, email, xp, streak, last_active, created_at, avatar, is_pro, energy, energy_refill_at, onboarding_done FROM users WHERE id = $1', [req.userId]);
         const user = result.rows[0];
         if (!user) {
             res.status(404).json({ error: 'User not found' });
@@ -115,6 +121,18 @@ exports.authRouter.get('/me', auth_1.authenticate, async (req, res) => {
     }
     catch (err) {
         console.error('Me error:', err);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+/* Mark onboarding complete (user chose free plan) */
+exports.authRouter.post('/onboarding', auth_1.authenticate, async (req, res) => {
+    try {
+        const pool = (0, db_1.getPool)();
+        await pool.query('UPDATE users SET onboarding_done = TRUE WHERE id = $1', [req.userId]);
+        res.json({ success: true });
+    }
+    catch (err) {
+        console.error('Onboarding error:', err);
         res.status(500).json({ error: 'Server error' });
     }
 });

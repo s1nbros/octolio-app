@@ -6,7 +6,7 @@ import { ModuleCard } from '../components/ModuleCard';
 import type { ModuleMeta } from '../types';
 
 export function Modules() {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const { ui, lang } = useLang();
   const [modules, setModules] = useState<ModuleMeta[]>([]);
   const [loading, setLoading] = useState(true);
@@ -19,13 +19,18 @@ export function Modules() {
       .finally(() => setLoading(false));
   }, [token]);
 
-  // A module is locked if the previous module has fewer than 2 completed lessons
+  const isPro = user?.is_pro ?? false;
+
+  // A module is locked if the previous non-pro module has fewer than 2 completed lessons
   const isLocked = (index: number) => {
     if (index === 0) return false;
     const prev = modules[index - 1];
+    if (prev.proOnly) return false; // don't gate on pro modules
     const prevCompleted = prev.lessons.filter((l) => l.completed).length;
     return prevCompleted < 2;
   };
+
+  const isProLocked = (mod: ModuleMeta) => mod.proOnly && !isPro;
 
   if (loading) {
     return (
@@ -55,7 +60,7 @@ export function Modules() {
             {modules.map((mod, i) => {
               const done = mod.lessons.filter((l) => l.completed).length;
               const total = mod.lessons.length;
-              const locked = isLocked(i);
+              const locked = isLocked(i) || isProLocked(mod);
               return (
                 <div key={mod.id} className="flex items-center gap-2">
                   <span className="text-lg">{locked ? '🔒' : mod.icon}</span>
@@ -77,7 +82,7 @@ export function Modules() {
         {/* Module grid */}
         <div className="grid sm:grid-cols-2 gap-6">
           {modules.map((mod, i) => (
-            <ModuleCard key={mod.id} module={mod} isLocked={isLocked(i)} index={i} />
+            <ModuleCard key={mod.id} module={mod} isLocked={isLocked(i)} isProLocked={isProLocked(mod)} index={i} />
           ))}
         </div>
       </div>

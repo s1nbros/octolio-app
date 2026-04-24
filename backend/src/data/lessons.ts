@@ -87,6 +87,7 @@ export interface Module {
   icon: string;
   color: string;
   order: number;
+  proOnly?: boolean;
   lessons: Lesson[];
 }
 
@@ -832,6 +833,255 @@ export const modules: Module[] = [
             ],
             correctIndex: 1,
             explanation: { en: 'Paying 22% debt = a guaranteed 22% return (by eliminating interest). Investing gives an uncertain ~7%. You can\'t beat a guaranteed 22%. Always eliminate high-interest debt first.', bg: 'Изплащането на 22% дълг = гарантирана 22% доходност (чрез елиминиране на лихвата). Инвестирането дава несигурни ~7%. Не можеш да победиш гарантирани 22%. Винаги елиминирай дълга с висока лихва първо.' },
+          },
+        ],
+      },
+    ],
+  },
+
+  // ─────────────────────────────────────────────
+  // PRO MODULE 1 — ADVANCED INVESTING
+  // ─────────────────────────────────────────────
+  {
+    id: 'advanced-investing',
+    title: { en: 'Advanced Investing', bg: 'Напреднало инвестиране' },
+    description: { en: 'ETFs, options basics, portfolio diversification and risk management strategies.', bg: 'ETF-и, основи на опциите, диверсификация на портфолио и стратегии за управление на риска.' },
+    icon: '📈', color: 'blue', order: 5, proOnly: true,
+    lessons: [
+      {
+        id: 'etf-mastery',
+        moduleId: 'advanced-investing',
+        title: { en: 'ETF Mastery', bg: 'Майсторство с ETF-и' },
+        description: { en: 'Understand how ETFs work and how to build a diversified portfolio with them.', bg: 'Разбери как работят ETF-ите и как да изградиш диверсифицирано портфолио с тях.' },
+        icon: '🌐', xpReward: 120, order: 1,
+        exercises: [
+          {
+            id: 'etf-theory-1', type: 'theory', xp: 0,
+            slides: [
+              {
+                emoji: '🌐',
+                title: { en: 'What is an ETF?', bg: 'Какво е ETF?' },
+                body: { en: 'An Exchange-Traded Fund (ETF) is a basket of securities that trades on a stock exchange like a single stock. Instead of picking individual stocks, you buy a slice of hundreds at once.\n\nExample: SPY tracks the S&P 500 — the top 500 US companies in one ticker.', bg: 'Exchange-Traded Fund (ETF) е кошница от ценни книжа, която се търгува на борса като отделна акция. Вместо да избираш отделни акции, купуваш дял от стотици наведнъж.\n\nПример: SPY следи S&P 500 — топ 500 американски компании в един тикер.' },
+                highlight: { en: '💡 Diversification = owning many assets so one bad one does not ruin your portfolio.', bg: '💡 Диверсификация = притежаване на много активи, така че един лош да не съсипе портфолиото ти.' },
+              },
+              {
+                emoji: '⚖️',
+                title: { en: 'ETF vs Individual Stocks', bg: 'ETF срещу отделни акции' },
+                body: { en: 'ETFs:\n✅ Instant diversification\n✅ Low fees (0.03%-0.20%)\n✅ No stock-picking skill needed\n\nIndividual Stocks:\n❌ High concentration risk\n✅ Potential for higher gains\n❌ Requires deep research', bg: 'ETF-и:\n✅ Моментална диверсификация\n✅ Ниски такси (0.03%-0.20%)\n✅ Не е нужно умение за избор на акции\n\nОтделни акции:\n❌ Висок риск от концентрация\n✅ Потенциал за по-висока печалба\n❌ Изисква задълбочено проучване' },
+                highlight: { en: 'Warren Buffett recommends: "Put 90% in a low-cost S&P 500 index fund."', bg: 'Уорън Бъфет препоръчва: "Сложи 90% в нискотарифен S&P 500 индексен фонд."' },
+              },
+            ],
+          },
+          {
+            id: 'etf-choice-1', type: 'choice', xp: 20,
+            question: { en: 'Which ETF strategy gives the best risk-adjusted returns for a beginner?', bg: 'Коя ETF стратегия дава най-добра доходност, коригирана за риска, за начинаещ?' },
+            options: [
+              { en: 'Pick 10 individual tech stocks', bg: 'Избери 10 отделни технологични акции' },
+              { en: 'Buy a total market ETF (VTI or MSCI World)', bg: 'Купи total market ETF (VTI или MSCI World)' },
+              { en: 'Put everything in gold ETF', bg: 'Сложи всичко в злато ETF' },
+              { en: 'Actively trade sector ETFs', bg: 'Търгувай активно секторни ETF-и' },
+            ],
+            correctIndex: 1,
+            explanation: { en: 'Total market ETFs give maximum diversification at minimal cost. Picking individual stocks or sector bets adds risk without reliably improving returns.', bg: 'Total market ETF-ите дават максимална диверсификация при минимална цена. Изборът на отделни акции или секторни залози добавя риск без надеждно подобряване на доходността.' },
+          },
+          {
+            id: 'etf-choice-2', type: 'choice', xp: 20,
+            question: { en: 'An ETF has an expense ratio of 0.03%. You invest €10,000. What do you pay in fees per year?', bg: 'ETF има такса на фонда 0.03%. Инвестираш €10,000. Колко плащаш в такси на година?' },
+            options: [
+              { en: '€30', bg: '€30' },
+              { en: '€3', bg: '€3' },
+              { en: '€300', bg: '€300' },
+              { en: '€0.30', bg: '€0.30' },
+            ],
+            correctIndex: 1,
+            explanation: { en: '0.03% of €10,000 = €3 per year. That is why low-cost index ETFs are so powerful — fees compound against you over decades.', bg: '0.03% от €10,000 = €3 на година. Затова нискотарифните индексни ETF-и са толкова мощни — таксите се натрупват срещу теб в продължение на десетилетия.' },
+          },
+        ],
+      },
+      {
+        id: 'options-basics',
+        moduleId: 'advanced-investing',
+        title: { en: 'Options Basics', bg: 'Основи на опциите' },
+        description: { en: 'Learn what call and put options are and how professional investors use them.', bg: 'Научи какво са кол и пут опции и как ги използват професионалните инвеститори.' },
+        icon: '⚙️', xpReward: 140, order: 2,
+        exercises: [
+          {
+            id: 'opt-theory-1', type: 'theory', xp: 0,
+            slides: [
+              {
+                emoji: '⚙️',
+                title: { en: 'What is an Option?', bg: 'Какво е опция?' },
+                body: { en: 'An option gives you the RIGHT (but not obligation) to buy or sell an asset at a set price before a deadline.\n\n📞 CALL option = right to BUY (bet price goes UP)\n📉 PUT option = right to SELL (bet price goes DOWN)\n\nYou pay a "premium" for this right.', bg: 'Опцията ти дава ПРАВО (но не задължение) да купиш или продадеш актив на определена цена преди краен срок.\n\n📞 CALL опция = право да КУПИШ (залог, че цената ще расте)\n📉 PUT опция = право да ПРОДАДЕШ (залог, че цената ще пада)\n\nПлащаш "премия" за това право.' },
+                highlight: { en: '⚠️ Options are advanced instruments. They can expire worthless — only use money you can afford to lose.', bg: '⚠️ Опциите са напреднали инструменти. Могат да изтекат без ст��йност — използвай само пари, които можеш да загубиш.' },
+              },
+            ],
+          },
+          {
+            id: 'opt-choice-1', type: 'choice', xp: 25,
+            question: { en: 'You buy a CALL option on stock at €50. The stock rises to €70. What happens?', bg: 'Купуваш CALL опция на акция при €50. Акцията нараства до €70. Какво се случва?' },
+            options: [
+              { en: 'You lose your premium', bg: 'Губиш премията си' },
+              { en: 'You can buy at €50 and sell at €70 for profit', bg: 'Можеш да купиш на €50 и да продадеш на €70 за печалба' },
+              { en: 'Nothing — options only work going down', bg: 'Нищо — опциите работят само надолу' },
+              { en: 'You must buy the stock at €70', bg: 'Трябва да купиш акцията на €70' },
+            ],
+            correctIndex: 1,
+            explanation: { en: 'A CALL gives you the right to buy at the strike price (€50). When the stock is at €70, you exercise the option, buy at €50, and can sell at €70 — pocketing €20 minus premium paid.', bg: 'CALL ти дава право да купиш на стачкова цена (€50). Когато акцията е на €70, упражняваш опцията, купуваш на €50 и можеш да продадеш на €70 — прибираш €20 минус платената премия.' },
+          },
+        ],
+      },
+    ],
+  },
+
+  // ─────────────────────────────────────────────
+  // PRO MODULE 2 — REAL ESTATE INVESTING
+  // ─────────────────────────────────────────────
+  {
+    id: 'real-estate',
+    title: { en: 'Real Estate Investing', bg: 'Инвестиции в недвижими имоти' },
+    description: { en: 'REITs, rental property cashflow, leverage and real estate as a wealth-building tool.', bg: 'REIT-и, паричен поток от наемна собственост, ливъридж и недвижими имоти като инструмент за изграждане на богатство.' },
+    icon: '🏠', color: 'orange', order: 6, proOnly: true,
+    lessons: [
+      {
+        id: 'reit-fundamentals',
+        moduleId: 'real-estate',
+        title: { en: 'REITs — Real Estate Without a Mortgage', bg: 'REIT-и — Недвижими имоти без ипотека' },
+        description: { en: 'How to invest in real estate with as little as €10 through Real Estate Investment Trusts.', bg: 'Как да инвестираш в недвижими имоти с толкова малко, колкото €10 чрез Real Estate Investment Trusts.' },
+        icon: '🏢', xpReward: 130, order: 1,
+        exercises: [
+          {
+            id: 'reit-theory-1', type: 'theory', xp: 0,
+            slides: [
+              {
+                emoji: '🏢',
+                title: { en: 'What is a REIT?', bg: 'Какво е REIT?' },
+                body: { en: 'A Real Estate Investment Trust (REIT) is a company that owns income-producing real estate — malls, apartments, offices, hospitals.\n\nBy law they must pay out 90%+ of taxable income as dividends. This makes them great passive income vehicles.', bg: 'Real Estate Investment Trust (REIT) е компания, която притежава недвижими имоти, генериращи доход — мол-ове, апартаменти, офиси, болници.\n\nПо закон трябва да изплащат 90%+ от облагаемия доход като дивиденти. Това ги прави чудесни пасивни инструменти за доход.' },
+                highlight: { en: '💡 REITs let you earn rental income without buying a property, finding tenants, or fixing toilets.', bg: '💡 REIT-ите ти позволяват да печелиш наемни доходи без да купуваш имот, намираш наематели или оправяш тоалетни.' },
+              },
+              {
+                emoji: '📊',
+                title: { en: 'REIT vs Buying Property', bg: 'REIT срещу Купуване на имот' },
+                body: { en: 'REITs:\n✅ Start with €10\n✅ Instant diversification across 100+ properties\n✅ Liquid (sell in seconds)\n✅ No management hassle\n\nDirect Property:\n✅ Leverage (borrow 80%)\n✅ Full control\n❌ Illiquid, high entry cost\n❌ Tenant/maintenance risk', bg: 'REIT-и:\n✅ Започни с €10\n✅ Моментална диверсификация в 100+ имота\n✅ Ликвидни (продай за секунди)\n✅ Без управленски главоболия\n\nДиректен имот:\n✅ Ливъридж (заеми 80%)\n✅ Пълен контрол\n❌ Неликвиден, висока начална цена\n❌ Риск от наемател/поддръжка' },
+              },
+            ],
+          },
+          {
+            id: 'reit-choice-1', type: 'choice', xp: 20,
+            question: { en: 'A REIT trades at €100/share and pays a €5 annual dividend. What is the dividend yield?', bg: 'REIT се търгува на €100/дял и изплаща €5 годишен дивидент. Каква е дивидентната доходност?' },
+            options: [
+              { en: '5%', bg: '5%' },
+              { en: '50%', bg: '50%' },
+              { en: '0.5%', bg: '0.5%' },
+              { en: '20%', bg: '20%' },
+            ],
+            correctIndex: 0,
+            explanation: { en: 'Dividend yield = Annual dividend / Price = €5 / €100 = 5%. REITs typically yield 4-8%, making them attractive income investments.', bg: 'Дивидентна доходност = Годишен дивидент / Цена = €5 / €100 = 5%. REIT-ите обикновено носят 4-8%, което ги прави привлекателни инвестиции за доход.' },
+          },
+          {
+            id: 'reit-choice-2', type: 'choice', xp: 20,
+            question: { en: 'You want passive rental income but have only €500 to invest. What is the best option?', bg: 'Искаш пасивен наемен доход, но имаш само €500 за инвестиция. Кой е най-добрият вариант?' },
+            options: [
+              { en: 'Save until you can buy an apartment', bg: 'Спести, докато можеш да купиш апартамент' },
+              { en: 'Invest in a diversified REIT ETF', bg: 'Инвестирай в диверсифициран REIT ETF' },
+              { en: 'Buy a parking space', bg: 'Купи паркомясто' },
+              { en: 'Real estate is not for small investors', bg: 'Недвижимите имоти не са за малки инвеститори' },
+            ],
+            correctIndex: 1,
+            explanation: { en: 'REIT ETFs let you invest in real estate with any amount. You get exposure to dozens of properties, earn dividends, and can sell at any time.', bg: 'REIT ETF-ите ти позволяват да инвестираш в недвижими имоти с произволна сума. Получаваш излагане на десетки имоти, печелиш дивиденти и можеш да продадеш по всяко време.' },
+          },
+        ],
+      },
+      {
+        id: 'rental-cashflow',
+        moduleId: 'real-estate',
+        title: { en: 'Rental Property Cashflow', bg: 'Паричен поток от наемен имот' },
+        description: { en: 'How to analyse a property deal and calculate if it actually makes money.', bg: 'Как да анализираш сделка с имот и да изчислиш дали реално носи пари.' },
+        icon: '💶', xpReward: 150, order: 2,
+        exercises: [
+          {
+            id: 'rcf-theory-1', type: 'theory', xp: 0,
+            slides: [
+              {
+                emoji: '🧮',
+                title: { en: 'The Cashflow Formula', bg: 'Формулата за паричен поток' },
+                body: { en: 'Monthly Cashflow = Rent − Mortgage − Insurance − Maintenance − Vacancy\n\nA property with POSITIVE cashflow puts money in your pocket every month. Negative cashflow means you are subsidising a tenant.\n\nRule of thumb: aim for at least 1% of purchase price in monthly rent (1% rule).', bg: 'Месечен паричен поток = Наем − Ипотека − Застраховка − Поддръжка − Незаетост\n\nИмот с ПОЛОЖИТЕЛЕН паричен поток слага пари в джоба ти всеки месец. Отрицателен паричен поток означава, че субсидираш наемател.\n\nПравило: стреми се поне 1% от покупната цена в месечен наем (1% правило).' },
+                highlight: { en: '🏠 Property at €200,000 → you need at least €2,000/month in rent to pass the 1% rule.', bg: '🏠 Имот за €200,000 → нужни са поне €2,000/месец наем за да преминеш 1% правилото.' },
+              },
+            ],
+          },
+          {
+            id: 'rcf-choice-1', type: 'choice', xp: 30,
+            question: { en: 'Property: €150,000 purchase. Rent: €900/month. Mortgage: €600. Costs: €150. Monthly cashflow?', bg: 'Имот: €150,000 покупка. Наем: €900/месец. Ипотека: €600. Разходи: €150. Месечен паричен поток?' },
+            options: [
+              { en: '+€150 positive cashflow', bg: '+€150 положителен паричен поток' },
+              { en: '−€150 negative cashflow', bg: '−€150 отрицателен паричен поток' },
+              { en: '+€300 positive cashflow', bg: '+€300 положителен паричен поток' },
+              { en: '€0 break even', bg: '€0 без печалба' },
+            ],
+            correctIndex: 0,
+            explanation: { en: '€900 − €600 − €150 = €150 positive per month. This is a decent deal but thin margin. Always budget for vacancy and surprise repairs.', bg: '€900 − €600 − €150 = €150 положително на месец. Това е добра сделка, но тясна марж. Винаги бюджетирай за незаетост и изненадващи ремонти.' },
+          },
+        ],
+      },
+    ],
+  },
+
+  // ─────────────────────────────────────────────
+  // PRO MODULE 3 — TAX STRATEGY
+  // ─────────────────────────────────────────────
+  {
+    id: 'tax-strategy',
+    title: { en: 'Tax Strategy', bg: 'Данъчна стратегия' },
+    description: { en: 'Legal tax optimisation: deductions, tax-advantaged accounts and how the wealthy minimise their tax bill.', bg: 'Законна данъчна оптимизация: приспадания, данъчнооблагодетелствани сметки и как богатите минимизират данъчната си сметка.' },
+    icon: '🧾', color: 'purple', order: 7, proOnly: true,
+    lessons: [
+      {
+        id: 'tax-basics',
+        moduleId: 'tax-strategy',
+        title: { en: 'How Taxes Actually Work', bg: 'Как реално работят данъците' },
+        description: { en: 'Progressive tax, marginal rates, and why you should never fear a higher bracket.', bg: 'Прогресивен данък, пределни ставки и защо никога не трябва да се страхуваш от по-висока скоба.' },
+        icon: '📋', xpReward: 110, order: 1,
+        exercises: [
+          {
+            id: 'tax-theory-1', type: 'theory', xp: 0,
+            slides: [
+              {
+                emoji: '📊',
+                title: { en: 'Marginal vs Effective Tax Rate', bg: 'Пределна срещу Ефективна данъчна ставка' },
+                body: { en: 'Most people misunderstand how tax brackets work.\n\n❌ Wrong: "If I earn €50k I pay 40% on all of it."\n✅ Right: You pay each rate only on income in THAT bracket.\n\nExample (simplified):\n€0–€20k: 20% → €4,000\n€20k–€50k: 40% → €12,000\nTotal tax: €16,000 on €50k = 32% effective rate', bg: 'Повечето хора не разбират как работят данъчните скоби.\n\n❌ Грешно: "Ако печеля €50k плащам 40% от всичко."\n✅ Правилно: Плащаш всяка ставка само за дохода В ТАЗИ скоба.\n\nПример (опростен):\n€0–€20k: 20% → €4,000\n€20k–€50k: 40% → €12,000\nОбщ данък: €16,000 от €50k = 32% ефективна ставка' },
+                highlight: { en: '💡 Getting a raise never makes you poorer. Only the additional money is taxed at the higher rate.', bg: '💡 Увеличение на заплатата никога не те прави по-беден. Само допълнителните пари се облагат с по-висока ставка.' },
+              },
+              {
+                emoji: '🏦',
+                title: { en: 'Tax-Advantaged Accounts', bg: 'Данъчнооблагодетелствани сметки' },
+                body: { en: 'The government incentivises saving and investing through special accounts:\n\n🏦 Pension / 401k / ISA type accounts let your money grow TAX-FREE or TAX-DEFERRED.\n\nEvery euro saved in a pension reduces your taxable income NOW, and grows without tax until retirement.', bg: 'Правителството стимулира спестяването и инвестирането чрез специални сметки:\n\n🏦 Пенсионни / 401k / ISA сметки позволяват на парите ти да растат БЕЗ ДАНЪК или с ОТЛОЖЕН ДАНЪК.\n\nВсяко евро, спестено в пенсия, намалява облагаемия ти доход СЕГА и расте без данък до пенсиониране.' },
+                highlight: { en: 'Max out tax-advantaged accounts before investing in taxable accounts. Free money from the government!', bg: 'Изчерпай данъчнооблагодетелстваните сметки преди да инвестираш в облагаеми сметки. Безплатни пари от правителството!' },
+              },
+            ],
+          },
+          {
+            id: 'tax-choice-1', type: 'choice', xp: 20,
+            question: { en: 'You earn €60,000. Brackets: €0-25k at 20%, €25k-60k at 35%. What is your total tax bill?', bg: 'Печелиш €60,000. Скоби: €0-25k при 20%, €25k-60k при 35%. Колко е общата ти данъчна сметка?' },
+            options: [
+              { en: '€21,000 (35% on all)', bg: '€21,000 (35% от всичко)' },
+              { en: '€17,250 (20% on first 25k + 35% on rest)', bg: '€17,250 (20% от първите 25k + 35% от останалото)' },
+              { en: '€12,000 (20% on all)', bg: '€12,000 (20% от всичко)' },
+              { en: '€15,000', bg: '€15,000' },
+            ],
+            correctIndex: 1,
+            explanation: { en: '(€25,000 × 20%) + (€35,000 �� 35%) = €5,000 + €12,250 = €17,250. Your effective rate is 28.75% — not 35%.', bg: '(€25,000 × 20%) + (€35,000 × 35%) = €5,000 + €12,250 = €17,250. Ефективната ти ставка е 28.75% — не 35%.' },
+          },
+          {
+            id: 'tax-choice-2', type: 'choice', xp: 20,
+            question: { en: 'Which is the BEST first move for tax optimisation?', bg: 'Кой е НАЙ-ДОБРИЯТ първи ход за данъчна оптимизация?' },
+            options: [
+              { en: 'Set up an offshore company', bg: 'Регистрирай офшорна компания' },
+              { en: 'Max out your pension/retirement contributions', bg: 'Изчерпай пенсионните/пенсионноспестовни вноски' },
+              { en: 'Keep all money in cash to avoid capital gains', bg: 'Дръж всички пари в кеш, за да избегнеш данък върху капиталовата печалба' },
+              { en: 'Hire an expensive tax lawyer immediately', bg: 'Наеми скъп данъчен адвокат незабавно' },
+            ],
+            correctIndex: 1,
+            explanation: { en: 'Pension contributions reduce your taxable income now AND grow tax-free. This is legal, easy, and the highest return guaranteed tax-reduction strategy available to most people.', bg: 'Пенсионните вноски намаляват облагаемия ти доход сега И растат без данък. Това е законно, лесно и стратегия с гарантирана най-висока доходност за намаляване на данъците, достъпна за повечето хора.' },
           },
         ],
       },

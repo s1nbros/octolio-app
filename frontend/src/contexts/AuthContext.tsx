@@ -36,8 +36,10 @@ interface AuthContextType {
   register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => void;
   updateUser: (updates: Partial<User>) => void;
+  refreshUser: () => Promise<void>;
   updateProfile: (updates: { name?: string; avatar?: string }) => Promise<void>;
   changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
+  completeOnboarding: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -114,6 +116,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser((u) => (u ? { ...u, ...updates } : u));
   };
 
+  const refreshUser = useCallback(async () => {
+    const t = readToken();
+    if (t) await fetchMe(t);
+  }, [fetchMe]);
+
+  const completeOnboarding = async () => {
+    await fetch('/api/auth/onboarding', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    setUser((u) => (u ? { ...u, onboarding_done: true } : u));
+  };
+
   const updateProfile = async (updates: { name?: string; avatar?: string }) => {
     const res = await fetch('/api/auth/profile', {
       method: 'PATCH',
@@ -136,7 +151,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, isLoading, login, register, logout, updateUser, updateProfile, changePassword }}>
+    <AuthContext.Provider value={{ user, token, isLoading, login, register, logout, updateUser, refreshUser, updateProfile, changePassword, completeOnboarding }}>
       {children}
     </AuthContext.Provider>
   );

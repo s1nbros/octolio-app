@@ -13,6 +13,7 @@ const db_1 = require("./db");
 const auth_1 = require("./routes/auth");
 const modules_1 = require("./routes/modules");
 const progress_1 = require("./routes/progress");
+const stripe_1 = require("./routes/stripe");
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 3001;
 const allowedOrigins = process.env.ALLOWED_ORIGINS
@@ -22,10 +23,13 @@ app.use((0, cors_1.default)({
     origin: allowedOrigins,
     credentials: true,
 }));
+// Stripe webhook needs raw body — must be registered BEFORE express.json()
+app.post('/api/stripe/webhook', express_1.default.raw({ type: 'application/json' }), stripe_1.stripeWebhookHandler);
 app.use(express_1.default.json());
 app.use('/api/auth', auth_1.authRouter);
 app.use('/api/modules', modules_1.modulesRouter);
 app.use('/api/progress', progress_1.progressRouter);
+app.use('/api/stripe', stripe_1.stripeRouter);
 app.get('/api/health', (_req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });

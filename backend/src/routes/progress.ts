@@ -27,6 +27,81 @@ progressRouter.get('/', authenticate, async (req: AuthRequest, res: Response): P
   }
 });
 
+/* POST /api/progress/energy/use — deduct energy for interactive exercises in a lesson */
+progressRouter.post('/energy/use', authenticate, async (req: AuthRequest, res: Response): Promise<void> => {
+  const { lessonId, moduleId } = req.body;
+
+  if (!lessonId || !moduleId) {
+    res.status(400).json({ error: 'lessonId and moduleId are required' });
+    return;
+  }
+
+  const mod = modules.find((m) => m.id === moduleId);
+  const lesson = mod?.lessons.find((l) => l.id === lessonId);
+  if (!lesson) {
+    res.status(404).json({ error: 'Lesson not found' });
+    return;
+  }
+
+  // Count interactive (non-theory) exercises
+  const cost = lesson.exercises.filter(e => e.type !== 'theory').length;
+  if (cost === 0) {
+    res.json({ energy: 12, cost: 0 }); // theory-only lesson is free
+    return;
+  }
+
+  try {
+    const pool = getPool();
+
+    // Check pro status — pro users have unlimited energy
+    const userResult = await pool.query(
+      'SELECT is_pro, energy, energy_refill_at FROM users WHERE id = $1',
+      [req.userId]
+    );
+    const user = userResult.rows[0] as { is_pro: boolean; energy: number; energy_refill_at: string | null };
+
+    if (user.is_pro) {
+      res.json({ energy: Infinity, cost: 0 });
+      return;
+    }
+
+    // Auto-refill if refill time passed
+    let currentEnergy = user.energy;
+    let refillAt = user.energy_refill_at;
+    if (refillAt && new Date(refillAt) <= new Date()) {
+      currentEnergy = 12;
+      refillAt = null;
+    }
+
+    if (currentEnergy < cost) {
+      const refillDate = refillAt ? new Date(refillAt) : null;
+      res.status(402).json({
+        error: 'no_energy',
+        energy: currentEnergy,
+        cost,
+        refillAt: refillDate?.toISOString() ?? null,
+      });
+      return;
+    }
+
+    const newEnergy = currentEnergy - cost;
+    // Set refill timer when energy first goes below max
+    const newRefillAt = (!refillAt && newEnergy < 12)
+      ? new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+      : refillAt;
+
+    await pool.query(
+      'UPDATE users SET energy = $1, energy_refill_at = $2 WHERE id = $3',
+      [newEnergy, newRefillAt, req.userId]
+    );
+
+    res.json({ energy: newEnergy, cost, refillAt: newRefillAt });
+  } catch (err) {
+    console.error('Energy use error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 progressRouter.post('/complete', authenticate, async (req: AuthRequest, res: Response): Promise<void> => {
   const { lessonId, moduleId } = req.body;
 

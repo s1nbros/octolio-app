@@ -6,11 +6,11 @@ import { FloatingOrbs } from '../components/FloatingOrbs';
 import { ExerciseRenderer } from '../components/ExerciseRenderer';
 import type { Lesson as LessonType } from '../types';
 
-type LessonState = 'loading' | 'intro' | 'exercise' | 'complete' | 'error';
+type LessonState = 'loading' | 'intro' | 'exercise' | 'complete' | 'error' | 'no_energy';
 
 export function Lesson() {
   const { moduleId, lessonId } = useParams<{ moduleId: string; lessonId: string }>();
-  const { token, updateUser, user } = useAuth();
+  const { token, updateUser, user, refreshUser } = useAuth();
   const { ui, lang } = useLang();
   const navigate = useNavigate();
 
@@ -24,6 +24,7 @@ export function Lesson() {
   const [xpPopVisible, setXpPopVisible] = useState(false);
   const [lastXp, setLastXp] = useState(0);
   const [errorMsg, setErrorMsg] = useState('');
+  const [energyRefillAt, setEnergyRefillAt] = useState<string | null>(null);
 
   useEffect(() => {
     if (!token || !moduleId || !lessonId) return;
@@ -89,6 +90,8 @@ export function Lesson() {
       const data = await res.json();
       setTotalXpAfter(data.totalXp);
       updateUser({ xp: data.totalXp, streak: data.streak });
+      // Refresh full user to sync energy from server
+      refreshUser().catch(() => {});
     } catch {
       setTotalXpAfter((user?.xp ?? 0) + finalXp);
     }
@@ -162,11 +165,70 @@ export function Lesson() {
               </p>
             )}
 
-            <button className="btn-primary w-full" onClick={() => setState('exercise')}>
+            <button className="btn-primary w-full" onClick={async () => {
+              if (!token || !moduleId || !lessonId) return;
+              try {
+                const res = await fetch('/api/progress/energy/use', {
+                  method: 'POST',
+                  headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ lessonId, moduleId }),
+                });
+                const data = await res.json();
+                if (res.status === 402 && data.error === 'no_energy') {
+                  setEnergyRefillAt(data.refillAt);
+                  setState('no_energy');
+                  return;
+                }
+                if (res.ok && typeof data.energy === 'number' && data.energy !== Infinity) {
+                  updateUser({ energy: data.energy });
+                }
+              } catch { /* continue anyway */ }
+              setState('exercise');
+            }}>
               {lang === 'en' ? 'Start Lesson' : 'Започни урока'} →
             </button>
             <Link to="/modules">
               <button className="btn-ghost w-full mt-3">{ui.back_to_modules}</button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // No energy screen
+  if (state === 'no_energy') {
+    const refill = energyRefillAt ? new Date(energyRefillAt) : null;
+    const hoursLeft = refill ? Math.ceil((refill.getTime() - Date.now()) / 3600000) : 24;
+    return (
+      <div className="relative min-h-screen flex items-center justify-center px-4">
+        <FloatingOrbs />
+        <div className="relative max-w-sm w-full animate-scale-in" style={{ zIndex: 1 }}>
+          <div className="glass-card rounded-3xl p-8 text-center">
+            <div className="text-5xl mb-4">⚡</div>
+            <h2 className="font-black text-2xl mb-2" style={{ color: 'hsl(var(--c-fg))' }}>
+              {lang === 'en' ? 'Out of Energy' : 'Нямаш енергия'}
+            </h2>
+            <p className="text-sm mb-2" style={{ color: 'hsl(var(--c-fg-muted))' }}>
+              {lang === 'en'
+                ? `Your energy refills in ~${hoursLeft}h. Come back then, or upgrade to Pro for unlimited energy.`
+                : `Енергията ти се зарежда след ~${hoursLeft}ч. Върни се тогава или надгради до Pro за неограничена енергия.`}
+            </p>
+            <p className="mono text-sm font-semibold mb-6" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+              {lang === 'en' ? `Current energy: ${user?.energy ?? 0}/12` : `Текуща енергия: ${user?.energy ?? 0}/12`}
+            </p>
+            <button className="btn-primary w-full mb-3" onClick={async () => {
+              const res = await fetch('/api/stripe/checkout', {
+                method: 'POST',
+                headers: { Authorization: `Bearer ${token}` },
+              });
+              const data = await res.json();
+              if (data.url) window.location.href = data.url;
+            }}>
+              ✦ {lang === 'en' ? 'Upgrade to Pro' : 'Надгради до Pro'}
+            </button>
+            <Link to="/modules">
+              <button className="btn-ghost w-full">{ui.back_to_modules}</button>
             </Link>
           </div>
         </div>

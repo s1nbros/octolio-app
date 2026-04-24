@@ -91,10 +91,30 @@ export function Navbar() {
                 <span>{lang === 'en' ? 'EN' : 'BG'}</span>
               </button>
 
+              {/* Pro badge OR energy pill */}
+              {user.is_pro ? (
+                <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full"
+                  style={{ background: 'hsl(var(--c-primary)/0.15)', border: '1px solid hsl(var(--c-primary)/0.35)' }}>
+                  <span className="text-xs font-black tracking-wider" style={{ color: 'hsl(var(--c-primary))' }}>✦ PRO</span>
+                </div>
+              ) : (
+                <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full"
+                  title="Energy — refills every 24h"
+                  style={{
+                    background: user.energy > 3 ? 'hsl(var(--c-green)/0.1)' : 'hsl(var(--c-red,0,70%,55%)/0.12)',
+                    border: `1px solid ${user.energy > 3 ? 'hsl(var(--c-green)/0.25)' : 'hsl(var(--c-red,0,70%,55%)/0.35)'}`,
+                  }}>
+                  <span className="text-sm">⚡</span>
+                  <span className="mono text-sm font-semibold" style={{ color: user.energy > 3 ? 'hsl(var(--c-green))' : '#f87171' }}>
+                    {user.energy}/12
+                  </span>
+                </div>
+              )}
+
               {/* XP pill */}
               <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full"
                 style={{ background: 'hsl(var(--c-primary)/0.1)', border: '1px solid hsl(var(--c-primary)/0.2)' }}>
-                <span className="text-sm" style={{ color: 'hsl(var(--c-primary))' }}>⚡</span>
+                <span className="text-sm" style={{ color: 'hsl(var(--c-primary))' }}>🪙</span>
                 <span className="mono text-sm font-semibold" style={{ color: 'hsl(var(--c-primary))' }}>
                   {user.xp.toLocaleString()}
                 </span>
