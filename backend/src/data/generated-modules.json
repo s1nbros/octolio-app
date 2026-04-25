@@ -1,0 +1,658 @@
+[
+  {
+    "id": "saving",
+    "title": { "en": "Saving Smart", "bg": "Умно спестяване" },
+    "description": { "en": "Build your safety net and harness compound interest.", "bg": "Изгради финансова мрежа и използвай сложната лихва." },
+    "icon": "💎",
+    "color": "blue",
+    "order": 2,
+    "proOnly": false,
+    "lessons": [
+      {
+        "id": "saving-fundamentals",
+        "moduleId": "saving",
+        "title": { "en": "Foundations of Saving", "bg": "Основи на спестяването" },
+        "description": { "en": "Emergency funds, automation, and the magic of compounding.", "bg": "Авариен фонд, автоматизация и магията на сложната лихва." },
+        "icon": "🏗️",
+        "xpReward": 175,
+        "order": 1,
+        "exercises": [
+          {
+            "id": "sf-theory-1",
+            "type": "theory",
+            "xp": 0,
+            "slides": [
+              {
+                "emoji": "🛡️",
+                "title": { "en": "Why an Emergency Fund?", "bg": "Защо авариен фонд?" },
+                "body": { "en": "An emergency fund is 3–6 months of expenses kept in a high-yield savings account. It absorbs life's surprises — job loss, medical bills, car repairs — without forcing you into high-interest debt.\n\nWithout it, ONE bad week can erase years of financial progress.", "bg": "Аварийният фонд е 3–6 месеца разходи в спестовна сметка с висока лихва. Той поема изненадите — загуба на работа, медицински разходи, ремонти — без да те принуждава да вземеш скъп заем.\n\nБез него ЕДНА лоша седмица може да заличи години прогрес." },
+                "highlight": { "en": "🎯 Goal: 3 months of expenses to start, 6 months ideally.", "bg": "🎯 Цел: 3 месеца разходи за начало, 6 идеално." }
+              },
+              {
+                "emoji": "📈",
+                "title": { "en": "Compound Interest", "bg": "Сложна лихва" },
+                "body": { "en": "Interest earns interest. Saving €200/month at 7% from age 25 → €525,000 by 65.\n\nDelay 10 years and you only get €245,000 — less than half. Time matters more than amount.", "bg": "Лихвата печели лихва. Спестяване €200/месец при 7% от 25 → €525,000 на 65.\n\nЗабави с 10 години и имаш само €245,000 — по-малко от половината. Времето е по-важно от сумата." },
+                "highlight": { "en": "💡 \"Compound interest is the 8th wonder of the world.\" — Einstein (allegedly)", "bg": "💡 „Сложната лихва е 8-то чудо на света.\" — Айнщайн (предполагаемо)" }
+              }
+            ]
+          },
+          {
+            "id": "sf-choice-1",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "What's the recommended size of an emergency fund?", "bg": "Какъв е препоръчителният размер на авариен фонд?" },
+            "options": [
+              { "en": "1 week of expenses", "bg": "1 седмица разходи" },
+              { "en": "3–6 months of expenses", "bg": "3–6 месеца разходи" },
+              { "en": "1 year of income", "bg": "1 година доход" },
+              { "en": "€50 just in case", "bg": "€50 за всеки случай" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Experts recommend 3 months minimum, 6 months ideally. Less = vulnerable. More = wasted growth potential.", "bg": "Експертите препоръчват минимум 3 месеца, идеално 6. По-малко = уязвим. Повече = пропуснат растеж." }
+          },
+          {
+            "id": "sf-fill-1",
+            "type": "fill_blank",
+            "xp": 15,
+            "question": { "en": "If your monthly expenses are €1,500, your minimum emergency fund should be €___", "bg": "Ако месечните ти разходи са €1,500, минималният ти авариен фонд трябва да е €___" },
+            "correctAnswer": 4500,
+            "answerMin": 4400,
+            "answerMax": 4600,
+            "answerUnit": "€",
+            "explanation": { "en": "€1,500 × 3 months = €4,500 minimum. Aim for €9,000 for full 6-month coverage.", "bg": "€1,500 × 3 месеца = €4,500 минимум. Цели €9,000 за пълно 6-месечно покритие." }
+          },
+          {
+            "id": "sf-compound-1",
+            "type": "compound_sim",
+            "xp": 30,
+            "compoundConfig": {
+              "defaultPrincipal": 1000,
+              "defaultRate": 7,
+              "defaultYears": 30,
+              "defaultMonthly": 200
+            }
+          },
+          {
+            "id": "sf-sort-1",
+            "type": "sort_items",
+            "xp": 20,
+            "sortItems": [
+              { "label": { "en": "High-yield savings account", "bg": "Спестовна сметка с висока лихва" }, "emoji": "🏦", "isAsset": true },
+              { "label": { "en": "Money under your mattress", "bg": "Пари под матрака" }, "emoji": "🛏️", "isAsset": false },
+              { "label": { "en": "Automated monthly transfer", "bg": "Автоматичен месечен превод" }, "emoji": "🤖", "isAsset": true },
+              { "label": { "en": "Spending bonuses on luxuries", "bg": "Харчене на бонуси за лукс" }, "emoji": "💸", "isAsset": false },
+              { "label": { "en": "Treasury bond ladder", "bg": "Стълба от държавни облигации" }, "emoji": "📜", "isAsset": true },
+              { "label": { "en": "Lottery tickets", "bg": "Билети от лотария" }, "emoji": "🎰", "isAsset": false }
+            ]
+          },
+          {
+            "id": "sf-rpg-1",
+            "type": "rpg_scenario",
+            "xp": 25,
+            "scenario": { "en": "You just got a €1,200 tax refund. You have €0 in savings, €500 in credit card debt at 22% APR, and you've been eyeing a €700 weekend trip.", "bg": "Току-що получи €1,200 данъчно възстановяване. Имаш €0 спестявания, €500 дълг на кредитна карта при 22% ГПР, и оглеждаш уикенд за €700." },
+            "avatar": "🧑‍💼",
+            "choices": [
+              { "label": { "en": "Pay off the card, save the rest", "bg": "Плати картата, спести остатъка" }, "emoji": "✅", "consequence": { "en": "Best move! €500 to debt (saves €110/year in interest), €700 to your starter emergency fund. You're now debt-free with cushion.", "bg": "Най-добрият ход! €500 за дълга (спестява €110/година лихва), €700 в стартов авариен фонд. Без дълг и с буфер си." }, "cashFlowChange": 110, "isGood": true },
+              { "label": { "en": "Take the trip — I deserve it", "bg": "На пътуването — заслужавам го" }, "emoji": "✈️", "consequence": { "en": "Trip was fun, but the €500 debt grew to €610 by year-end. The trip ultimately cost €810. You still have €0 savings.", "bg": "Пътуването беше готино, но €500 дълг стана €610 до края на годината. Пътуването струва €810. Все още €0 спестявания." }, "cashFlowChange": -110, "isGood": false },
+              { "label": { "en": "Invest all €1,200 in stocks", "bg": "Инвестирай всичките €1,200 в акции" }, "emoji": "📊", "consequence": { "en": "Investing while paying 22% on debt is mathematically losing money. The card grows faster than your investments. Pay debt first.", "bg": "Инвестиции при 22% лихва на дълга = губене на пари. Картата расте по-бързо от инвестицията. Първо дълг." }, "cashFlowChange": -50, "isGood": false }
+            ]
+          },
+          {
+            "id": "sf-choice-2",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Why is automating savings effective?", "bg": "Защо автоматизацията на спестяване работи?" },
+            "options": [
+              { "en": "It earns higher interest", "bg": "Печели по-висока лихва" },
+              { "en": "It removes willpower from the equation", "bg": "Премахва силата на волята от уравнението" },
+              { "en": "It hides money from taxes", "bg": "Скрива парите от данъци" },
+              { "en": "Banks legally require it", "bg": "Банките го изискват по закон" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Automation = decision made once. You never \"forget\" or \"skip a month\" because it happens before you see the money.", "bg": "Автоматизация = решение веднъж. Никога не „забравяш\" или „пропускаш месец\" защото става преди да видиш парите." }
+          },
+          {
+            "id": "sf-fill-2",
+            "type": "fill_blank",
+            "xp": 15,
+            "question": { "en": "€100/month at 7% for 40 years grows to approximately €___", "bg": "€100/месец при 7% за 40 години става приблизително €___" },
+            "correctAnswer": 264000,
+            "answerMin": 250000,
+            "answerMax": 280000,
+            "answerUnit": "€",
+            "explanation": { "en": "~€264,000. Total invested = €48,000. The other €216,000 = compound interest. Time is the most powerful variable.", "bg": "~€264,000. Общо вложено = €48,000. Останалите €216,000 = сложна лихва. Времето е най-мощната променлива." }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "investing",
+    "title": { "en": "Investing 101", "bg": "Инвестиции 101" },
+    "description": { "en": "From zero to your first portfolio — the fundamentals.", "bg": "От нула до първия портфейл — основите." },
+    "icon": "📈",
+    "color": "purple",
+    "order": 3,
+    "proOnly": false,
+    "lessons": [
+      {
+        "id": "investing-basics",
+        "moduleId": "investing",
+        "title": { "en": "Stocks, Bonds & ETFs", "bg": "Акции, облигации и ETF" },
+        "description": { "en": "What you're actually buying when you invest.", "bg": "Какво всъщност купуваш когато инвестираш." },
+        "icon": "🏛️",
+        "xpReward": 165,
+        "order": 1,
+        "exercises": [
+          {
+            "id": "ib-theory-1",
+            "type": "theory",
+            "xp": 0,
+            "slides": [
+              {
+                "emoji": "🏛️",
+                "title": { "en": "What is a Stock?", "bg": "Какво е акция?" },
+                "body": { "en": "A stock = a tiny slice of ownership in a company. If Apple has 15 billion shares and you own 1, you own 1/15,000,000,000 of Apple — including a share of its future profits.\n\nStocks rise long-term because companies grow, innovate, and earn more profit.", "bg": "Акция = малък дял от собствеността на компания. Apple има 15 милиарда акции, ако имаш 1, притежаваш 1/15,000,000,000 от Apple — включително част от бъдещите печалби.\n\nАкциите растат дългосрочно защото компаниите растат, иновират и печелят повече." },
+                "highlight": { "en": "Average S&P 500 return over 100 years: ~10%/year (7% after inflation).", "bg": "Средна доходност на S&P 500 за 100 години: ~10%/година (7% след инфлация)." }
+              },
+              {
+                "emoji": "📦",
+                "title": { "en": "Bonds & ETFs", "bg": "Облигации и ETF" },
+                "body": { "en": "BOND = a loan you give to a government or company. They pay you interest, then return your money at maturity. Lower risk, lower return (~3–5%).\n\nETF = a basket of many stocks/bonds in one share. Vanguard's VOO holds all 500 S&P companies — buy 1 share = own a slice of all 500.", "bg": "ОБЛИГАЦИЯ = заем към правителство или компания. Плащат лихва и връщат парите на падежа. По-нисък риск, по-нисък растеж (~3–5%).\n\nETF = кошница от много акции/облигации в една. VOO на Vanguard държи всички 500 компании от S&P — купуваш 1 акция = дял от всичките 500." },
+                "highlight": { "en": "🎯 ETFs = instant diversification with one purchase.", "bg": "🎯 ETF = моментна диверсификация с една покупка." }
+              }
+            ]
+          },
+          {
+            "id": "ib-choice-1",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "When you buy a stock, you become...", "bg": "Когато купуваш акция, ставаш..." },
+            "options": [
+              { "en": "A creditor of the company", "bg": "Кредитор на компанията" },
+              { "en": "A partial owner of the company", "bg": "Частичен собственик на компанията" },
+              { "en": "An employee of the company", "bg": "Служител на компанията" },
+              { "en": "A customer with discounts", "bg": "Клиент с отстъпки" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Stockholders own a piece of the company and have a claim on its future profits and assets.", "bg": "Акционерите притежават дял от компанията и имат право над бъдещите печалби и активи." }
+          },
+          {
+            "id": "ib-choice-2",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Which is generally safest?", "bg": "Кое е най-безопасно?" },
+            "options": [
+              { "en": "Single stock in a startup", "bg": "Една акция в стартъп" },
+              { "en": "Crypto coin you saw on TikTok", "bg": "Крипто монета от TikTok" },
+              { "en": "Diversified S&P 500 ETF", "bg": "Диверсифициран S&P 500 ETF" },
+              { "en": "Lottery ticket", "bg": "Билет от лотария" }
+            ],
+            "correctIndex": 2,
+            "explanation": { "en": "An S&P 500 ETF spreads risk across 500 large companies. If one fails, others compensate. Diversification = lower risk.", "bg": "S&P 500 ETF разпределя риска между 500 големи компании. Ако една падне, други компенсират. Диверсификация = по-малко риск." }
+          },
+          {
+            "id": "ib-fill-1",
+            "type": "fill_blank",
+            "xp": 15,
+            "question": { "en": "If you invest €10,000 at the average historical S&P return (~7% real), in 10 years you'll have approximately €___", "bg": "Ако инвестираш €10,000 при средна доходност (~7% реална), след 10 години ще имаш €___" },
+            "correctAnswer": 19672,
+            "answerMin": 19000,
+            "answerMax": 20500,
+            "answerUnit": "€",
+            "explanation": { "en": "€10,000 × 1.07^10 ≈ €19,672. Your money nearly doubled — without you doing anything.", "bg": "€10,000 × 1.07^10 ≈ €19,672. Парите почти се удвоиха — без да правиш нищо." }
+          },
+          {
+            "id": "ib-sort-1",
+            "type": "sort_items",
+            "xp": 20,
+            "sortItems": [
+              { "label": { "en": "VOO (S&P 500 ETF)", "bg": "VOO (S&P 500 ETF)" }, "emoji": "📊", "isAsset": true },
+              { "label": { "en": "Penny stock from Reddit", "bg": "Пени-акция от Reddit" }, "emoji": "🚩", "isAsset": false },
+              { "label": { "en": "Government bond fund", "bg": "Фонд от държавни облигации" }, "emoji": "🏛️", "isAsset": true },
+              { "label": { "en": "\"Get rich quick\" course", "bg": "Курс „забогатей бързо\"" }, "emoji": "💸", "isAsset": false },
+              { "label": { "en": "Diversified bond ETF", "bg": "Диверсифициран ETF от облигации" }, "emoji": "📦", "isAsset": true },
+              { "label": { "en": "All savings in one stock", "bg": "Всички спестявания в 1 акция" }, "emoji": "🎯", "isAsset": false }
+            ]
+          },
+          {
+            "id": "ib-rpg-1",
+            "type": "rpg_scenario",
+            "xp": 25,
+            "scenario": { "en": "You're 28 and have €5,000 to invest. A friend says \"Put it all in this hot AI stock — it'll 10x in a month!\" Your investing app suggests an S&P 500 ETF.", "bg": "На 28 си и имаш €5,000 за инвестиране. Приятел казва: „Вкарай всичко в тази AI акция — ще порасне 10×!\" Приложението ти предлага S&P 500 ETF." },
+            "avatar": "🧑‍💻",
+            "choices": [
+              { "label": { "en": "Yolo into the AI stock", "bg": "Всичко в AI акцията" }, "emoji": "🎰", "consequence": { "en": "It dropped 70% in 2 weeks. You panic-sell at €1,500. Lesson: hot tips = gambling. Concentration = risk.", "bg": "Падна 70% за 2 седмици. Продаваш в паника за €1,500. Урок: горещи съвети = хазарт. Концентрация = риск." }, "cashFlowChange": -3500, "isGood": false },
+              { "label": { "en": "All into S&P 500 ETF", "bg": "Всичко в S&P 500 ETF" }, "emoji": "📈", "consequence": { "en": "Boring but smart. Over 30 years at ~7% real, €5,000 becomes ~€38,000. You'll thank yourself.", "bg": "Скучно но умно. За 30 години при ~7%, €5,000 стават ~€38,000. Ще си благодариш." }, "cashFlowChange": 33000, "isGood": true },
+              { "label": { "en": "Split: 80% ETF, 20% AI stock", "bg": "Раздели: 80% ETF, 20% AI акция" }, "emoji": "⚖️", "consequence": { "en": "Solid. Most growth comes from the boring ETF, while the small risky bet satisfies the urge to gamble. Behaviorally smart.", "bg": "Стабилно. Растежът идва от скучния ETF, а малкият риск задоволява желанието да играеш. Поведенчески умно." }, "cashFlowChange": 25000, "isGood": true }
+            ]
+          },
+          {
+            "id": "ib-choice-3",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "What's the main advantage of an index fund?", "bg": "Кое е главното предимство на индексен фонд?" },
+            "options": [
+              { "en": "It guarantees no losses", "bg": "Гарантира липса на загуби" },
+              { "en": "Low fees + instant diversification", "bg": "Ниски такси + моментна диверсификация" },
+              { "en": "Beats the market every year", "bg": "Бие пазара всяка година" },
+              { "en": "Pays daily dividends", "bg": "Плаща дневни дивиденти" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Index funds (e.g., S&P 500) charge ~0.03% fees vs ~1% for active funds, and own hundreds of stocks in one. Over 20 years, ~85% of active managers LOSE to the index.", "bg": "Индексните фондове таксуват ~0.03% срещу ~1% за активни, и притежават стотици акции в един. За 20 години ~85% от активните мениджъри ГУБЯТ срещу индекса." }
+          },
+          {
+            "id": "ib-choice-4",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Time horizon for stocks should be at least...", "bg": "Времевият хоризонт за акции трябва да е поне..." },
+            "options": [
+              { "en": "1 month", "bg": "1 месец" },
+              { "en": "1 year", "bg": "1 година" },
+              { "en": "5–10+ years", "bg": "5–10+ години" },
+              { "en": "Until next dividend", "bg": "До следващ дивидент" }
+            ],
+            "correctIndex": 2,
+            "explanation": { "en": "Stocks can drop 30–50% in a year. Over 10+ years, the S&P has been positive ~95% of the time. Time smooths the ride.", "bg": "Акциите могат да паднат 30–50% за година. За 10+ години S&P е положителен ~95% от времето. Времето изглажда." }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "credit-debt",
+    "title": { "en": "Credit & Debt Mastery", "bg": "Майсторство в кредити и дълг" },
+    "description": { "en": "Build great credit and crush bad debt.", "bg": "Изгради чудесен кредит и унищожи лошия дълг." },
+    "icon": "🏦",
+    "color": "orange",
+    "order": 4,
+    "proOnly": false,
+    "lessons": [
+      {
+        "id": "credit-essentials",
+        "moduleId": "credit-debt",
+        "title": { "en": "Credit Score & Debt Payoff", "bg": "Кредитен рейтинг и изплащане на дълг" },
+        "description": { "en": "How credit scores work and how to demolish debt fast.", "bg": "Как работят кредитните рейтинги и как да унищожиш дълга бързо." },
+        "icon": "⭐",
+        "xpReward": 170,
+        "order": 1,
+        "exercises": [
+          {
+            "id": "ce-theory-1",
+            "type": "theory",
+            "xp": 0,
+            "slides": [
+              {
+                "emoji": "⭐",
+                "title": { "en": "Anatomy of a Credit Score", "bg": "Анатомия на кредитен рейтинг" },
+                "body": { "en": "Your FICO score (300–850) is built from:\n• 35% Payment history (NEVER miss)\n• 30% Credit utilization (use <30% of limit)\n• 15% Length of credit history\n• 10% New credit inquiries\n• 10% Credit mix\n\nA score of 750+ saves you tens of thousands in lifetime interest.", "bg": "FICO рейтингът (300–850) се състои от:\n• 35% История на плащания (НИКОГА не пропускай)\n• 30% Използване (под 30% от лимита)\n• 15% Дължина на историята\n• 10% Нови запитвания\n• 10% Микс\n\nРейтинг 750+ спестява десетки хиляди лихва за живота." },
+                "highlight": { "en": "💡 One missed payment can drop your score 100 points. Protect it.", "bg": "💡 Едно пропуснато плащане може да свали рейтинга със 100 точки. Пази го." }
+              },
+              {
+                "emoji": "⚔️",
+                "title": { "en": "Avalanche vs Snowball", "bg": "Лавина срещу снежна топка" },
+                "body": { "en": "Two methods to crush debt:\n\n🏔️ AVALANCHE: pay highest interest rate first → math optimal, saves most money.\n\n❄️ SNOWBALL: pay smallest balance first → psychological wins, builds momentum.\n\nBoth work. The best is the one you'll actually stick with.", "bg": "Два метода за унищожаване на дълга:\n\n🏔️ ЛАВИНА: плащаш първо най-високата лихва → математически оптимално.\n\n❄️ СНЕЖНА ТОПКА: плащаш първо най-малкия дълг → психологически победи, импулс.\n\nИ двете работят. Най-добрият е този, който ще спазваш." },
+                "highlight": { "en": "🎯 Always pay minimums on EVERYTHING. Use extra cash on your priority debt.", "bg": "🎯 Винаги плащай минимума на ВСИЧКО. Излишъка — на приоритетния дълг." }
+              }
+            ]
+          },
+          {
+            "id": "ce-choice-1",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Biggest factor in your credit score?", "bg": "Най-важният фактор в кредитния рейтинг?" },
+            "options": [
+              { "en": "Number of credit cards", "bg": "Брой кредитни карти" },
+              { "en": "Payment history", "bg": "История на плащанията" },
+              { "en": "Annual income", "bg": "Годишен доход" },
+              { "en": "Length of employment", "bg": "Дължина на работа" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Payment history = 35%. Income isn't even in the formula. Lenders care most: do you pay on time?", "bg": "Историята на плащанията = 35%. Доходът дори не е във формулата. Кредиторите искат: плащаш ли на време?" }
+          },
+          {
+            "id": "ce-fill-1",
+            "type": "fill_blank",
+            "xp": 15,
+            "question": { "en": "Your credit card limit is €4,000. To stay under the recommended 30% utilization, your balance should not exceed €___", "bg": "Лимитът на картата ти е €4,000. За да си под препоръчителните 30% използване, балансът ти не трябва да надвишава €___" },
+            "correctAnswer": 1200,
+            "answerMin": 1180,
+            "answerMax": 1220,
+            "answerUnit": "€",
+            "explanation": { "en": "30% of €4,000 = €1,200. Below 10% (€400) is even better for top scores.", "bg": "30% от €4,000 = €1,200. Под 10% (€400) е още по-добре за топ рейтинги." }
+          },
+          {
+            "id": "ce-sort-1",
+            "type": "sort_items",
+            "xp": 20,
+            "sortItems": [
+              { "label": { "en": "Mortgage at 4%", "bg": "Ипотека при 4%" }, "emoji": "🏠", "isAsset": true },
+              { "label": { "en": "Credit card at 22% APR", "bg": "Кредитна карта при 22% ГПР" }, "emoji": "💳", "isAsset": false },
+              { "label": { "en": "Federal student loan at 5%", "bg": "Държавен студентски заем при 5%" }, "emoji": "🎓", "isAsset": true },
+              { "label": { "en": "Payday loan at 400% APR", "bg": "Заплатен заем при 400% ГПР" }, "emoji": "🚨", "isAsset": false },
+              { "label": { "en": "Business loan funding revenue", "bg": "Бизнес заем за приход" }, "emoji": "💼", "isAsset": true },
+              { "label": { "en": "Buy-now-pay-later iPhone", "bg": "Купи сега-плати после iPhone" }, "emoji": "📱", "isAsset": false }
+            ]
+          },
+          {
+            "id": "ce-rpg-1",
+            "type": "rpg_scenario",
+            "xp": 25,
+            "scenario": { "en": "You owe €3,000 on a credit card at 22% APR and €8,000 on a student loan at 5% APR. You have €500 extra this month.", "bg": "Дължиш €3,000 на кредитна карта при 22% ГПР и €8,000 студентски заем при 5%. Имаш €500 излишък този месец." },
+            "avatar": "🧑‍🎓",
+            "choices": [
+              { "label": { "en": "€500 extra to credit card", "bg": "€500 на кредитната карта" }, "emoji": "🏔️", "consequence": { "en": "Smart avalanche move! 22% interest is the killer. Killing this faster saves €700+ vs splitting evenly.", "bg": "Умен ход (лавина)! 22% са убиец. Изплатиш ли първо това, спестяваш €700+ срещу разделяне." }, "cashFlowChange": 700, "isGood": true },
+              { "label": { "en": "€500 extra to student loan", "bg": "€500 на студентския заем" }, "emoji": "🎓", "consequence": { "en": "Mathematically wrong. Each month you delay killing the 22% card costs €55. Pay highest rate first.", "bg": "Математически грешно. Всеки месец отлагане на 22% картата струва €55. Първо най-високата лихва." }, "cashFlowChange": -200, "isGood": false },
+              { "label": { "en": "Split €250 / €250", "bg": "Раздели €250 / €250" }, "emoji": "⚖️", "consequence": { "en": "Half-measure. The 22% card keeps growing fast. You'll save more by going all-in on it.", "bg": "Половинчато. 22% картата продължава да расте. Ще спестиш повече ако отидеш изцяло там." }, "cashFlowChange": 0, "isGood": false }
+            ]
+          },
+          {
+            "id": "ce-choice-2",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "What does APR stand for?", "bg": "Какво означава ГПР?" },
+            "options": [
+              { "en": "Approved Payment Range", "bg": "Одобрен платежен диапазон" },
+              { "en": "Annual Percentage Rate", "bg": "Годишен процент разходи" },
+              { "en": "Average Payment Required", "bg": "Средно изискано плащане" },
+              { "en": "Account Profit Rate", "bg": "Сметка на профитна ставка" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "APR = the yearly cost of borrowing including fees, expressed as a percent. Higher APR = more expensive debt.", "bg": "ГПР = годишната цена на заемане включително такси, в проценти. По-висок ГПР = по-скъп дълг." }
+          },
+          {
+            "id": "ce-choice-3",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Closing your oldest credit card will...", "bg": "Затварянето на най-старата ти карта ще..." },
+            "options": [
+              { "en": "Boost your score significantly", "bg": "Значително увеличи рейтинга ти" },
+              { "en": "Likely lower your score", "bg": "Вероятно ще намали рейтинга ти" },
+              { "en": "Have no effect", "bg": "Няма да има ефект" },
+              { "en": "Erase your credit history", "bg": "Ще изтрие кредитната ти история" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Closing it shortens your average credit history and reduces total available credit, hurting utilization. Keep it open with €0 balance.", "bg": "Намалява средната дължина на историята и общия наличен кредит, влошава използването. Дръж я отворена с €0 баланс." }
+          },
+          {
+            "id": "ce-fill-2",
+            "type": "fill_blank",
+            "xp": 15,
+            "question": { "en": "A €2,000 credit card balance at 22% APR, paying minimum (~2%), takes about ___ years to pay off.", "bg": "Баланс €2,000 при 22% ГПР, минимални плащания (~2%), отнема около ___ години да се изплати." },
+            "correctAnswer": 30,
+            "answerMin": 28,
+            "answerMax": 32,
+            "answerUnit": "years",
+            "explanation": { "en": "~30 years and you'd pay over €5,000 in interest. Minimum payments are a trap. Always pay more.", "bg": "~30 години и плащаш над €5,000 лихва. Минималните плащания са капан. Винаги плащай повече." }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "side-hustles",
+    "title": { "en": "Side Hustles & Extra Income", "bg": "Странични бизнеси и допълнителен доход" },
+    "description": { "en": "Turn your skills into income streams.", "bg": "Превърни уменията си в потоци от доход." },
+    "icon": "💼",
+    "color": "green",
+    "order": 5,
+    "proOnly": false,
+    "lessons": [
+      {
+        "id": "side-hustle-launch",
+        "moduleId": "side-hustles",
+        "title": { "en": "Launch Your Side Hustle", "bg": "Започни странична работа" },
+        "description": { "en": "Find, validate, and grow income outside your day job.", "bg": "Намери, валидирай и развий доход извън основната си работа." },
+        "icon": "🚀",
+        "xpReward": 165,
+        "order": 1,
+        "exercises": [
+          {
+            "id": "sh-theory-1",
+            "type": "theory",
+            "xp": 0,
+            "slides": [
+              {
+                "emoji": "💼",
+                "title": { "en": "Why a Side Hustle?", "bg": "Защо странична работа?" },
+                "body": { "en": "A side hustle is income outside your main job. The benefits go beyond cash:\n• Skill diversification (less dependent on one employer)\n• Tax-deductible expenses\n• A path to entrepreneurship without the risk\n\nMedian US side-hustle earnings: $810/month. Some scale into full businesses.", "bg": "Страничната работа е доход извън основната. Ползите са повече от пари:\n• Диверсификация на умения (по-малко зависим от 1 работодател)\n• Данъчно приспадащи се разходи\n• Път към предприемачество без риска\n\nСредна странична работа в САЩ: $810/месец. Някои стават пълноценен бизнес." },
+                "highlight": { "en": "💡 Best side hustles solve a problem you already understand.", "bg": "💡 Най-добрите странични работи решават проблем, който вече разбираш." }
+              },
+              {
+                "emoji": "🎯",
+                "title": { "en": "Skill × Demand × Margin", "bg": "Умение × Търсене × Марж" },
+                "body": { "en": "A profitable side hustle sits at the intersection of:\n1. SKILL — something you can do better than average\n2. DEMAND — people actually want it\n3. MARGIN — earns more than it costs in time/money\n\nMissing one = stuck. All three = leverage.", "bg": "Печелившата странична работа е в пресечната точка на:\n1. УМЕНИЕ — нещо, което правиш по-добре от средното\n2. ТЪРСЕНЕ — хората наистина го искат\n3. МАРЖ — печели повече отколкото струва\n\nЛипсва едно = заседнал. И трите = лост." },
+                "highlight": { "en": "Validate demand BEFORE investing time. Pre-sell, don't pre-build.", "bg": "Валидирай търсенето ПРЕДИ да вложиш време. Продай първо, не строй първо." }
+              }
+            ]
+          },
+          {
+            "id": "sh-choice-1",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Best first step before quitting your job for a side hustle?", "bg": "Най-добра първа стъпка преди да напуснеш работа за странична работа?" },
+            "options": [
+              { "en": "Quit immediately for full focus", "bg": "Напусни веднага за пълен фокус" },
+              { "en": "Replace your salary 1.5× before quitting", "bg": "Замени заплатата 1.5× преди да напуснеш" },
+              { "en": "Borrow €50,000 from family", "bg": "Заеми €50,000 от семейството" },
+              { "en": "Wait for inspiration", "bg": "Изчакай вдъхновение" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Replacing 1.5× your salary covers self-employment taxes and dry months. Quitting too early = panic decisions.", "bg": "1.5× заплата покрива данъци за самонает и сухи месеци. Напускане твърде рано = решения от паника." }
+          },
+          {
+            "id": "sh-fill-1",
+            "type": "fill_blank",
+            "xp": 15,
+            "question": { "en": "If your side hustle nets €600/month invested at 7%, in 20 years it grows to approximately €___", "bg": "Ако страничната работа носи €600/месец при 7%, за 20 години става €___" },
+            "correctAnswer": 313000,
+            "answerMin": 300000,
+            "answerMax": 325000,
+            "answerUnit": "€",
+            "explanation": { "en": "~€313,000. Not life-changing on its own — but layered on top of your main income, it's enormous.", "bg": "~€313,000. Самостоятелно не е огромно — но наслоено върху основния доход, е огромно." }
+          },
+          {
+            "id": "sh-sort-1",
+            "type": "sort_items",
+            "xp": 20,
+            "sortItems": [
+              { "label": { "en": "Freelance design (skill-based)", "bg": "Фрийланс дизайн" }, "emoji": "🎨", "isAsset": true },
+              { "label": { "en": "MLM / pyramid scheme", "bg": "MLM / пирамидна схема" }, "emoji": "🚩", "isAsset": false },
+              { "label": { "en": "Online course you teach", "bg": "Онлайн курс, който водиш" }, "emoji": "💻", "isAsset": true },
+              { "label": { "en": "Day-trading penny stocks", "bg": "Дневна търговия с пени-акции" }, "emoji": "🎰", "isAsset": false },
+              { "label": { "en": "Etsy shop with your art", "bg": "Etsy магазин с твоето изкуство" }, "emoji": "🖼️", "isAsset": true },
+              { "label": { "en": "\"Get rich in 30 days\" coaching", "bg": "„Забогатей за 30 дни\" коучинг" }, "emoji": "💸", "isAsset": false }
+            ]
+          },
+          {
+            "id": "sh-rpg-1",
+            "type": "rpg_scenario",
+            "xp": 25,
+            "scenario": { "en": "You're considering a side hustle. You can spend €1,000 on: (A) inventory for an online store, (B) a coding bootcamp, or (C) a get-rich-quick course. What's your move?", "bg": "Обмисляш странична работа. Имаш €1,000 за: (A) стока за онлайн магазин, (B) курс по програмиране, (C) курс „забогатей бързо\". Кой е ходът?" },
+            "avatar": "🧑‍🚀",
+            "choices": [
+              { "label": { "en": "Coding bootcamp", "bg": "Курс по програмиране" }, "emoji": "💻", "consequence": { "en": "Skill-building compounds. 6 months later you charge €40/hr freelancing. Skills > inventory > scams.", "bg": "Уменията се натрупват. След 6 месеца вземаш €40/час фрийланс. Умения > стока > измами." }, "cashFlowChange": 800, "isGood": true },
+              { "label": { "en": "Online store inventory", "bg": "Стока за онлайн магазин" }, "emoji": "📦", "consequence": { "en": "Risky without validation. Half the inventory sits unsold. Should've pre-sold first to test demand.", "bg": "Рисково без валидация. Половината стока стои непродадена. Трябваше да продадеш първо за тест." }, "cashFlowChange": -300, "isGood": false },
+              { "label": { "en": "Get-rich-quick course", "bg": "Курс „забогатей бързо\"" }, "emoji": "🚩", "consequence": { "en": "Money gone, no real skill. Real wealth is built from real value, not motivational PDFs.", "bg": "Парите изчезват, няма реално умение. Истинско богатство = реална стойност, не PDF-и." }, "cashFlowChange": -1000, "isGood": false }
+            ]
+          },
+          {
+            "id": "sh-choice-2",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "What does \"validate demand\" mean for a new product?", "bg": "Какво значи „валидирай търсенето\" за нов продукт?" },
+            "options": [
+              { "en": "Build it perfectly, then ship", "bg": "Построй го идеално, после пусни" },
+              { "en": "Get pre-orders or paying customers BEFORE building", "bg": "Вземи поръчки/клиенти ПРЕДИ да построиш" },
+              { "en": "Ask your mom if she likes it", "bg": "Питай майка си дали ѝ харесва" },
+              { "en": "Run Facebook ads for €5,000", "bg": "Пусни реклами в Facebook за €5,000" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Real validation = strangers paying real money. Compliments and \"likes\" don't pay rent.", "bg": "Реална валидация = непознати плащат реални пари. Комплименти и лайкове не плащат наем." }
+          },
+          {
+            "id": "sh-choice-3",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "What's the biggest tax advantage of a side business?", "bg": "Най-голямото данъчно предимство на страничен бизнес?" },
+            "options": [
+              { "en": "You pay zero taxes", "bg": "Не плащаш данъци" },
+              { "en": "Business expenses reduce taxable income", "bg": "Бизнес разходите намаляват облагаемия доход" },
+              { "en": "Government pays you back", "bg": "Държавата ти връща пари" },
+              { "en": "It's all hidden from the tax office", "bg": "Всичко е скрито от данъчните" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Legitimate business costs (software, mileage, home office) reduce your taxable profit. Always keep receipts.", "bg": "Легитимни бизнес разходи (софтуер, гориво, офис вкъщи) намаляват облагаемата печалба. Пази касовите бележки." }
+          },
+          {
+            "id": "sh-choice-4",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "You charge €30/hr freelancing. Your tax + business costs = 30%. How much of every hour is actually yours?", "bg": "Таксуваш €30/час фрийланс. Данъци + разходи = 30%. Колко от всеки час е реално твое?" },
+            "options": [
+              { "en": "€30", "bg": "€30" },
+              { "en": "€21", "bg": "€21" },
+              { "en": "€15", "bg": "€15" },
+              { "en": "€9", "bg": "€9" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "€30 × 0.7 = €21. Always price knowing your real take-home — many freelancers underprice.", "bg": "€30 × 0.7 = €21. Винаги се ценуй знаейки реалното. Много фрийлансери подценяват себе си." }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "insurance",
+    "title": { "en": "Insurance Fundamentals", "bg": "Основи на застраховането" },
+    "description": { "en": "Protect your wealth before you build it.", "bg": "Защити богатството си преди да го изградиш." },
+    "icon": "🛡️",
+    "color": "blue",
+    "order": 6,
+    "proOnly": false,
+    "lessons": [
+      {
+        "id": "insurance-essentials",
+        "moduleId": "insurance",
+        "title": { "en": "What You Actually Need", "bg": "Какво наистина ти трябва" },
+        "description": { "en": "Cut through the sales pitches and pick smart coverage.", "bg": "Преодолей търговските думи и избери умно покритие." },
+        "icon": "❤️",
+        "xpReward": 160,
+        "order": 1,
+        "exercises": [
+          {
+            "id": "ins-theory-1",
+            "type": "theory",
+            "xp": 0,
+            "slides": [
+              {
+                "emoji": "🛡️",
+                "title": { "en": "What Insurance IS — and Isn't", "bg": "Какво Е застраховката — и какво не е" },
+                "body": { "en": "Insurance = protection against catastrophic loss you can't afford to absorb yourself.\n\nIt is NOT:\n• An investment\n• A way to \"get money back\"\n• Useful for small predictable expenses\n\nGood rule: insure what would BANKRUPT you. Self-insure (save) for everything else.", "bg": "Застраховката = защита срещу катастрофична загуба, която не можеш да поемеш сам.\n\nНе е:\n• Инвестиция\n• Начин да „си вземеш пари обратно\"\n• Полезна за малки предвидими разходи\n\nПравило: застраховай това, което би те фалирало. Спестявай за останалото." },
+                "highlight": { "en": "🎯 If you can pay it from savings without panic, you don't need insurance for it.", "bg": "🎯 Ако можеш да платиш от спестявания без паника, не ти трябва застраховка за него." }
+              },
+              {
+                "emoji": "💰",
+                "title": { "en": "Premium, Deductible, Out-of-Pocket Max", "bg": "Премия, самоучастие, максимум от джоба" },
+                "body": { "en": "PREMIUM — what you pay monthly\nDEDUCTIBLE — what you pay before insurance kicks in\nOUT-OF-POCKET MAX — your worst-case yearly total\n\nHigher deductible = lower premium. If you have an emergency fund, a HIGH-deductible plan is usually cheaper long-term.", "bg": "ПРЕМИЯ — месечно плащане\nСАМОУЧАСТИЕ — плащаш преди застраховката да включи\nМАКС ОТ ДЖОБА — годишен худший случай\n\nПо-високо самоучастие = по-ниска премия. С авариен фонд, план с ВИСОКО самоучастие обикновено излиза по-евтин." },
+                "highlight": { "en": "💡 Compare TOTAL annual cost (premium × 12 + likely out-of-pocket), not just monthly.", "bg": "💡 Сравнявай ОБЩА годишна цена (премия × 12 + вероятно от джоба), не само месечна." }
+              }
+            ]
+          },
+          {
+            "id": "ins-choice-1",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Who needs life insurance most?", "bg": "Кой най-много се нуждае от животозастраховане?" },
+            "options": [
+              { "en": "A single 22-year-old with no dependents", "bg": "Самотен 22-годишен без деца" },
+              { "en": "A parent whose family relies on their income", "bg": "Родител, чието семейство зависи от дохода му" },
+              { "en": "A retired millionaire", "bg": "Пенсиониран милионер" },
+              { "en": "Everyone equally", "bg": "Всеки еднакво" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Life insurance replaces lost income for dependents. No dependents + no debt = often no need.", "bg": "Животозастраховането заменя загубен доход за зависимите. Без деца + без дълг = често не нужно." }
+          },
+          {
+            "id": "ins-choice-2",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Term vs whole life insurance — which is usually better?", "bg": "Срочна срещу пожизнена — коя е по-добра?" },
+            "options": [
+              { "en": "Whole life — it's an investment", "bg": "Пожизнена — инвестиция е" },
+              { "en": "Term — cheaper, simpler, invest the difference", "bg": "Срочна — по-евтина, по-проста, инвестирай разликата" },
+              { "en": "Both equally", "bg": "И двете еднакво" },
+              { "en": "Universal life — most flexible", "bg": "Универсална — най-гъвкава" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Whole life is typically 5–10× more expensive with poor returns. \"Buy term, invest the difference\" beats it most of the time.", "bg": "Пожизнената обикновено е 5–10× по-скъпа с лоша доходност. „Купи срочна, инвестирай разликата\" обикновено бие пожизнената." }
+          },
+          {
+            "id": "ins-fill-1",
+            "type": "fill_blank",
+            "xp": 15,
+            "question": { "en": "Your auto insurance has €500 deductible, €1,200/year premium. After a €3,000 accident, your TOTAL out-of-pocket for that year is €___", "bg": "Авто застраховката има €500 самоучастие, €1,200/год. премия. След €3,000 инцидент, общо плащаш €___" },
+            "correctAnswer": 1700,
+            "answerMin": 1690,
+            "answerMax": 1710,
+            "answerUnit": "€",
+            "explanation": { "en": "€1,200 premium + €500 deductible = €1,700. Insurance covered the remaining €2,500.", "bg": "€1,200 премия + €500 самоучастие = €1,700. Застраховката покри останалите €2,500." }
+          },
+          {
+            "id": "ins-sort-1",
+            "type": "sort_items",
+            "xp": 20,
+            "sortItems": [
+              { "label": { "en": "Health insurance", "bg": "Здравна застраховка" }, "emoji": "🏥", "isAsset": true },
+              { "label": { "en": "Extended warranty on a toaster", "bg": "Удължена гаранция за тостер" }, "emoji": "🍞", "isAsset": false },
+              { "label": { "en": "Disability insurance (high-earner)", "bg": "Застраховка за неработоспособност (висок доход)" }, "emoji": "♿", "isAsset": true },
+              { "label": { "en": "Phone insurance for €600 phone", "bg": "Застраховка за телефон €600" }, "emoji": "📱", "isAsset": false },
+              { "label": { "en": "Term life (parent of young kids)", "bg": "Срочна жив. застр. (родител с малки деца)" }, "emoji": "👨‍👩‍👧", "isAsset": true },
+              { "label": { "en": "Rental car damage waiver", "bg": "Доплащане за щети на кола под наем" }, "emoji": "🚗", "isAsset": false }
+            ]
+          },
+          {
+            "id": "ins-rpg-1",
+            "type": "rpg_scenario",
+            "xp": 25,
+            "scenario": { "en": "You're shopping for health insurance. Plan A: €200/month, €5,000 deductible. Plan B: €450/month, €500 deductible. You're young, healthy, and have €8,000 in emergency savings.", "bg": "Избираш здравна застраховка. План A: €200/мес, €5,000 самоучастие. План B: €450/мес, €500 самоучастие. Млад си, здрав, имаш €8,000 спестявания." },
+            "avatar": "🧑‍⚕️",
+            "choices": [
+              { "label": { "en": "Plan A — high-deductible, save the difference", "bg": "План A — високо самоучастие, спести разликата" }, "emoji": "💰", "consequence": { "en": "Smart for your situation. €3,000/year saved on premiums covers the deductible if needed. You're self-insuring for small stuff.", "bg": "Умно за твоята ситуация. €3,000/год спестени от премиите покриват самоучастието ако трябва. Самоосигуряваш дребното." }, "cashFlowChange": 3000, "isGood": true },
+              { "label": { "en": "Plan B — comfort, low deductible", "bg": "План B — комфорт, ниско самоучастие" }, "emoji": "🛋️", "consequence": { "en": "You'll pay €3,000 MORE per year for marginal extra coverage. Math doesn't favor it for healthy people.", "bg": "Плащаш €3,000 ПОВЕЧЕ годишно за минимално допълнение. Математиката не е на твоя страна." }, "cashFlowChange": -2500, "isGood": false },
+              { "label": { "en": "Skip insurance entirely", "bg": "Без застраховка изобщо" }, "emoji": "🚨", "consequence": { "en": "One serious accident = €100,000 bill = bankruptcy. Health insurance is non-negotiable. Pick the cheap plan, but pick one.", "bg": "Един сериозен инцидент = €100,000 сметка = фалит. Здравната застраховка е задължителна." }, "cashFlowChange": -50000, "isGood": false }
+            ]
+          },
+          {
+            "id": "ins-choice-3",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Why are extended warranties on small electronics usually a bad deal?", "bg": "Защо удължените гаранции на малка електроника са лоша сделка?" },
+            "options": [
+              { "en": "They never pay out", "bg": "Никога не плащат" },
+              { "en": "Replacement cost ≈ self-insure cheaper", "bg": "Цената на замяна ≈ самоосигуряване е по-евтино" },
+              { "en": "They're illegal", "bg": "Незаконни са" },
+              { "en": "Phones never break", "bg": "Телефоните не се чупят" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Stores profit ~50% margin on warranties. If the item breaks, replacing it from savings is usually cheaper than years of premiums.", "bg": "Магазините печелят ~50% марж от гаранциите. Замяна от спестявания обикновено излиза по-евтино." }
+          },
+          {
+            "id": "ins-choice-4",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Your renter's insurance costs €15/month. It mainly protects against...", "bg": "Застраховката за наемател струва €15/мес. Защитава главно срещу..." },
+            "options": [
+              { "en": "Your landlord raising rent", "bg": "Хазяинът ти да вдигне наема" },
+              { "en": "Theft, fire damage to your stuff, and liability", "bg": "Кражба, щета от пожар, отговорност" },
+              { "en": "Bad neighbors", "bg": "Лоши съседи" },
+              { "en": "Property tax", "bg": "Данък имоти" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Renter's insurance is one of the best deals in personal finance — €15/month covers thousands in belongings + liability if someone gets hurt in your apartment.", "bg": "Една от най-добрите сделки — €15/мес покрива хиляди в собственост + отговорност ако някой се нарани при теб." }
+          }
+        ]
+      }
+    ]
+  }
+]

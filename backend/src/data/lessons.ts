@@ -91,7 +91,15 @@ export interface Module {
   lessons: Lesson[];
 }
 
-export const modules: Module[] = [
+// Load AI-generated modules if the script has been run (see scripts/generateProModules.ts).
+// Safe no-op if the file doesn't exist yet.
+let generatedModules: Module[] = [];
+try {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  generatedModules = require('./generated-modules.json') as Module[];
+} catch { /* no generated file yet */ }
+
+const staticModules: Module[] = [
   // ─────────────────────────────────────────────
   // MODULE 1 — BUDGETING
   // ─────────────────────────────────────────────
@@ -1189,3 +1197,12 @@ export const modules: Module[] = [
     ],
   },
 ];
+
+// Merge static + generated modules.
+// Generated modules with the same `id` OVERRIDE the static version,
+// so you can swap any hand-written module for an AI-generated one
+// just by re-running the generation script.
+const byId = new Map<string, Module>();
+for (const m of staticModules) byId.set(m.id, m);
+for (const m of generatedModules) byId.set(m.id, m);
+export const modules: Module[] = [...byId.values()].sort((a, b) => a.order - b.order);

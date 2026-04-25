@@ -21,11 +21,11 @@ export function Modules() {
 
   const isPro = user?.is_pro ?? false;
 
-  // A module is locked if the previous non-pro module has fewer than 2 completed lessons
+  // Pro users have everything unlocked; free users need 2 lessons in previous module
   const isLocked = (index: number) => {
-    if (index === 0) return false;
+    if (isPro || index === 0) return false;
     const prev = modules[index - 1];
-    if (prev.proOnly) return false; // don't gate on pro modules
+    if (prev.proOnly) return false;
     const prevCompleted = prev.lessons.filter((l) => l.completed).length;
     return prevCompleted < 2;
   };

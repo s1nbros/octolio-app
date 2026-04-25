@@ -128,7 +128,7 @@ function StatCard({ icon, badge, value, label, color }: StatCardProps) {
 }
 
 export function Profile() {
-  const { user, token, updateProfile, changePassword, refreshUser } = useAuth();
+  const { user, token, updateProfile, changePassword, refreshUser, updateUser } = useAuth();
   const { lang } = useLang();
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -735,11 +735,20 @@ export function Profile() {
                 </div>
                 <button
                   onClick={async () => {
-                    const res = await fetch('/api/auth/dev/toggle-pro', {
-                      method: 'POST',
-                      headers: { Authorization: `Bearer ${token}` },
-                    });
-                    if (res.ok) refreshUser();
+                    try {
+                      const res = await fetch('/api/auth/dev/toggle-pro', {
+                        method: 'POST',
+                        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+                      });
+                      const data = await res.json();
+                      if (res.ok) {
+                        updateUser({ is_pro: data.is_pro });
+                      } else {
+                        alert(data.error ?? 'Toggle failed');
+                      }
+                    } catch (e) {
+                      alert('Network error: ' + e);
+                    }
                   }}
                   className="text-sm font-bold px-4 py-2 rounded-xl transition-all"
                   style={{

@@ -12,6 +12,7 @@ import { Lesson } from './pages/Lesson';
 import { Profile } from './pages/Profile';
 import { League } from './pages/League';
 import { Onboarding } from './pages/Onboarding';
+import { GeneratedLesson } from './pages/GeneratedLesson';
 
 function Spinner() {
   return (
@@ -63,6 +64,7 @@ function AppRoutes() {
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/modules" element={<ProtectedRoute><Modules /></ProtectedRoute>} />
           <Route path="/lesson/:moduleId/:lessonId" element={<ProtectedRoute><Lesson /></ProtectedRoute>} />
+          <Route path="/generate" element={<ProtectedRoute><GeneratedLesson /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/league" element={<ProtectedRoute><League /></ProtectedRoute>} />
           <Route path="*" element={<Navigate to="/" replace />} />
