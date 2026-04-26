@@ -37,22 +37,23 @@ exports.aiRouter.post('/chat', auth_1.authenticate, async (req, res) => {
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
+    res.flushHeaders();
     try {
-        const stream = await anthropic.messages.stream({
+        const stream = anthropic.messages.stream({
             model: 'claude-haiku-4-5-20251001',
             max_tokens: 1024,
             system: SYSTEM_PROMPT,
-            messages: messages.slice(-20), // last 20 messages to keep context window sane
+            messages: messages.slice(-20),
         });
-        for await (const chunk of stream) {
-            if (chunk.type === 'content_block_delta' && chunk.delta.type === 'text_delta') {
-                res.write(`data: ${JSON.stringify({ text: chunk.delta.text })}\n\n`);
-            }
-        }
+        stream.on('text', (text) => {
+            res.write(`data: ${JSON.stringify({ text })}\n\n`);
+        });
+        await stream.done();
         res.write('data: [DONE]\n\n');
         res.end();
     }
     catch (err) {
+        console.error('AI chat error:', err);
         res.write(`data: ${JSON.stringify({ error: 'AI error' })}\n\n`);
         res.end();
     }

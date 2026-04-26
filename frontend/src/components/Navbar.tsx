@@ -72,7 +72,7 @@ function EnergyPopover({ energy, refillAt, onClose }: { energy: number; refillAt
 
   return (
     <div ref={ref} className="absolute right-0 top-10 z-50 rounded-2xl p-4 w-60 shadow-xl"
-      style={{ background: 'var(--c-bg-elevated, hsl(var(--c-bg-card)))', border: '1px solid var(--c-border)' }}>
+      style={{ background: 'hsl(228, 24%, 10%)', border: '1px solid rgba(160,140,220,0.2)' }}>
       <div className="flex items-center gap-2 mb-3">
         <span className="text-xl">⚡</span>
         <span className="font-bold text-sm" style={{ color: 'hsl(var(--c-fg))' }}>Energy</span>
