@@ -37,6 +37,7 @@ exports.aiRouter.post('/chat', auth_1.authenticate, async (req, res) => {
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
+    res.setHeader('X-Accel-Buffering', 'no'); // disable nginx buffering on Render
     res.flushHeaders();
     try {
         const stream = anthropic.messages.stream({

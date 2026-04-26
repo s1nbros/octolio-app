@@ -47,7 +47,7 @@ function IconAdvisor() {
   );
 }
 
-function EnergyPopover({ energy, refillAt, onClose }: { energy: number; refillAt?: string | null; onClose: () => void }) {
+function EnergyPopover({ energy, refillAt, isPro, onClose }: { energy: number; refillAt?: string | null; isPro: boolean; onClose: () => void }) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     function handler(e: MouseEvent) {
@@ -78,31 +78,43 @@ function EnergyPopover({ energy, refillAt, onClose }: { energy: number; refillAt
         <span className="font-bold text-sm" style={{ color: 'hsl(var(--c-fg))' }}>Energy</span>
       </div>
 
-      {/* Bar */}
-      <div className="w-full h-2.5 rounded-full mb-1 overflow-hidden" style={{ background: 'var(--c-glass)' }}>
-        <div className="h-full rounded-full transition-all"
-          style={{
-            width: `${(energy / 12) * 100}%`,
-            background: energy <= 3 ? '#f87171' : 'hsl(var(--c-green))',
-          }} />
-      </div>
-      <p className="mono text-xs mb-3" style={{ color: 'hsl(var(--c-fg-subtle))' }}>{energy} / 12</p>
-
-      {isFull ? (
-        <p className="text-xs" style={{ color: 'hsl(var(--c-green))' }}>✓ Energy is full! Start a lesson.</p>
+      {isPro ? (
+        <>
+          <div className="w-full h-2.5 rounded-full mb-1 overflow-hidden" style={{ background: 'var(--c-glass)' }}>
+            <div className="h-full rounded-full" style={{ width: '100%', background: 'hsl(var(--c-primary))' }} />
+          </div>
+          <p className="mono text-xs mb-3" style={{ color: 'hsl(var(--c-fg-subtle))' }}>∞ / ∞</p>
+          <p className="text-xs" style={{ color: 'hsl(var(--c-primary))' }}>✦ Unlimited energy — Pro perk!</p>
+        </>
       ) : (
         <>
-          <p className="text-xs mb-1" style={{ color: 'hsl(var(--c-fg-muted))' }}>
-            ⚡ +3 energy every hour
-          </p>
-          {nextIn && (
-            <p className="text-xs mb-1" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
-              Next +3 in ~{nextIn}
-            </p>
+          {/* Bar */}
+          <div className="w-full h-2.5 rounded-full mb-1 overflow-hidden" style={{ background: 'var(--c-glass)' }}>
+            <div className="h-full rounded-full transition-all"
+              style={{
+                width: `${(energy / 12) * 100}%`,
+                background: energy <= 3 ? '#f87171' : 'hsl(var(--c-green))',
+              }} />
+          </div>
+          <p className="mono text-xs mb-3" style={{ color: 'hsl(var(--c-fg-subtle))' }}>{energy} / 12</p>
+
+          {isFull ? (
+            <p className="text-xs" style={{ color: 'hsl(var(--c-green))' }}>✓ Energy is full! Start a lesson.</p>
+          ) : (
+            <>
+              <p className="text-xs mb-1" style={{ color: 'hsl(var(--c-fg-muted))' }}>
+                ⚡ +3 energy every hour
+              </p>
+              {nextIn && (
+                <p className="text-xs mb-1" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+                  Next +3 in ~{nextIn}
+                </p>
+              )}
+              <p className="text-xs" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+                Full in ~{hoursToFull}h
+              </p>
+            </>
           )}
-          <p className="text-xs" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
-            Full in ~{hoursToFull}h
-          </p>
         </>
       )}
     </div>
@@ -180,18 +192,19 @@ export function Navbar() {
                   onClick={() => setEnergyOpen(o => !o)}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all"
                   style={{
-                    background: user.energy > 3 ? 'hsl(var(--c-green)/0.1)' : 'hsl(0,70%,55%,0.12)',
-                    border: `1px solid ${user.energy > 3 ? 'hsl(var(--c-green)/0.25)' : 'hsl(0,70%,55%,0.35)'}`,
+                    background: user.is_pro ? 'hsl(var(--c-primary)/0.1)' : user.energy > 3 ? 'hsl(var(--c-green)/0.1)' : 'hsl(0,70%,55%,0.12)',
+                    border: `1px solid ${user.is_pro ? 'hsl(var(--c-primary)/0.25)' : user.energy > 3 ? 'hsl(var(--c-green)/0.25)' : 'hsl(0,70%,55%,0.35)'}`,
                   }}>
                   <span className="text-sm">⚡</span>
-                  <span className="mono text-sm font-semibold" style={{ color: user.energy > 3 ? 'hsl(var(--c-green))' : '#f87171' }}>
-                    {user.energy}/12
+                  <span className="mono text-sm font-semibold" style={{ color: user.is_pro ? 'hsl(var(--c-primary))' : user.energy > 3 ? 'hsl(var(--c-green))' : '#f87171' }}>
+                    {user.is_pro ? '∞' : `${user.energy}/12`}
                   </span>
                 </button>
                 {energyOpen && (
                   <EnergyPopover
                     energy={user.energy}
                     refillAt={user.energy_refill_at}
+                    isPro={user.is_pro}
                     onClose={() => setEnergyOpen(false)}
                   />
                 )}
