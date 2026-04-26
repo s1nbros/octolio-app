@@ -135,7 +135,7 @@ export function Navbar() {
   return (
     <>
     <header className="nav-bar sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center gap-4">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 h-14 flex items-center gap-2 sm:gap-4">
 
         {/* Logo */}
         <Link to={user ? '/dashboard' : '/'} className="flex items-center gap-2 flex-shrink-0">
@@ -180,17 +180,17 @@ export function Navbar() {
 
               {/* Pro badge */}
               {user.is_pro && (
-                <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full"
+                <div className="hidden sm:flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full"
                   style={{ background: 'hsl(var(--c-primary)/0.15)', border: '1px solid hsl(var(--c-primary)/0.35)' }}>
                   <span className="text-xs font-black tracking-wider" style={{ color: 'hsl(var(--c-primary))' }}>✦ PRO</span>
                 </div>
               )}
 
-              {/* Energy pill — always shown, clickable tooltip */}
-              <div className="hidden md:block relative">
+              {/* Energy pill — shown from sm+, clickable tooltip */}
+              <div className="hidden sm:block relative">
                 <button
                   onClick={() => setEnergyOpen(o => !o)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all"
+                  className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full transition-all"
                   style={{
                     background: user.is_pro ? 'hsl(var(--c-primary)/0.1)' : user.energy > 3 ? 'hsl(var(--c-green)/0.1)' : 'hsl(0,70%,55%,0.12)',
                     border: `1px solid ${user.is_pro ? 'hsl(var(--c-primary)/0.25)' : user.energy > 3 ? 'hsl(var(--c-green)/0.25)' : 'hsl(0,70%,55%,0.35)'}`,

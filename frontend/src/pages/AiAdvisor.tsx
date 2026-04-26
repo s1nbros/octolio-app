@@ -43,45 +43,20 @@ export function AiAdvisor() {
         body: JSON.stringify({ messages: newMessages }),
       });
 
+      const data = await res.json().catch(() => ({}));
+
       if (!res.ok) {
-        const err = await res.json();
         setMessages((prev) => {
           const updated = [...prev];
-          updated[updated.length - 1] = { role: 'assistant', content: `⚠ ${err.error ?? 'Error'}` };
+          updated[updated.length - 1] = { role: 'assistant', content: `⚠ ${data.error ?? 'Error'}` };
           return updated;
         });
-        setStreaming(false);
-        return;
-      }
-
-      const reader = res.body!.getReader();
-      const decoder = new TextDecoder();
-      let buffer = '';
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split('\n');
-        buffer = lines.pop() ?? '';
-        for (const line of lines) {
-          if (!line.startsWith('data: ')) continue;
-          const data = line.slice(6);
-          if (data === '[DONE]') break;
-          try {
-            const chunk = JSON.parse(data) as { text?: string };
-            if (chunk.text) {
-              setMessages((prev) => {
-                const updated = [...prev];
-                updated[updated.length - 1] = {
-                  role: 'assistant',
-                  content: updated[updated.length - 1].content + chunk.text,
-                };
-                return updated;
-              });
-            }
-          } catch { /* ignore parse errors */ }
-        }
+      } else {
+        setMessages((prev) => {
+          const updated = [...prev];
+          updated[updated.length - 1] = { role: 'assistant', content: data.text ?? '' };
+          return updated;
+        });
       }
     } catch {
       setMessages((prev) => {

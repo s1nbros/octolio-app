@@ -53,7 +53,7 @@ export function ModuleCard({ module, isLocked, isProLocked, index }: Props) {
 
   return (
     <div
-      className={`glass-card rounded-2xl p-6 transition-all duration-300 animate-fade-up delay-${Math.min(index * 100, 400)}`}
+      className={`glass-card rounded-2xl p-4 sm:p-6 transition-all duration-300 animate-fade-up delay-${Math.min(index * 100, 400)}`}
       style={{
         borderColor: hardBlocked
           ? (isProLocked ? 'hsl(var(--c-primary)/0.35)' : 'var(--c-border)')
@@ -71,16 +71,16 @@ export function ModuleCard({ module, isLocked, isProLocked, index }: Props) {
       onMouseLeave={() => setHovered(false)}
     >
       {/* Header */}
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center gap-3">
+      <div className="flex items-start justify-between mb-3 sm:mb-4 gap-2">
+        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
           <div
-            className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl"
+            className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-xl sm:text-2xl flex-shrink-0"
             style={{ background: hardBlocked ? 'var(--c-glass)' : colors.bg }}
           >
             {isProLocked ? '✦' : isLocked ? '🔒' : module.icon}
           </div>
-          <div>
-            <h3 className="font-bold text-base" style={{ color: hardBlocked ? 'hsl(var(--c-fg-subtle))' : 'hsl(var(--c-fg))' }}>
+          <div className="min-w-0">
+            <h3 className="font-bold text-sm sm:text-base truncate" style={{ color: hardBlocked ? 'hsl(var(--c-fg-subtle))' : 'hsl(var(--c-fg))' }}>
               {t(module.title)}
             </h3>
             <p className="text-xs mt-0.5" style={{ color: 'hsl(var(--c-fg-subtle))' }}>

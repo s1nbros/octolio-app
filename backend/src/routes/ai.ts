@@ -26,7 +26,6 @@ aiRouter.post('/chat', authenticate, async (req: AuthRequest, res: Response): Pr
     return;
   }
 
-  // Verify user is pro
   const pool = getPool();
   const result = await pool.query('SELECT is_pro FROM users WHERE id = $1', [req.userId]);
   if (!result.rows[0]?.is_pro) {
@@ -34,31 +33,29 @@ aiRouter.post('/chat', authenticate, async (req: AuthRequest, res: Response): Pr
     return;
   }
 
-  // Stream the response
-  res.setHeader('Content-Type', 'text/event-stream');
-  res.setHeader('Cache-Control', 'no-cache');
-  res.setHeader('Connection', 'keep-alive');
-  res.setHeader('X-Accel-Buffering', 'no'); // disable nginx buffering on Render
-  res.flushHeaders();
+  if (!process.env.ANTHROPIC_API_KEY) {
+    console.error('AI chat: ANTHROPIC_API_KEY missing');
+    res.status(500).json({ error: 'AI service not configured' });
+    return;
+  }
 
   try {
-    const stream = anthropic.messages.stream({
+    const response = await anthropic.messages.create({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 1024,
       system: SYSTEM_PROMPT,
       messages: messages.slice(-20),
     });
 
-    stream.on('text', (text: string) => {
-      res.write(`data: ${JSON.stringify({ text })}\n\n`);
-    });
+    const text = response.content
+      .map((block) => (block.type === 'text' ? block.text : ''))
+      .join('');
 
-    await stream.done();
-    res.write('data: [DONE]\n\n');
-    res.end();
-  } catch (err) {
-    console.error('AI chat error:', err);
-    res.write(`data: ${JSON.stringify({ error: 'AI error' })}\n\n`);
-    res.end();
+    res.json({ text });
+  } catch (err: any) {
+    const status = err?.status ?? err?.response?.status;
+    const detail = err?.error?.error?.message ?? err?.message ?? 'AI error';
+    console.error('AI chat error:', status, detail, err);
+    res.status(500).json({ error: detail });
   }
 });

@@ -46,33 +46,34 @@ export function Modules() {
     <div className="relative min-h-screen pb-20 sm:pb-0">
       <FloatingOrbs />
 
-      <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-10" style={{ zIndex: 1 }}>
+      <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-10" style={{ zIndex: 1 }}>
         {/* Header */}
-        <div className="mb-10 animate-fade-up">
-          <h1 className="text-3xl font-bold mb-2" style={{ color: 'hsl(var(--c-fg))' }}>
+        <div className="mb-6 sm:mb-10 animate-fade-up">
+          <h1 className="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2" style={{ color: 'hsl(var(--c-fg))' }}>
             {ui.modules_title}
           </h1>
-          <p style={{ color: 'hsl(var(--c-fg-muted))' }}>{ui.modules_sub}</p>
+          <p className="text-sm sm:text-base" style={{ color: 'hsl(var(--c-fg-muted))' }}>{ui.modules_sub}</p>
         </div>
 
-        {/* Progress overview */}
-        <div className="glass-card rounded-2xl p-5 mb-8 animate-fade-up delay-100">
-          <div className="flex flex-wrap gap-6 items-center">
+        {/* Progress overview — horizontal scroll on mobile */}
+        <div className="glass-card rounded-2xl p-4 sm:p-5 mb-6 sm:mb-8 animate-fade-up delay-100">
+          <div className="flex gap-4 sm:gap-6 items-center overflow-x-auto sm:flex-wrap -mx-1 px-1 pb-1 sm:pb-0"
+            style={{ scrollbarWidth: 'thin' }}>
             {modules.map((mod, i) => {
               const done = mod.lessons.filter((l) => l.completed).length;
               const total = mod.lessons.length;
               const locked = isLocked(i) || isProLocked(mod);
               return (
-                <div key={mod.id} className="flex items-center gap-2">
-                  <span className="text-lg">{locked ? '🔒' : mod.icon}</span>
+                <div key={mod.id} className="flex items-center gap-2 flex-shrink-0">
+                  <span className="text-base sm:text-lg">{locked ? '🔒' : mod.icon}</span>
                   <div>
-                    <p className="text-xs font-medium" style={{ color: locked ? 'hsl(var(--c-fg-subtle))' : 'hsl(var(--c-fg))' }}>
+                    <p className="text-xs font-medium whitespace-nowrap" style={{ color: locked ? 'hsl(var(--c-fg-subtle))' : 'hsl(var(--c-fg))' }}>
                       {mod.title[lang]}
                     </p>
                     <p className="text-xs" style={{ color: 'hsl(var(--c-fg-subtle))' }}>{done}/{total}</p>
                   </div>
                   {i < modules.length - 1 && (
-                    <span className="ml-2 text-xs" style={{ color: 'hsl(var(--c-fg-subtle))' }}>→</span>
+                    <span className="ml-1 sm:ml-2 text-xs" style={{ color: 'hsl(var(--c-fg-subtle))' }}>→</span>
                   )}
                 </div>
               );
@@ -81,7 +82,7 @@ export function Modules() {
         </div>
 
         {/* Module grid */}
-        <div className="grid sm:grid-cols-2 gap-6">
+        <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
           {modules.map((mod, i) => (
             <ModuleCard key={mod.id} module={mod} isLocked={isLocked(i)} isProLocked={isProLocked(mod)} index={i} />
           ))}
