@@ -1,0 +1,2517 @@
+[
+  {
+    "id": "saving",
+    "title": { "en": "Saving Smart", "bg": "Умно спестяване" },
+    "description": { "en": "Build your safety net and harness compound interest.", "bg": "Изгради финансова мрежа и използвай сложната лихва." },
+    "icon": "💎",
+    "color": "blue",
+    "order": 2,
+    "proOnly": false,
+    "lessons": [
+      {
+        "id": "saving-fundamentals",
+        "moduleId": "saving",
+        "title": { "en": "Foundations of Saving", "bg": "Основи на спестяването" },
+        "description": { "en": "Emergency funds, automation, and the magic of compounding.", "bg": "Авариен фонд, автоматизация и магията на сложната лихва." },
+        "icon": "🏗️",
+        "xpReward": 175,
+        "order": 1,
+        "exercises": [
+          {
+            "id": "sf-theory-1",
+            "type": "theory",
+            "xp": 0,
+            "slides": [
+              {
+                "emoji": "🛡️",
+                "title": { "en": "Why an Emergency Fund?", "bg": "Защо авариен фонд?" },
+                "body": { "en": "An emergency fund is 3–6 months of expenses kept in a high-yield savings account. It absorbs life's surprises — job loss, medical bills, car repairs — without forcing you into high-interest debt.\n\nWithout it, ONE bad week can erase years of financial progress.", "bg": "Аварийният фонд е 3–6 месеца разходи в спестовна сметка с висока лихва. Той поема изненадите — загуба на работа, медицински разходи, ремонти — без да те принуждава да вземеш скъп заем.\n\nБез него ЕДНА лоша седмица може да заличи години прогрес." },
+                "highlight": { "en": "🎯 Goal: 3 months of expenses to start, 6 months ideally.", "bg": "🎯 Цел: 3 месеца разходи за начало, 6 идеално." }
+              },
+              {
+                "emoji": "📈",
+                "title": { "en": "Compound Interest", "bg": "Сложна лихва" },
+                "body": { "en": "Interest earns interest. Saving €200/month at 7% from age 25 → €525,000 by 65.\n\nDelay 10 years and you only get €245,000 — less than half. Time matters more than amount.", "bg": "Лихвата печели лихва. Спестяване €200/месец при 7% от 25 → €525,000 на 65.\n\nЗабави с 10 години и имаш само €245,000 — по-малко от половината. Времето е по-важно от сумата." },
+                "highlight": { "en": "💡 \"Compound interest is the 8th wonder of the world.\" — Einstein (allegedly)", "bg": "💡 „Сложната лихва е 8-то чудо на света.\" — Айнщайн (предполагаемо)" }
+              }
+            ]
+          },
+          {
+            "id": "sf-choice-1",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "What's the recommended size of an emergency fund?", "bg": "Какъв е препоръчителният размер на авариен фонд?" },
+            "options": [
+              { "en": "1 week of expenses", "bg": "1 седмица разходи" },
+              { "en": "3–6 months of expenses", "bg": "3–6 месеца разходи" },
+              { "en": "1 year of income", "bg": "1 година доход" },
+              { "en": "€50 just in case", "bg": "€50 за всеки случай" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Experts recommend 3 months minimum, 6 months ideally. Less = vulnerable. More = wasted growth potential.", "bg": "Експертите препоръчват минимум 3 месеца, идеално 6. По-малко = уязвим. Повече = пропуснат растеж." }
+          },
+          {
+            "id": "sf-fill-1",
+            "type": "fill_blank",
+            "xp": 15,
+            "question": { "en": "If your monthly expenses are €1,500, your minimum emergency fund should be €___", "bg": "Ако месечните ти разходи са €1,500, минималният ти авариен фонд трябва да е €___" },
+            "correctAnswer": 4500,
+            "answerMin": 4400,
+            "answerMax": 4600,
+            "answerUnit": "€",
+            "explanation": { "en": "€1,500 × 3 months = €4,500 minimum. Aim for €9,000 for full 6-month coverage.", "bg": "€1,500 × 3 месеца = €4,500 минимум. Цели €9,000 за пълно 6-месечно покритие." }
+          },
+          {
+            "id": "sf-compound-1",
+            "type": "compound_sim",
+            "xp": 30,
+            "compoundConfig": {
+              "defaultPrincipal": 1000,
+              "defaultRate": 7,
+              "defaultYears": 30,
+              "defaultMonthly": 200
+            }
+          },
+          {
+            "id": "sf-sort-1",
+            "type": "sort_items",
+            "xp": 20,
+            "sortItems": [
+              { "label": { "en": "High-yield savings account", "bg": "Спестовна сметка с висока лихва" }, "emoji": "🏦", "isAsset": true },
+              { "label": { "en": "Money under your mattress", "bg": "Пари под матрака" }, "emoji": "🛏️", "isAsset": false },
+              { "label": { "en": "Automated monthly transfer", "bg": "Автоматичен месечен превод" }, "emoji": "🤖", "isAsset": true },
+              { "label": { "en": "Spending bonuses on luxuries", "bg": "Харчене на бонуси за лукс" }, "emoji": "💸", "isAsset": false },
+              { "label": { "en": "Treasury bond ladder", "bg": "Стълба от държавни облигации" }, "emoji": "📜", "isAsset": true },
+              { "label": { "en": "Lottery tickets", "bg": "Билети от лотария" }, "emoji": "🎰", "isAsset": false }
+            ]
+          },
+          {
+            "id": "sf-rpg-1",
+            "type": "rpg_scenario",
+            "xp": 25,
+            "scenario": { "en": "You just got a €1,200 tax refund. You have €0 in savings, €500 in credit card debt at 22% APR, and you've been eyeing a €700 weekend trip.", "bg": "Току-що получи €1,200 данъчно възстановяване. Имаш €0 спестявания, €500 дълг на кредитна карта при 22% ГПР, и оглеждаш уикенд за €700." },
+            "avatar": "🧑‍💼",
+            "choices": [
+              { "label": { "en": "Pay off the card, save the rest", "bg": "Плати картата, спести остатъка" }, "emoji": "✅", "consequence": { "en": "Best move! €500 to debt (saves €110/year in interest), €700 to your starter emergency fund. You're now debt-free with cushion.", "bg": "Най-добрият ход! €500 за дълга (спестява €110/година лихва), €700 в стартов авариен фонд. Без дълг и с буфер си." }, "cashFlowChange": 110, "isGood": true },
+              { "label": { "en": "Take the trip — I deserve it", "bg": "На пътуването — заслужавам го" }, "emoji": "✈️", "consequence": { "en": "Trip was fun, but the €500 debt grew to €610 by year-end. The trip ultimately cost €810. You still have €0 savings.", "bg": "Пътуването беше готино, но €500 дълг стана €610 до края на годината. Пътуването струва €810. Все още €0 спестявания." }, "cashFlowChange": -110, "isGood": false },
+              { "label": { "en": "Invest all €1,200 in stocks", "bg": "Инвестирай всичките €1,200 в акции" }, "emoji": "📊", "consequence": { "en": "Investing while paying 22% on debt is mathematically losing money. The card grows faster than your investments. Pay debt first.", "bg": "Инвестиции при 22% лихва на дълга = губене на пари. Картата расте по-бързо от инвестицията. Първо дълг." }, "cashFlowChange": -50, "isGood": false }
+            ]
+          },
+          {
+            "id": "sf-choice-2",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Why is automating savings effective?", "bg": "Защо автоматизацията на спестяване работи?" },
+            "options": [
+              { "en": "It earns higher interest", "bg": "Печели по-висока лихва" },
+              { "en": "It removes willpower from the equation", "bg": "Премахва силата на волята от уравнението" },
+              { "en": "It hides money from taxes", "bg": "Скрива парите от данъци" },
+              { "en": "Banks legally require it", "bg": "Банките го изискват по закон" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Automation = decision made once. You never \"forget\" or \"skip a month\" because it happens before you see the money.", "bg": "Автоматизация = решение веднъж. Никога не „забравяш\" или „пропускаш месец\" защото става преди да видиш парите." }
+          },
+          {
+            "id": "sf-fill-2",
+            "type": "fill_blank",
+            "xp": 15,
+            "question": { "en": "€100/month at 7% for 40 years grows to approximately €___", "bg": "€100/месец при 7% за 40 години става приблизително €___" },
+            "correctAnswer": 264000,
+            "answerMin": 250000,
+            "answerMax": 280000,
+            "answerUnit": "€",
+            "explanation": { "en": "~€264,000. Total invested = €48,000. The other €216,000 = compound interest. Time is the most powerful variable.", "bg": "~€264,000. Общо вложено = €48,000. Останалите €216,000 = сложна лихва. Времето е най-мощната променлива." }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "investing",
+    "title": { "en": "Investing 101", "bg": "Инвестиции 101" },
+    "description": { "en": "From zero to your first portfolio — the fundamentals.", "bg": "От нула до първия портфейл — основите." },
+    "icon": "📈",
+    "color": "purple",
+    "order": 3,
+    "proOnly": false,
+    "lessons": [
+      {
+        "id": "investing-basics",
+        "moduleId": "investing",
+        "title": { "en": "Stocks, Bonds & ETFs", "bg": "Акции, облигации и ETF" },
+        "description": { "en": "What you're actually buying when you invest.", "bg": "Какво всъщност купуваш когато инвестираш." },
+        "icon": "🏛️",
+        "xpReward": 165,
+        "order": 1,
+        "exercises": [
+          {
+            "id": "ib-theory-1",
+            "type": "theory",
+            "xp": 0,
+            "slides": [
+              {
+                "emoji": "🏛️",
+                "title": { "en": "What is a Stock?", "bg": "Какво е акция?" },
+                "body": { "en": "A stock = a tiny slice of ownership in a company. If Apple has 15 billion shares and you own 1, you own 1/15,000,000,000 of Apple — including a share of its future profits.\n\nStocks rise long-term because companies grow, innovate, and earn more profit.", "bg": "Акция = малък дял от собствеността на компания. Apple има 15 милиарда акции, ако имаш 1, притежаваш 1/15,000,000,000 от Apple — включително част от бъдещите печалби.\n\nАкциите растат дългосрочно защото компаниите растат, иновират и печелят повече." },
+                "highlight": { "en": "Average S&P 500 return over 100 years: ~10%/year (7% after inflation).", "bg": "Средна доходност на S&P 500 за 100 години: ~10%/година (7% след инфлация)." }
+              },
+              {
+                "emoji": "📦",
+                "title": { "en": "Bonds & ETFs", "bg": "Облигации и ETF" },
+                "body": { "en": "BOND = a loan you give to a government or company. They pay you interest, then return your money at maturity. Lower risk, lower return (~3–5%).\n\nETF = a basket of many stocks/bonds in one share. Vanguard's VOO holds all 500 S&P companies — buy 1 share = own a slice of all 500.", "bg": "ОБЛИГАЦИЯ = заем към правителство или компания. Плащат лихва и връщат парите на падежа. По-нисък риск, по-нисък растеж (~3–5%).\n\nETF = кошница от много акции/облигации в една. VOO на Vanguard държи всички 500 компании от S&P — купуваш 1 акция = дял от всичките 500." },
+                "highlight": { "en": "🎯 ETFs = instant diversification with one purchase.", "bg": "🎯 ETF = моментна диверсификация с една покупка." }
+              }
+            ]
+          },
+          {
+            "id": "ib-choice-1",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "When you buy a stock, you become...", "bg": "Когато купуваш акция, ставаш..." },
+            "options": [
+              { "en": "A creditor of the company", "bg": "Кредитор на компанията" },
+              { "en": "A partial owner of the company", "bg": "Частичен собственик на компанията" },
+              { "en": "An employee of the company", "bg": "Служител на компанията" },
+              { "en": "A customer with discounts", "bg": "Клиент с отстъпки" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Stockholders own a piece of the company and have a claim on its future profits and assets.", "bg": "Акционерите притежават дял от компанията и имат право над бъдещите печалби и активи." }
+          },
+          {
+            "id": "ib-choice-2",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Which is generally safest?", "bg": "Кое е най-безопасно?" },
+            "options": [
+              { "en": "Single stock in a startup", "bg": "Една акция в стартъп" },
+              { "en": "Crypto coin you saw on TikTok", "bg": "Крипто монета от TikTok" },
+              { "en": "Diversified S&P 500 ETF", "bg": "Диверсифициран S&P 500 ETF" },
+              { "en": "Lottery ticket", "bg": "Билет от лотария" }
+            ],
+            "correctIndex": 2,
+            "explanation": { "en": "An S&P 500 ETF spreads risk across 500 large companies. If one fails, others compensate. Diversification = lower risk.", "bg": "S&P 500 ETF разпределя риска между 500 големи компании. Ако една падне, други компенсират. Диверсификация = по-малко риск." }
+          },
+          {
+            "id": "ib-fill-1",
+            "type": "fill_blank",
+            "xp": 15,
+            "question": { "en": "If you invest €10,000 at the average historical S&P return (~7% real), in 10 years you'll have approximately €___", "bg": "Ако инвестираш €10,000 при средна доходност (~7% реална), след 10 години ще имаш €___" },
+            "correctAnswer": 19672,
+            "answerMin": 19000,
+            "answerMax": 20500,
+            "answerUnit": "€",
+            "explanation": { "en": "€10,000 × 1.07^10 ≈ €19,672. Your money nearly doubled — without you doing anything.", "bg": "€10,000 × 1.07^10 ≈ €19,672. Парите почти се удвоиха — без да правиш нищо." }
+          },
+          {
+            "id": "ib-sort-1",
+            "type": "sort_items",
+            "xp": 20,
+            "sortItems": [
+              { "label": { "en": "VOO (S&P 500 ETF)", "bg": "VOO (S&P 500 ETF)" }, "emoji": "📊", "isAsset": true },
+              { "label": { "en": "Penny stock from Reddit", "bg": "Пени-акция от Reddit" }, "emoji": "🚩", "isAsset": false },
+              { "label": { "en": "Government bond fund", "bg": "Фонд от държавни облигации" }, "emoji": "🏛️", "isAsset": true },
+              { "label": { "en": "\"Get rich quick\" course", "bg": "Курс „забогатей бързо\"" }, "emoji": "💸", "isAsset": false },
+              { "label": { "en": "Diversified bond ETF", "bg": "Диверсифициран ETF от облигации" }, "emoji": "📦", "isAsset": true },
+              { "label": { "en": "All savings in one stock", "bg": "Всички спестявания в 1 акция" }, "emoji": "🎯", "isAsset": false }
+            ]
+          },
+          {
+            "id": "ib-rpg-1",
+            "type": "rpg_scenario",
+            "xp": 25,
+            "scenario": { "en": "You're 28 and have €5,000 to invest. A friend says \"Put it all in this hot AI stock — it'll 10x in a month!\" Your investing app suggests an S&P 500 ETF.", "bg": "На 28 си и имаш €5,000 за инвестиране. Приятел казва: „Вкарай всичко в тази AI акция — ще порасне 10×!\" Приложението ти предлага S&P 500 ETF." },
+            "avatar": "🧑‍💻",
+            "choices": [
+              { "label": { "en": "Yolo into the AI stock", "bg": "Всичко в AI акцията" }, "emoji": "🎰", "consequence": { "en": "It dropped 70% in 2 weeks. You panic-sell at €1,500. Lesson: hot tips = gambling. Concentration = risk.", "bg": "Падна 70% за 2 седмици. Продаваш в паника за €1,500. Урок: горещи съвети = хазарт. Концентрация = риск." }, "cashFlowChange": -3500, "isGood": false },
+              { "label": { "en": "All into S&P 500 ETF", "bg": "Всичко в S&P 500 ETF" }, "emoji": "📈", "consequence": { "en": "Boring but smart. Over 30 years at ~7% real, €5,000 becomes ~€38,000. You'll thank yourself.", "bg": "Скучно но умно. За 30 години при ~7%, €5,000 стават ~€38,000. Ще си благодариш." }, "cashFlowChange": 33000, "isGood": true },
+              { "label": { "en": "Split: 80% ETF, 20% AI stock", "bg": "Раздели: 80% ETF, 20% AI акция" }, "emoji": "⚖️", "consequence": { "en": "Solid. Most growth comes from the boring ETF, while the small risky bet satisfies the urge to gamble. Behaviorally smart.", "bg": "Стабилно. Растежът идва от скучния ETF, а малкият риск задоволява желанието да играеш. Поведенчески умно." }, "cashFlowChange": 25000, "isGood": true }
+            ]
+          },
+          {
+            "id": "ib-choice-3",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "What's the main advantage of an index fund?", "bg": "Кое е главното предимство на индексен фонд?" },
+            "options": [
+              { "en": "It guarantees no losses", "bg": "Гарантира липса на загуби" },
+              { "en": "Low fees + instant diversification", "bg": "Ниски такси + моментна диверсификация" },
+              { "en": "Beats the market every year", "bg": "Бие пазара всяка година" },
+              { "en": "Pays daily dividends", "bg": "Плаща дневни дивиденти" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Index funds (e.g., S&P 500) charge ~0.03% fees vs ~1% for active funds, and own hundreds of stocks in one. Over 20 years, ~85% of active managers LOSE to the index.", "bg": "Индексните фондове таксуват ~0.03% срещу ~1% за активни, и притежават стотици акции в един. За 20 години ~85% от активните мениджъри ГУБЯТ срещу индекса." }
+          },
+          {
+            "id": "ib-choice-4",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Time horizon for stocks should be at least...", "bg": "Времевият хоризонт за акции трябва да е поне..." },
+            "options": [
+              { "en": "1 month", "bg": "1 месец" },
+              { "en": "1 year", "bg": "1 година" },
+              { "en": "5–10+ years", "bg": "5–10+ години" },
+              { "en": "Until next dividend", "bg": "До следващ дивидент" }
+            ],
+            "correctIndex": 2,
+            "explanation": { "en": "Stocks can drop 30–50% in a year. Over 10+ years, the S&P has been positive ~95% of the time. Time smooths the ride.", "bg": "Акциите могат да паднат 30–50% за година. За 10+ години S&P е положителен ~95% от времето. Времето изглажда." }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "credit-debt",
+    "title": { "en": "Credit & Debt Mastery", "bg": "Майсторство в кредити и дълг" },
+    "description": { "en": "Build great credit and crush bad debt.", "bg": "Изгради чудесен кредит и унищожи лошия дълг." },
+    "icon": "🏦",
+    "color": "orange",
+    "order": 4,
+    "proOnly": false,
+    "lessons": [
+      {
+        "id": "credit-essentials",
+        "moduleId": "credit-debt",
+        "title": { "en": "Credit Score & Debt Payoff", "bg": "Кредитен рейтинг и изплащане на дълг" },
+        "description": { "en": "How credit scores work and how to demolish debt fast.", "bg": "Как работят кредитните рейтинги и как да унищожиш дълга бързо." },
+        "icon": "⭐",
+        "xpReward": 170,
+        "order": 1,
+        "exercises": [
+          {
+            "id": "ce-theory-1",
+            "type": "theory",
+            "xp": 0,
+            "slides": [
+              {
+                "emoji": "⭐",
+                "title": { "en": "Anatomy of a Credit Score", "bg": "Анатомия на кредитен рейтинг" },
+                "body": { "en": "Your FICO score (300–850) is built from:\n• 35% Payment history (NEVER miss)\n• 30% Credit utilization (use <30% of limit)\n• 15% Length of credit history\n• 10% New credit inquiries\n• 10% Credit mix\n\nA score of 750+ saves you tens of thousands in lifetime interest.", "bg": "FICO рейтингът (300–850) се състои от:\n• 35% История на плащания (НИКОГА не пропускай)\n• 30% Използване (под 30% от лимита)\n• 15% Дължина на историята\n• 10% Нови запитвания\n• 10% Микс\n\nРейтинг 750+ спестява десетки хиляди лихва за живота." },
+                "highlight": { "en": "💡 One missed payment can drop your score 100 points. Protect it.", "bg": "💡 Едно пропуснато плащане може да свали рейтинга със 100 точки. Пази го." }
+              },
+              {
+                "emoji": "⚔️",
+                "title": { "en": "Avalanche vs Snowball", "bg": "Лавина срещу снежна топка" },
+                "body": { "en": "Two methods to crush debt:\n\n🏔️ AVALANCHE: pay highest interest rate first → math optimal, saves most money.\n\n❄️ SNOWBALL: pay smallest balance first → psychological wins, builds momentum.\n\nBoth work. The best is the one you'll actually stick with.", "bg": "Два метода за унищожаване на дълга:\n\n🏔️ ЛАВИНА: плащаш първо най-високата лихва → математически оптимално.\n\n❄️ СНЕЖНА ТОПКА: плащаш първо най-малкия дълг → психологически победи, импулс.\n\nИ двете работят. Най-добрият е този, който ще спазваш." },
+                "highlight": { "en": "🎯 Always pay minimums on EVERYTHING. Use extra cash on your priority debt.", "bg": "🎯 Винаги плащай минимума на ВСИЧКО. Излишъка — на приоритетния дълг." }
+              }
+            ]
+          },
+          {
+            "id": "ce-choice-1",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Biggest factor in your credit score?", "bg": "Най-важният фактор в кредитния рейтинг?" },
+            "options": [
+              { "en": "Number of credit cards", "bg": "Брой кредитни карти" },
+              { "en": "Payment history", "bg": "История на плащанията" },
+              { "en": "Annual income", "bg": "Годишен доход" },
+              { "en": "Length of employment", "bg": "Дължина на работа" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Payment history = 35%. Income isn't even in the formula. Lenders care most: do you pay on time?", "bg": "Историята на плащанията = 35%. Доходът дори не е във формулата. Кредиторите искат: плащаш ли на време?" }
+          },
+          {
+            "id": "ce-fill-1",
+            "type": "fill_blank",
+            "xp": 15,
+            "question": { "en": "Your credit card limit is €4,000. To stay under the recommended 30% utilization, your balance should not exceed €___", "bg": "Лимитът на картата ти е €4,000. За да си под препоръчителните 30% използване, балансът ти не трябва да надвишава €___" },
+            "correctAnswer": 1200,
+            "answerMin": 1180,
+            "answerMax": 1220,
+            "answerUnit": "€",
+            "explanation": { "en": "30% of €4,000 = €1,200. Below 10% (€400) is even better for top scores.", "bg": "30% от €4,000 = €1,200. Под 10% (€400) е още по-добре за топ рейтинги." }
+          },
+          {
+            "id": "ce-sort-1",
+            "type": "sort_items",
+            "xp": 20,
+            "sortItems": [
+              { "label": { "en": "Mortgage at 4%", "bg": "Ипотека при 4%" }, "emoji": "🏠", "isAsset": true },
+              { "label": { "en": "Credit card at 22% APR", "bg": "Кредитна карта при 22% ГПР" }, "emoji": "💳", "isAsset": false },
+              { "label": { "en": "Federal student loan at 5%", "bg": "Държавен студентски заем при 5%" }, "emoji": "🎓", "isAsset": true },
+              { "label": { "en": "Payday loan at 400% APR", "bg": "Заплатен заем при 400% ГПР" }, "emoji": "🚨", "isAsset": false },
+              { "label": { "en": "Business loan funding revenue", "bg": "Бизнес заем за приход" }, "emoji": "💼", "isAsset": true },
+              { "label": { "en": "Buy-now-pay-later iPhone", "bg": "Купи сега-плати после iPhone" }, "emoji": "📱", "isAsset": false }
+            ]
+          },
+          {
+            "id": "ce-rpg-1",
+            "type": "rpg_scenario",
+            "xp": 25,
+            "scenario": { "en": "You owe €3,000 on a credit card at 22% APR and €8,000 on a student loan at 5% APR. You have €500 extra this month.", "bg": "Дължиш €3,000 на кредитна карта при 22% ГПР и €8,000 студентски заем при 5%. Имаш €500 излишък този месец." },
+            "avatar": "🧑‍🎓",
+            "choices": [
+              { "label": { "en": "€500 extra to credit card", "bg": "€500 на кредитната карта" }, "emoji": "🏔️", "consequence": { "en": "Smart avalanche move! 22% interest is the killer. Killing this faster saves €700+ vs splitting evenly.", "bg": "Умен ход (лавина)! 22% са убиец. Изплатиш ли първо това, спестяваш €700+ срещу разделяне." }, "cashFlowChange": 700, "isGood": true },
+              { "label": { "en": "€500 extra to student loan", "bg": "€500 на студентския заем" }, "emoji": "🎓", "consequence": { "en": "Mathematically wrong. Each month you delay killing the 22% card costs €55. Pay highest rate first.", "bg": "Математически грешно. Всеки месец отлагане на 22% картата струва €55. Първо най-високата лихва." }, "cashFlowChange": -200, "isGood": false },
+              { "label": { "en": "Split €250 / €250", "bg": "Раздели €250 / €250" }, "emoji": "⚖️", "consequence": { "en": "Half-measure. The 22% card keeps growing fast. You'll save more by going all-in on it.", "bg": "Половинчато. 22% картата продължава да расте. Ще спестиш повече ако отидеш изцяло там." }, "cashFlowChange": 0, "isGood": false }
+            ]
+          },
+          {
+            "id": "ce-choice-2",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "What does APR stand for?", "bg": "Какво означава ГПР?" },
+            "options": [
+              { "en": "Approved Payment Range", "bg": "Одобрен платежен диапазон" },
+              { "en": "Annual Percentage Rate", "bg": "Годишен процент разходи" },
+              { "en": "Average Payment Required", "bg": "Средно изискано плащане" },
+              { "en": "Account Profit Rate", "bg": "Сметка на профитна ставка" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "APR = the yearly cost of borrowing including fees, expressed as a percent. Higher APR = more expensive debt.", "bg": "ГПР = годишната цена на заемане включително такси, в проценти. По-висок ГПР = по-скъп дълг." }
+          },
+          {
+            "id": "ce-choice-3",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Closing your oldest credit card will...", "bg": "Затварянето на най-старата ти карта ще..." },
+            "options": [
+              { "en": "Boost your score significantly", "bg": "Значително увеличи рейтинга ти" },
+              { "en": "Likely lower your score", "bg": "Вероятно ще намали рейтинга ти" },
+              { "en": "Have no effect", "bg": "Няма да има ефект" },
+              { "en": "Erase your credit history", "bg": "Ще изтрие кредитната ти история" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Closing it shortens your average credit history and reduces total available credit, hurting utilization. Keep it open with €0 balance.", "bg": "Намалява средната дължина на историята и общия наличен кредит, влошава използването. Дръж я отворена с €0 баланс." }
+          },
+          {
+            "id": "ce-fill-2",
+            "type": "fill_blank",
+            "xp": 15,
+            "question": { "en": "A €2,000 credit card balance at 22% APR, paying minimum (~2%), takes about ___ years to pay off.", "bg": "Баланс €2,000 при 22% ГПР, минимални плащания (~2%), отнема около ___ години да се изплати." },
+            "correctAnswer": 30,
+            "answerMin": 28,
+            "answerMax": 32,
+            "answerUnit": "years",
+            "explanation": { "en": "~30 years and you'd pay over €5,000 in interest. Minimum payments are a trap. Always pay more.", "bg": "~30 години и плащаш над €5,000 лихва. Минималните плащания са капан. Винаги плащай повече." }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "side-hustles",
+    "title": { "en": "Side Hustles & Extra Income", "bg": "Странични бизнеси и допълнителен доход" },
+    "description": { "en": "Turn your skills into income streams.", "bg": "Превърни уменията си в потоци от доход." },
+    "icon": "💼",
+    "color": "green",
+    "order": 5,
+    "proOnly": false,
+    "lessons": [
+      {
+        "id": "side-hustle-launch",
+        "moduleId": "side-hustles",
+        "title": { "en": "Launch Your Side Hustle", "bg": "Започни странична работа" },
+        "description": { "en": "Find, validate, and grow income outside your day job.", "bg": "Намери, валидирай и развий доход извън основната си работа." },
+        "icon": "🚀",
+        "xpReward": 165,
+        "order": 1,
+        "exercises": [
+          {
+            "id": "sh-theory-1",
+            "type": "theory",
+            "xp": 0,
+            "slides": [
+              {
+                "emoji": "💼",
+                "title": { "en": "Why a Side Hustle?", "bg": "Защо странична работа?" },
+                "body": { "en": "A side hustle is income outside your main job. The benefits go beyond cash:\n• Skill diversification (less dependent on one employer)\n• Tax-deductible expenses\n• A path to entrepreneurship without the risk\n\nMedian US side-hustle earnings: $810/month. Some scale into full businesses.", "bg": "Страничната работа е доход извън основната. Ползите са повече от пари:\n• Диверсификация на умения (по-малко зависим от 1 работодател)\n• Данъчно приспадащи се разходи\n• Път към предприемачество без риска\n\nСредна странична работа в САЩ: $810/месец. Някои стават пълноценен бизнес." },
+                "highlight": { "en": "💡 Best side hustles solve a problem you already understand.", "bg": "💡 Най-добрите странични работи решават проблем, който вече разбираш." }
+              },
+              {
+                "emoji": "🎯",
+                "title": { "en": "Skill × Demand × Margin", "bg": "Умение × Търсене × Марж" },
+                "body": { "en": "A profitable side hustle sits at the intersection of:\n1. SKILL — something you can do better than average\n2. DEMAND — people actually want it\n3. MARGIN — earns more than it costs in time/money\n\nMissing one = stuck. All three = leverage.", "bg": "Печелившата странична работа е в пресечната точка на:\n1. УМЕНИЕ — нещо, което правиш по-добре от средното\n2. ТЪРСЕНЕ — хората наистина го искат\n3. МАРЖ — печели повече отколкото струва\n\nЛипсва едно = заседнал. И трите = лост." },
+                "highlight": { "en": "Validate demand BEFORE investing time. Pre-sell, don't pre-build.", "bg": "Валидирай търсенето ПРЕДИ да вложиш време. Продай първо, не строй първо." }
+              }
+            ]
+          },
+          {
+            "id": "sh-choice-1",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Best first step before quitting your job for a side hustle?", "bg": "Най-добра първа стъпка преди да напуснеш работа за странична работа?" },
+            "options": [
+              { "en": "Quit immediately for full focus", "bg": "Напусни веднага за пълен фокус" },
+              { "en": "Replace your salary 1.5× before quitting", "bg": "Замени заплатата 1.5× преди да напуснеш" },
+              { "en": "Borrow €50,000 from family", "bg": "Заеми €50,000 от семейството" },
+              { "en": "Wait for inspiration", "bg": "Изчакай вдъхновение" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Replacing 1.5× your salary covers self-employment taxes and dry months. Quitting too early = panic decisions.", "bg": "1.5× заплата покрива данъци за самонает и сухи месеци. Напускане твърде рано = решения от паника." }
+          },
+          {
+            "id": "sh-fill-1",
+            "type": "fill_blank",
+            "xp": 15,
+            "question": { "en": "If your side hustle nets €600/month invested at 7%, in 20 years it grows to approximately €___", "bg": "Ако страничната работа носи €600/месец при 7%, за 20 години става €___" },
+            "correctAnswer": 313000,
+            "answerMin": 300000,
+            "answerMax": 325000,
+            "answerUnit": "€",
+            "explanation": { "en": "~€313,000. Not life-changing on its own — but layered on top of your main income, it's enormous.", "bg": "~€313,000. Самостоятелно не е огромно — но наслоено върху основния доход, е огромно." }
+          },
+          {
+            "id": "sh-sort-1",
+            "type": "sort_items",
+            "xp": 20,
+            "sortItems": [
+              { "label": { "en": "Freelance design (skill-based)", "bg": "Фрийланс дизайн" }, "emoji": "🎨", "isAsset": true },
+              { "label": { "en": "MLM / pyramid scheme", "bg": "MLM / пирамидна схема" }, "emoji": "🚩", "isAsset": false },
+              { "label": { "en": "Online course you teach", "bg": "Онлайн курс, който водиш" }, "emoji": "💻", "isAsset": true },
+              { "label": { "en": "Day-trading penny stocks", "bg": "Дневна търговия с пени-акции" }, "emoji": "🎰", "isAsset": false },
+              { "label": { "en": "Etsy shop with your art", "bg": "Etsy магазин с твоето изкуство" }, "emoji": "🖼️", "isAsset": true },
+              { "label": { "en": "\"Get rich in 30 days\" coaching", "bg": "„Забогатей за 30 дни\" коучинг" }, "emoji": "💸", "isAsset": false }
+            ]
+          },
+          {
+            "id": "sh-rpg-1",
+            "type": "rpg_scenario",
+            "xp": 25,
+            "scenario": { "en": "You're considering a side hustle. You can spend €1,000 on: (A) inventory for an online store, (B) a coding bootcamp, or (C) a get-rich-quick course. What's your move?", "bg": "Обмисляш странична работа. Имаш €1,000 за: (A) стока за онлайн магазин, (B) курс по програмиране, (C) курс „забогатей бързо\". Кой е ходът?" },
+            "avatar": "🧑‍🚀",
+            "choices": [
+              { "label": { "en": "Coding bootcamp", "bg": "Курс по програмиране" }, "emoji": "💻", "consequence": { "en": "Skill-building compounds. 6 months later you charge €40/hr freelancing. Skills > inventory > scams.", "bg": "Уменията се натрупват. След 6 месеца вземаш €40/час фрийланс. Умения > стока > измами." }, "cashFlowChange": 800, "isGood": true },
+              { "label": { "en": "Online store inventory", "bg": "Стока за онлайн магазин" }, "emoji": "📦", "consequence": { "en": "Risky without validation. Half the inventory sits unsold. Should've pre-sold first to test demand.", "bg": "Рисково без валидация. Половината стока стои непродадена. Трябваше да продадеш първо за тест." }, "cashFlowChange": -300, "isGood": false },
+              { "label": { "en": "Get-rich-quick course", "bg": "Курс „забогатей бързо\"" }, "emoji": "🚩", "consequence": { "en": "Money gone, no real skill. Real wealth is built from real value, not motivational PDFs.", "bg": "Парите изчезват, няма реално умение. Истинско богатство = реална стойност, не PDF-и." }, "cashFlowChange": -1000, "isGood": false }
+            ]
+          },
+          {
+            "id": "sh-choice-2",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "What does \"validate demand\" mean for a new product?", "bg": "Какво значи „валидирай търсенето\" за нов продукт?" },
+            "options": [
+              { "en": "Build it perfectly, then ship", "bg": "Построй го идеално, после пусни" },
+              { "en": "Get pre-orders or paying customers BEFORE building", "bg": "Вземи поръчки/клиенти ПРЕДИ да построиш" },
+              { "en": "Ask your mom if she likes it", "bg": "Питай майка си дали ѝ харесва" },
+              { "en": "Run Facebook ads for €5,000", "bg": "Пусни реклами в Facebook за €5,000" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Real validation = strangers paying real money. Compliments and \"likes\" don't pay rent.", "bg": "Реална валидация = непознати плащат реални пари. Комплименти и лайкове не плащат наем." }
+          },
+          {
+            "id": "sh-choice-3",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "What's the biggest tax advantage of a side business?", "bg": "Най-голямото данъчно предимство на страничен бизнес?" },
+            "options": [
+              { "en": "You pay zero taxes", "bg": "Не плащаш данъци" },
+              { "en": "Business expenses reduce taxable income", "bg": "Бизнес разходите намаляват облагаемия доход" },
+              { "en": "Government pays you back", "bg": "Държавата ти връща пари" },
+              { "en": "It's all hidden from the tax office", "bg": "Всичко е скрито от данъчните" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Legitimate business costs (software, mileage, home office) reduce your taxable profit. Always keep receipts.", "bg": "Легитимни бизнес разходи (софтуер, гориво, офис вкъщи) намаляват облагаемата печалба. Пази касовите бележки." }
+          },
+          {
+            "id": "sh-choice-4",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "You charge €30/hr freelancing. Your tax + business costs = 30%. How much of every hour is actually yours?", "bg": "Таксуваш €30/час фрийланс. Данъци + разходи = 30%. Колко от всеки час е реално твое?" },
+            "options": [
+              { "en": "€30", "bg": "€30" },
+              { "en": "€21", "bg": "€21" },
+              { "en": "€15", "bg": "€15" },
+              { "en": "€9", "bg": "€9" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "€30 × 0.7 = €21. Always price knowing your real take-home — many freelancers underprice.", "bg": "€30 × 0.7 = €21. Винаги се ценуй знаейки реалното. Много фрийлансери подценяват себе си." }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "insurance",
+    "title": { "en": "Insurance Fundamentals", "bg": "Основи на застраховането" },
+    "description": { "en": "Protect your wealth before you build it.", "bg": "Защити богатството си преди да го изградиш." },
+    "icon": "🛡️",
+    "color": "blue",
+    "order": 6,
+    "proOnly": false,
+    "lessons": [
+      {
+        "id": "insurance-essentials",
+        "moduleId": "insurance",
+        "title": { "en": "What You Actually Need", "bg": "Какво наистина ти трябва" },
+        "description": { "en": "Cut through the sales pitches and pick smart coverage.", "bg": "Преодолей търговските думи и избери умно покритие." },
+        "icon": "❤️",
+        "xpReward": 160,
+        "order": 1,
+        "exercises": [
+          {
+            "id": "ins-theory-1",
+            "type": "theory",
+            "xp": 0,
+            "slides": [
+              {
+                "emoji": "🛡️",
+                "title": { "en": "What Insurance IS — and Isn't", "bg": "Какво Е застраховката — и какво не е" },
+                "body": { "en": "Insurance = protection against catastrophic loss you can't afford to absorb yourself.\n\nIt is NOT:\n• An investment\n• A way to \"get money back\"\n• Useful for small predictable expenses\n\nGood rule: insure what would BANKRUPT you. Self-insure (save) for everything else.", "bg": "Застраховката = защита срещу катастрофична загуба, която не можеш да поемеш сам.\n\nНе е:\n• Инвестиция\n• Начин да „си вземеш пари обратно\"\n• Полезна за малки предвидими разходи\n\nПравило: застраховай това, което би те фалирало. Спестявай за останалото." },
+                "highlight": { "en": "🎯 If you can pay it from savings without panic, you don't need insurance for it.", "bg": "🎯 Ако можеш да платиш от спестявания без паника, не ти трябва застраховка за него." }
+              },
+              {
+                "emoji": "💰",
+                "title": { "en": "Premium, Deductible, Out-of-Pocket Max", "bg": "Премия, самоучастие, максимум от джоба" },
+                "body": { "en": "PREMIUM — what you pay monthly\nDEDUCTIBLE — what you pay before insurance kicks in\nOUT-OF-POCKET MAX — your worst-case yearly total\n\nHigher deductible = lower premium. If you have an emergency fund, a HIGH-deductible plan is usually cheaper long-term.", "bg": "ПРЕМИЯ — месечно плащане\nСАМОУЧАСТИЕ — плащаш преди застраховката да включи\nМАКС ОТ ДЖОБА — годишен худший случай\n\nПо-високо самоучастие = по-ниска премия. С авариен фонд, план с ВИСОКО самоучастие обикновено излиза по-евтин." },
+                "highlight": { "en": "💡 Compare TOTAL annual cost (premium × 12 + likely out-of-pocket), not just monthly.", "bg": "💡 Сравнявай ОБЩА годишна цена (премия × 12 + вероятно от джоба), не само месечна." }
+              }
+            ]
+          },
+          {
+            "id": "ins-choice-1",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Who needs life insurance most?", "bg": "Кой най-много се нуждае от животозастраховане?" },
+            "options": [
+              { "en": "A single 22-year-old with no dependents", "bg": "Самотен 22-годишен без деца" },
+              { "en": "A parent whose family relies on their income", "bg": "Родител, чието семейство зависи от дохода му" },
+              { "en": "A retired millionaire", "bg": "Пенсиониран милионер" },
+              { "en": "Everyone equally", "bg": "Всеки еднакво" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Life insurance replaces lost income for dependents. No dependents + no debt = often no need.", "bg": "Животозастраховането заменя загубен доход за зависимите. Без деца + без дълг = често не нужно." }
+          },
+          {
+            "id": "ins-choice-2",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Term vs whole life insurance — which is usually better?", "bg": "Срочна срещу пожизнена — коя е по-добра?" },
+            "options": [
+              { "en": "Whole life — it's an investment", "bg": "Пожизнена — инвестиция е" },
+              { "en": "Term — cheaper, simpler, invest the difference", "bg": "Срочна — по-евтина, по-проста, инвестирай разликата" },
+              { "en": "Both equally", "bg": "И двете еднакво" },
+              { "en": "Universal life — most flexible", "bg": "Универсална — най-гъвкава" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Whole life is typically 5–10× more expensive with poor returns. \"Buy term, invest the difference\" beats it most of the time.", "bg": "Пожизнената обикновено е 5–10× по-скъпа с лоша доходност. „Купи срочна, инвестирай разликата\" обикновено бие пожизнената." }
+          },
+          {
+            "id": "ins-fill-1",
+            "type": "fill_blank",
+            "xp": 15,
+            "question": { "en": "Your auto insurance has €500 deductible, €1,200/year premium. After a €3,000 accident, your TOTAL out-of-pocket for that year is €___", "bg": "Авто застраховката има €500 самоучастие, €1,200/год. премия. След €3,000 инцидент, общо плащаш €___" },
+            "correctAnswer": 1700,
+            "answerMin": 1690,
+            "answerMax": 1710,
+            "answerUnit": "€",
+            "explanation": { "en": "€1,200 premium + €500 deductible = €1,700. Insurance covered the remaining €2,500.", "bg": "€1,200 премия + €500 самоучастие = €1,700. Застраховката покри останалите €2,500." }
+          },
+          {
+            "id": "ins-sort-1",
+            "type": "sort_items",
+            "xp": 20,
+            "sortItems": [
+              { "label": { "en": "Health insurance", "bg": "Здравна застраховка" }, "emoji": "🏥", "isAsset": true },
+              { "label": { "en": "Extended warranty on a toaster", "bg": "Удължена гаранция за тостер" }, "emoji": "🍞", "isAsset": false },
+              { "label": { "en": "Disability insurance (high-earner)", "bg": "Застраховка за неработоспособност (висок доход)" }, "emoji": "♿", "isAsset": true },
+              { "label": { "en": "Phone insurance for €600 phone", "bg": "Застраховка за телефон €600" }, "emoji": "📱", "isAsset": false },
+              { "label": { "en": "Term life (parent of young kids)", "bg": "Срочна жив. застр. (родител с малки деца)" }, "emoji": "👨‍👩‍👧", "isAsset": true },
+              { "label": { "en": "Rental car damage waiver", "bg": "Доплащане за щети на кола под наем" }, "emoji": "🚗", "isAsset": false }
+            ]
+          },
+          {
+            "id": "ins-rpg-1",
+            "type": "rpg_scenario",
+            "xp": 25,
+            "scenario": { "en": "You're shopping for health insurance. Plan A: €200/month, €5,000 deductible. Plan B: €450/month, €500 deductible. You're young, healthy, and have €8,000 in emergency savings.", "bg": "Избираш здравна застраховка. План A: €200/мес, €5,000 самоучастие. План B: €450/мес, €500 самоучастие. Млад си, здрав, имаш €8,000 спестявания." },
+            "avatar": "🧑‍⚕️",
+            "choices": [
+              { "label": { "en": "Plan A — high-deductible, save the difference", "bg": "План A — високо самоучастие, спести разликата" }, "emoji": "💰", "consequence": { "en": "Smart for your situation. €3,000/year saved on premiums covers the deductible if needed. You're self-insuring for small stuff.", "bg": "Умно за твоята ситуация. €3,000/год спестени от премиите покриват самоучастието ако трябва. Самоосигуряваш дребното." }, "cashFlowChange": 3000, "isGood": true },
+              { "label": { "en": "Plan B — comfort, low deductible", "bg": "План B — комфорт, ниско самоучастие" }, "emoji": "🛋️", "consequence": { "en": "You'll pay €3,000 MORE per year for marginal extra coverage. Math doesn't favor it for healthy people.", "bg": "Плащаш €3,000 ПОВЕЧЕ годишно за минимално допълнение. Математиката не е на твоя страна." }, "cashFlowChange": -2500, "isGood": false },
+              { "label": { "en": "Skip insurance entirely", "bg": "Без застраховка изобщо" }, "emoji": "🚨", "consequence": { "en": "One serious accident = €100,000 bill = bankruptcy. Health insurance is non-negotiable. Pick the cheap plan, but pick one.", "bg": "Един сериозен инцидент = €100,000 сметка = фалит. Здравната застраховка е задължителна." }, "cashFlowChange": -50000, "isGood": false }
+            ]
+          },
+          {
+            "id": "ins-choice-3",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Why are extended warranties on small electronics usually a bad deal?", "bg": "Защо удължените гаранции на малка електроника са лоша сделка?" },
+            "options": [
+              { "en": "They never pay out", "bg": "Никога не плащат" },
+              { "en": "Replacement cost ≈ self-insure cheaper", "bg": "Цената на замяна ≈ самоосигуряване е по-евтино" },
+              { "en": "They're illegal", "bg": "Незаконни са" },
+              { "en": "Phones never break", "bg": "Телефоните не се чупят" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Stores profit ~50% margin on warranties. If the item breaks, replacing it from savings is usually cheaper than years of premiums.", "bg": "Магазините печелят ~50% марж от гаранциите. Замяна от спестявания обикновено излиза по-евтино." }
+          },
+          {
+            "id": "ins-choice-4",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Your renter's insurance costs €15/month. It mainly protects against...", "bg": "Застраховката за наемател струва €15/мес. Защитава главно срещу..." },
+            "options": [
+              { "en": "Your landlord raising rent", "bg": "Хазяинът ти да вдигне наема" },
+              { "en": "Theft, fire damage to your stuff, and liability", "bg": "Кражба, щета от пожар, отговорност" },
+              { "en": "Bad neighbors", "bg": "Лоши съседи" },
+              { "en": "Property tax", "bg": "Данък имоти" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Renter's insurance is one of the best deals in personal finance — €15/month covers thousands in belongings + liability if someone gets hurt in your apartment.", "bg": "Една от най-добрите сделки — €15/мес покрива хиляди в собственост + отговорност ако някой се нарани при теб." }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "risk-management",
+    "title": { "en": "Emergency Planning & Risk", "bg": "Аварийно планиране и риск" },
+    "description": { "en": "Prepare for the unexpected — financially and mentally.", "bg": "Подготви се за неочакваното — финансово и психически." },
+    "icon": "🚨",
+    "color": "orange",
+    "order": 7,
+    "proOnly": false,
+    "lessons": [
+      {
+        "id": "risk-essentials",
+        "moduleId": "risk-management",
+        "title": { "en": "Risk-Proof Your Money", "bg": "Подсигури парите си срещу риск" },
+        "description": { "en": "Spot risks early and build a buffer that survives any shock.", "bg": "Засечи рисковете рано и изгради буфер срещу всеки шок." },
+        "icon": "⚠️",
+        "xpReward": 165,
+        "order": 1,
+        "exercises": [
+          {
+            "id": "rk-theory-1",
+            "type": "theory",
+            "xp": 0,
+            "slides": [
+              {
+                "emoji": "⚠️",
+                "title": { "en": "The 4 Types of Financial Risk", "bg": "4-те вида финансов риск" },
+                "body": { "en": "1. MARKET — your investments lose value (stocks crash)\n2. CREDIT — borrowers don't pay you back (bonds default)\n3. LIQUIDITY — you can't access cash quickly enough\n4. INFLATION — your cash buys less over time\n\nMost people only think about market risk. The other three are equally dangerous.", "bg": "1. ПАЗАРЕН — инвестициите губят стойност\n2. КРЕДИТЕН — длъжниците не плащат\n3. ЛИКВИДЕН — нямаш достъп до пари бързо\n4. ИНФЛАЦИОНЕН — парите ти купуват по-малко\n\nПовечето хора мислят само за пазарния. Другите 3 са еднакво опасни." },
+                "highlight": { "en": "💡 Cash under the mattress isn't safe — inflation eats ~3%/year, silently.", "bg": "💡 Парите под матрака не са безопасни — инфлацията яде ~3%/година." }
+              },
+              {
+                "emoji": "🛟",
+                "title": { "en": "Recession-Proofing", "bg": "Подсигуряване срещу рецесия" },
+                "body": { "en": "Recessions hit every 7–10 years on average. To survive one without panic:\n• 6+ months of expenses in cash\n• Multiple income streams\n• No high-interest debt\n• Long-term investments (don't sell at the bottom)\n\nThe people who buy DURING a recession build the biggest wealth.", "bg": "Рецесия идва на всеки 7–10 години. За да я преживееш без паника:\n• 6+ месеца разходи в кеш\n• Няколко източника на доход\n• Без скъп дълг\n• Дългосрочни инвестиции (не продавай на дъното)\n\nХората, които КУПУВАТ по време на рецесия, печелят най-много." },
+                "highlight": { "en": "🎯 Crisis = opportunity for the prepared. Panic = wealth destruction for everyone else.", "bg": "🎯 Криза = възможност за подготвените. Паника = унищожение на богатство за останалите." }
+              }
+            ]
+          },
+          {
+            "id": "rk-choice-1",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Inflation at 3% means €100 today buys what €___ buys in 10 years?", "bg": "Инфлация 3% значи €100 днес купуват колкото €___ след 10 години?" },
+            "options": [
+              { "en": "€103", "bg": "€103" },
+              { "en": "€134", "bg": "€134" },
+              { "en": "€97", "bg": "€97" },
+              { "en": "€70", "bg": "€70" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "€100 × 1.03^10 ≈ €134. To maintain purchasing power, you need ~34% more money in 10 years.", "bg": "€100 × 1.03^10 ≈ €134. За да запазиш покупателната сила, нужни ~34% повече пари след 10 г." }
+          },
+          {
+            "id": "rk-fill-1",
+            "type": "fill_blank",
+            "xp": 15,
+            "question": { "en": "Your monthly expenses are €1,800. To survive a 6-month job loss, you need at least €___ in cash.", "bg": "Месечните ти разходи са €1,800. За да преживееш 6 месеца без работа, трябват ти €___" },
+            "correctAnswer": 10800,
+            "answerMin": 10700,
+            "answerMax": 10900,
+            "answerUnit": "€",
+            "explanation": { "en": "€1,800 × 6 = €10,800. This is your liquidity buffer — accessible, not invested in stocks.", "bg": "€1,800 × 6 = €10,800. Това е ликвидният буфер — достъпен, не в акции." }
+          },
+          {
+            "id": "rk-sort-1",
+            "type": "sort_items",
+            "xp": 20,
+            "sortItems": [
+              { "label": { "en": "Diversified portfolio", "bg": "Диверсифициран портфейл" }, "emoji": "📊", "isAsset": true },
+              { "label": { "en": "All savings in 1 stock", "bg": "Всички спестявания в 1 акция" }, "emoji": "🎯", "isAsset": false },
+              { "label": { "en": "6-month emergency fund", "bg": "6-месечен авариен фонд" }, "emoji": "🛟", "isAsset": true },
+              { "label": { "en": "All cash, no investments", "bg": "Само кеш, без инвестиции" }, "emoji": "💸", "isAsset": false },
+              { "label": { "en": "Multiple income streams", "bg": "Няколко източника на доход" }, "emoji": "💼", "isAsset": true },
+              { "label": { "en": "100% leveraged real estate", "bg": "100% на ливъридж имот" }, "emoji": "🏚️", "isAsset": false }
+            ]
+          },
+          {
+            "id": "rk-rpg-1",
+            "type": "rpg_scenario",
+            "xp": 25,
+            "scenario": { "en": "Markets just crashed 35%. Your portfolio is down €20,000. The news screams \"WORST CRISIS IN DECADES!\" Your emergency fund is intact. What do you do?", "bg": "Пазарите паднаха 35%. Портфейлът ти е надолу €20,000. Новините крещят „НАЙ-ГОЛЯМАТА КРИЗА!\" Аварийният фонд е цял. Какво правиш?" },
+            "avatar": "📉",
+            "choices": [
+              { "label": { "en": "Sell everything before it gets worse", "bg": "Продай всичко преди да стане по-зле" }, "emoji": "😱", "consequence": { "en": "You locked in losses. Markets recovered 6 months later. You missed the rebound. Never sell at the bottom.", "bg": "Заключи загубите. Пазарите се възстановиха след 6 месеца. Изпусна отскока. Никога не продавай на дъното." }, "cashFlowChange": -20000, "isGood": false },
+              { "label": { "en": "Hold + invest more if you have spare cash", "bg": "Дръж + инвестирай повече ако имаш кеш" }, "emoji": "💎", "consequence": { "en": "You bought the dip. 18 months later your portfolio is up 20% from pre-crash. Crisis was your opportunity.", "bg": "Купи спада. След 18 месеца си с +20% спрямо преди кризата. Кризата беше възможност." }, "cashFlowChange": 25000, "isGood": true },
+              { "label": { "en": "Panic-check the app every 5 minutes", "bg": "Проверявай приложението на 5 минути" }, "emoji": "📱", "consequence": { "en": "You'll likely capitulate eventually. Studies: investors who check daily underperform by ~5%/yr. Turn it off.", "bg": "Ще се пречупиш накрая. Изследвания: тези, които проверяват дневно, изостават с ~5%/год. Изключи го." }, "cashFlowChange": -5000, "isGood": false }
+            ]
+          },
+          {
+            "id": "rk-choice-2",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "What's the safest place for your emergency fund?", "bg": "Кое е най-безопасното място за авариен фонд?" },
+            "options": [
+              { "en": "Stock index fund", "bg": "Индексен фонд от акции" },
+              { "en": "High-yield savings or money market account", "bg": "Спестовна сметка с висока лихва" },
+              { "en": "Crypto stablecoin", "bg": "Крипто стейбълкойн" },
+              { "en": "Long-term real estate", "bg": "Дългосрочен имот" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Emergency fund needs LIQUIDITY (instant access) and SAFETY. HYSA gives both. Stocks can be down 30% when you need it.", "bg": "Аварийният фонд трябва ЛИКВИДНОСТ (моментен достъп) и БЕЗОПАСНОСТ. Спестовна сметка дава и двете." }
+          },
+          {
+            "id": "rk-choice-3",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Best inflation hedge for long-term savings?", "bg": "Най-добрата защита от инфлация за дългосрочни спестявания?" },
+            "options": [
+              { "en": "Cash under the mattress", "bg": "Пари под матрака" },
+              { "en": "Stocks, real estate, and TIPS bonds", "bg": "Акции, имоти, облигации против инфлация" },
+              { "en": "Buying gold every paycheck", "bg": "Покупка на злато всеки месец" },
+              { "en": "Long-term fixed-rate bonds", "bg": "Дългосрочни облигации с фиксирана лихва" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Productive assets (stocks, real estate) typically outpace inflation over decades. TIPS adjust principal with CPI. Cash always loses.", "bg": "Производителните активи (акции, имоти) бият инфлацията дългосрочно. TIPS се коригират с инфлацията. Кешът губи." }
+          },
+          {
+            "id": "rk-choice-4",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Why is having ONE income source risky?", "bg": "Защо ЕДИН източник на доход е рисково?" },
+            "options": [
+              { "en": "Tax authorities target single earners", "bg": "Данъчните таргетират едноначални" },
+              { "en": "Job loss = 100% of income gone overnight", "bg": "Загуба на работа = 100% доход изчезва за нощ" },
+              { "en": "It's illegal in most countries", "bg": "Незаконно в повечето страни" },
+              { "en": "Banks won't give you loans", "bg": "Банките няма да ти дадат заем" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Diversifying income (job + side hustle + investments) is just like diversifying a portfolio. Don't put 100% of your livelihood in one basket.", "bg": "Диверсификация на доход (работа + странично + инвестиции) = като диверсификация на портфейл. Не слагай 100% в 1 кошница." }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "smart-shopping",
+    "title": { "en": "Smart Shopping & Negotiation", "bg": "Умно пазаруване и преговори" },
+    "description": { "en": "Spend less without feeling deprived.", "bg": "Харчи по-малко без чувство на лишение." },
+    "icon": "🛍️",
+    "color": "purple",
+    "order": 8,
+    "proOnly": false,
+    "lessons": [
+      {
+        "id": "shopping-mastery",
+        "moduleId": "smart-shopping",
+        "title": { "en": "Beat the Pricing Tricks", "bg": "Победи ценовите трикове" },
+        "description": { "en": "Spot retail manipulation, negotiate hard, optimize rewards.", "bg": "Засечи манипулациите, преговаряй твърдо, оптимизирай бонусите." },
+        "icon": "🎯",
+        "xpReward": 165,
+        "order": 1,
+        "exercises": [
+          {
+            "id": "ss-theory-1",
+            "type": "theory",
+            "xp": 0,
+            "slides": [
+              {
+                "emoji": "🧠",
+                "title": { "en": "How Retailers Trick You", "bg": "Как магазините те манипулират" },
+                "body": { "en": "Common pricing tricks:\n• ANCHORING — fake \"original price\" makes the discount feel bigger\n• CHARM PRICING — €9.99 feels much less than €10\n• DECOY — \"medium\" option overpriced to make \"large\" look reasonable\n• URGENCY — \"only 3 left!\" triggers panic buying\n\nAwareness is the antidote.", "bg": "Чести трикове:\n• АНКЕР — фалшива „първоначална цена\" прави отстъпката да изглежда по-голяма\n• ЧАРМ — €9.99 изглежда много по-малко от €10\n• ПРИМАМКА — „средната\" е надценена, за да изглежда „голямата\" разумна\n• СПЕШНОСТ — „само 3 останали!\" предизвиква паника\n\nОсъзнаване = противоотровата." },
+                "highlight": { "en": "💡 Sleep on any purchase over €100. The \"want\" usually fades within 24h.", "bg": "💡 Преспи всяка покупка над €100. Желанието обикновено изчезва за 24ч." }
+              },
+              {
+                "emoji": "🤝",
+                "title": { "en": "Negotiation = Free Money", "bg": "Преговорите = безплатни пари" },
+                "body": { "en": "Anything recurring or expensive is negotiable: rent, salary, insurance, phone bill, gym, car prices.\n\nThe magic question: \"Is that the best you can do?\" — said politely, with silence after.\n\nNegotiating a €60/month bill down to €40 over 5 years saves €1,200. One conversation.", "bg": "Всичко повтарящо се или скъпо е договоримо: наем, заплата, застраховка, телефон, фитнес, кола.\n\nМагическият въпрос: „Това ли е най-доброто?\" — учтиво, с тишина след това.\n\nПреговаряне на €60/мес сметка до €40 за 5 години = €1,200. Един разговор." },
+                "highlight": { "en": "🎯 The worst they can say is \"no\" — same as if you didn't ask.", "bg": "🎯 Най-лошото е да кажат „не\" — същото е като да не попиташ." }
+              }
+            ]
+          },
+          {
+            "id": "sh2-choice-1",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "A jacket is \"50% off — was €240, now €120!\" Best response?", "bg": "Яке „50% намаление — беше €240, сега €120!\" Най-добра реакция?" },
+            "options": [
+              { "en": "Buy immediately — half off!", "bg": "Купи веднага — наполовина!" },
+              { "en": "Ask: would I pay €120 if it weren't on sale?", "bg": "Питай: бих ли платил €120 без намаление?" },
+              { "en": "Buy 2 to maximize savings", "bg": "Купи 2 за повече спестявания" },
+              { "en": "Wait until it's 70% off", "bg": "Изчакай 70% намаление" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Anchoring trick. The \"original price\" is often inflated. Decide based on whether the CURRENT price is worth it to you, ignoring the \"discount.\"", "bg": "Трик с анкериране. „Първоначалната цена\" често е надута. Решавай дали ТЕКУЩАТА цена ти струва." }
+          },
+          {
+            "id": "sh2-choice-2",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Why is €9.99 so common instead of €10?", "bg": "Защо €9.99 е толкова често вместо €10?" },
+            "options": [
+              { "en": "Tax requirements", "bg": "Данъчни изисквания" },
+              { "en": "Brain reads the first digit — €9.99 feels like \"9 something\"", "bg": "Мозъкът чете първата цифра — €9.99 е „9 нещо\"" },
+              { "en": "It's cheaper to print", "bg": "По-евтино за принтиране" },
+              { "en": "Random tradition", "bg": "Случайна традиция" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Studies show \".99\" pricing increases sales 24%. It's psychological — your brain rounds DOWN, not up.", "bg": "Изследванията показват, че \".99\" увеличава продажбите с 24%. Психология — мозъкът закръгля НАДОЛУ." }
+          },
+          {
+            "id": "sh2-fill-1",
+            "type": "fill_blank",
+            "xp": 15,
+            "question": { "en": "You negotiate your phone bill from €55/mo to €35/mo. Over 5 years that saves €___", "bg": "Договаряш телефонната сметка от €55/мес на €35/мес. За 5 години спестяваш €___" },
+            "correctAnswer": 1200,
+            "answerMin": 1190,
+            "answerMax": 1210,
+            "answerUnit": "€",
+            "explanation": { "en": "(€55 − €35) × 60 months = €1,200. A 10-minute phone call earned you €1,200/hour effectively.", "bg": "(€55 − €35) × 60 месеца = €1,200. 10-минутно обаждане ти спечели реално €1,200/час." }
+          },
+          {
+            "id": "sh2-sort-1",
+            "type": "sort_items",
+            "xp": 20,
+            "sortItems": [
+              { "label": { "en": "24-hour rule before big purchases", "bg": "Правилото 24 часа преди голяма покупка" }, "emoji": "⏰", "isAsset": true },
+              { "label": { "en": "Buying because \"it's 50% off\"", "bg": "Купуваш защото е „50% намалено\"" }, "emoji": "🚩", "isAsset": false },
+              { "label": { "en": "Cashback credit card paid in full", "bg": "Кредитна карта с кешбек, платена изцяло" }, "emoji": "💳", "isAsset": true },
+              { "label": { "en": "Impulse-buying at checkout", "bg": "Импулсна покупка на касата" }, "emoji": "🛒", "isAsset": false },
+              { "label": { "en": "Negotiating recurring bills yearly", "bg": "Договаряне на сметки всяка година" }, "emoji": "🤝", "isAsset": true },
+              { "label": { "en": "Subscriptions you forgot existed", "bg": "Абонаменти, които си забравил" }, "emoji": "👻", "isAsset": false }
+            ]
+          },
+          {
+            "id": "sh2-rpg-1",
+            "type": "rpg_scenario",
+            "xp": 25,
+            "scenario": { "en": "Salary review. Your boss offers a 3% raise. Inflation last year was 5%. You've delivered great work. What do you do?", "bg": "Преглед на заплата. Шефът предлага 3% увеличение. Инфлацията миналата година беше 5%. Свършил си страхотна работа. Какво правиш?" },
+            "avatar": "💼",
+            "choices": [
+              { "label": { "en": "Accept gratefully — it's better than nothing", "bg": "Приеми с благодарност — по-добре от нищо" }, "emoji": "🙏", "consequence": { "en": "You just took a 2% pay cut in real terms. Inflation > raise. Most negotiations are won by people who simply ask.", "bg": "Току-що взе −2% реално намаление. Инфлация > увеличение. Повечето преговори се печелят от тези, които просто питат." }, "cashFlowChange": -800, "isGood": false },
+              { "label": { "en": "Counter with data: market rate, your wins, ask for 8%", "bg": "Контра с данни: пазарна заплата, успехи, искай 8%" }, "emoji": "📊", "consequence": { "en": "You meet at 6%. Over 30 years, that compounds to €100K+ extra in lifetime earnings. The single highest-ROI conversation.", "bg": "Срещате се на 6%. За 30 години = €100K+ повече доходи. Най-високата възвръщаемост от един разговор." }, "cashFlowChange": 1500, "isGood": true },
+              { "label": { "en": "Quit on the spot in protest", "bg": "Напусни в знак на протест" }, "emoji": "🚪", "consequence": { "en": "Burned bridges, no leverage, no income. Negotiate FROM your job, not by abandoning it.", "bg": "Изгорени мостове, без лост, без доход. Преговаряй ОТ работата, не я зарязвай." }, "cashFlowChange": -10000, "isGood": false }
+            ]
+          },
+          {
+            "id": "sh2-choice-3",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Best way to use a cashback credit card?", "bg": "Най-добрият начин да ползваш кредитна карта с кешбек?" },
+            "options": [
+              { "en": "Spend more to get more cashback", "bg": "Харчи повече за повече кешбек" },
+              { "en": "Use it only for planned purchases, pay in full monthly", "bg": "Само за планирани покупки, плащай изцяло всеки месец" },
+              { "en": "Carry a small balance for credit score", "bg": "Носи малък баланс за кредитен рейтинг" },
+              { "en": "Take cash advances when broke", "bg": "Тегли кеш когато си без пари" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Pay in full = free 1–2% on planned spending. Carrying a balance at 22% APR destroys the cashback math instantly.", "bg": "Плащай изцяло = безплатни 1–2% от планираното. Носиш баланс при 22% ГПР = унищожаваш всичко." }
+          },
+          {
+            "id": "sh2-choice-4",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "What's a \"decoy price\"?", "bg": "Какво е „примамна цена\"?" },
+            "options": [
+              { "en": "A discount only for new customers", "bg": "Намаление само за нови клиенти" },
+              { "en": "An overpriced option that makes another look like a great deal", "bg": "Надценена опция, която прави друга да изглежда страхотна" },
+              { "en": "A typo by the cashier", "bg": "Грешка на касиера" },
+              { "en": "Tax-included pricing", "bg": "Цена с включен данък" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Classic example: small popcorn €5, medium €8.50, large €9. The medium is the decoy making the large feel \"obvious value.\"", "bg": "Класически пример: малки пуканки €5, средни €8.50, големи €9. Средните са примамката." }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "money-mindset",
+    "title": { "en": "Money Mindset & Behavior", "bg": "Манталитет и поведение спрямо парите" },
+    "description": { "en": "Master the psychology that drives every financial decision.", "bg": "Овладей психологията зад всяко финансово решение." },
+    "icon": "🧠",
+    "color": "green",
+    "order": 9,
+    "proOnly": false,
+    "lessons": [
+      {
+        "id": "behavioral-finance",
+        "moduleId": "money-mindset",
+        "title": { "en": "Cognitive Biases & Wealth", "bg": "Когнитивни пристрастия и богатство" },
+        "description": { "en": "Spot the brain glitches that cost you thousands.", "bg": "Засечи грешките на мозъка, които ти струват хиляди." },
+        "icon": "🪞",
+        "xpReward": 165,
+        "order": 1,
+        "exercises": [
+          {
+            "id": "mm-theory-1",
+            "type": "theory",
+            "xp": 0,
+            "slides": [
+              {
+                "emoji": "🧠",
+                "title": { "en": "Your Brain Is Bad at Money", "bg": "Мозъкът ти е лош с пари" },
+                "body": { "en": "Common biases that destroy wealth:\n• LOSS AVERSION — losses hurt 2× more than equivalent gains\n• RECENCY — you assume the recent past predicts the future\n• HERD — you buy what others buy (at the top)\n• OVERCONFIDENCE — \"I'll beat the market\" (most don't)\n\nKnowing them doesn't fix them, but awareness slows the impulse.", "bg": "Чести пристрастия, унищожаващи богатство:\n• ОТБЯГВАНЕ НА ЗАГУБА — загубите болят 2× повече\n• ПОСЛЕДНОСТ — мислиш, че скорошното предсказва бъдещето\n• СТАДО — купуваш каквото другите (на върха)\n• САМОУВЕРЕНОСТ — „ще победя пазара\" (почти никой не може)\n\nОсъзнаването не оправя, но забавя импулса." },
+                "highlight": { "en": "💡 Daniel Kahneman won a Nobel Prize for proving humans are NOT rational with money.", "bg": "💡 Даниел Канеман спечели Нобелова награда за доказване, че хората НЕ са рационални с пари." }
+              },
+              {
+                "emoji": "🎯",
+                "title": { "en": "Goals + Systems", "bg": "Цели + системи" },
+                "body": { "en": "Goal: \"save €10,000 this year.\"\nSystem: \"€833 auto-transferred on the 1st of every month.\"\n\nGoals describe destinations. Systems get you there. Wealthy people obsess over systems, not goals.\n\nMost financial transformation = boring repetition done automatically.", "bg": "Цел: „спести €10,000 тази година.\"\nСистема: „€833 авто-превод 1-во число всеки месец.\"\n\nЦелите описват дестинацията. Системите те водят там. Богатите се вманиачават по системи, не по цели.\n\nФинансовата трансформация = скучна автоматична рутина." },
+                "highlight": { "en": "🔑 \"You don't rise to the level of your goals. You fall to the level of your systems.\" — James Clear", "bg": "🔑 „Не се издигаш до целите си. Падаш до нивото на системите си.\" — Джеймс Клиър" }
+              }
+            ]
+          },
+          {
+            "id": "mm-choice-1",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "You bought a stock at €100. It's now €70. You should...", "bg": "Купи акция за €100. Сега е €70. Трябва..." },
+            "options": [
+              { "en": "Hold until it returns to €100 — never lose!", "bg": "Дръж докато се върне до €100 — не губи!" },
+              { "en": "Decide based on its FUTURE prospects, not your purchase price", "bg": "Реши на база БЪДЕЩЕ, не цената, на която си купил" },
+              { "en": "Buy more to lower your average", "bg": "Купи още да намалиш средната" },
+              { "en": "Sell immediately to stop the pain", "bg": "Продай веднага да спре болката" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Anchoring on your purchase price is irrational. The market doesn't care what you paid. Ask: would I buy this stock TODAY at €70?", "bg": "Анкериране на покупната цена = ирационално. Пазарът не го интересува. Питай: бих ли купил ДНЕС за €70?" }
+          },
+          {
+            "id": "mm-choice-2",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "What is \"loss aversion\"?", "bg": "Какво е „отбягване на загуба\"?" },
+            "options": [
+              { "en": "Losing money to taxes", "bg": "Губиш пари от данъци" },
+              { "en": "Losses feel ~2× as painful as equivalent gains feel good", "bg": "Загубите болят ~2× повече от еквивалентни печалби" },
+              { "en": "Avoiding all investment risk", "bg": "Избягване на всеки инвестиционен риск" },
+              { "en": "A bank fee", "bg": "Банкова такса" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Kahneman & Tversky's classic finding: pain of losing €100 ≈ joy of gaining €200. This makes us hold losers too long and sell winners too soon.", "bg": "Канеман и Тверски: болката от загуба €100 ≈ радостта от печалба €200. Затова държим губещи и продаваме печеливши." }
+          },
+          {
+            "id": "mm-fill-1",
+            "type": "fill_blank",
+            "xp": 15,
+            "question": { "en": "If €833/month is auto-saved at 7% return, in 10 years you have approximately €___", "bg": "Ако €833/мес авто-се спестяват при 7%, след 10 години имаш €___" },
+            "correctAnswer": 144000,
+            "answerMin": 138000,
+            "answerMax": 150000,
+            "answerUnit": "€",
+            "explanation": { "en": "~€144,000. Total invested: €100,000. Compound interest: ~€44,000. The system did 100% of the work.", "bg": "~€144,000. Общо вложени: €100,000. Сложна лихва: ~€44,000. Системата свърши 100% от работата." }
+          },
+          {
+            "id": "mm-sort-1",
+            "type": "sort_items",
+            "xp": 20,
+            "sortItems": [
+              { "label": { "en": "Automating savings every payday", "bg": "Авто-спестяване всяка заплата" }, "emoji": "🤖", "isAsset": true },
+              { "label": { "en": "FOMO-buying a hot crypto", "bg": "FOMO покупка на крипто" }, "emoji": "🚀", "isAsset": false },
+              { "label": { "en": "Tracking net worth monthly", "bg": "Месечно проследяване на нетна стойност" }, "emoji": "📊", "isAsset": true },
+              { "label": { "en": "Checking stocks 10× per day", "bg": "Проверка на акции 10× дневно" }, "emoji": "📱", "isAsset": false },
+              { "label": { "en": "Long-term written goals", "bg": "Дългосрочни писмени цели" }, "emoji": "📝", "isAsset": true },
+              { "label": { "en": "Following financial influencers blindly", "bg": "Сляпо следване на финфлуенсъри" }, "emoji": "👀", "isAsset": false }
+            ]
+          },
+          {
+            "id": "mm-rpg-1",
+            "type": "rpg_scenario",
+            "xp": 25,
+            "scenario": { "en": "Your friend made €30,000 on a meme stock and won't shut up about it. You're tempted to dump your boring index fund into the same trade. Markets feel \"easy\" right now.", "bg": "Приятел спечели €30,000 на мийм акция и не спира да говори. Изкушаваш се да прехвърлиш скучния си индексен фонд в същата сделка. Пазарите изглеждат „лесни\"." },
+            "avatar": "🎰",
+            "choices": [
+              { "label": { "en": "Sell your ETF, buy the meme stock", "bg": "Продай ETF, купи мийм акцията" }, "emoji": "🦍", "consequence": { "en": "Stock crashed 80% the next month. You sold low, bought high — textbook herd behavior. €15,000 gone.", "bg": "Акцията падна 80% следващия месец. Продаде ниско, купи високо — стадно поведение. €15,000 изчезнаха." }, "cashFlowChange": -15000, "isGood": false },
+              { "label": { "en": "Stick to plan. Maybe gamble 1–2% \"fun money\"", "bg": "Дръж плана. Можеш да рискуваш 1–2% „забавни пари\"" }, "emoji": "💎", "consequence": { "en": "Disciplined. Long-term you'll outperform 90% of \"hot stock\" traders. Boring wins.", "bg": "Дисциплиниран. Дългосрочно ще бияш 90% от „горещи акции\" търговци. Скучното печели." }, "cashFlowChange": 5000, "isGood": true },
+              { "label": { "en": "Take a loan to buy the meme stock", "bg": "Вземи заем да купиш мийм акцията" }, "emoji": "🚨", "consequence": { "en": "Leveraged speculation = the fastest way to financial ruin. Don't borrow to gamble.", "bg": "Спекулация на ливъридж = най-бързо до финансова разруха. Не заемай за хазарт." }, "cashFlowChange": -25000, "isGood": false }
+            ]
+          },
+          {
+            "id": "mm-choice-3",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "What's the difference between a goal and a system?", "bg": "Каква е разликата между цел и система?" },
+            "options": [
+              { "en": "They're the same", "bg": "Едно и също е" },
+              { "en": "Goal = destination; system = repeatable process to get there", "bg": "Цел = дестинация; система = повтаряем процес" },
+              { "en": "System is for businesses only", "bg": "Системата е само за бизнес" },
+              { "en": "Goal is for short-term, system long-term", "bg": "Целта е краткосрочно, системата дългосрочно" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "\"Save €10K\" is a goal. \"€833 auto-transferred monthly\" is a system. Systems work even when motivation runs out.", "bg": "„Спести €10K\" е цел. „€833 авто-превод месечно\" е система. Системите работят дори когато мотивацията свърши." }
+          },
+          {
+            "id": "mm-choice-4",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Which habit correlates MOST with building wealth?", "bg": "Кой навик корелира НАЙ-СИЛНО с богатство?" },
+            "options": [
+              { "en": "Picking winning stocks", "bg": "Избиране на печеливши акции" },
+              { "en": "Spending less than you earn — consistently", "bg": "Харчиш по-малко от това, което печелиш — постоянно" },
+              { "en": "Earning a high income", "bg": "Печелиш висок доход" },
+              { "en": "Watching financial news daily", "bg": "Гледаш финансови новини всеки ден" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Studies of millionaires (Stanley & Danko's \"The Millionaire Next Door\") show consistent saving > high income > stock picking. Boring beats brilliant.", "bg": "Изследвания на милионери („The Millionaire Next Door\"): постоянно спестяване > висок доход > избор на акции. Скучното бие гениалното." }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "advanced-investing",
+    "title": { "en": "Advanced Investing", "bg": "Напреднало инвестиране" },
+    "description": { "en": "Beyond index funds — go global, go disciplined.", "bg": "Отвъд индексните фондове — глобално и дисциплинирано." },
+    "icon": "📈",
+    "color": "blue",
+    "order": 10,
+    "proOnly": true,
+    "lessons": [
+      {
+        "id": "portfolio-construction",
+        "moduleId": "advanced-investing",
+        "title": { "en": "Building a Pro Portfolio", "bg": "Изграждане на про портфейл" },
+        "description": { "en": "Asset allocation, rebalancing, and disciplined contributions.", "bg": "Разпределение на активи, ребалансиране, дисциплинирани вноски." },
+        "icon": "🌐",
+        "xpReward": 175,
+        "order": 1,
+        "exercises": [
+          {
+            "id": "ai-theory-1",
+            "type": "theory",
+            "xp": 0,
+            "slides": [
+              {
+                "emoji": "🌐",
+                "title": { "en": "Asset Allocation = 90% of Returns", "bg": "Разпределението на активи = 90% от резултата" },
+                "body": { "en": "Studies (Brinson, Hood & Beebower) show ~90% of long-term portfolio variance comes from asset allocation — not stock picking.\n\nA simple global mix:\n• 60% global stock ETF (VT)\n• 30% bond ETF\n• 10% diversifiers (REITs, gold, cash)\n\nBoring? Yes. Effective? Extremely.", "bg": "Изследванията (Brinson, Hood & Beebower) показват ~90% от дългосрочната вариация е от разпределението — не от избор на акции.\n\nПрост глобален микс:\n• 60% глобален ETF за акции (VT)\n• 30% облигации ETF\n• 10% диверсификатори (REIT, злато, кеш)\n\nСкучно? Да. Ефективно? Много." },
+                "highlight": { "en": "💡 Don't try to pick winners. Own a slice of everything productive.", "bg": "💡 Не се опитвай да избираш победители. Притежавай дял от всичко продуктивно." }
+              },
+              {
+                "emoji": "♻️",
+                "title": { "en": "Rebalancing", "bg": "Ребалансиране" },
+                "body": { "en": "Markets push your allocation off target. After a stock rally, you might end up 75/25 instead of 60/40.\n\nRebalancing = sell what's overweight, buy what's underweight. Once or twice a year is enough.\n\nIt forces you to BUY LOW and SELL HIGH automatically — without emotion.", "bg": "Пазарите изместват таргета ти. След ралли в акции, може да си 75/25 вместо 60/40.\n\nРебалансиране = продай преразпределеното, купи недостатъчното. 1-2 пъти годишно стига.\n\nКарат те да КУПУВАШ НИСКО и ПРОДАВАШ ВИСОКО без емоция." },
+                "highlight": { "en": "🎯 Rebalance by date (every Jan) OR by drift (>5% off target). Never by feeling.", "bg": "🎯 Ребалансирай по дата (всеки януари) ИЛИ по отклонение (>5%). Никога по чувство." }
+              }
+            ]
+          },
+          {
+            "id": "ai-choice-1",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Most of your long-term returns will come from...", "bg": "Повечето от дългосрочната ти доходност идва от..." },
+            "options": [
+              { "en": "Picking the right individual stocks", "bg": "Избор на правилните акции" },
+              { "en": "Asset allocation between stocks/bonds/etc", "bg": "Разпределение между акции/облигации/и др" },
+              { "en": "Timing the market", "bg": "Хващане на пазарния момент" },
+              { "en": "Watching daily news", "bg": "Гледане на дневни новини" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Decades of research: ~90% of variance comes from allocation, not selection or timing. Get the mix right; the rest is noise.", "bg": "Десетилетия изследвания: ~90% от вариацията е от разпределението. Правилният микс > избор и таймиране." }
+          },
+          {
+            "id": "ai-choice-2",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Best time to rebalance a portfolio?", "bg": "Най-доброто време за ребалансиране?" },
+            "options": [
+              { "en": "Daily — stay sharp!", "bg": "Дневно — бъди фокусиран!" },
+              { "en": "Annually OR when drift exceeds 5%", "bg": "Годишно ИЛИ при отклонение >5%" },
+              { "en": "Never — let it ride", "bg": "Никога — остави го" },
+              { "en": "Whenever the news scares you", "bg": "Когато новините те плашат" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Too often = unnecessary trading costs and tax. Too rarely = drift exposes you to wrong risk. Annual + threshold = sweet spot.", "bg": "Твърде често = разходи и данъци. Твърде рядко = грешен риск. Годишно + праг = идеално." }
+          },
+          {
+            "id": "ai-fill-1",
+            "type": "fill_blank",
+            "xp": 15,
+            "question": { "en": "Your target allocation is 60/40 (stock/bond). Total portfolio €100K. After a rally you have €72K stocks, €38K bonds. To rebalance back to 60/40, sell €___ of stocks.", "bg": "Целеви микс 60/40. Портфейл €100K. След ралли: €72K акции, €38K облигации. За връщане към 60/40, продай €___ акции." },
+            "correctAnswer": 6000,
+            "answerMin": 5800,
+            "answerMax": 6200,
+            "answerUnit": "€",
+            "explanation": { "en": "Total = €110K. 60% = €66K target stocks. You have €72K → sell €6K. Buy €6K bonds.", "bg": "Общо €110K. 60% = €66K цел акции. Имаш €72K → продай €6K. Купи €6K облигации." }
+          },
+          {
+            "id": "ai-sort-1",
+            "type": "sort_items",
+            "xp": 20,
+            "sortItems": [
+              { "label": { "en": "Global stock ETF (VT)", "bg": "Глобален ETF (VT)" }, "emoji": "🌐", "isAsset": true },
+              { "label": { "en": "All eggs in 1 country's stocks", "bg": "Всичко в акции на 1 държава" }, "emoji": "🥚", "isAsset": false },
+              { "label": { "en": "Annual rebalancing", "bg": "Годишно ребалансиране" }, "emoji": "♻️", "isAsset": true },
+              { "label": { "en": "Selling everything during a crash", "bg": "Продажба на всичко при срив" }, "emoji": "😱", "isAsset": false },
+              { "label": { "en": "Bond ETF for stability", "bg": "ETF от облигации за стабилност" }, "emoji": "🏛️", "isAsset": true },
+              { "label": { "en": "Margin/leverage on retirement money", "bg": "Маржин/ливъридж на пенсионни пари" }, "emoji": "🚨", "isAsset": false }
+            ]
+          },
+          {
+            "id": "ai-rpg-1",
+            "type": "rpg_scenario",
+            "xp": 25,
+            "scenario": { "en": "Your target is 60/40. After 2 great years, you're at 78/22. You're tempted to keep the winning streak going.", "bg": "Таргетът ти е 60/40. След 2 отлични години си на 78/22. Изкушаваш се да оставиш печалбите да текат." },
+            "avatar": "📊",
+            "choices": [
+              { "label": { "en": "Rebalance back to 60/40", "bg": "Ребалансирай до 60/40" }, "emoji": "♻️", "consequence": { "en": "You locked in gains and reduced risk before the inevitable correction. When it came, you lost half as much as un-rebalanced peers.", "bg": "Заключи печалбите и намали риска преди корекцията. Когато тя дойде, загуби наполовина по-малко." }, "cashFlowChange": 8000, "isGood": true },
+              { "label": { "en": "Let winners run — stay 78/22", "bg": "Остави печелившите — стой 78/22" }, "emoji": "🚀", "consequence": { "en": "Two months later, stocks fell 30%. Your portfolio dropped 23%, vs ~18% if rebalanced. Greed cost €5,000.", "bg": "Два месеца по-късно акциите паднаха 30%. Портфейлът −23%, срещу −18% при ребалансиране. Алчността струваше €5,000." }, "cashFlowChange": -5000, "isGood": false },
+              { "label": { "en": "Push to 90/10 — markets feel strong", "bg": "Към 90/10 — пазарите изглеждат силни" }, "emoji": "🎰", "consequence": { "en": "Recency bias took over. Crash hit. You panic-sold near the bottom. Classic wealth destruction loop.", "bg": "Пристрастието към последното превзе. Срив. Продаде в паника близо до дъното. Класически цикъл на разрушение." }, "cashFlowChange": -20000, "isGood": false }
+            ]
+          },
+          {
+            "id": "ai-choice-3",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Dollar-cost averaging (DCA) means...", "bg": "Доларово усредняване (DCA) значи..." },
+            "options": [
+              { "en": "Always buying in dollars only", "bg": "Купуваш само в долари" },
+              { "en": "Investing a fixed amount on a fixed schedule, regardless of price", "bg": "Инвестираш фиксирана сума на фиксиран график, независимо от цената" },
+              { "en": "Averaging your portfolio's price down by buying more", "bg": "Усредняваш цената като купуваш повече" },
+              { "en": "A type of forex strategy", "bg": "Тип валутна стратегия" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "DCA = €500 every month, no matter what. Buys more shares when cheap, fewer when expensive. Removes timing decisions.", "bg": "DCA = €500 всеки месец, независимо. Купуваш повече когато е евтино, по-малко когато е скъпо. Премахва таймирането." }
+          },
+          {
+            "id": "ai-choice-4",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Why include international stocks instead of just home-country?", "bg": "Защо да включваш международни акции вместо само домашни?" },
+            "options": [
+              { "en": "International stocks always beat domestic", "bg": "Международните винаги бият домашните" },
+              { "en": "No country dominates forever — diversification reduces risk", "bg": "Никоя държава не доминира вечно — диверсификацията намалява риск" },
+              { "en": "Tax breaks", "bg": "Данъчни облекчения" },
+              { "en": "Bragging rights", "bg": "За да се хвалиш" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Japan was the world's top market in the 80s. Then 30 years of stagnation. Owning the world means you don't have to predict the next winner.", "bg": "Япония беше топ пазар през 80-те. После 30 години стагнация. Притежаваш света = не предсказваш следващия победител." }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "real-estate",
+    "title": { "en": "Real Estate Investing", "bg": "Инвестиции в недвижими имоти" },
+    "description": { "en": "Use property to build long-term wealth.", "bg": "Използвай имоти за дългосрочно богатство." },
+    "icon": "🏠",
+    "color": "orange",
+    "order": 11,
+    "proOnly": true,
+    "lessons": [
+      {
+        "id": "first-rental",
+        "moduleId": "real-estate",
+        "title": { "en": "Your First Rental Property", "bg": "Първият ти имот под наем" },
+        "description": { "en": "Cash flow, leverage, and the 1% rule.", "bg": "Паричен поток, ливъридж и правилото на 1%." },
+        "icon": "🏢",
+        "xpReward": 175,
+        "order": 1,
+        "exercises": [
+          {
+            "id": "re-theory-1",
+            "type": "theory",
+            "xp": 0,
+            "slides": [
+              {
+                "emoji": "🏠",
+                "title": { "en": "How Real Estate Builds Wealth", "bg": "Как имотите изграждат богатство" },
+                "body": { "en": "Real estate gives you 4 returns at once:\n1. CASH FLOW — rent minus expenses\n2. APPRECIATION — property value rises\n3. LOAN PAYDOWN — tenant pays your mortgage\n4. TAX BENEFITS — depreciation, deductions\n\nLeverage (mortgage) amplifies all four. That's why it built more millionaires than any other asset class.", "bg": "Имотите дават 4 възвръщаемости едновременно:\n1. ПАРИЧЕН ПОТОК — наем минус разходи\n2. ПОСКЪПВАНЕ — стойността расте\n3. ИЗПЛАЩАНЕ — наемателят плаща ипотеката\n4. ДАНЪЧНИ ОБЛЕКЧЕНИЯ\n\nЛивъриджът ги усилва. Затова имотите са направили повече милионери от всеки друг клас активи." },
+                "highlight": { "en": "🎯 With 20% down, a 5% appreciation = 25% return on YOUR cash. Leverage cuts both ways.", "bg": "🎯 С 20% първа вноска, 5% поскъпване = 25% на ТВОИТЕ пари. Ливъриджът работи и в двете посоки." }
+              },
+              {
+                "emoji": "📐",
+                "title": { "en": "The 1% Rule (Cash Flow Filter)", "bg": "Правилото на 1% (филтър за паричен поток)" },
+                "body": { "en": "Quick test: monthly rent should be ≥ 1% of purchase price.\n\n€200,000 home → needs ≥ €2,000/mo rent.\n\nIf it doesn't, the deal probably doesn't cash flow after expenses. In hot markets this rule is hard to meet — that means hot markets often don't cash flow.", "bg": "Бърз тест: месечният наем ≥ 1% от цената.\n\n€200,000 имот → нужни ≥ €2,000/мес.\n\nАко не — имотът вероятно не носи паричен поток след разходи. В горещи пазари правилото е трудно — значи горещите пазари често не носят кеш." },
+                "highlight": { "en": "💡 The 50% rule: ~50% of rent goes to expenses (taxes, insurance, repairs, vacancy, management).", "bg": "💡 Правило 50%: ~50% от наема отиват за разходи (данъци, застраховка, ремонти, вакантност, управление)." }
+              }
+            ]
+          },
+          {
+            "id": "re-choice-1",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "A property costs €250,000. The 1% rule says monthly rent should be at least...", "bg": "Имот струва €250,000. Правилото 1% казва, че наемът трябва да е поне..." },
+            "options": [
+              { "en": "€1,000", "bg": "€1,000" },
+              { "en": "€2,500", "bg": "€2,500" },
+              { "en": "€5,000", "bg": "€5,000" },
+              { "en": "€500", "bg": "€500" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "1% of €250,000 = €2,500/month. Below that, expenses likely eat the cash flow.", "bg": "1% от €250,000 = €2,500/мес. По-малко от това и разходите изяждат паричния поток." }
+          },
+          {
+            "id": "re-fill-1",
+            "type": "fill_blank",
+            "xp": 15,
+            "question": { "en": "Property: €200,000, 20% down. Rent €1,800/mo. Expenses + mortgage = €1,500/mo. Annual cash-on-cash return = ___%", "bg": "Имот €200,000, 20% първа вноска. Наем €1,800/мес. Разходи + ипотека = €1,500/мес. Годишна доходност на кеш = ___%" },
+            "correctAnswer": 9,
+            "answerMin": 8,
+            "answerMax": 10,
+            "answerUnit": "%",
+            "explanation": { "en": "Cash flow: (€1,800 − €1,500) × 12 = €3,600/yr. Down payment: €40,000. €3,600 / €40,000 = 9%. Plus appreciation, principal paydown, tax benefits.", "bg": "Поток: (€1,800 − €1,500) × 12 = €3,600/год. Първа вноска: €40,000. €3,600 / €40,000 = 9%. Плюс поскъпване и др." }
+          },
+          {
+            "id": "re-sort-1",
+            "type": "sort_items",
+            "xp": 20,
+            "sortItems": [
+              { "label": { "en": "Cash-flowing rental property", "bg": "Имот с положителен паричен поток" }, "emoji": "🏠", "isAsset": true },
+              { "label": { "en": "Negative cash flow \"hoping for appreciation\"", "bg": "Отрицателен поток „с надежда за поскъпване\"" }, "emoji": "🤞", "isAsset": false },
+              { "label": { "en": "Property with reserves for repairs", "bg": "Имот с резерв за ремонти" }, "emoji": "🛠️", "isAsset": true },
+              { "label": { "en": "100% leveraged with no reserves", "bg": "100% на ливъридж без резерв" }, "emoji": "🚨", "isAsset": false },
+              { "label": { "en": "REIT in a tax-advantaged account", "bg": "REIT в данъчно облекчена сметка" }, "emoji": "📈", "isAsset": true },
+              { "label": { "en": "Vacation home you'll \"rent sometimes\"", "bg": "Вилно жилище, което „понякога\" се отдава" }, "emoji": "🏖️", "isAsset": false }
+            ]
+          },
+          {
+            "id": "re-rpg-1",
+            "type": "rpg_scenario",
+            "xp": 25,
+            "scenario": { "en": "You found a duplex: €280,000, 20% down. Rent income: €2,400/mo combined. PITI + maintenance + vacancy reserve: €2,300/mo. The agent says \"appreciation will make it work!\"", "bg": "Намери дуплекс: €280,000, 20% първа. Наеми: €2,400/мес общо. Ипотека+поддръжка+резерв за вакантност: €2,300/мес. Брокерът: „Поскъпването ще го оправи!\"" },
+            "avatar": "🏘️",
+            "choices": [
+              { "label": { "en": "Buy it — appreciation always wins", "bg": "Купи го — поскъпването винаги печели" }, "emoji": "🤞", "consequence": { "en": "Market flattened. €100/mo cash flow turned into −€300 after a furnace replacement. You're funding the property from your salary.", "bg": "Пазарът замръзна. €100/мес поток стана −€300 след нов котел. Финансираш имота от заплатата си." }, "cashFlowChange": -3000, "isGood": false },
+              { "label": { "en": "Negotiate to €240K, or walk away", "bg": "Договаряй до €240K, или си тръгни" }, "emoji": "🚶", "consequence": { "en": "Smart. At €240K, math actually works: €350/mo cash flow + appreciation upside. Discipline = wealth.", "bg": "Умно. На €240K математиката работи: €350/мес + поскъпване. Дисциплина = богатство." }, "cashFlowChange": 4000, "isGood": true },
+              { "label": { "en": "Pay all cash to skip the mortgage", "bg": "Плати всичко в кеш да избегнеш ипотека" }, "emoji": "💰", "consequence": { "en": "You eliminated leverage but tied up €280K. Return on cash drops to ~3% — worse than an index fund.", "bg": "Премахна ливъриджа но заключи €280K. Доходност на кеш ~3% — по-зле от индексен фонд." }, "cashFlowChange": -2000, "isGood": false }
+            ]
+          },
+          {
+            "id": "re-choice-2",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "What's \"PITI\"?", "bg": "Какво е PITI?" },
+            "options": [
+              { "en": "Principal, Interest, Taxes, Insurance", "bg": "Главница, лихва, данъци, застраховка" },
+              { "en": "Profit Investment Tax Income", "bg": "Печалба-инвестиция-данък-доход" },
+              { "en": "Property Inspection Time Index", "bg": "Индекс за инспекция" },
+              { "en": "Phantom Income Tax Issue", "bg": "Фантомен данъчен проблем" }
+            ],
+            "correctIndex": 0,
+            "explanation": { "en": "PITI = total monthly housing payment. Always include it ALL when calculating cash flow — many newbies forget taxes/insurance.", "bg": "PITI = общо месечно плащане. Винаги включвай всичко при сметка на поток — много начинаещи забравят данъци/застраховка." }
+          },
+          {
+            "id": "re-choice-3",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Why is leverage a double-edged sword in real estate?", "bg": "Защо ливъриджът е нож с две остриета в имоти?" },
+            "options": [
+              { "en": "It only helps in good markets", "bg": "Помага само при добри пазари" },
+              { "en": "Amplifies BOTH gains and losses on your equity", "bg": "Усилва И печалбите И загубите върху капитала ти" },
+              { "en": "Mortgages are illegal", "bg": "Ипотеките са незаконни" },
+              { "en": "It cancels appreciation", "bg": "Отменя поскъпването" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "20% down means 5× leverage. A 10% rise = 50% return on equity. A 10% drop = 50% loss. Manage with reserves and conservative LTV.", "bg": "20% първа = 5× ливъридж. 10% ръст = 50% доходност. 10% спад = 50% загуба. Управлявай с резерви и нисък LTV." }
+          },
+          {
+            "id": "re-choice-4",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "REIT stands for...", "bg": "REIT означава..." },
+            "options": [
+              { "en": "Real Estate Investment Trust", "bg": "Тръст за инвестиции в имоти" },
+              { "en": "Renovation Equity Investment Tax", "bg": "Данък върху инвестиция в реновация" },
+              { "en": "Rental Earnings International Tariff", "bg": "Международна тарифа върху наеми" },
+              { "en": "Residential Estate Income Token", "bg": "Жилищен токен" }
+            ],
+            "correctIndex": 0,
+            "explanation": { "en": "REITs are publicly-traded companies that own/operate income real estate. Buy them like stocks — instant exposure, no tenants to manage.", "bg": "REIT-ите са публично търгувани компании, които владеят/управляват имоти. Купуваш като акции — без наематели." }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "tax-strategy",
+    "title": { "en": "Tax Strategy", "bg": "Данъчна стратегия" },
+    "description": { "en": "Keep more of what you earn — legally.", "bg": "Запази повече от това, което печелиш — законно." },
+    "icon": "🧾",
+    "color": "purple",
+    "order": 12,
+    "proOnly": true,
+    "lessons": [
+      {
+        "id": "tax-essentials",
+        "moduleId": "tax-strategy",
+        "title": { "en": "Legal Tax Optimization", "bg": "Законна оптимизация на данъци" },
+        "description": { "en": "Use accounts and timing to legally cut your tax bill.", "bg": "Използвай сметки и таймиране законно да намалиш данъка." },
+        "icon": "💡",
+        "xpReward": 165,
+        "order": 1,
+        "exercises": [
+          {
+            "id": "tx-theory-1",
+            "type": "theory",
+            "xp": 0,
+            "slides": [
+              {
+                "emoji": "🧾",
+                "title": { "en": "Tax Avoidance ≠ Tax Evasion", "bg": "Избягване ≠ укриване на данъци" },
+                "body": { "en": "EVASION = illegal hiding of income. Goes to jail.\nAVOIDANCE = legally structuring finances to pay less tax. Goes to wealth.\n\nThe tax code is full of incentives: pension contributions, capital-loss harvesting, tax-free accounts, business deductions. Use them.", "bg": "УКРИВАНЕ = незаконно скриване. Затвор.\nИЗБЯГВАНЕ = законно структуриране за по-малко данък. Богатство.\n\nДанъчният кодекс е пълен със стимули: пенсия, реализиране на загуби, без-данъчни сметки, бизнес разходи. Използвай ги." },
+                "highlight": { "en": "💡 \"Anyone may arrange his affairs to keep his taxes as low as possible.\" — Judge Learned Hand, 1934", "bg": "💡 „Всеки може да си подреди делата така, че да плаща минимум данък.\" — съдия Лърнд Ханд, 1934" }
+              },
+              {
+                "emoji": "🏦",
+                "title": { "en": "Tax-Advantaged Accounts", "bg": "Данъчно облекчени сметки" },
+                "body": { "en": "Three flavors:\n• PRE-TAX (401k, traditional IRA, pension Pillar 3) — deduct now, taxed on withdrawal\n• POST-TAX (Roth IRA, ISA) — pay tax now, withdraw FREE\n• TAXABLE BROKERAGE — no tax breaks, full flexibility\n\nMost people should max pre-tax + post-tax accounts BEFORE touching taxable.", "bg": "Три типа:\n• ПРЕДИ-ДАНЪК (401k, IRA, Pillar 3) — приспадаш сега, данък при теглене\n• СЛЕД-ДАНЪК (Roth IRA, ISA) — данък сега, тегленето е без данък\n• ОБЛАГАЕМА БРОКЕРСКА — без облекчения, пълна гъвкавост\n\nМаксимизирай първите две преди облагаемата." },
+                "highlight": { "en": "🎯 €10K pre-tax in a 30% bracket = instant €3K tax saving. Year after year.", "bg": "🎯 €10K преди-данък при 30% = моментални €3K спестен данък. Всяка година." }
+              }
+            ]
+          },
+          {
+            "id": "tx-choice-1",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "You're in a 35% bracket. A €10,000 pension contribution saves you...", "bg": "В 35% скоба си. €10,000 в пенсията ти спестяват..." },
+            "options": [
+              { "en": "€0 — pension is free money", "bg": "€0 — пенсията е безплатна" },
+              { "en": "€3,500 in taxes immediately", "bg": "€3,500 данък моментално" },
+              { "en": "€10,000 over 30 years", "bg": "€10,000 за 30 години" },
+              { "en": "€100", "bg": "€100" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "€10K × 35% = €3,500 saved. Plus the contribution grows tax-free until retirement. Best deal in personal finance.", "bg": "€10K × 35% = €3,500 спестено. Плюс расте без данък до пенсиониране. Най-добрата сделка." }
+          },
+          {
+            "id": "tx-choice-2",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "What is \"tax-loss harvesting\"?", "bg": "Какво е „реализиране на данъчни загуби\"?" },
+            "options": [
+              { "en": "Hiding losses on your tax return", "bg": "Скриване на загуби в декларацията" },
+              { "en": "Selling losing investments to offset gains and reduce taxes", "bg": "Продажба на губещи инвестиции за компенсиране на печалби" },
+              { "en": "Asking for a tax refund early", "bg": "Искаш възстановяване рано" },
+              { "en": "Loaning money to friends", "bg": "Заемаш на приятели" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Sell a position at a loss → use that loss to cancel out capital gains. You can usually carry unused losses forward to future years.", "bg": "Продай позиция на загуба → използвай загубата срещу печалби. Неизползваните загуби обикновено се пренасят напред." }
+          },
+          {
+            "id": "tx-fill-1",
+            "type": "fill_blank",
+            "xp": 15,
+            "question": { "en": "You earned €60K. Pension contribution €8K. Tax bracket 25%. Pre-deduction tax was €15,000. After deduction it's €___", "bg": "Печелиш €60K. Пенсия €8K. Скоба 25%. Данък преди приспадане €15,000. След приспадане е €___" },
+            "correctAnswer": 13000,
+            "answerMin": 12900,
+            "answerMax": 13100,
+            "answerUnit": "€",
+            "explanation": { "en": "€8K × 25% = €2K tax saved. €15K − €2K = €13K. €2K stays in your pocket every year.", "bg": "€8K × 25% = €2K спестен данък. €15K − €2K = €13K. €2K остават в джоба ти всяка година." }
+          },
+          {
+            "id": "tx-sort-1",
+            "type": "sort_items",
+            "xp": 20,
+            "sortItems": [
+              { "label": { "en": "Maxing pension contributions", "bg": "Максимални пенсионни вноски" }, "emoji": "🏦", "isAsset": true },
+              { "label": { "en": "Hiding income from tax authority", "bg": "Скриване на доход от данъчните" }, "emoji": "🚨", "isAsset": false },
+              { "label": { "en": "Tax-loss harvesting in December", "bg": "Реализиране на загуби през декември" }, "emoji": "❄️", "isAsset": true },
+              { "label": { "en": "Day trading in a taxable account", "bg": "Дневна търговия в облагаема сметка" }, "emoji": "💸", "isAsset": false },
+              { "label": { "en": "HSA contributions (if eligible)", "bg": "HSA вноски (ако имаш достъп)" }, "emoji": "🏥", "isAsset": true },
+              { "label": { "en": "Cash payments \"under the table\"", "bg": "Кешови плащания „под масата\"" }, "emoji": "💼", "isAsset": false }
+            ]
+          },
+          {
+            "id": "tx-rpg-1",
+            "type": "rpg_scenario",
+            "xp": 25,
+            "scenario": { "en": "You got a €15,000 year-end bonus. You're in a 30% bracket. The deadline for pension contribution is Dec 31.", "bg": "Получи €15,000 годишен бонус. В 30% скоба си. Краен срок за пенсия — 31 декември." },
+            "avatar": "💰",
+            "choices": [
+              { "label": { "en": "Spend it on a vacation — life is short", "bg": "Похарчи го за ваканция — животът е кратък" }, "emoji": "✈️", "consequence": { "en": "Vacation was nice. But €4,500 went to taxes and €10,500 vanished. Net wealth: €0 + memories.", "bg": "Ваканцията беше готина. Но €4,500 за данъци и €10,500 изчезнаха. Нетно богатство: €0 + спомени." }, "cashFlowChange": -10500, "isGood": false },
+              { "label": { "en": "Max pension contribution before Dec 31", "bg": "Максимална пенсия преди 31 декември" }, "emoji": "🏦", "consequence": { "en": "Saved €4,500 in taxes immediately. The €15K compounds tax-free until retirement. In 25 years at 7% = €81K.", "bg": "Спести €4,500 данък моментално. €15K растат без данък до пенсиониране. За 25 г. при 7% = €81K." }, "cashFlowChange": 65000, "isGood": true },
+              { "label": { "en": "Day-trade it in a taxable account", "bg": "Дневна търговия в облагаема сметка" }, "emoji": "🎰", "consequence": { "en": "Short-term gains taxed at top rates. Even if you win, you keep less. Most day-traders lose anyway.", "bg": "Краткосрочните печалби се облагат високо. Дори да спечелиш, оставяш по-малко. Повечето дневни търговци губят." }, "cashFlowChange": -8000, "isGood": false }
+            ]
+          },
+          {
+            "id": "tx-choice-3",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Long-term capital gains are typically taxed...", "bg": "Дългосрочните капиталови печалби обикновено се облагат..." },
+            "options": [
+              { "en": "Same as ordinary income", "bg": "Като обичаен доход" },
+              { "en": "Lower than ordinary income (in most countries)", "bg": "По-ниско от обичайния доход" },
+              { "en": "Always at 50%", "bg": "Винаги 50%" },
+              { "en": "Tax-free", "bg": "Без данък" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Holding investments >1 year usually qualifies for lower long-term rates. Time = tax efficiency.", "bg": "Държане >1 година обикновено квалифицира за по-ниска ставка. Времето = данъчна ефективност." }
+          },
+          {
+            "id": "tx-choice-4",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Best account to hold high-dividend stocks for tax efficiency?", "bg": "Най-добрата сметка за акции с високи дивиденти?" },
+            "options": [
+              { "en": "Taxable brokerage", "bg": "Облагаема брокерска" },
+              { "en": "Tax-advantaged retirement account", "bg": "Данъчно облекчена пенсионна сметка" },
+              { "en": "Cash savings account", "bg": "Спестовна сметка" },
+              { "en": "Doesn't matter", "bg": "Няма значение" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Dividends create taxable events every quarter in a brokerage. Inside a retirement account, they compound tax-free. \"Asset location\" matters.", "bg": "Дивидентите създават облагаеми събития всеки тримесечие. В пенсионна сметка растат без данък. „Локация на активите\" има значение." }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "crypto",
+    "title": { "en": "Cryptocurrency & Web3", "bg": "Криптовалути и Web3" },
+    "description": { "en": "Understand Bitcoin, blockchain, DeFi — and the real risks.", "bg": "Разбери Bitcoin, блокчейн, DeFi — и реалните рискове." },
+    "icon": "₿",
+    "color": "yellow",
+    "order": 13,
+    "proOnly": true,
+    "lessons": [
+      {
+        "id": "crypto-foundations",
+        "moduleId": "crypto",
+        "title": { "en": "Bitcoin, Blockchain & DeFi", "bg": "Bitcoin, блокчейн и DeFi" },
+        "description": { "en": "What's real, what's hype, and how to avoid getting rekt.", "bg": "Кое е реално, кое е шум и как да не загубиш всичко." },
+        "icon": "⛓️",
+        "xpReward": 170,
+        "order": 1,
+        "exercises": [
+          {
+            "id": "cr-theory-1",
+            "type": "theory",
+            "xp": 0,
+            "slides": [
+              {
+                "emoji": "⛓️",
+                "title": { "en": "What Bitcoin Actually Is", "bg": "Какво всъщност е Bitcoin" },
+                "body": { "en": "Bitcoin = a digital asset secured by a global network of computers (\"blockchain\"). Supply is fixed at 21M coins, no central issuer.\n\nBenefits: scarce, portable, borderless.\nRisks: volatile (50%+ swings normal), no cash flows, regulatory unknowns, easy to lose access.\n\nIt's neither magic internet money nor obvious genius. It's a high-risk speculative asset.", "bg": "Bitcoin = дигитален актив, защитен от глобална мрежа компютри (блокчейн). Фиксирани 21M монети, без централен издател.\n\nПлюсове: оскъден, преносим, без граници.\nРискове: волатилен (50%+ е нормално), без парични потоци, регулации, лесно се губи достъпът.\n\nНе е нито магия, нито очевиден гений. Високорисков спекулативен актив." },
+                "highlight": { "en": "💡 Rule of thumb: never put more in crypto than you can afford to lose 100% of.", "bg": "💡 Правило: никога не слагай повече, отколкото можеш да загубиш 100%." }
+              },
+              {
+                "emoji": "🌐",
+                "title": { "en": "DeFi & Smart Contracts", "bg": "DeFi и смарт договори" },
+                "body": { "en": "DeFi = financial services (lending, trading, savings) that run on code instead of banks.\n\nThe code is automatic and global, but also unaudited and irreversible. Smart-contract bugs and \"rug pulls\" have erased billions.\n\nIf you can't read the contract, you're trusting strangers. Anonymity ≠ trust.", "bg": "DeFi = финансови услуги (заеми, търговия, спестявания), задвижвани от код вместо банки.\n\nКодът е автоматичен и глобален, но необработен и необратим. Бъгове и „rug pull\"-и са изтрили милиарди.\n\nАко не можеш да четеш договора, доверяваш се на непознати. Анонимност ≠ доверие." },
+                "highlight": { "en": "🚨 \"Not your keys, not your coins.\" Exchanges have collapsed. Self-custody, but carefully.", "bg": "🚨 „Не са твоите ключове — не са твоите монети.\" Борси фалират. Самосъхранение, но внимателно." }
+              }
+            ]
+          },
+          {
+            "id": "cr-choice-1",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "What's the maximum number of Bitcoin that will ever exist?", "bg": "Максималният брой Bitcoin, който ще съществува?" },
+            "options": [
+              { "en": "Unlimited", "bg": "Неограничен" },
+              { "en": "21 million", "bg": "21 милиона" },
+              { "en": "1 billion", "bg": "1 милиард" },
+              { "en": "100 million", "bg": "100 милиона" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Bitcoin's supply cap is 21M, hard-coded into the protocol. New coins are minted at decreasing rates until ~2140.", "bg": "Лимитът от 21M е заложен в протокола. Нови монети се създават на намаляваща ставка до ~2140 г." }
+          },
+          {
+            "id": "cr-choice-2",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "What does \"not your keys, not your coins\" mean?", "bg": "Какво значи „не са твоите ключове — не са твоите монети\"?" },
+            "options": [
+              { "en": "If you lose the password, the bank refunds you", "bg": "Ако загубиш паролата, банката връща" },
+              { "en": "If your crypto sits on an exchange, the exchange — not you — actually controls it", "bg": "Ако крипто е на борса, борсата — не ти — реално го контролира" },
+              { "en": "Coins are physical", "bg": "Монетите са физически" },
+              { "en": "Mining is required to own crypto", "bg": "Изисква се копаене за притежание" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Exchanges have gone bankrupt (FTX) with billions in user funds. Self-custody (hardware wallets) gives you actual ownership.", "bg": "Борси са фалирали (FTX) с милиарди потребителски средства. Самосъхранение (хардуерен портфейл) = реално собственост." }
+          },
+          {
+            "id": "cr-fill-1",
+            "type": "fill_blank",
+            "xp": 15,
+            "question": { "en": "Allocation rule of thumb: max ___% of your portfolio in crypto.", "bg": "Правило на палец: максимум ___% от портфейла в крипто." },
+            "correctAnswer": 5,
+            "answerMin": 1,
+            "answerMax": 10,
+            "answerUnit": "%",
+            "explanation": { "en": "Most advisors recommend 1–5% as a satellite allocation. Crypto's volatility means you sleep better with limited exposure.", "bg": "Повечето съветват 1–5%. Волатилността означава, че спиш по-добре с ограничена експозиция." }
+          },
+          {
+            "id": "cr-sort-1",
+            "type": "sort_items",
+            "xp": 20,
+            "sortItems": [
+              { "label": { "en": "Hardware wallet self-custody", "bg": "Хардуерен портфейл" }, "emoji": "🔐", "isAsset": true },
+              { "label": { "en": "Anonymous coin from a Discord", "bg": "Анонимна монета от Discord" }, "emoji": "🚩", "isAsset": false },
+              { "label": { "en": "Limiting crypto to <5% of portfolio", "bg": "Крипто <5% от портфейла" }, "emoji": "🎯", "isAsset": true },
+              { "label": { "en": "Borrowing money to buy crypto", "bg": "Заем за покупка на крипто" }, "emoji": "🚨", "isAsset": false },
+              { "label": { "en": "Reputable exchange + self-custody", "bg": "Уважавана борса + самосъхранение" }, "emoji": "🏦", "isAsset": true },
+              { "label": { "en": "\"Guaranteed 30%/mo yield\" protocol", "bg": "„Гарантирани 30%/мес\" протокол" }, "emoji": "🚩", "isAsset": false }
+            ]
+          },
+          {
+            "id": "cr-rpg-1",
+            "type": "rpg_scenario",
+            "xp": 25,
+            "scenario": { "en": "An influencer with 200K followers promotes a new token. \"Already up 50% in a week — get in before the next 10x!\" Their wallet shows huge holdings.", "bg": "Инфлуенсър с 200K последователи рекламира нов токен. „Вече +50% за седмица — влез преди 10x!\" Портфейлът му показва огромни позиции." },
+            "avatar": "📱",
+            "choices": [
+              { "label": { "en": "Buy €5,000 worth — they're an expert!", "bg": "Купи за €5,000 — той е експерт!" }, "emoji": "🦍", "consequence": { "en": "Classic pump-and-dump. The influencer was paid to shill. Token dropped 95% within a month. €4,750 gone.", "bg": "Класически pump-and-dump. Платен бил да рекламира. Токенът падна 95% за месец. €4,750 изчезнаха." }, "cashFlowChange": -4750, "isGood": false },
+              { "label": { "en": "Research the team, code, and tokenomics first", "bg": "Изследвай екип, код, токеномика първо" }, "emoji": "🔍", "consequence": { "en": "You discover the team is anonymous and 60% of tokens are held by 3 wallets. Hard pass. Saved €5,000.", "bg": "Откриваш, че екипът е анонимен и 60% токени са в 3 портфейла. Пас. Спести €5,000." }, "cashFlowChange": 5000, "isGood": true },
+              { "label": { "en": "Take a loan to buy more — easy 10x!", "bg": "Вземи заем за повече — лесни 10x!" }, "emoji": "🚨", "consequence": { "en": "Leveraged crypto speculation = the fastest way to bankruptcy. Don't borrow to gamble. Ever.", "bg": "Спекулация на ливъридж в крипто = най-бързо до фалит. Никога не заемай за хазарт." }, "cashFlowChange": -20000, "isGood": false }
+            ]
+          },
+          {
+            "id": "cr-choice-3",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "What's a \"stablecoin\"?", "bg": "Какво е „стейбълкойн\"?" },
+            "options": [
+              { "en": "A coin that always rises", "bg": "Монета, която винаги расте" },
+              { "en": "A token pegged to a stable value (usually $1)", "bg": "Токен, привързан към стабилна стойност (обикновено $1)" },
+              { "en": "Bitcoin's nickname", "bg": "Прякор на Bitcoin" },
+              { "en": "A coin issued by central banks", "bg": "Монета от централни банки" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "USDC, USDT, DAI try to maintain $1 value via reserves or algorithms. Some have failed catastrophically (Terra/UST). Always check what backs them.", "bg": "USDC, USDT, DAI се опитват да поддържат $1 чрез резерви или алгоритми. Някои са се сринали катастрофално (Terra/UST). Винаги проверявай покритието." }
+          },
+          {
+            "id": "cr-choice-4",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "What's the biggest risk in DeFi?", "bg": "Най-големият риск в DeFi?" },
+            "options": [
+              { "en": "Network outages", "bg": "Прекъсване на мрежата" },
+              { "en": "Smart-contract bugs and irreversible mistakes", "bg": "Бъгове в смарт договори и необратими грешки" },
+              { "en": "Slow transaction speed", "bg": "Бавни транзакции" },
+              { "en": "High gas fees", "bg": "Високи такси" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "DeFi has lost $3B+ to bugs and exploits. Send to wrong address? Gone. Buggy contract? Drained. No customer service. No reversal.", "bg": "DeFi е загубил $3B+ от бъгове и експлойти. Грешен адрес? Загубено. Бъг в договора? Източен. Без обслужване. Без връщане." }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "retirement",
+    "title": { "en": "Financial Independence & Retirement", "bg": "Финансова независимост и пенсиониране" },
+    "description": { "en": "Engineer your exit — FIRE, retirement accounts, withdrawal math.", "bg": "Планирай изхода си — FIRE, пенсионни сметки, безопасно теглене." },
+    "icon": "🏖️",
+    "color": "green",
+    "order": 14,
+    "proOnly": true,
+    "lessons": [
+      {
+        "id": "fire-fundamentals",
+        "moduleId": "retirement",
+        "title": { "en": "FIRE & The 4% Rule", "bg": "FIRE и правилото на 4%" },
+        "description": { "en": "The math behind retiring on YOUR schedule.", "bg": "Математиката зад пенсиониране по ТВОЙ график." },
+        "icon": "🔥",
+        "xpReward": 170,
+        "order": 1,
+        "exercises": [
+          {
+            "id": "fr-theory-1",
+            "type": "theory",
+            "xp": 0,
+            "slides": [
+              {
+                "emoji": "🔥",
+                "title": { "en": "What is FIRE?", "bg": "Какво е FIRE?" },
+                "body": { "en": "FIRE = Financial Independence, Retire Early. The premise:\n\n• Save aggressively (40–70% of income)\n• Invest in low-cost index funds\n• Once your portfolio = 25× annual expenses, you can quit.\n\nWhy 25×? Because at a 4% withdrawal rate, the portfolio historically lasts 30+ years.", "bg": "FIRE = финансова независимост, ранно пенсиониране. Идеята:\n\n• Спестявай агресивно (40–70% от дохода)\n• Инвестирай в евтини индексни фондове\n• Когато портфейлът = 25× годишни разходи, можеш да напуснеш.\n\nЗащо 25×? При 4% теглене портфейлът обикновено издържа 30+ години." },
+                "highlight": { "en": "🎯 €40K/yr expenses × 25 = €1M needed for FIRE.", "bg": "🎯 €40K/год. разходи × 25 = €1M за FIRE." }
+              },
+              {
+                "emoji": "📉",
+                "title": { "en": "The 4% Rule (Trinity Study)", "bg": "Правилото на 4% (Trinity Study)" },
+                "body": { "en": "1998 study tested withdrawal rates over 30-year retirements (1926–1995):\n\n• 4% withdrawal → 95% success rate\n• 5% → 67% success\n• 6% → 38% success\n\nReal returns matter more than nominal. In low-return periods you may need flexibility (cut spending) to survive.", "bg": "Изследване от 1998 тества тегления за 30-годишни пенсии (1926–1995):\n\n• 4% теглене → 95% успех\n• 5% → 67% успех\n• 6% → 38% успех\n\nРеалната доходност е по-важна. В лоши периоди ти трябва гъвкавост." },
+                "highlight": { "en": "💡 4% is a guideline, not a guarantee. Some FIRE folks use 3.5% for extra safety.", "bg": "💡 4% е насока, не гаранция. Някои FIRE хора ползват 3.5% за безопасност." }
+              }
+            ]
+          },
+          {
+            "id": "fr-fill-1",
+            "type": "fill_blank",
+            "xp": 15,
+            "question": { "en": "You spend €30,000/year. Your FIRE number (25×) is €___", "bg": "Харчиш €30,000/год. Числото ти за FIRE (25×) е €___" },
+            "correctAnswer": 750000,
+            "answerMin": 740000,
+            "answerMax": 760000,
+            "answerUnit": "€",
+            "explanation": { "en": "€30,000 × 25 = €750,000. At a 4% withdrawal, that yields €30K/yr indefinitely (with high historical success).", "bg": "€30,000 × 25 = €750,000. При 4% теглене дава €30K/год дълго време (висок исторически успех)." }
+          },
+          {
+            "id": "fr-choice-1",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "What does the 4% rule tell you?", "bg": "Какво казва правилото на 4%?" },
+            "options": [
+              { "en": "Save 4% of your income", "bg": "Спестявай 4% от дохода" },
+              { "en": "Withdraw 4% of your starting portfolio per year, adjusted for inflation", "bg": "Тегли 4% от началния портфейл годишно, коригирано с инфлация" },
+              { "en": "Index funds return 4% per year", "bg": "Индексните фондове правят 4%/год" },
+              { "en": "Inflation never exceeds 4%", "bg": "Инфлацията не надвишава 4%" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Year 1 you withdraw 4% of starting balance. Each subsequent year you adjust THAT amount up for inflation. The portfolio handles the rest.", "bg": "Първа година теглиш 4% от началото. Следващите години коригираш СУМАТА с инфлация. Портфейлът поема останалото." }
+          },
+          {
+            "id": "fr-choice-2",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Which has the BIGGEST impact on your time-to-FIRE?", "bg": "Кое влияе НАЙ-СИЛНО на времето до FIRE?" },
+            "options": [
+              { "en": "Investment returns", "bg": "Доходността на инвестициите" },
+              { "en": "Your savings rate", "bg": "Процентът, който спестяваш" },
+              { "en": "Lottery wins", "bg": "Печалби от лотария" },
+              { "en": "Tax bracket", "bg": "Данъчна скоба" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Saving 50% vs 10% changes time-to-FIRE from ~50 years to ~17. Returns matter, but savings rate is the dominant lever YOU control.", "bg": "Спестяване 50% срещу 10% сменя времето от ~50 г. на ~17. Доходността е важна, но процентът на спестяване е лостът, който ти контролираш." }
+          },
+          {
+            "id": "fr-compound-1",
+            "type": "compound_sim",
+            "xp": 30,
+            "compoundConfig": {
+              "defaultPrincipal": 5000,
+              "defaultRate": 7,
+              "defaultYears": 25,
+              "defaultMonthly": 1000
+            }
+          },
+          {
+            "id": "fr-sort-1",
+            "type": "sort_items",
+            "xp": 20,
+            "sortItems": [
+              { "label": { "en": "High savings rate (40%+)", "bg": "Висок процент на спестяване (40%+)" }, "emoji": "💪", "isAsset": true },
+              { "label": { "en": "Lifestyle inflation with every raise", "bg": "Инфлация на начина на живот при всяко увеличение" }, "emoji": "🚩", "isAsset": false },
+              { "label": { "en": "Index-fund-only retirement portfolio", "bg": "Пенсия само от индексни фондове" }, "emoji": "📊", "isAsset": true },
+              { "label": { "en": "Single-stock retirement plan", "bg": "Пенсия от 1 акция" }, "emoji": "🎯", "isAsset": false },
+              { "label": { "en": "Geographic arbitrage (cheaper region)", "bg": "Географски арбитраж (по-евтин регион)" }, "emoji": "🌍", "isAsset": true },
+              { "label": { "en": "Withdrawing 8% per year in retirement", "bg": "Теглене 8% годишно в пенсия" }, "emoji": "🚨", "isAsset": false }
+            ]
+          },
+          {
+            "id": "fr-rpg-1",
+            "type": "rpg_scenario",
+            "xp": 25,
+            "scenario": { "en": "You're 32, earn €60K/yr, save €18K/yr. You hit your €600K FIRE number at 50. The market crashes 30% the year you retire. What now?", "bg": "На 32 си, печелиш €60K/год, спестяваш €18K. Достигаш числото €600K на 50. Пазарът пада 30% в годината на пенсиониране. Какво правиш?" },
+            "avatar": "🏖️",
+            "choices": [
+              { "label": { "en": "Stick to 4% withdrawal regardless", "bg": "Дръж 4% теглене независимо" }, "emoji": "🎯", "consequence": { "en": "Risky in a crash year (\"sequence of returns risk\"). Withdrawing during a downturn can permanently damage portfolio longevity.", "bg": "Рисково при срив (\"sequence of returns risk\"). Теглене по време на спад може трайно да навреди." }, "cashFlowChange": -10000, "isGood": false },
+              { "label": { "en": "Cut spending 20% for 1–2 years", "bg": "Намали разходите 20% за 1-2 години" }, "emoji": "✂️", "consequence": { "en": "Smart flexibility. \"Variable withdrawal\" preserves principal during downturns. Most successful retirees adapt.", "bg": "Умна гъвкавост. „Променливо теглене\" пази капитала при спадове. Повечето успешни пенсионери се адаптират." }, "cashFlowChange": 15000, "isGood": true },
+              { "label": { "en": "Take a part-time \"barista FIRE\" gig", "bg": "Part-time \"barista FIRE\"" }, "emoji": "☕", "consequence": { "en": "Even small income (€10K/yr) lets the portfolio recover untouched. Many real FIRE folks do this.", "bg": "Дори малък доход (€10K/год) позволява портфейлът да се възстанови. Много реални FIRE хора правят това." }, "cashFlowChange": 12000, "isGood": true }
+            ]
+          },
+          {
+            "id": "fr-choice-3",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "What's \"sequence of returns risk\"?", "bg": "Какво е „риск от последователност на доходностите\"?" },
+            "options": [
+              { "en": "Stocks always crash in sequence", "bg": "Акциите винаги падат последователно" },
+              { "en": "Negative returns EARLY in retirement hurt much more than late", "bg": "Отрицателни доходности РАНО в пенсия са много по-вредни от късно" },
+              { "en": "Inflation rises in cycles", "bg": "Инфлацията расте на цикли" },
+              { "en": "Pension contributions are taxed in order", "bg": "Пенсионните вноски се облагат по ред" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Big losses in years 1–5 of retirement, combined with withdrawals, can permanently shrink the portfolio. Same average return, different timing = different outcome.", "bg": "Големи загуби в първите 5 години + тегления = траен срив. Същата средна доходност, различен ред = различен резултат." }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "stock-picking",
+    "title": { "en": "Stock Picking & Analysis", "bg": "Подбор и анализ на акции" },
+    "description": { "en": "Read 10-Ks like Warren Buffett.", "bg": "Чети 10-K отчети като Уорън Бъфет." },
+    "icon": "🔎",
+    "color": "blue",
+    "order": 15,
+    "proOnly": true,
+    "lessons": [
+      {
+        "id": "fundamental-analysis",
+        "moduleId": "stock-picking",
+        "title": { "en": "Reading Financial Statements", "bg": "Четене на финансови отчети" },
+        "description": { "en": "Income statement, balance sheet, cash flow — and what they hide.", "bg": "Отчет за доходи, баланс, паричен поток — и какво крият." },
+        "icon": "📑",
+        "xpReward": 165,
+        "order": 1,
+        "exercises": [
+          {
+            "id": "fa-theory-1",
+            "type": "theory",
+            "xp": 0,
+            "slides": [
+              {
+                "emoji": "📑",
+                "title": { "en": "The 3 Statements", "bg": "Трите отчета" },
+                "body": { "en": "Every public company files three statements:\n\n• INCOME STATEMENT — revenue, costs, profit (a year of activity)\n• BALANCE SHEET — what the company OWNS vs OWES (snapshot)\n• CASH FLOW — actual cash moving in/out (no accounting tricks)\n\nProfit can be manipulated. Cash flow is harder to fake. Read all three together.", "bg": "Всяка публична компания подава три отчета:\n\n• ОТЧЕТ ЗА ДОХОДИ — приходи, разходи, печалба (година активност)\n• БАЛАНС — какво ПРИТЕЖАВА срещу какво ДЪЛЖИ (снимка)\n• ПАРИЧЕН ПОТОК — реален кеш в/извън (без счетоводни трикове)\n\nПечалбата може да се манипулира. Паричният поток — по-трудно. Чети и трите заедно." },
+                "highlight": { "en": "💡 \"Earnings is opinion, cash is fact.\" — Old Wall Street saying.", "bg": "💡 „Печалбата е мнение, кешът е факт.\" — стара поговорка на Wall Street." }
+              },
+              {
+                "emoji": "🏰",
+                "title": { "en": "Moats & Competitive Advantage", "bg": "Защитни ровове и конкурентно предимство" },
+                "body": { "en": "A \"moat\" is what stops competitors from stealing your profits. Buffett looks for:\n\n• Brand power (Coca-Cola, Apple)\n• Network effects (Visa, Meta)\n• Switching costs (Adobe, Microsoft)\n• Scale/cost advantages (Walmart, Amazon)\n\nA company without a moat = its high profits invite competition that erases them.", "bg": "„Ровът\" е това, което спира конкурентите да крадат печалбите ти. Бъфет търси:\n\n• Сила на бранда (Coca-Cola, Apple)\n• Мрежови ефекти (Visa, Meta)\n• Разходи за смяна (Adobe, Microsoft)\n• Мащаб (Walmart, Amazon)\n\nКомпания без ров = високите печалби привличат конкуренция, която ги изтрива." },
+                "highlight": { "en": "🎯 No moat = no long-term investment. Find businesses competitors can't easily copy.", "bg": "🎯 Без ров = без дългосрочна инвестиция. Намирай бизнеси, които конкурентите не могат да копират лесно." }
+              }
+            ]
+          },
+          {
+            "id": "fa-choice-1",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Which statement shows ACTUAL cash entering and leaving the business?", "bg": "Кой отчет показва РЕАЛНИЯ кеш, влизащ и излизащ?" },
+            "options": [
+              { "en": "Income statement", "bg": "Отчет за доходи" },
+              { "en": "Balance sheet", "bg": "Баланс" },
+              { "en": "Cash flow statement", "bg": "Отчет за паричен поток" },
+              { "en": "Annual report cover letter", "bg": "Писмо в годишния отчет" }
+            ],
+            "correctIndex": 2,
+            "explanation": { "en": "Cash flow strips away accruals and accounting choices. A company can show \"profit\" while bleeding cash — that's a red flag.", "bg": "Паричният поток премахва натрупванията. Компания може да показва „печалба\" докато губи кеш — червен флаг." }
+          },
+          {
+            "id": "fa-choice-2",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "What's a P/E ratio?", "bg": "Какво е P/E съотношение?" },
+            "options": [
+              { "en": "Profit per Employee", "bg": "Печалба на служител" },
+              { "en": "Price-to-Earnings — how much you pay per €1 of yearly profit", "bg": "Цена/печалба — колко плащаш за €1 годишна печалба" },
+              { "en": "Performance Equity", "bg": "Капитал на представяне" },
+              { "en": "Personal Earnings", "bg": "Личен доход" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "P/E = stock price / earnings per share. P/E of 20 means you pay €20 for €1 of yearly profit. Lower = cheaper, but context matters.", "bg": "P/E = цена / печалба на акция. P/E 20 = плащаш €20 за €1 печалба. По-ниско = по-евтино, но контекстът има значение." }
+          },
+          {
+            "id": "fa-fill-1",
+            "type": "fill_blank",
+            "xp": 15,
+            "question": { "en": "A company earns €5/share. The stock trades at €100. The P/E ratio is ___", "bg": "Компания печели €5/акция. Акцията е €100. P/E е ___" },
+            "correctAnswer": 20,
+            "answerMin": 19.5,
+            "answerMax": 20.5,
+            "answerUnit": "x",
+            "explanation": { "en": "€100 / €5 = 20x. You're paying 20 years of current profits for 1 share — assuming no growth.", "bg": "€100 / €5 = 20x. Плащаш 20 години текущи печалби за 1 акция — ако няма растеж." }
+          },
+          {
+            "id": "fa-sort-1",
+            "type": "sort_items",
+            "xp": 20,
+            "sortItems": [
+              { "label": { "en": "Strong free cash flow growth", "bg": "Силен растеж на свободен паричен поток" }, "emoji": "💰", "isAsset": true },
+              { "label": { "en": "Profitable but burning cash", "bg": "Печеливша, но губеща кеш" }, "emoji": "🚩", "isAsset": false },
+              { "label": { "en": "Strong competitive moat", "bg": "Силен конкурентен ров" }, "emoji": "🏰", "isAsset": true },
+              { "label": { "en": "No durable advantage", "bg": "Без трайно предимство" }, "emoji": "🌪️", "isAsset": false },
+              { "label": { "en": "Low debt, healthy balance sheet", "bg": "Нисък дълг, здрав баланс" }, "emoji": "📊", "isAsset": true },
+              { "label": { "en": "Massive debt + declining sales", "bg": "Огромен дълг + падащи продажби" }, "emoji": "🚨", "isAsset": false }
+            ]
+          },
+          {
+            "id": "fa-rpg-1",
+            "type": "rpg_scenario",
+            "xp": 25,
+            "scenario": { "en": "Two companies in the same industry. Company A: P/E 15, growing 5%/yr, fortress balance sheet, 20-yr brand. Company B: P/E 80, growing 3%/yr, lots of debt, no moat. Both at €50/share.", "bg": "Две компании в същата индустрия. A: P/E 15, расте 5%/год, силен баланс, 20-год бранд. B: P/E 80, расте 3%/год, много дълг, без ров. И двете на €50." },
+            "avatar": "🔎",
+            "choices": [
+              { "label": { "en": "Buy Company A — cheaper, stronger, has a moat", "bg": "Купи A — по-евтина, по-силна, с ров" }, "emoji": "🏰", "consequence": { "en": "Buffett's checklist passes. Quality + reasonable price = long-term wealth. You sleep at night.", "bg": "Списъкът на Бъфет минава. Качество + разумна цена = дългосрочно богатство. Спиш спокойно." }, "cashFlowChange": 15000, "isGood": true },
+              { "label": { "en": "Buy Company B — \"high P/E means it's a winner\"", "bg": "Купи B — „висок P/E значи победител\"" }, "emoji": "🚀", "consequence": { "en": "P/E 80 with low growth means you're paying for a story, not earnings. Stock dropped 60% when story broke.", "bg": "P/E 80 с нисък растеж = плащаш история, не печалби. Акцията падна 60% когато историята се счупи." }, "cashFlowChange": -30000, "isGood": false },
+              { "label": { "en": "Buy both 50/50 to \"diversify\"", "bg": "Купи и двете 50/50 за „диверсификация\"" }, "emoji": "⚖️", "consequence": { "en": "Diversification doesn't fix a bad pick. Half your money still went into a low-quality, overpriced company.", "bg": "Диверсификацията не оправя лош избор. Половината пари пак отиват в нискокачествена надценена компания." }, "cashFlowChange": -7500, "isGood": false }
+            ]
+          },
+          {
+            "id": "fa-choice-3",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Why does free cash flow matter more than reported earnings?", "bg": "Защо свободният паричен поток е по-важен от отчетената печалба?" },
+            "options": [
+              { "en": "Earnings are tax-deductible", "bg": "Печалбата се приспада от данъци" },
+              { "en": "FCF is harder to manipulate with accounting", "bg": "FCF е по-трудно да се манипулира счетоводно" },
+              { "en": "Earnings are illegal in some countries", "bg": "Печалбите са незаконни в някои страни" },
+              { "en": "FCF is always larger", "bg": "FCF винаги е по-голям" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Earnings include non-cash items (depreciation, accruals, write-offs). FCF = real money the business generates after capex. Quality fundamental investors live by it.", "bg": "Печалбата включва безкешови позиции (амортизация, натрупвания, отписвания). FCF = реални пари след инвестиции. Качествените инвеститори живеят по него." }
+          },
+          {
+            "id": "fa-choice-4",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Which is NOT a typical economic moat?", "bg": "Кое НЕ е типичен икономически ров?" },
+            "options": [
+              { "en": "Network effects", "bg": "Мрежови ефекти" },
+              { "en": "High switching costs", "bg": "Високи разходи за смяна" },
+              { "en": "Strong brand recognition", "bg": "Силен бранд" },
+              { "en": "A famous CEO", "bg": "Известен CEO" }
+            ],
+            "correctIndex": 3,
+            "explanation": { "en": "Star CEOs are short-term. Real moats are STRUCTURAL — they keep working when the CEO leaves.", "bg": "Звездните CEO са временни. Истинските ровове са СТРУКТУРНИ — работят и без CEO-то." }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "options-derivatives",
+    "title": { "en": "Options & Derivatives", "bg": "Опции и деривати" },
+    "description": { "en": "Hedge, leverage, and earn income with contracts.", "bg": "Хеджирай, ливъридж и печели доход с контракти." },
+    "icon": "⚙️",
+    "color": "purple",
+    "order": 16,
+    "proOnly": true,
+    "lessons": [
+      {
+        "id": "options-basics",
+        "moduleId": "options-derivatives",
+        "title": { "en": "Calls, Puts & Risk Control", "bg": "Кол, пут и контрол на риска" },
+        "description": { "en": "What contracts actually do — and how to not blow up.", "bg": "Какво правят контрактите — и как да не се взривиш." },
+        "icon": "📈",
+        "xpReward": 170,
+        "order": 1,
+        "exercises": [
+          {
+            "id": "op-theory-1",
+            "type": "theory",
+            "xp": 0,
+            "slides": [
+              {
+                "emoji": "📜",
+                "title": { "en": "Calls and Puts", "bg": "Кол и пут опции" },
+                "body": { "en": "An OPTION = a contract giving you the RIGHT (not obligation) to buy or sell at a set price by a deadline.\n\n• CALL = right to BUY (bullish bet)\n• PUT = right to SELL (bearish bet / insurance)\n\nYou pay a \"premium\" for that right. Maximum loss = premium. Maximum gain = unlimited (calls) or strike−0 (puts).", "bg": "ОПЦИЯ = договор, даващ ти ПРАВОТО (не задължение) да купиш или продадеш на фиксирана цена до краен срок.\n\n• КОЛ = право да КУПИШ (биков залог)\n• ПУТ = право да ПРОДАДЕШ (мечи залог / застраховка)\n\nПлащаш „премия\" за правото. Максимална загуба = премията. Максимална печалба = неограничена (кол) или страйк−0 (пут)." },
+                "highlight": { "en": "🎯 Buying options = limited risk. Selling \"naked\" options = potentially unlimited risk.", "bg": "🎯 Купуването на опции = ограничен риск. Продаването на „голи\" опции = потенциално неограничен риск." }
+              },
+              {
+                "emoji": "🛡️",
+                "title": { "en": "Conservative Strategies", "bg": "Консервативни стратегии" },
+                "body": { "en": "Two safer income strategies:\n\n• COVERED CALL — own 100 shares, sell a call against them. Earn premium, cap upside.\n• CASH-SECURED PUT — set aside cash, sell a put. Earn premium, get assigned shares cheaper if price drops.\n\nBoth work for boring stocks you'd hold anyway. NEVER do uncovered/naked options without serious training.", "bg": "Две по-сигурни стратегии за доход:\n\n• ПОКРИТ КОЛ — притежаваш 100 акции, продаваш кол срещу тях. Печелиш премия, ограничаваш ръста.\n• ОСИГУРЕН ПУТ — заделяш кеш, продаваш пут. Печелиш премия, ако паднат — взимаш акции по-евтино.\n\nИ двете работят за скучни акции, които иначе би държал. НИКОГА непокрити опции без сериозно обучение." },
+                "highlight": { "en": "💡 Most retail traders LOSE money on options. Treat them as a tool, not a casino.", "bg": "💡 Повечето дребни трейдъри ГУБЯТ от опции. Гледай на тях като инструмент, не казино." }
+              }
+            ]
+          },
+          {
+            "id": "op-choice-1",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "A call option gives you the right to...", "bg": "Кол опцията ти дава правото да..." },
+            "options": [
+              { "en": "Sell at a set price", "bg": "Продадеш на фиксирана цена" },
+              { "en": "Buy at a set price within a time window", "bg": "Купиш на фиксирана цена в определен период" },
+              { "en": "Receive dividends only", "bg": "Получаваш само дивиденти" },
+              { "en": "Vote at shareholder meetings", "bg": "Гласуваш на събранията" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Call = call it up to your price = the right to BUY. If the stock goes much higher, your call is worth a lot.", "bg": "Кол = право да КУПИШ. Ако акцията се качи много, кол-ът ти струва много." }
+          },
+          {
+            "id": "op-choice-2",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "What's the maximum loss on BUYING a call option?", "bg": "Каква е максималната загуба при КУПУВАНЕ на кол опция?" },
+            "options": [
+              { "en": "Unlimited", "bg": "Неограничена" },
+              { "en": "The premium you paid", "bg": "Премията, която си платил" },
+              { "en": "10× the premium", "bg": "10× премията" },
+              { "en": "Half your portfolio", "bg": "Половината портфейл" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "If the stock doesn't move past your strike, the call expires worthless. You lose 100% of premium — but no more.", "bg": "Ако акцията не премине страйка, кол-ът изтича без стойност. Губиш 100% от премията — но не повече." }
+          },
+          {
+            "id": "op-fill-1",
+            "type": "fill_blank",
+            "xp": 15,
+            "question": { "en": "You sell a covered call: 100 shares of stock at €50, strike €55, premium €2/share. Max profit if assigned = €___", "bg": "Продаваш покрит кол: 100 акции на €50, страйк €55, премия €2/акция. Максимална печалба при упражняване = €___" },
+            "correctAnswer": 700,
+            "answerMin": 690,
+            "answerMax": 710,
+            "answerUnit": "€",
+            "explanation": { "en": "Capital gain (€55−€50)×100 = €500. Premium €2×100 = €200. Total €700. Cap on upside in exchange for guaranteed premium.", "bg": "Капиталова печалба (€55−€50)×100 = €500. Премия €2×100 = €200. Общо €700. Ограничен ръст срещу гарантирана премия." }
+          },
+          {
+            "id": "op-sort-1",
+            "type": "sort_items",
+            "xp": 20,
+            "sortItems": [
+              { "label": { "en": "Covered call on stock you'd hold", "bg": "Покрит кол на акция, която иначе би държал" }, "emoji": "🛡️", "isAsset": true },
+              { "label": { "en": "Selling naked calls on a meme stock", "bg": "Продажба на голи кол на мийм акция" }, "emoji": "🚨", "isAsset": false },
+              { "label": { "en": "Buying puts as portfolio insurance", "bg": "Покупка на пут като застраховка" }, "emoji": "☂️", "isAsset": true },
+              { "label": { "en": "Maxing out margin on weekly options", "bg": "Максимален маржин на седмични опции" }, "emoji": "🎰", "isAsset": false },
+              { "label": { "en": "Cash-secured puts on quality stocks", "bg": "Осигурени пут на качествени акции" }, "emoji": "💵", "isAsset": true },
+              { "label": { "en": "0DTE gambling with rent money", "bg": "0DTE хазарт с парите за наем" }, "emoji": "🚩", "isAsset": false }
+            ]
+          },
+          {
+            "id": "op-rpg-1",
+            "type": "rpg_scenario",
+            "xp": 25,
+            "scenario": { "en": "You have €10,000. Friend says \"Buy €10K of weekly call options on TSLA — easy 5x in a week!\" You're tempted.", "bg": "Имаш €10,000. Приятел: „Купи €10K седмични кол опции на TSLA — лесни 5x за седмица!\" Изкушен си." },
+            "avatar": "🎰",
+            "choices": [
+              { "label": { "en": "All in on weekly calls", "bg": "Всичко в седмични кол" }, "emoji": "🚀", "consequence": { "en": "TSLA moved sideways. Calls expired worthless. €10,000 → €0. Most lottery tickets don't win.", "bg": "TSLA се движи настрани. Кол-овете изтекоха без стойност. €10,000 → €0. Повечето билети не печелят." }, "cashFlowChange": -10000, "isGood": false },
+              { "label": { "en": "Skip it — buy a TSLA share + cash-secured put", "bg": "Пас — купи TSLA + осигурен пут" }, "emoji": "🛡️", "consequence": { "en": "Strategic. You earn premium income while keeping capital safe. Boring beats blow-up.", "bg": "Стратегически. Печелиш премия и пазиш капитала. Скучното бие взрив." }, "cashFlowChange": 800, "isGood": true },
+              { "label": { "en": "Half on options, half on shares", "bg": "Половината опции, половината акции" }, "emoji": "⚖️", "consequence": { "en": "Less catastrophic, but you still lit €5K on fire. Limit speculation to 1–2% \"fun money\", not 50%.", "bg": "По-малко катастрофално, но пак изгаряш €5K. Ограничи спекулацията до 1–2% „забавни пари\"." }, "cashFlowChange": -5000, "isGood": false }
+            ]
+          },
+          {
+            "id": "op-choice-3",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "What does \"theta decay\" mean?", "bg": "Какво е „тета разпад\"?" },
+            "options": [
+              { "en": "Stock price decay over decades", "bg": "Разпад на цената за десетилетия" },
+              { "en": "Options lose time value as expiration approaches", "bg": "Опциите губят времева стойност с приближаване на падежа" },
+              { "en": "Inflation eating dividends", "bg": "Инфлацията яде дивиденти" },
+              { "en": "Tax drag on returns", "bg": "Данъчно влачене" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Options are wasting assets. Every day that passes, time value drops — accelerating in the final weeks. Buyers fight time; sellers profit from it.", "bg": "Опциите са разпадащи се активи. Всеки ден губят времева стойност, ускорено в последните седмици. Купувачите се борят с времето; продавачите печелят от него." }
+          },
+          {
+            "id": "op-choice-4",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Best use of options for most long-term investors?", "bg": "Най-добра употреба на опции за дългосрочни инвеститори?" },
+            "options": [
+              { "en": "Day-trading SPY 0DTE for income", "bg": "Дневна търговия на SPY 0DTE" },
+              { "en": "Hedging or generating income on positions you already own", "bg": "Хеджиране или доход от позиции, които вече притежаваш" },
+              { "en": "Maximum leverage on penny stocks", "bg": "Максимален ливъридж на пени-акции" },
+              { "en": "Avoiding all stocks", "bg": "Избягване на всички акции" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Pros use options to manage RISK on existing portfolios — covered calls, protective puts. Speculation is the way most retail traders go broke.", "bg": "Професионалистите ползват опции за управление на РИСКА — покрити кол, защитни пут. Спекулацията е начинът, по който повечето дребни трейдъри фалират." }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "estate-planning",
+    "title": { "en": "Estate Planning & Inheritance", "bg": "Наследствено планиране" },
+    "description": { "en": "Pass on wealth without tearing the family apart.", "bg": "Предай богатство без да разкъсаш семейството." },
+    "icon": "📜",
+    "color": "orange",
+    "order": 17,
+    "proOnly": true,
+    "lessons": [
+      {
+        "id": "estate-essentials",
+        "moduleId": "estate-planning",
+        "title": { "en": "Wills, Trusts & Beneficiaries", "bg": "Завещания, тръстове и бенефициенти" },
+        "description": { "en": "What happens to your stuff — and how to control it.", "bg": "Какво се случва с твоите неща — и как да го контролираш." },
+        "icon": "✍️",
+        "xpReward": 160,
+        "order": 1,
+        "exercises": [
+          {
+            "id": "es-theory-1",
+            "type": "theory",
+            "xp": 0,
+            "slides": [
+              {
+                "emoji": "📜",
+                "title": { "en": "Why You Need a Plan", "bg": "Защо ти трябва план" },
+                "body": { "en": "Without a will, the state decides who gets your assets — slow, public, and rarely matches your wishes.\n\nKey documents:\n• WILL — distributes assets, names guardians for kids\n• POWER OF ATTORNEY — who decides if you can't\n• HEALTHCARE DIRECTIVE — medical choices\n• BENEFICIARY DESIGNATIONS — bypass wills entirely on retirement/insurance\n\n70% of adults don't have a will. Don't be one of them.", "bg": "Без завещание държавата решава — бавно, публично, рядко според желанията ти.\n\nКлючови документи:\n• ЗАВЕЩАНИЕ — разпределя активи, назначава настойници\n• ПЪЛНОМОЩНО — кой решава, ако ти не можеш\n• МЕДИЦИНСКА ДИРЕКТИВА — медицински избори\n• БЕНЕФИЦИЕНТИ — заобикалят завещанието при пенсии/застраховки\n\n70% от възрастните нямат завещание. Не бъди от тях." },
+                "highlight": { "en": "💡 Beneficiary forms TRUMP your will. Update them after divorce, marriage, or new kids.", "bg": "💡 Формите за бенефициенти ИМАТ ПРИОРИТЕТ над завещанието. Обновявай ги при развод, брак, деца." }
+              },
+              {
+                "emoji": "🏛️",
+                "title": { "en": "Wills vs Trusts", "bg": "Завещания срещу тръстове" },
+                "body": { "en": "WILL — simple, cheap, but goes through PROBATE (public, slow, fees).\n\nLIVING TRUST — assets transfer privately and instantly to beneficiaries. More expensive to set up; saves money & headaches if you have meaningful assets.\n\nFor most people: a basic will is enough. For families with property, business, or kids, a trust is often worth it.", "bg": "ЗАВЕЩАНИЕ — просто, евтино, но минава през НАСЛЕДСТВЕНА ПРОЦЕДУРА (публична, бавна, такси).\n\nЖИВ ТРЪСТ — активите се прехвърлят частно и моментално. По-скъп за създаване; спестява пари и нерви при сериозни активи.\n\nЗа повечето хора: основно завещание стига. Със семейства, имот или бизнес — често тръст си струва." },
+                "highlight": { "en": "🎯 Probate can take 6–24 months and eat 3–7% of the estate in fees.", "bg": "🎯 Наследствената процедура може да отнеме 6–24 месеца и 3–7% от наследството за такси." }
+              }
+            ]
+          },
+          {
+            "id": "es-choice-1",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "What happens if you die without a will?", "bg": "Какво се случва ако умреш без завещание?" },
+            "options": [
+              { "en": "The bank keeps everything", "bg": "Банката взима всичко" },
+              { "en": "State law decides who inherits — often distant relatives", "bg": "Законът решава — често далечни роднини" },
+              { "en": "Your closest friend gets it all", "bg": "Най-близкият ти приятел" },
+              { "en": "It's burned with you", "bg": "Изгаря с теб" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "\"Intestate succession\" rules vary by country but rarely match what you'd actually choose. Spouses, then children, then parents, then siblings.", "bg": "Правилата за наследяване варират по държава, но рядко съвпадат с желанието ти. Първо съпруг, после деца, родители, братя/сестри." }
+          },
+          {
+            "id": "es-choice-2",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Beneficiary forms on a 401k/IRA generally...", "bg": "Бенефициент в 401k/IRA обикновено..." },
+            "options": [
+              { "en": "Are ignored if you have a will", "bg": "Се игнорират, ако имаш завещание" },
+              { "en": "Override the instructions in your will", "bg": "Имат приоритет над завещанието" },
+              { "en": "Apply only after a court ruling", "bg": "Действат само след съдебно решение" },
+              { "en": "Don't matter at all", "bg": "Нямат значение" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Beneficiary forms are CONTRACTS that bypass probate and your will. If you forgot to update yours after divorce, your ex might inherit. Check them every few years.", "bg": "Формите са ДОГОВОРИ, които заобикалят завещанието. Забравил да ги обновиш след развод? Бившият ти може да наследи. Проверявай ги редовно." }
+          },
+          {
+            "id": "es-fill-1",
+            "type": "fill_blank",
+            "xp": 15,
+            "question": { "en": "Probate fees often eat about ___% of the estate.", "bg": "Таксите за наследствена процедура често изяждат около ___% от наследството." },
+            "correctAnswer": 5,
+            "answerMin": 3,
+            "answerMax": 7,
+            "answerUnit": "%",
+            "explanation": { "en": "Typical probate cost is 3–7%, plus 6–24 months of delay. A €500,000 estate could lose €25,000+ to fees a trust would have avoided.", "bg": "Типично 3–7%, плюс 6–24 месеца забавяне. €500,000 наследство може да загуби €25,000+ от такси, които тръст би избегнал." }
+          },
+          {
+            "id": "es-sort-1",
+            "type": "sort_items",
+            "xp": 20,
+            "sortItems": [
+              { "label": { "en": "Updated will after each life event", "bg": "Обновено завещание след всяко събитие" }, "emoji": "✍️", "isAsset": true },
+              { "label": { "en": "Beneficiary still set to ex-spouse", "bg": "Бенефициент още е бившият" }, "emoji": "🚨", "isAsset": false },
+              { "label": { "en": "Living trust for property", "bg": "Жив тръст за имоти" }, "emoji": "🏛️", "isAsset": true },
+              { "label": { "en": "No documents at all", "bg": "Никакви документи" }, "emoji": "🚩", "isAsset": false },
+              { "label": { "en": "Healthcare directive on file", "bg": "Подадена медицинска директива" }, "emoji": "🏥", "isAsset": true },
+              { "label": { "en": "Verbal promises only", "bg": "Само устни обещания" }, "emoji": "💨", "isAsset": false }
+            ]
+          },
+          {
+            "id": "es-rpg-1",
+            "type": "rpg_scenario",
+            "xp": 25,
+            "scenario": { "en": "You're 35, married with two kids and a house. You have €200K in retirement and a €500K life policy. You've never written a will.", "bg": "На 35 си, женен/омъжен с 2 деца и къща. Имаш €200K пенсия и €500K животозастраховане. Никога не си писал завещание." },
+            "avatar": "👨‍👩‍👧",
+            "choices": [
+              { "label": { "en": "Schedule a 1-hour call with an estate attorney this month", "bg": "Запази 1 час с адвокат този месец" }, "emoji": "✅", "consequence": { "en": "Will, POA, healthcare directive done for €500–1,500. Family protected. Sleep restored.", "bg": "Завещание, пълномощно, директива готови за €500–1,500. Семейството защитено. Спокоен сън." }, "cashFlowChange": 50000, "isGood": true },
+              { "label": { "en": "Use a free online will template only", "bg": "Само безплатен онлайн шаблон" }, "emoji": "📝", "consequence": { "en": "Better than nothing — but generic templates often miss state-specific rules. For young families, professional review is worth €500.", "bg": "По-добре от нищо — но шаблоните често пропускат специфики. За млади семейства професионален преглед си струва €500." }, "cashFlowChange": 5000, "isGood": false },
+              { "label": { "en": "Procrastinate — \"I have decades\"", "bg": "Отлагай — „имам десетилетия\"" }, "emoji": "⏰", "consequence": { "en": "Sudden accident → state decides custody and assets. Months of family fighting and €25K+ in probate fees.", "bg": "Внезапен инцидент → държавата решава настойничество и активи. Месеци семейни конфликти и €25K+ такси." }, "cashFlowChange": -25000, "isGood": false }
+            ]
+          },
+          {
+            "id": "es-choice-3",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Why is naming a guardian for minor children in your will so important?", "bg": "Защо назначаването на настойник за малолетни в завещанието е важно?" },
+            "options": [
+              { "en": "It's a tax deduction", "bg": "Данъчно облекчение" },
+              { "en": "Without it, a court — not you — chooses who raises your kids", "bg": "Без него съдът — не ти — избира кой ги отглежда" },
+              { "en": "Kids inherit faster", "bg": "Децата наследяват по-бързо" },
+              { "en": "Schools require it", "bg": "Училищата го изискват" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "If both parents die without naming a guardian, courts decide based on \"best interests\" — which may not match your values. Always name a primary AND backup guardian.", "bg": "Без назначаване, съдът избира по „най-добър интерес\" — често не съвпада със стойностите ти. Винаги назначавай основен И резервен." }
+          },
+          {
+            "id": "es-choice-4",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Power of Attorney activates when...", "bg": "Пълномощното се активира когато..." },
+            "options": [
+              { "en": "You die", "bg": "Умреш" },
+              { "en": "You become incapacitated and can't make decisions yourself", "bg": "Станеш неспособен да решаваш" },
+              { "en": "You leave the country for vacation", "bg": "Заминеш на ваканция" },
+              { "en": "Your bank requests it", "bg": "Банката го поиска" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "POA is for LIFE, not death. If you're in a coma or have dementia, the named person can manage your finances/medical decisions. Without it: courts decide.", "bg": "Пълномощното е за ЖИВОТА, не смъртта. Ако си в кома или с деменция, посоченото лице управлява. Без него — съдът решава." }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "entrepreneurship",
+    "title": { "en": "Entrepreneurship & Business Finance", "bg": "Предприемачество и бизнес финанси" },
+    "description": { "en": "Run the numbers behind a real business.", "bg": "Управлявай числата зад истински бизнес." },
+    "icon": "🏢",
+    "color": "green",
+    "order": 18,
+    "proOnly": true,
+    "lessons": [
+      {
+        "id": "unit-economics",
+        "moduleId": "entrepreneurship",
+        "title": { "en": "Unit Economics That Work", "bg": "Бизнес математика, която работи" },
+        "description": { "en": "Margins, CAC, LTV, and not running out of cash.", "bg": "Маржове, CAC, LTV и да не свършат парите." },
+        "icon": "💵",
+        "xpReward": 170,
+        "order": 1,
+        "exercises": [
+          {
+            "id": "ue-theory-1",
+            "type": "theory",
+            "xp": 0,
+            "slides": [
+              {
+                "emoji": "📊",
+                "title": { "en": "Revenue ≠ Profit", "bg": "Приходи ≠ печалба" },
+                "body": { "en": "Revenue = money in. Profit = what's left after every cost.\n\nA €1M business that spends €1.05M makes a €50K loss — bigger \"on paper\" than a €200K business with 25% margins (€50K profit).\n\nFocus on UNIT ECONOMICS: gross margin, contribution margin, payback period. The headline revenue is vanity.", "bg": "Приходи = пари влязли. Печалба = каквото остава след разходи.\n\nБизнес с €1M приход, който харчи €1.05M, губи €50K — по-голям „на хартия\" от €200K бизнес с 25% маржове (€50K печалба).\n\nФокусирай се върху БИЗНЕС МАТЕМАТИКА: брутен марж, принос, период на възвръщаемост." },
+                "highlight": { "en": "💡 Revenue is vanity. Profit is sanity. Cash is reality.", "bg": "💡 Приходите са суета. Печалбата е разум. Кешът е реалност." }
+              },
+              {
+                "emoji": "🔁",
+                "title": { "en": "CAC vs LTV", "bg": "CAC срещу LTV" },
+                "body": { "en": "CAC = Customer Acquisition Cost — what you spend to get one customer.\nLTV = Lifetime Value — total profit one customer brings.\n\nGolden rule: LTV / CAC ≥ 3.\nPayback period: ideally < 12 months.\n\nIf CAC > LTV, every new customer LOSES money. Scaling that = scaling losses.", "bg": "CAC = цена за привличане на клиент.\nLTV = общата печалба от 1 клиент за живота му.\n\nЗлатно правило: LTV / CAC ≥ 3.\nПериод на възвръщаемост: < 12 месеца.\n\nАко CAC > LTV, всеки клиент ГУБИ пари. Мащабиране = мащабиране на загубите." },
+                "highlight": { "en": "🎯 Profitable unit economics first. THEN scale. Reverse order kills startups.", "bg": "🎯 Първо печеливша математика. ПОСЛЕ растеж. Обратният ред убива стартъпи." }
+              }
+            ]
+          },
+          {
+            "id": "ue-choice-1",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Which is a healthier business?", "bg": "Кой бизнес е по-здрав?" },
+            "options": [
+              { "en": "€10M revenue, 1% margin", "bg": "€10M приход, 1% марж" },
+              { "en": "€2M revenue, 25% margin", "bg": "€2M приход, 25% марж" },
+              { "en": "€5M revenue, −2% margin", "bg": "€5M приход, −2% марж" },
+              { "en": "Bigger always wins", "bg": "По-голямото винаги печели" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "€2M × 25% = €500K profit. €10M × 1% = €100K profit. The smaller, more profitable business is more valuable per €1 of effort.", "bg": "€2M × 25% = €500K печалба. €10M × 1% = €100K. По-малкият, по-печеливш бизнес носи повече на €1 усилие." }
+          },
+          {
+            "id": "ue-fill-1",
+            "type": "fill_blank",
+            "xp": 15,
+            "question": { "en": "You spend €100 in ads to get one customer who pays you €450 over their lifetime. LTV/CAC ratio = ___", "bg": "Харчиш €100 реклама за 1 клиент, който плаща €450 за живота си. LTV/CAC = ___" },
+            "correctAnswer": 4.5,
+            "answerMin": 4.4,
+            "answerMax": 4.6,
+            "answerUnit": "x",
+            "explanation": { "en": "€450 / €100 = 4.5×. Above the 3× threshold = scalable. Below 1 = burning money on every sale.", "bg": "€450 / €100 = 4.5×. Над прага 3× = мащабируем. Под 1 = горене на пари." }
+          },
+          {
+            "id": "ue-choice-2",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "What's gross margin?", "bg": "Какво е брутен марж?" },
+            "options": [
+              { "en": "Total revenue", "bg": "Общи приходи" },
+              { "en": "Revenue minus cost of goods sold (COGS), as a %", "bg": "Приходи минус разход за стока, в %" },
+              { "en": "Profit after taxes", "bg": "Печалба след данъци" },
+              { "en": "Cash in the bank", "bg": "Кеш в банката" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Gross margin tells you how much of every €1 of revenue is left to pay overhead and generate profit. SaaS: 75–90%. Retail: 20–40%. Restaurants: 60–70%.", "bg": "Брутният марж показва колко от всеки €1 приход остава за разходи и печалба. SaaS: 75–90%. Търговия: 20–40%. Ресторанти: 60–70%." }
+          },
+          {
+            "id": "ue-sort-1",
+            "type": "sort_items",
+            "xp": 20,
+            "sortItems": [
+              { "label": { "en": "LTV/CAC of 4×, payback 8 months", "bg": "LTV/CAC 4×, възвръщаемост 8 м." }, "emoji": "📈", "isAsset": true },
+              { "label": { "en": "Selling at a loss to \"grow fast\"", "bg": "Продажба на загуба за „бърз растеж\"" }, "emoji": "🔥", "isAsset": false },
+              { "label": { "en": "Recurring monthly revenue", "bg": "Повтарящ се месечен приход" }, "emoji": "🔁", "isAsset": true },
+              { "label": { "en": "Single customer = 50% of revenue", "bg": "1 клиент = 50% от прихода" }, "emoji": "🚨", "isAsset": false },
+              { "label": { "en": "12+ months of runway", "bg": "12+ месеца резерв" }, "emoji": "🛬", "isAsset": true },
+              { "label": { "en": "2 weeks of cash left", "bg": "2 седмици кеш остава" }, "emoji": "🚩", "isAsset": false }
+            ]
+          },
+          {
+            "id": "ue-rpg-1",
+            "type": "rpg_scenario",
+            "xp": 25,
+            "scenario": { "en": "Your startup makes €50K MRR but burns €80K/month. A VC offers €5M at €30M valuation, urging \"grow at all costs.\" Cash will last 8 months as-is.", "bg": "Стартъпът ти прави €50K MRR, но гори €80K/мес. VC предлага €5M на €30M оценка с „растеж на всяка цена\". Кешът стига за 8 месеца." },
+            "avatar": "🚀",
+            "choices": [
+              { "label": { "en": "Take VC, blast on ads", "bg": "Взимаш VC, заливаш с реклами" }, "emoji": "🚀", "consequence": { "en": "Revenue 3x'd to €150K, but burn jumped to €250K. CAC ballooned, LTV/CAC dropped below 1. Out of cash in 18 months.", "bg": "Приходът 3x до €150K, но горенето стана €250K. CAC раздут, LTV/CAC под 1. Без кеш за 18 месеца." }, "cashFlowChange": -2000000, "isGood": false },
+              { "label": { "en": "Decline VC, fix unit economics first", "bg": "Откажи VC, оправи математиката" }, "emoji": "🛠️", "consequence": { "en": "Painful 4 months. Cut costs, doubled prices, killed unprofitable channels. Now profitable at €40K/mo. Real business.", "bg": "Болезнени 4 месеца. Орязваш разходи, удвояваш цени, спираш нерентабилни канали. Печеливш на €40K/мес. Реален бизнес." }, "cashFlowChange": 500000, "isGood": true },
+              { "label": { "en": "Take VC, save it for runway only", "bg": "Взимаш VC, пазиш за резерв" }, "emoji": "🛟", "consequence": { "en": "Solid defensive move. You give up dilution but buy 3 years to nail unit economics. Better than dying.", "bg": "Стабилен защитен ход. Жертваш дял, но печелиш 3 години да оправиш математиката. По-добре от смърт." }, "cashFlowChange": 200000, "isGood": true }
+            ]
+          },
+          {
+            "id": "ue-choice-3",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "What's \"runway\"?", "bg": "Какво е „runway\" (резерв)?" },
+            "options": [
+              { "en": "The path at the airport", "bg": "Пистата на летището" },
+              { "en": "How many months of cash you have at current burn rate", "bg": "Колко месеца кеш ти остават при текущо горене" },
+              { "en": "Your annual revenue", "bg": "Годишен приход" },
+              { "en": "Marketing budget", "bg": "Маркетинг бюджет" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Runway = cash on hand / monthly burn. <6 months = panic. 12–18 months = healthy. Always know your number.", "bg": "Резерв = кеш / месечно горене. <6 месеца = паника. 12–18 = здравословно. Винаги знай числото." }
+          },
+          {
+            "id": "ue-choice-4",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Why is recurring revenue (subscriptions) more valuable than one-time sales?", "bg": "Защо повтарящият се приход е по-ценен от еднократни продажби?" },
+            "options": [
+              { "en": "It's taxed less", "bg": "Облага се по-малко" },
+              { "en": "Predictability + compounding LTV per customer", "bg": "Предвидимост + растящ LTV на клиент" },
+              { "en": "Customers like it more", "bg": "Клиентите го харесват повече" },
+              { "en": "It's required by law", "bg": "Изисква се по закон" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "SaaS companies trade at ~10× revenue, vs ~2× for one-time sales. Recurring = predictable cash flow + every retained customer compounds.", "bg": "SaaS компаниите се търгуват на ~10× приход, срещу ~2× за еднократни продажби. Повтарящ = предвидим кеш + натрупване с всеки задържан клиент." }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "international-investing",
+    "title": { "en": "International Investing & Currency", "bg": "Международни инвестиции и валути" },
+    "description": { "en": "Go global without getting burned by FX.", "bg": "Инвестирай глобално без да загубиш от валутата." },
+    "icon": "🌍",
+    "color": "blue",
+    "order": 19,
+    "proOnly": true,
+    "lessons": [
+      {
+        "id": "global-investing",
+        "moduleId": "international-investing",
+        "title": { "en": "Global Markets & FX", "bg": "Глобални пазари и валути" },
+        "description": { "en": "Emerging vs developed, hedged vs unhedged.", "bg": "Развиващи се срещу развити, хеджирани срещу нехеджирани." },
+        "icon": "🗺️",
+        "xpReward": 160,
+        "order": 1,
+        "exercises": [
+          {
+            "id": "ii-theory-1",
+            "type": "theory",
+            "xp": 0,
+            "slides": [
+              {
+                "emoji": "🌍",
+                "title": { "en": "Home Bias is Expensive", "bg": "Домашното пристрастие е скъпо" },
+                "body": { "en": "Most investors hold 80%+ of their portfolio in their home country. The market cap reality:\n\n• US ≈ 60% of world stock value\n• Europe ≈ 15%\n• Asia/Pacific ≈ 18%\n• Emerging markets ≈ 7%\n\nIf your country is small (e.g., Bulgaria), home bias = under-diversified concentration in a single political/economic system.", "bg": "Повечето инвеститори държат 80%+ в своята държава. Реалността по пазарна капитализация:\n\n• САЩ ≈ 60%\n• Европа ≈ 15%\n• Азия/Пасифик ≈ 18%\n• Развиващи се ≈ 7%\n\nАко държавата ти е малка (напр. България), домашното пристрастие = недиверсифицирана концентрация в 1 система." },
+                "highlight": { "en": "💡 A global ETF (VT, VWRL) gives ~9,000 stocks across 50 countries in one share.", "bg": "💡 Глобален ETF (VT, VWRL) дава ~9,000 акции от 50 държави в 1 акция." }
+              },
+              {
+                "emoji": "💱",
+                "title": { "en": "Currency Risk", "bg": "Валутен риск" },
+                "body": { "en": "Buying foreign stocks = exposure to BOTH price AND currency moves. If a US stock rises 10% but the dollar falls 10% vs your currency, you break even.\n\nHEDGED ETFs neutralize FX (extra cost, can hurt you both ways).\nUNHEDGED = ride the FX waves; long-term they often wash out.\n\nFor decade-plus horizons, unhedged is usually fine.", "bg": "Покупка на чужди акции = експозиция И към цената И към валутата. Ако американска акция расте 10%, но доларът пада 10% спрямо валутата ти, оставаш на 0.\n\nХЕДЖИРАНИ ETF неутрализират валутата (допълнителен разход).\nНЕХЕДЖИРАНИ = яздиш валутните вълни; дългосрочно често се изравняват.\n\nЗа 10+ години хоризонт нехеджирани обикновено са окей." },
+                "highlight": { "en": "🎯 For long-term portfolios, unhedged global equity is usually the simpler, cheaper option.", "bg": "🎯 За дългосрочни портфейли, нехеджирани глобални акции обикновено са по-проста и евтина опция." }
+              }
+            ]
+          },
+          {
+            "id": "ii-choice-1",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Approximately what % of global stock market value is the US?", "bg": "Приблизително какъв % от световната пазарна капитализация е САЩ?" },
+            "options": [
+              { "en": "10%", "bg": "10%" },
+              { "en": "30%", "bg": "30%" },
+              { "en": "60%", "bg": "60%" },
+              { "en": "95%", "bg": "95%" }
+            ],
+            "correctIndex": 2,
+            "explanation": { "en": "~60% as of recent years. A globally diversified investor naturally holds ~60% US — but a 100% S&P 500 portfolio is concentrated, not diversified.", "bg": "~60% в последните години. Глобално диверсифициран инвеститор естествено държи ~60% САЩ — но 100% S&P 500 портфейл е концентриран, не диверсифициран." }
+          },
+          {
+            "id": "ii-choice-2",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "What's currency risk?", "bg": "Какво е валутен риск?" },
+            "options": [
+              { "en": "Risk that paper money disappears", "bg": "Риск парите да изчезнат" },
+              { "en": "Foreign exchange rate changes can amplify or reduce your investment returns", "bg": "Валутният курс може да усили или намали доходността" },
+              { "en": "Risk of running out of cash", "bg": "Риск да свършиш парите" },
+              { "en": "Risk of bank failure", "bg": "Риск от фалит на банка" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Foreign returns = stock return × FX move. A great stock in a falling currency might net you nothing — or vice versa.", "bg": "Чуждестранните резултати = доходност × валутно движение. Страхотна акция в падаща валута може да ти даде нула — или обратно." }
+          },
+          {
+            "id": "ii-fill-1",
+            "type": "fill_blank",
+            "xp": 15,
+            "question": { "en": "A US stock returned 12%. The dollar fell 8% vs euro that year. Your euro-denominated return is approximately ___%", "bg": "Американска акция направи 12%. Доларът падна 8% спрямо еврото. Доходността ти в евро е около ___%" },
+            "correctAnswer": 4,
+            "answerMin": 3,
+            "answerMax": 5,
+            "answerUnit": "%",
+            "explanation": { "en": "~12% − 8% ≈ 4% in euros. Currency moves can wipe out half (or all) of an asset's return — both ways.", "bg": "~12% − 8% ≈ 4% в евро. Валутните движения могат да изтрият половината (или цялата) доходност — и в двете посоки." }
+          },
+          {
+            "id": "ii-sort-1",
+            "type": "sort_items",
+            "xp": 20,
+            "sortItems": [
+              { "label": { "en": "Globally diversified ETF (VT/VWRL)", "bg": "Глобално диверсифициран ETF" }, "emoji": "🌍", "isAsset": true },
+              { "label": { "en": "100% home country index", "bg": "100% домашен индекс" }, "emoji": "🚩", "isAsset": false },
+              { "label": { "en": "Small EM allocation (5–10%)", "bg": "Малка експозиция към EM (5–10%)" }, "emoji": "🌱", "isAsset": true },
+              { "label": { "en": "All savings in 1 emerging country", "bg": "Всички спестявания в 1 EM държава" }, "emoji": "🎯", "isAsset": false },
+              { "label": { "en": "Low-cost developed-world ETF", "bg": "Евтин ETF от развит свят" }, "emoji": "📊", "isAsset": true },
+              { "label": { "en": "Speculative single-country bet", "bg": "Спекулативен залог на 1 държава" }, "emoji": "🎰", "isAsset": false }
+            ]
+          },
+          {
+            "id": "ii-rpg-1",
+            "type": "rpg_scenario",
+            "xp": 25,
+            "scenario": { "en": "You're Bulgarian, 100% invested in BG-listed stocks. A friend says \"Why bother going abroad? Local feels safer.\" You're considering global diversification.", "bg": "Българин си, 100% в български акции. Приятел: „Защо чужбина? Местното е по-сигурно.\" Обмисляш глобална диверсификация." },
+            "avatar": "🌍",
+            "choices": [
+              { "label": { "en": "Stay 100% local — \"familiar = safe\"", "bg": "Остани 100% местно — „познато = сигурно\"" }, "emoji": "🏠", "consequence": { "en": "Familiar ≠ safe. Concentrated in one small economy + one currency = high single-country risk. Decades of underperformance possible.", "bg": "Познато ≠ сигурно. Концентриран в 1 малка икономика + 1 валута = висок риск. Възможни десетилетия слаба доходност." }, "cashFlowChange": -10000, "isGood": false },
+              { "label": { "en": "Move to a global ETF (VT) for the bulk", "bg": "Премести по-голямата част в глобален ETF (VT)" }, "emoji": "🌐", "consequence": { "en": "Smart shift. ~9,000 stocks, 50 countries, low fees. You're now diversified across the global economy.", "bg": "Умен ход. ~9,000 акции, 50 държави, ниски такси. Диверсифициран в глобалната икономика." }, "cashFlowChange": 15000, "isGood": true },
+              { "label": { "en": "All-in on a single emerging market", "bg": "Всичко в 1 развиваща се пазарна икономика" }, "emoji": "🎰", "consequence": { "en": "You traded one concentration for another. EM can outperform OR underperform for decades. Spread the bet.", "bg": "Размени една концентрация за друга. EM могат да бият ИЛИ да губят за десетилетия. Разпредели залога." }, "cashFlowChange": -5000, "isGood": false }
+            ]
+          },
+          {
+            "id": "ii-choice-3",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "What's the main reason emerging markets are riskier than developed markets?", "bg": "Защо развиващите се пазари са по-рискови?" },
+            "options": [
+              { "en": "Stocks there always go down", "bg": "Акциите там винаги падат" },
+              { "en": "Less stable politics, currencies, regulations, and accounting", "bg": "По-нестабилна политика, валути, регулации, отчитане" },
+              { "en": "Companies don't make profit", "bg": "Компаниите не правят печалба" },
+              { "en": "It's illegal to invest there", "bg": "Незаконно е да инвестираш там" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "EM offers higher growth potential but also bigger drawdowns and currency volatility. A small allocation (5–15%) captures upside without risking the portfolio.", "bg": "EM дават по-висок потенциал за растеж, но по-големи спадове и валутна волатилност. Малка експозиция (5–15%) хваща ръста без риск за портфейла." }
+          },
+          {
+            "id": "ii-choice-4",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "For a 25-year-old saving for retirement, hedged or unhedged international ETFs?", "bg": "Млад човек, спестяващ за пенсия, хеджирани или нехеджирани международни ETF?" },
+            "options": [
+              { "en": "Always hedged — currency is scary", "bg": "Винаги хеджирани — валутата е страшна" },
+              { "en": "Unhedged usually — long horizon smooths FX, lower fees", "bg": "Нехеджирани обикновено — дългият хоризонт изглажда, по-ниски такси" },
+              { "en": "Doesn't matter at all", "bg": "Няма значение" },
+              { "en": "Half each, always", "bg": "По половина, винаги" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Hedging costs ~0.2–0.5%/year and erodes returns. Over 30+ years, currencies tend to mean-revert. Unhedged is the standard recommendation.", "bg": "Хеджирането струва ~0.2–0.5%/година и изяжда доходността. За 30+ години валутите се връщат към средното. Нехеджирани = стандартна препоръка." }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "macro-cycles",
+    "title": { "en": "Macroeconomics & Market Cycles", "bg": "Макроикономика и пазарни цикли" },
+    "description": { "en": "See the big picture — interest rates, inflation, recessions.", "bg": "Виж голямата картина — лихви, инфлация, рецесии." },
+    "icon": "🌊",
+    "color": "purple",
+    "order": 20,
+    "proOnly": true,
+    "lessons": [
+      {
+        "id": "macro-fundamentals",
+        "moduleId": "macro-cycles",
+        "title": { "en": "Rates, Inflation & Recessions", "bg": "Лихви, инфлация и рецесии" },
+        "description": { "en": "How the economic engine actually works.", "bg": "Как реално работи икономическият двигател." },
+        "icon": "🏛️",
+        "xpReward": 165,
+        "order": 1,
+        "exercises": [
+          {
+            "id": "mc-theory-1",
+            "type": "theory",
+            "xp": 0,
+            "slides": [
+              {
+                "emoji": "🏛️",
+                "title": { "en": "Central Banks & Interest Rates", "bg": "Централни банки и лихви" },
+                "body": { "en": "Central banks (ECB, Fed) set short-term interest rates to control inflation and growth.\n\n• Rates UP → borrowing expensive → spending slows → inflation cools\n• Rates DOWN → cheap money → economy heats up → risk of inflation\n\nWhen rates rise, BOND prices fall. When rates rise sharply, growth stocks usually fall too.", "bg": "Централните банки (ЕЦБ, Федералния резерв) определят краткосрочните лихви, за да контролират инфлация и растеж.\n\n• Лихви НАГОРЕ → скъпи заеми → харченето се забавя → инфлацията охладнява\n• Лихви НАДОЛУ → евтини пари → икономиката се загрява\n\nКогато лихвите растат, ОБЛИГАЦИИТЕ падат. Растежни акции обикновено също." },
+                "highlight": { "en": "💡 Don't fight the central bank. Their policy is the tide that moves all assets.", "bg": "💡 Не се борѝ с централната банка. Политиката ѝ е приливът, който движи всички активи." }
+              },
+              {
+                "emoji": "🌊",
+                "title": { "en": "The Business Cycle", "bg": "Бизнес циклите" },
+                "body": { "en": "Economies cycle through 4 phases:\n\n1. EXPANSION — growth, low unemployment, rising stocks\n2. PEAK — overheating, inflation, rate hikes\n3. RECESSION — contraction, layoffs, falling stocks\n4. RECOVERY — rates cut, stocks bottom, cycle restarts\n\nTime in market > timing the cycle. But understanding the phase you're in helps you not panic.", "bg": "Икономиките минават през 4 фази:\n\n1. РАЗШИРЕНИЕ — растеж, ниска безработица, растящи акции\n2. ВЪРХ — прегряване, инфлация, повишаване на лихвите\n3. РЕЦЕСИЯ — свиване, уволнения, падащи акции\n4. ВЪЗСТАНОВЯВАНЕ — лихви надолу, акции на дъното\n\nВреме на пазара > таймиране. Разбирането на фазата помага да не изпадаш в паника." },
+                "highlight": { "en": "🎯 Recessions on average hit every 7–10 years and last ~10 months. Plan for them; don't fear them.", "bg": "🎯 Рецесия идва на 7–10 години и трае ~10 месеца. Планирай за нея; не се страхувай." }
+              }
+            ]
+          },
+          {
+            "id": "mc-choice-1",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "When central banks raise interest rates, BONDS typically...", "bg": "Когато централните банки повишават лихвите, ОБЛИГАЦИИТЕ обикновено..." },
+            "options": [
+              { "en": "Rise in price", "bg": "Растат на цена" },
+              { "en": "Fall in price (existing bonds become less attractive)", "bg": "Падат на цена (старите облигации стават по-малко атрактивни)" },
+              { "en": "Stay exactly the same", "bg": "Остават същите" },
+              { "en": "Disappear from the market", "bg": "Изчезват от пазара" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "If new bonds pay 5%, your old bond paying 3% becomes less valuable — its price drops until yield matches the new rate.", "bg": "Ако нови облигации плащат 5%, твоята стара с 3% става по-малко ценна — цената пада докато доходността се изравни." }
+          },
+          {
+            "id": "mc-choice-2",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "What's typically the FIRST sign of a coming recession?", "bg": "Кой е обикновено ПЪРВИЯТ признак за наближаваща рецесия?" },
+            "options": [
+              { "en": "Stocks hitting new highs", "bg": "Акциите правят нови върхове" },
+              { "en": "Inverted yield curve (short-term rates higher than long-term)", "bg": "Обърната крива на доходността (краткосрочните лихви по-високи от дългосрочните)" },
+              { "en": "Lots of IPOs", "bg": "Много IPO-та" },
+              { "en": "High consumer confidence", "bg": "Висока потребителска увереност" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "An inverted yield curve has predicted nearly every US recession since 1955 — usually 6–18 months in advance. It's the most-watched recession indicator.", "bg": "Обърната крива е предсказала почти всяка рецесия в САЩ от 1955 г. — обикновено 6–18 месеца предварително." }
+          },
+          {
+            "id": "mc-fill-1",
+            "type": "fill_blank",
+            "xp": 15,
+            "question": { "en": "On average, recessions hit every ___ years.", "bg": "Средно рецесия идва на всеки ___ години." },
+            "correctAnswer": 8,
+            "answerMin": 7,
+            "answerMax": 10,
+            "answerUnit": "years",
+            "explanation": { "en": "Roughly 7–10 years between US recessions historically. They're features of capitalism, not bugs. Plan for them.", "bg": "Исторически между 7–10 години в САЩ. Те са особеност на капитализма, не грешка. Планирай за тях." }
+          },
+          {
+            "id": "mc-sort-1",
+            "type": "sort_items",
+            "xp": 20,
+            "sortItems": [
+              { "label": { "en": "Buying stocks during a recession", "bg": "Купуване на акции по време на рецесия" }, "emoji": "💎", "isAsset": true },
+              { "label": { "en": "Panic-selling at the bottom", "bg": "Продажба в паника на дъното" }, "emoji": "😱", "isAsset": false },
+              { "label": { "en": "Maintaining 6mo emergency fund", "bg": "6-месечен авариен фонд" }, "emoji": "🛟", "isAsset": true },
+              { "label": { "en": "Maxing margin near a market peak", "bg": "Максимален маржин близо до върха" }, "emoji": "🚨", "isAsset": false },
+              { "label": { "en": "Diversified 60/40 portfolio", "bg": "Диверсифициран 60/40 портфейл" }, "emoji": "📊", "isAsset": true },
+              { "label": { "en": "Trying to time the exact bottom", "bg": "Опит да хванеш точното дъно" }, "emoji": "🎯", "isAsset": false }
+            ]
+          },
+          {
+            "id": "mc-rpg-1",
+            "type": "rpg_scenario",
+            "xp": 25,
+            "scenario": { "en": "Headlines: \"WORST RECESSION SINCE 2008.\" Stocks down 35%. Your job is safe and you have a healthy emergency fund. You also have €1,000/month going into your investments automatically.", "bg": "Заглавия: „НАЙ-ЛОША РЕЦЕСИЯ ОТ 2008.\" Акции −35%. Работата ти е сигурна и имаш авариен фонд. €1,000/мес отиват в инвестиции автоматично." },
+            "avatar": "📰",
+            "choices": [
+              { "label": { "en": "Pause auto-investing until \"things calm down\"", "bg": "Спри авто-инвестицията докато „се успокои\"" }, "emoji": "⏸️", "consequence": { "en": "By the time \"calm\" returns, prices are 40% higher. You missed buying the discount.", "bg": "Докато „спокойствието\" се върне, цените са 40% по-високи. Пропусна намалението." }, "cashFlowChange": -8000, "isGood": false },
+              { "label": { "en": "Keep auto-investing — buy the discount", "bg": "Продължи авто-инвестицията — купувай намалението" }, "emoji": "💎", "consequence": { "en": "Same monthly amount buys MORE shares at lower prices. Within 24 months, you outperformed the \"wait and see\" crowd by 25%.", "bg": "Същата сума купува ПОВЕЧЕ акции на ниски цени. След 24 месеца биеш „чакащите\" с 25%." }, "cashFlowChange": 15000, "isGood": true },
+              { "label": { "en": "Sell everything to \"protect yourself\"", "bg": "Продай всичко за „защита\"" }, "emoji": "😱", "consequence": { "en": "You locked in 35% losses. You'll likely re-enter when sentiment is positive — i.e., AFTER the rebound. Classic destruction.", "bg": "Заключи 35% загуба. Вероятно ще влезеш отново когато настроението е положително — т.е. СЛЕД отскока." }, "cashFlowChange": -25000, "isGood": false }
+            ]
+          },
+          {
+            "id": "mc-choice-3",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "Which asset class typically does BEST during high inflation?", "bg": "Кой клас активи обикновено се справя НАЙ-ДОБРЕ при висока инфлация?" },
+            "options": [
+              { "en": "Long-term fixed-rate bonds", "bg": "Дългосрочни облигации с фиксирана лихва" },
+              { "en": "Cash", "bg": "Кеш" },
+              { "en": "Stocks of pricing-power businesses + real assets", "bg": "Акции на компании с ценова сила + реални активи" },
+              { "en": "Crypto stablecoins", "bg": "Крипто стейбълкойни" }
+            ],
+            "correctIndex": 2,
+            "explanation": { "en": "Companies that can raise prices (think: Coca-Cola, Visa) and real assets (real estate, commodities) historically outpace inflation. Long bonds and cash get crushed.", "bg": "Компании, които могат да вдигнат цени (Coca-Cola, Visa), и реални активи (имоти, суровини) исторически бият инфлацията. Дългите облигации и кешът губят." }
+          },
+          {
+            "id": "mc-choice-4",
+            "type": "choice",
+            "xp": 15,
+            "question": { "en": "What's \"stagflation\"?", "bg": "Какво е „стагфлация\"?" },
+            "options": [
+              { "en": "A market that just stagnates", "bg": "Стагниращ пазар" },
+              { "en": "High inflation + high unemployment + low growth simultaneously", "bg": "Висока инфлация + висока безработица + нисък растеж едновременно" },
+              { "en": "Rapid currency devaluation", "bg": "Бърза девалвация на валутата" },
+              { "en": "A type of bond", "bg": "Тип облигация" }
+            ],
+            "correctIndex": 1,
+            "explanation": { "en": "Stagflation = the worst of all worlds. The 1970s example. It's hard for central banks to fix because the cures (rate hikes vs cuts) work against each other.", "bg": "Стагфлация = най-лошото от всички светове. 70-те години. Централните банки трудно я оправят, защото лекарствата (повишаване срещу намаляване на лихвите) си противоречат." }
+          }
+        ]
+      }
+    ]
+  }
+]

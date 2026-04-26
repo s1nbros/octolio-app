@@ -856,7 +856,7 @@ const staticModules: Module[] = [
     id: 'advanced-investing',
     title: { en: 'Advanced Investing', bg: 'Напреднало инвестиране' },
     description: { en: 'ETFs, portfolio strategies and real investment decisions — learn by playing.', bg: 'ETF-и, портфолио стратегии и реални инвестиционни решения — учи чрез игра.' },
-    icon: '📈', color: 'blue', order: 5, proOnly: true,
+    icon: '📈', color: 'blue', order: 10, proOnly: true,
     lessons: [
       {
         id: 'etf-mastery',
@@ -981,7 +981,7 @@ const staticModules: Module[] = [
     id: 'real-estate',
     title: { en: 'Real Estate Investing', bg: 'Инвестиции в недвижими имоти' },
     description: { en: 'Analyse real deals, survive landlord nightmares, and decide: buy or invest in REITs?', bg: 'Анализирай реални сделки, преживей кошмари на наемодатели и реши: купувай или инвестирай в REIT-и?' },
-    icon: '🏠', color: 'orange', order: 6, proOnly: true,
+    icon: '🏠', color: 'orange', order: 11, proOnly: true,
     lessons: [
       {
         id: 'reit-fundamentals',
@@ -1115,7 +1115,7 @@ const staticModules: Module[] = [
     id: 'tax-strategy',
     title: { en: 'Tax Strategy', bg: 'Данъчна стратегия' },
     description: { en: 'The legal game the wealthy play. Learn every trick — without breaking any laws.', bg: 'Законната игра, която богатите играят. Научи всеки трик — без да нарушаваш закони.' },
-    icon: '🧾', color: 'purple', order: 7, proOnly: true,
+    icon: '🧾', color: 'purple', order: 12, proOnly: true,
     lessons: [
       {
         id: 'tax-basics',
@@ -1199,10 +1199,8 @@ const staticModules: Module[] = [
 ];
 
 // Merge static + generated modules.
-// Generated modules with the same `id` OVERRIDE the static version,
-// so you can swap any hand-written module for an AI-generated one
-// just by re-running the generation script.
+// Static modules take precedence — generated ones fill in IDs not already in static.
 const byId = new Map<string, Module>();
-for (const m of staticModules) byId.set(m.id, m);
 for (const m of generatedModules) byId.set(m.id, m);
+for (const m of staticModules) byId.set(m.id, m);
 export const modules: Module[] = [...byId.values()].sort((a, b) => a.order - b.order);

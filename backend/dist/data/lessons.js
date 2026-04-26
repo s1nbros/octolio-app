@@ -1,7 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.modules = void 0;
-exports.modules = [
+// Load AI-generated modules if the script has been run (see scripts/generateProModules.ts).
+// Safe no-op if the file doesn't exist yet.
+let generatedModules = [];
+try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    generatedModules = require('./generated-modules.json');
+}
+catch { /* no generated file yet */ }
+const staticModules = [
     // ─────────────────────────────────────────────
     // MODULE 1 — BUDGETING
     // ─────────────────────────────────────────────
@@ -750,7 +758,7 @@ exports.modules = [
         id: 'advanced-investing',
         title: { en: 'Advanced Investing', bg: 'Напреднало инвестиране' },
         description: { en: 'ETFs, portfolio strategies and real investment decisions — learn by playing.', bg: 'ETF-и, портфолио стратегии и реални инвестиционни решения — учи чрез игра.' },
-        icon: '📈', color: 'blue', order: 5, proOnly: true,
+        icon: '📈', color: 'blue', order: 10, proOnly: true,
         lessons: [
             {
                 id: 'etf-mastery',
@@ -874,7 +882,7 @@ exports.modules = [
         id: 'real-estate',
         title: { en: 'Real Estate Investing', bg: 'Инвестиции в недвижими имоти' },
         description: { en: 'Analyse real deals, survive landlord nightmares, and decide: buy or invest in REITs?', bg: 'Анализирай реални сделки, преживей кошмари на наемодатели и реши: купувай или инвестирай в REIT-и?' },
-        icon: '🏠', color: 'orange', order: 6, proOnly: true,
+        icon: '🏠', color: 'orange', order: 11, proOnly: true,
         lessons: [
             {
                 id: 'reit-fundamentals',
@@ -1007,7 +1015,7 @@ exports.modules = [
         id: 'tax-strategy',
         title: { en: 'Tax Strategy', bg: 'Данъчна стратегия' },
         description: { en: 'The legal game the wealthy play. Learn every trick — without breaking any laws.', bg: 'Законната игра, която богатите играят. Научи всеки трик — без да нарушаваш закони.' },
-        icon: '🧾', color: 'purple', order: 7, proOnly: true,
+        icon: '🧾', color: 'purple', order: 12, proOnly: true,
         lessons: [
             {
                 id: 'tax-basics',
@@ -1089,3 +1097,11 @@ exports.modules = [
         ],
     },
 ];
+// Merge static + generated modules.
+// Static modules take precedence — generated ones fill in IDs not already in static.
+const byId = new Map();
+for (const m of generatedModules)
+    byId.set(m.id, m);
+for (const m of staticModules)
+    byId.set(m.id, m);
+exports.modules = [...byId.values()].sort((a, b) => a.order - b.order);

@@ -14,6 +14,7 @@ const auth_1 = require("./routes/auth");
 const modules_1 = require("./routes/modules");
 const progress_1 = require("./routes/progress");
 const stripe_1 = require("./routes/stripe");
+const generate_1 = require("./routes/generate");
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 3001;
 const allowedOrigins = process.env.ALLOWED_ORIGINS
@@ -30,6 +31,7 @@ app.use('/api/auth', auth_1.authRouter);
 app.use('/api/modules', modules_1.modulesRouter);
 app.use('/api/progress', progress_1.progressRouter);
 app.use('/api/stripe', stripe_1.stripeRouter);
+app.use('/api/generate', generate_1.generateRouter);
 app.get('/api/health', (_req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
