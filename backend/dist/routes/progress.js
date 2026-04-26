@@ -32,16 +32,17 @@ exports.progressRouter.post('/energy/use', auth_1.authenticate, async (req, res)
         res.status(404).json({ error: 'Lesson not found' });
         return;
     }
-    // Count interactive (non-theory) exercises
-    const cost = lesson.exercises.filter(e => e.type !== 'theory').length;
-    if (cost === 0) {
-        res.json({ energy: 12, cost: 0 }); // theory-only lesson is free
-        return;
-    }
+    // Every lesson costs exactly 3 energy
+    const cost = 3;
     try {
         const pool = (0, db_1.getPool)();
-        const userResult = await pool.query('SELECT energy, energy_refill_at FROM users WHERE id = $1', [req.userId]);
+        const userResult = await pool.query('SELECT is_pro, energy, energy_refill_at FROM users WHERE id = $1', [req.userId]);
         const user = userResult.rows[0];
+        // Pro users have unlimited energy — skip all deduction
+        if (user.is_pro) {
+            res.json({ energy: user.energy, cost: 0, unlimited: true });
+            return;
+        }
         // Apply incremental refill (+3/hour) before deducting
         let currentEnergy = user.energy;
         let refillAt = user.energy_refill_at;
