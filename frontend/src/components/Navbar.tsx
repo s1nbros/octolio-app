@@ -1,3 +1,4 @@
+import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLang } from '../contexts/LanguageContext';
@@ -46,6 +47,68 @@ function IconAdvisor() {
   );
 }
 
+function EnergyPopover({ energy, refillAt, onClose }: { energy: number; refillAt?: string | null; onClose: () => void }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    function handler(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) onClose();
+    }
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [onClose]);
+
+  const isFull = energy >= 12;
+  const hoursToFull = isFull ? 0 : Math.ceil((12 - energy) / 3);
+
+  // Time until next +3: minutes remaining in current hour of refill
+  let nextIn: string | null = null;
+  if (!isFull && refillAt) {
+    const elapsedMs = Date.now() - new Date(refillAt).getTime();
+    const msInHour = elapsedMs % 3600000;
+    const msUntilNext = 3600000 - msInHour;
+    const mins = Math.ceil(msUntilNext / 60000);
+    nextIn = `${mins}m`;
+  }
+
+  return (
+    <div ref={ref} className="absolute right-0 top-10 z-50 rounded-2xl p-4 w-60 shadow-xl"
+      style={{ background: 'var(--c-bg-elevated, hsl(var(--c-bg-card)))', border: '1px solid var(--c-border)' }}>
+      <div className="flex items-center gap-2 mb-3">
+        <span className="text-xl">⚡</span>
+        <span className="font-bold text-sm" style={{ color: 'hsl(var(--c-fg))' }}>Energy</span>
+      </div>
+
+      {/* Bar */}
+      <div className="w-full h-2.5 rounded-full mb-1 overflow-hidden" style={{ background: 'var(--c-glass)' }}>
+        <div className="h-full rounded-full transition-all"
+          style={{
+            width: `${(energy / 12) * 100}%`,
+            background: energy <= 3 ? '#f87171' : 'hsl(var(--c-green))',
+          }} />
+      </div>
+      <p className="mono text-xs mb-3" style={{ color: 'hsl(var(--c-fg-subtle))' }}>{energy} / 12</p>
+
+      {isFull ? (
+        <p className="text-xs" style={{ color: 'hsl(var(--c-green))' }}>✓ Energy is full! Start a lesson.</p>
+      ) : (
+        <>
+          <p className="text-xs mb-1" style={{ color: 'hsl(var(--c-fg-muted))' }}>
+            ⚡ +3 energy every hour
+          </p>
+          {nextIn && (
+            <p className="text-xs mb-1" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+              Next +3 in ~{nextIn}
+            </p>
+          )}
+          <p className="text-xs" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+            Full in ~{hoursToFull}h
+          </p>
+        </>
+      )}
+    </div>
+  );
+}
+
 export function Navbar() {
   const { user, logout } = useAuth();
   const { lang, setLang } = useLang();
@@ -53,6 +116,7 @@ export function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
   const isActive = (p: string) => location.pathname.startsWith(p);
+  const [energyOpen, setEnergyOpen] = useState(false);
 
   const level = user ? getLevel(user.xp) : null;
 
@@ -102,25 +166,36 @@ export function Navbar() {
                 <span>{lang === 'en' ? 'EN' : 'BG'}</span>
               </button>
 
-              {/* Pro badge OR energy pill */}
-              {user.is_pro ? (
+              {/* Pro badge */}
+              {user.is_pro && (
                 <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full"
                   style={{ background: 'hsl(var(--c-primary)/0.15)', border: '1px solid hsl(var(--c-primary)/0.35)' }}>
                   <span className="text-xs font-black tracking-wider" style={{ color: 'hsl(var(--c-primary))' }}>✦ PRO</span>
                 </div>
-              ) : (
-                <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full"
-                  title="Energy — refills every 24h"
+              )}
+
+              {/* Energy pill — always shown, clickable tooltip */}
+              <div className="hidden md:block relative">
+                <button
+                  onClick={() => setEnergyOpen(o => !o)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all"
                   style={{
-                    background: user.energy > 3 ? 'hsl(var(--c-green)/0.1)' : 'hsl(var(--c-red,0,70%,55%)/0.12)',
-                    border: `1px solid ${user.energy > 3 ? 'hsl(var(--c-green)/0.25)' : 'hsl(var(--c-red,0,70%,55%)/0.35)'}`,
+                    background: user.energy > 3 ? 'hsl(var(--c-green)/0.1)' : 'hsl(0,70%,55%,0.12)',
+                    border: `1px solid ${user.energy > 3 ? 'hsl(var(--c-green)/0.25)' : 'hsl(0,70%,55%,0.35)'}`,
                   }}>
                   <span className="text-sm">⚡</span>
                   <span className="mono text-sm font-semibold" style={{ color: user.energy > 3 ? 'hsl(var(--c-green))' : '#f87171' }}>
                     {user.energy}/12
                   </span>
-                </div>
-              )}
+                </button>
+                {energyOpen && (
+                  <EnergyPopover
+                    energy={user.energy}
+                    refillAt={user.energy_refill_at}
+                    onClose={() => setEnergyOpen(false)}
+                  />
+                )}
+              </div>
 
               {/* XP pill */}
               <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full"

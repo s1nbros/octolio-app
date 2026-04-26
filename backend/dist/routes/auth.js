@@ -105,12 +105,17 @@ exports.authRouter.post('/login', async (req, res) => {
 exports.authRouter.get('/me', auth_1.authenticate, async (req, res) => {
     try {
         const pool = (0, db_1.getPool)();
-        // Auto-refill energy if refill time has passed
-        await pool.query(`
-      UPDATE users
-      SET energy = 12, energy_refill_at = NULL
-      WHERE id = $1 AND energy_refill_at IS NOT NULL AND energy_refill_at <= NOW()
-    `, [req.userId]);
+        // Incremental energy refill: +3 per hour since refill started
+        const energyRow = await pool.query('SELECT energy, energy_refill_at FROM users WHERE id = $1', [req.userId]);
+        const er = energyRow.rows[0];
+        if (er && er.energy < 12 && er.energy_refill_at) {
+            const hoursElapsed = (Date.now() - new Date(er.energy_refill_at).getTime()) / 3600000;
+            const toAdd = Math.floor(hoursElapsed * 3);
+            if (toAdd > 0) {
+                const newEnergy = Math.min(12, er.energy + toAdd);
+                await pool.query('UPDATE users SET energy = $1, energy_refill_at = $2 WHERE id = $3', [newEnergy, newEnergy >= 12 ? null : er.energy_refill_at, req.userId]);
+            }
+        }
         const result = await pool.query('SELECT id, name, email, xp, streak, last_active, created_at, avatar, is_pro, energy, energy_refill_at, onboarding_done FROM users WHERE id = $1', [req.userId]);
         const user = result.rows[0];
         if (!user) {

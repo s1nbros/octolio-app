@@ -249,14 +249,16 @@ const COLOR_HEX: Record<string, string> = {
   orange: 'hsl(28,  85%, 60%)',
 };
 
-function DashModuleCard({ mod, idx, prevMod, lang }: {
+function DashModuleCard({ mod, idx, prevMod, lang, isPro }: {
   mod: ModuleMeta;
   idx: number;
   prevMod: ModuleMeta | null;
   lang: 'en' | 'bg';
+  isPro: boolean;
 }) {
   const [hovered, setHovered] = useState(false);
-  const locked = prevMod !== null && prevMod.lessons.some(l => !l.completed);
+  // Pro users have all modules unlocked; free users need previous module completion
+  const locked = !isPro && prevMod !== null && prevMod.lessons.some(l => !l.completed);
   const done  = mod.lessons.filter(l => l.completed).length;
   const total = mod.lessons.length;
   const pct   = total > 0 ? Math.round((done / total) * 100) : 0;
@@ -286,15 +288,25 @@ function DashModuleCard({ mod, idx, prevMod, lang }: {
             opacity: hovered ? 1 : 0.6, transition: 'opacity 0.2s' }} />
       )}
 
-      {/* Top row: icon + progress % or lock */}
+      {/* Top row: icon + PRO badge or progress % or lock */}
       <div className="flex items-start justify-between mb-3 relative">
         <div className="w-11 h-11 rounded-xl flex items-center justify-center text-2xl"
           style={{ background: locked ? 'hsl(var(--c-fg-subtle)/0.08)' : `${color}25` }}>
           {locked ? '🔒' : mod.icon}
         </div>
-        <span className="mono text-xs font-semibold" style={{ color: hovered && !locked ? color : 'hsl(var(--c-fg-subtle))' }}>
-          {locked ? '' : `${pct}%`}
-        </span>
+        <div className="flex items-center gap-1.5">
+          {mod.proOnly && (
+            <span className="text-xs font-bold px-1.5 py-0.5 rounded"
+              style={{ background: 'hsl(var(--c-primary)/0.12)', color: 'hsl(var(--c-primary))', border: '1px solid hsl(var(--c-primary)/0.2)' }}>
+              ✦ PRO
+            </span>
+          )}
+          {!locked && (
+            <span className="mono text-xs font-semibold" style={{ color: hovered ? color : 'hsl(var(--c-fg-subtle))' }}>
+              {pct}%
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Name + desc */}
@@ -516,7 +528,7 @@ export function Dashboard() {
 
               <div className="grid sm:grid-cols-3 gap-3">
                 {modules.map((mod, idx) => (
-                  <DashModuleCard key={mod.id} mod={mod} idx={idx} prevMod={idx > 0 ? modules[idx - 1] : null} lang={lang} />
+                  <DashModuleCard key={mod.id} mod={mod} idx={idx} prevMod={idx > 0 ? modules[idx - 1] : null} lang={lang} isPro={user?.is_pro ?? false} />
                 ))}
               </div>
             </div>

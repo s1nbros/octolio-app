@@ -59,29 +59,32 @@ progressRouter.post('/energy/use', authenticate, async (req: AuthRequest, res: R
     );
     const user = userResult.rows[0] as { energy: number; energy_refill_at: string | null };
 
-    // Auto-refill if refill time passed
+    // Apply incremental refill (+3/hour) before deducting
     let currentEnergy = user.energy;
     let refillAt = user.energy_refill_at;
-    if (refillAt && new Date(refillAt) <= new Date()) {
-      currentEnergy = 12;
-      refillAt = null;
+    if (currentEnergy < 12 && refillAt) {
+      const hoursElapsed = (Date.now() - new Date(refillAt).getTime()) / 3600000;
+      const toAdd = Math.floor(hoursElapsed * 3);
+      if (toAdd > 0) {
+        currentEnergy = Math.min(12, currentEnergy + toAdd);
+        if (currentEnergy >= 12) refillAt = null;
+      }
     }
 
     if (currentEnergy < cost) {
-      const refillDate = refillAt ? new Date(refillAt) : null;
       res.status(402).json({
         error: 'no_energy',
         energy: currentEnergy,
         cost,
-        refillAt: refillDate?.toISOString() ?? null,
+        refillAt: refillAt ?? null,
       });
       return;
     }
 
     const newEnergy = currentEnergy - cost;
-    // Set refill timer when energy first goes below max
+    // Start refill timer from NOW when energy first drops below max
     const newRefillAt = (!refillAt && newEnergy < 12)
-      ? new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+      ? new Date().toISOString()
       : refillAt;
 
     await pool.query(
