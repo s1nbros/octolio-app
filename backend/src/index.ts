@@ -10,6 +10,7 @@ import { modulesRouter } from './routes/modules';
 import { progressRouter } from './routes/progress';
 import { stripeRouter, stripeWebhookHandler } from './routes/stripe';
 import { generateRouter } from './routes/generate';
+import { aiRouter } from './routes/ai';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -33,6 +34,7 @@ app.use('/api/modules', modulesRouter);
 app.use('/api/progress', progressRouter);
 app.use('/api/stripe', stripeRouter);
 app.use('/api/generate', generateRouter);
+app.use('/api/ai', aiRouter);
 
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });

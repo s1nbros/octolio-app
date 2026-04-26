@@ -37,6 +37,14 @@ function IconProfile() {
     </svg>
   );
 }
+function IconAdvisor() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7H3a7 7 0 0 1 7-7h1V5.73A2 2 0 0 1 10 4a2 2 0 0 1 2-2z" />
+      <path d="M3 14v1a9 9 0 0 0 18 0v-1" />
+    </svg>
+  );
+}
 
 export function Navbar() {
   const { user, logout } = useAuth();
@@ -68,6 +76,9 @@ export function Navbar() {
             <NavTab to="/dashboard" active={isActive('/dashboard')} label="Dashboard" />
             <NavTab to="/modules"   active={isActive('/modules') || isActive('/lesson')} label="Learn" />
             <NavTab to="/league"    active={isActive('/league')} label="League" />
+            {user.is_pro && (
+              <NavTab to="/advisor" active={isActive('/advisor')} label="✦ AI Advisor" />
+            )}
           </nav>
         )}
 
@@ -192,6 +203,9 @@ export function Navbar() {
           <BottomTab to="/dashboard" active={isActive('/dashboard')} icon={<IconHome />} label="Home" />
           <BottomTab to="/modules"   active={isActive('/modules') || isActive('/lesson')} icon={<IconLearn />} label="Learn" />
           <BottomTab to="/league"    active={isActive('/league')}    icon={<IconLeague />} label="League" />
+          {user.is_pro && (
+            <BottomTab to="/advisor" active={isActive('/advisor')} icon={<IconAdvisor />} label="AI" />
+          )}
           <BottomTab to="/profile"   active={isActive('/profile')}   icon={<IconProfile />} label="Profile" />
 
         </div>

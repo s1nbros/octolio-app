@@ -45,7 +45,9 @@ export function ModuleCard({ module, isLocked, isProLocked, index }: Props) {
   const totalLessons = module.lessons.length;
   const progress = totalLessons > 0 ? (completedCount / totalLessons) * 100 : 0;
   const isFullyDone = completedCount === totalLessons && totalLessons > 0;
-  const blocked = isLocked || isProLocked;
+
+  // Pro users see pro modules unlocked but with a PRO label. Free users see them locked.
+  const hardBlocked = isLocked || isProLocked;
 
   const nextLesson = module.lessons.find((l) => !l.completed) ?? module.lessons[0];
 
@@ -53,19 +55,19 @@ export function ModuleCard({ module, isLocked, isProLocked, index }: Props) {
     <div
       className={`glass-card rounded-2xl p-6 transition-all duration-300 animate-fade-up delay-${Math.min(index * 100, 400)}`}
       style={{
-        borderColor: blocked
+        borderColor: hardBlocked
           ? (isProLocked ? 'hsl(var(--c-primary)/0.35)' : 'var(--c-border)')
           : hovered
             ? colors.badge
             : colors.border,
-        boxShadow: !blocked && hovered
+        boxShadow: !hardBlocked && hovered
           ? `0 0 0 1px ${colors.badge}, 0 8px 32px ${colors.glow}`
           : isProLocked ? '0 0 24px hsl(var(--c-primary)/0.08)' : undefined,
         opacity: isLocked ? 0.55 : 1,
-        cursor: blocked ? 'default' : 'pointer',
-        transform: !blocked && hovered ? 'translateY(-2px)' : undefined,
+        cursor: hardBlocked ? 'default' : 'pointer',
+        transform: !hardBlocked && hovered ? 'translateY(-2px)' : undefined,
       }}
-      onMouseEnter={() => !blocked && setHovered(true)}
+      onMouseEnter={() => !hardBlocked && setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
       {/* Header */}
@@ -73,12 +75,12 @@ export function ModuleCard({ module, isLocked, isProLocked, index }: Props) {
         <div className="flex items-center gap-3">
           <div
             className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl"
-            style={{ background: blocked ? 'var(--c-glass)' : colors.bg }}
+            style={{ background: hardBlocked ? 'var(--c-glass)' : colors.bg }}
           >
             {isProLocked ? '✦' : isLocked ? '🔒' : module.icon}
           </div>
           <div>
-            <h3 className="font-bold text-base" style={{ color: blocked ? 'hsl(var(--c-fg-subtle))' : 'hsl(var(--c-fg))' }}>
+            <h3 className="font-bold text-base" style={{ color: hardBlocked ? 'hsl(var(--c-fg-subtle))' : 'hsl(var(--c-fg))' }}>
               {t(module.title)}
             </h3>
             <p className="text-xs mt-0.5" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
@@ -89,15 +91,20 @@ export function ModuleCard({ module, isLocked, isProLocked, index }: Props) {
           </div>
         </div>
 
-        {isFullyDone && !blocked && (
+        {isFullyDone && !hardBlocked && (
           <span className="text-xs font-semibold px-2.5 py-1 rounded-full"
             style={{ background: colors.bg, color: colors.badge, border: `1px solid ${colors.border}` }}>
             ✓ {ui.completed}
           </span>
         )}
-        {isProLocked && (
+        {/* Pro badge — shown on locked (free user) AND unlocked (pro user) pro modules */}
+        {module.proOnly && (
           <span className="text-xs font-bold px-2.5 py-1 rounded-full"
-            style={{ background: 'hsl(var(--c-primary)/0.15)', color: 'hsl(var(--c-primary))', border: '1px solid hsl(var(--c-primary)/0.35)' }}>
+            style={{
+              background: isProLocked ? 'hsl(var(--c-primary)/0.15)' : 'hsl(var(--c-primary)/0.08)',
+              color: 'hsl(var(--c-primary))',
+              border: `1px solid ${isProLocked ? 'hsl(var(--c-primary)/0.35)' : 'hsl(var(--c-primary)/0.2)'}`,
+            }}>
             ✦ PRO
           </span>
         )}
@@ -155,7 +162,7 @@ export function ModuleCard({ module, isLocked, isProLocked, index }: Props) {
         </div>
       )}
 
-      {/* Pro locked — teaser */}
+      {/* Pro locked — teaser for free users */}
       {isProLocked && (
         <div className="mb-5 p-3 rounded-xl text-center"
           style={{ background: 'hsl(var(--c-primary)/0.08)', border: '1px solid hsl(var(--c-primary)/0.2)' }}>
@@ -168,7 +175,7 @@ export function ModuleCard({ module, isLocked, isProLocked, index }: Props) {
       )}
 
       {/* CTA */}
-      {!blocked && (
+      {!hardBlocked && (
         <Link to={`/lesson/${module.id}/${nextLesson.id}`}>
           <button
             className="w-full py-2.5 rounded-xl font-semibold text-sm transition-all"

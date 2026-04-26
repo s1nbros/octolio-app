@@ -41,8 +41,6 @@ export function Lesson() {
       .catch(() => { setErrorMsg('Failed to load lesson'); setState('error'); });
   }, [token, moduleId, lessonId]);
 
-  const isPro = user?.is_pro ?? false;
-
   const handleAnswer = (correct: boolean, xp: number) => {
     if (correct) {
       setXpEarned((prev) => prev + xp);
@@ -51,15 +49,15 @@ export function Lesson() {
         setXpPopVisible(true);
         setTimeout(() => setXpPopVisible(false), 1200);
       }
-    } else if (!isPro) {
+    } else {
       setHearts((h) => Math.max(0, h - 1));
     }
 
     const next = currentExerciseIndex + 1;
     if (!lesson) return;
 
-    // Out of hearts — restart from beginning (free users only)
-    if (!correct && !isPro && hearts - 1 <= 0) {
+    // Out of hearts — restart from beginning
+    if (!correct && hearts - 1 <= 0) {
       setTimeout(() => {
         setCurrentExerciseIndex(0);
         setHearts(3);
@@ -152,7 +150,7 @@ export function Lesson() {
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold" style={{ color: 'hsl(var(--c-orange))' }}>
-                  {isPro ? '∞' : '❤'.repeat(3)}
+                  {'❤'.repeat(3)}
                 </div>
                 <div className="text-xs" style={{ color: 'hsl(var(--c-fg-muted))' }}>
                   {lang === 'en' ? 'lives' : 'животи'}
@@ -169,24 +167,22 @@ export function Lesson() {
 
             <button className="btn-primary w-full" onClick={async () => {
               if (!token || !moduleId || !lessonId) return;
-              if (!isPro) {
-                try {
-                  const res = await fetch('/api/progress/energy/use', {
-                    method: 'POST',
-                    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ lessonId, moduleId }),
-                  });
-                  const data = await res.json();
-                  if (res.status === 402 && data.error === 'no_energy') {
-                    setEnergyRefillAt(data.refillAt);
-                    setState('no_energy');
-                    return;
-                  }
-                  if (res.ok && typeof data.energy === 'number') {
-                    updateUser({ energy: data.energy });
-                  }
-                } catch { /* continue anyway */ }
-              }
+              try {
+                const res = await fetch('/api/progress/energy/use', {
+                  method: 'POST',
+                  headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ lessonId, moduleId }),
+                });
+                const data = await res.json();
+                if (res.status === 402 && data.error === 'no_energy') {
+                  setEnergyRefillAt(data.refillAt);
+                  setState('no_energy');
+                  return;
+                }
+                if (res.ok && typeof data.energy === 'number') {
+                  updateUser({ energy: data.energy });
+                }
+              } catch { /* continue anyway */ }
               setState('exercise');
             }}>
               {lang === 'en' ? 'Start Lesson' : 'Започни урока'} →

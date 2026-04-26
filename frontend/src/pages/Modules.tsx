@@ -21,7 +21,7 @@ export function Modules() {
 
   const isPro = user?.is_pro ?? false;
 
-  // Pro users have everything unlocked; free users need 2 lessons in previous module
+  // Free users need 2 lessons in previous non-pro module to unlock next; pro users skip this gating
   const isLocked = (index: number) => {
     if (isPro || index === 0) return false;
     const prev = modules[index - 1];
@@ -30,6 +30,7 @@ export function Modules() {
     return prevCompleted < 2;
   };
 
+  // Pro modules are only hard-locked for free users; pro users can access them
   const isProLocked = (mod: ModuleMeta) => mod.proOnly && !isPro;
 
   if (loading) {

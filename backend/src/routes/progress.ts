@@ -53,17 +53,11 @@ progressRouter.post('/energy/use', authenticate, async (req: AuthRequest, res: R
   try {
     const pool = getPool();
 
-    // Check pro status — pro users have unlimited energy
     const userResult = await pool.query(
-      'SELECT is_pro, energy, energy_refill_at FROM users WHERE id = $1',
+      'SELECT energy, energy_refill_at FROM users WHERE id = $1',
       [req.userId]
     );
-    const user = userResult.rows[0] as { is_pro: boolean; energy: number; energy_refill_at: string | null };
-
-    if (user.is_pro) {
-      res.json({ energy: Infinity, cost: 0 });
-      return;
-    }
+    const user = userResult.rows[0] as { energy: number; energy_refill_at: string | null };
 
     // Auto-refill if refill time passed
     let currentEnergy = user.energy;

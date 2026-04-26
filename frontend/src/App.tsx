@@ -13,6 +13,7 @@ import { Profile } from './pages/Profile';
 import { League } from './pages/League';
 import { Onboarding } from './pages/Onboarding';
 import { GeneratedLesson } from './pages/GeneratedLesson';
+import { AiAdvisor } from './pages/AiAdvisor';
 
 function Spinner() {
   return (
@@ -67,6 +68,7 @@ function AppRoutes() {
           <Route path="/generate" element={<ProtectedRoute><GeneratedLesson /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/league" element={<ProtectedRoute><League /></ProtectedRoute>} />
+          <Route path="/advisor" element={<ProtectedRoute><AiAdvisor /></ProtectedRoute>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
