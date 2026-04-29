@@ -33,7 +33,7 @@ stripeRouter.post('/checkout', authenticate, async (req: AuthRequest, res: Respo
       await pool.query('UPDATE users SET stripe_customer_id = $1 WHERE id = $2', [customerId, req.userId]);
     }
 
-    const frontendUrl = process.env.FRONTEND_URL ?? 'https://octolio-app.vercel.app';
+    const frontendUrl = process.env.FRONTEND_URL ?? 'https://app.octolio.me';
 
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
@@ -71,7 +71,7 @@ stripeRouter.post('/portal', authenticate, async (req: AuthRequest, res: Respons
       return;
     }
 
-    const frontendUrl = process.env.FRONTEND_URL ?? 'https://octolio-app.vercel.app';
+    const frontendUrl = process.env.FRONTEND_URL ?? 'https://app.octolio.me';
     const session = await stripe.billingPortal.sessions.create({
       customer: customerId,
       return_url: `${frontendUrl}/profile`,

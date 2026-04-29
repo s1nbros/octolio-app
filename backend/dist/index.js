@@ -20,7 +20,7 @@ const app = (0, express_1.default)();
 const PORT = process.env.PORT || 3001;
 const allowedOrigins = process.env.ALLOWED_ORIGINS
     ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
-    : ['http://localhost:5173', 'http://localhost:4173', 'https://octolio-app.vercel.app'];
+    : ['http://localhost:5173', 'http://localhost:4173', 'https://app.octolio.me'];
 app.use((0, cors_1.default)({
     origin: allowedOrigins,
     credentials: true,

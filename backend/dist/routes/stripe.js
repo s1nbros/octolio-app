@@ -29,7 +29,7 @@ exports.stripeRouter.post('/checkout', auth_1.authenticate, async (req, res) => 
             customerId = customer.id;
             await pool.query('UPDATE users SET stripe_customer_id = $1 WHERE id = $2', [customerId, req.userId]);
         }
-        const frontendUrl = process.env.FRONTEND_URL ?? 'https://octolio-app.vercel.app';
+        const frontendUrl = process.env.FRONTEND_URL ?? 'https://app.octolio.me';
         const session = await stripe.checkout.sessions.create({
             customer: customerId,
             mode: 'subscription',
@@ -61,7 +61,7 @@ exports.stripeRouter.post('/portal', auth_1.authenticate, async (req, res) => {
             res.status(400).json({ error: 'No billing account found' });
             return;
         }
-        const frontendUrl = process.env.FRONTEND_URL ?? 'https://octolio-app.vercel.app';
+        const frontendUrl = process.env.FRONTEND_URL ?? 'https://app.octolio.me';
         const session = await stripe.billingPortal.sessions.create({
             customer: customerId,
             return_url: `${frontendUrl}/profile`,
