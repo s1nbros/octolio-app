@@ -275,7 +275,7 @@ export function Lesson() {
             {/* XP */}
             <div className="px-3 py-1 rounded-full text-sm font-semibold relative"
               style={{ background: 'hsl(var(--c-primary)/0.12)', color: 'hsl(var(--c-primary))', border: '1px solid hsl(var(--c-primary)/0.2)' }}>
-              ⚡ {xpEarned}
+              {xpEarned} XP
               {xpPopVisible && (
                 <span className="absolute -top-8 left-1/2 -translate-x-1/2 text-sm font-bold animate-xp-pop whitespace-nowrap"
                   style={{ color: 'hsl(var(--c-green))' }}>

@@ -110,7 +110,7 @@ function ProWidget() {
       </p>
 
       <ul className="space-y-1.5 mb-4 text-sm" style={{ color: 'hsl(var(--c-fg-muted))' }}>
-        {['Unlimited hearts — no waiting', 'All premium modules instantly', '2× XP on every lesson', 'Personal money coach AI'].map(f => (
+        {['All premium modules instantly', '2× XP on every lesson', 'Personal money coach AI'].map(f => (
           <li key={f} className="flex items-center gap-2">
             <span className="text-xs" style={{ color: 'hsl(var(--c-green))' }}>✓</span>
             {f}
@@ -119,8 +119,8 @@ function ProWidget() {
       </ul>
 
       <div className="flex items-baseline gap-2 mb-3">
-        <span className="mono font-extrabold text-2xl" style={{ color: 'hsl(var(--c-fg))' }}>$4.99</span>
-        <span className="text-sm line-through" style={{ color: 'hsl(var(--c-fg-subtle))' }}>$9.99</span>
+        <span className="mono font-extrabold text-2xl" style={{ color: 'hsl(var(--c-fg))' }}>€4.99</span>
+        <span className="text-sm line-through" style={{ color: 'hsl(var(--c-fg-subtle))' }}>€9.99</span>
         <span className="text-xs" style={{ color: 'hsl(var(--c-fg-subtle))' }}>/month</span>
       </div>
 

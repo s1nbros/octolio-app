@@ -153,7 +153,7 @@ export function Navbar() {
             <NavTab to="/modules"   active={isActive('/modules') || isActive('/lesson')} label="Learn" />
             <NavTab to="/league"    active={isActive('/league')} label="League" />
             {user.is_pro && (
-              <NavTab to="/advisor" active={isActive('/advisor')} label="✦ AI Advisor" />
+              <NavTab to="/advisor" active={isActive('/advisor')} label="✦ AI Advisor" disabled />
             )}
           </nav>
         )}
@@ -292,7 +292,7 @@ export function Navbar() {
           <BottomTab to="/modules"   active={isActive('/modules') || isActive('/lesson')} icon={<IconLearn />} label="Learn" />
           <BottomTab to="/league"    active={isActive('/league')}    icon={<IconLeague />} label="League" />
           {user.is_pro && (
-            <BottomTab to="/advisor" active={isActive('/advisor')} icon={<IconAdvisor />} label="AI" />
+            <BottomTab to="/advisor" active={isActive('/advisor')} icon={<IconAdvisor />} label="AI" disabled />
           )}
           <BottomTab to="/profile"   active={isActive('/profile')}   icon={<IconProfile />} label="Profile" />
 
@@ -303,13 +303,16 @@ export function Navbar() {
   );
 }
 
-function BottomTab({ to, active, icon, label }: { to: string; active: boolean; icon: React.ReactNode; label: string }) {
+function BottomTab({ to, active, icon, label, disabled }: { to: string; active: boolean; icon: React.ReactNode; label: string; disabled?: boolean }) {
   return (
     <Link to={to} className="flex flex-col items-center gap-0.5 px-4 py-1 rounded-2xl transition-all"
-      style={{ color: active ? 'hsl(var(--c-primary))' : 'hsl(var(--c-fg-subtle))' }}>
+      style={{
+        color: disabled ? 'hsl(var(--c-fg-subtle)/0.5)' : active ? 'hsl(var(--c-primary))' : 'hsl(var(--c-fg-subtle))',
+        opacity: disabled ? 0.5 : 1,
+      }}>
       {/* Active pill highlight behind icon */}
       <div className="relative flex items-center justify-center w-10 h-7 rounded-full transition-all"
-        style={{ background: active ? 'hsl(var(--c-primary)/0.18)' : 'transparent' }}>
+        style={{ background: !disabled && active ? 'hsl(var(--c-primary)/0.18)' : 'transparent' }}>
         {icon}
       </div>
       <span className="text-xs font-semibold tracking-wide">{label}</span>
@@ -317,13 +320,14 @@ function BottomTab({ to, active, icon, label }: { to: string; active: boolean; i
   );
 }
 
-function NavTab({ to, active, label }: { to: string; active: boolean; label: string }) {
+function NavTab({ to, active, label, disabled }: { to: string; active: boolean; label: string; disabled?: boolean }) {
   return (
     <Link to={to}
       className="px-4 py-1.5 rounded-lg text-sm font-semibold transition-all"
       style={{
-        color: active ? 'hsl(var(--c-fg))' : 'hsl(var(--c-fg-subtle))',
-        background: active ? 'hsl(var(--c-primary)/0.12)' : 'transparent',
+        color: disabled ? 'hsl(var(--c-fg-subtle)/0.6)' : active ? 'hsl(var(--c-fg))' : 'hsl(var(--c-fg-subtle))',
+        background: !disabled && active ? 'hsl(var(--c-primary)/0.12)' : 'transparent',
+        opacity: disabled ? 0.5 : 1,
       }}>
       {label}
     </Link>

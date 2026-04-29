@@ -503,7 +503,6 @@ export function Profile() {
                 {/* Features */}
                 <div className="space-y-2 mb-5 relative">
                   {[
-                    { icon: '❤️', en: 'Unlimited hearts — no waiting', bg: 'Неограничени сърца' },
                     { icon: '✦',  en: 'All premium modules unlocked',  bg: 'Всички модули отключени' },
                     { icon: '⚡', en: '2× XP on every lesson',         bg: '2× XP за всеки урок' },
                     { icon: '🤖', en: 'Personal money coach AI',       bg: 'Личен AI финансов треньор' },
@@ -518,8 +517,8 @@ export function Profile() {
 
                 {/* Price */}
                 <div className="flex items-baseline gap-2 mb-4 relative">
-                  <span className="mono font-black text-2xl" style={{ color: 'hsl(var(--c-fg))' }}>$4.99</span>
-                  <span className="text-sm line-through" style={{ color: 'hsl(var(--c-fg-subtle))' }}>$9.99</span>
+                  <span className="mono font-black text-2xl" style={{ color: 'hsl(var(--c-fg))' }}>€4.99</span>
+                  <span className="text-sm line-through" style={{ color: 'hsl(var(--c-fg-subtle))' }}>€9.99</span>
                   <span className="text-sm" style={{ color: 'hsl(var(--c-fg-subtle))' }}>/month</span>
                 </div>
 
