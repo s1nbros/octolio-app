@@ -546,6 +546,11 @@ export function Profile() {
               </h2>
             </div>
 
+            {/* Plan section */}
+            <div className="px-5 py-4" style={{ borderBottom: '1px solid var(--c-border)' }}>
+              <PlanSection isPro={user?.is_pro ?? false} token={token} lang={lang} />
+            </div>
+
             {/* Display name */}
             <div className="px-5 py-4" style={{ borderBottom: '1px solid var(--c-border)' }}>
               <label className="block text-xs font-bold uppercase tracking-widest mb-2" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
@@ -664,6 +669,84 @@ export function Profile() {
         )}
 
       </div>
+    </div>
+  );
+}
+
+/* ─── Plan section in Settings tab — shows current plan + CTA ─── */
+function PlanSection({ isPro, token, lang }: { isPro: boolean; token: string | null; lang: 'en' | 'bg' }) {
+  const [loading, setLoading] = useState(false);
+
+  const handleClick = async () => {
+    if (!token || loading) return;
+    setLoading(true);
+    try {
+      const endpoint = isPro ? '/api/stripe/portal' : '/api/stripe/checkout';
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+      else { alert(data.error ?? 'Request failed'); setLoading(false); }
+    } catch {
+      alert('Network error');
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div>
+      <label className="block text-xs font-bold uppercase tracking-widest mb-2" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+        {lang === 'en' ? 'Plan' : 'План'}
+      </label>
+
+      {/* Status row — stacks on mobile, row on sm+ */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <span className="text-xs font-black px-2.5 py-1 rounded-full tracking-wider flex-shrink-0"
+            style={{
+              background: isPro ? 'hsl(var(--c-primary)/0.2)' : 'hsl(var(--c-fg-subtle)/0.12)',
+              color: isPro ? 'hsl(var(--c-primary))' : 'hsl(var(--c-fg-muted))',
+              border: `1px solid ${isPro ? 'hsl(var(--c-primary)/0.4)' : 'hsl(var(--c-fg-subtle)/0.25)'}`,
+            }}>
+            {isPro ? '✦ PRO' : (lang === 'en' ? 'FREE' : 'БЕЗПЛАТЕН')}
+          </span>
+          <p className="text-sm font-semibold truncate" style={{ color: 'hsl(var(--c-fg))' }}>
+            {isPro
+              ? (lang === 'en' ? 'Octolio Pro' : 'Octolio Pro')
+              : (lang === 'en' ? 'Free plan' : 'Безплатен план')}
+          </p>
+        </div>
+        <button
+          onClick={handleClick}
+          disabled={loading}
+          className="text-sm font-bold px-4 py-2 rounded-xl transition-all disabled:opacity-50 w-full sm:w-auto flex-shrink-0"
+          style={{
+            background: isPro
+              ? 'rgba(255,255,255,0.06)'
+              : 'linear-gradient(90deg, hsl(var(--c-primary)), hsl(var(--c-green)))',
+            color: isPro ? 'hsl(var(--c-fg))' : '#fff',
+            border: isPro ? '1px solid var(--c-border)' : 'none',
+          }}>
+          {loading
+            ? (lang === 'en' ? 'Opening…' : 'Отваряне…')
+            : isPro
+              ? (lang === 'en' ? 'Manage' : 'Управление')
+              : `✦ ${lang === 'en' ? 'Upgrade' : 'Надгради'}`}
+        </button>
+      </div>
+
+      {/* Helper text below */}
+      <p className="text-xs mt-2.5 leading-relaxed" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+        {isPro
+          ? (lang === 'en'
+              ? 'Manage payment, view invoices, or cancel anytime. Cancellation takes effect at the end of the billing period.'
+              : 'Управлявай плащане, виж фактури или откажи. Отказът влиза в сила в края на периода.')
+          : (lang === 'en'
+              ? 'Unlock all premium modules, 2× XP and AI coach for €4.99/month. 7-day free trial.'
+              : 'Отключи всички премиум модули, 2× XP и AI треньор за €4.99/месец. 7 дни безплатен пробен период.')}
+      </p>
     </div>
   );
 }
