@@ -303,16 +303,3 @@ authRouter.patch('/password', authenticate, async (req: AuthRequest, res: Respon
   }
 });
 
-/* DEV ONLY — toggle Pro status without Stripe */
-authRouter.post('/dev/toggle-pro', authenticate, async (req: AuthRequest, res: Response): Promise<void> => {
-  try {
-    const pool = getPool();
-    const result = await pool.query(
-      'UPDATE users SET is_pro = NOT is_pro WHERE id = $1 RETURNING is_pro',
-      [req.userId]
-    );
-    res.json({ is_pro: result.rows[0].is_pro });
-  } catch (err) {
-    res.status(500).json({ error: 'Server error' });
-  }
-});

@@ -86,7 +86,26 @@ function StreakWidget({ streak }: { streak: number }) {
 }
 
 /* ─── Sidebar: Pro ad ─── */
-function ProWidget() {
+function ProWidget({ token }: { token: string | null }) {
+  const [loading, setLoading] = useState(false);
+
+  const handleUpgrade = async () => {
+    if (!token || loading) return;
+    setLoading(true);
+    try {
+      const res = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+      else { alert(data.error ?? 'Checkout failed'); setLoading(false); }
+    } catch {
+      alert('Network error');
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="rounded-2xl p-4 relative overflow-hidden"
       style={{ background: 'linear-gradient(135deg, hsl(var(--c-bg-elevated)), hsl(var(--c-primary)/0.08))', border: '1px solid hsl(var(--c-primary)/0.2)' }}>
@@ -124,7 +143,9 @@ function ProWidget() {
         <span className="text-xs" style={{ color: 'hsl(var(--c-fg-subtle))' }}>/month</span>
       </div>
 
-      <button className="btn-green w-full text-sm py-2.5">⚡ Try Pro free for 7 days</button>
+      <button className="btn-green w-full text-sm py-2.5 disabled:opacity-50" onClick={handleUpgrade} disabled={loading}>
+        {loading ? '…' : '⚡ Try Pro free for 7 days'}
+      </button>
       <p className="text-center text-xs mt-2" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
         CANCEL ANYTIME · OFFER ENDS IN 2D 14H
       </p>
@@ -538,7 +559,7 @@ export function Dashboard() {
           {/* ── Right sidebar ── */}
           <div className="w-72 flex-shrink-0 space-y-4 hidden lg:block animate-fade-up delay-200">
             <StreakWidget streak={streak} />
-            <ProWidget />
+            {!user?.is_pro && <ProWidget token={token} />}
             <LeagueWidget token={token} />
             <MoneyFactWidget />
           </div>

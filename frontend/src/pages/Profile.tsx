@@ -128,7 +128,7 @@ function StatCard({ icon, badge, value, label, color }: StatCardProps) {
 }
 
 export function Profile() {
-  const { user, token, updateProfile, changePassword, refreshUser, updateUser } = useAuth();
+  const { user, token, updateProfile, changePassword, refreshUser } = useAuth();
   const { lang } = useLang();
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -471,73 +471,12 @@ export function Profile() {
             {/* Right column */}
             <div className="space-y-4">
 
-              {/* Pro card */}
-              <div className="glass-card relative overflow-hidden rounded-2xl p-5"
-                style={{ border: '1px solid hsl(var(--c-gold)/0.35)', boxShadow: '0 0 32px hsl(var(--c-gold)/0.08)' }}>
-                {/* Glow blobs */}
-                <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full pointer-events-none"
-                  style={{ background: 'radial-gradient(circle, hsl(var(--c-primary)/0.18), transparent 70%)', filter: 'blur(20px)' }} />
-                <div className="absolute -bottom-10 -left-6 w-36 h-36 rounded-full pointer-events-none"
-                  style={{ background: 'radial-gradient(circle, hsl(var(--c-gold)/0.14), transparent 70%)', filter: 'blur(20px)' }} />
-
-                {/* Badge row */}
-                <div className="flex items-center gap-2 mb-3 relative">
-                  <span className="text-xs font-black px-2.5 py-1 rounded-full tracking-wider"
-                    style={{ background: 'hsl(var(--c-primary)/0.25)', color: 'hsl(var(--c-primary))', border: '1px solid hsl(var(--c-primary)/0.45)' }}>
-                    OCTOLIO PRO
-                  </span>
-                  <span className="text-xs font-bold tracking-wider" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
-                    LIMITED · 50% OFF
-                  </span>
-                </div>
-
-                {/* Headline */}
-                <p className="font-black text-xl leading-tight mb-0.5 relative" style={{ color: 'hsl(var(--c-fg))' }}>
-                  {lang === 'en' ? 'Unlock everything.' : 'Отключи всичко.'}
-                </p>
-                <p className="font-black text-xl leading-tight mb-4 relative">
-                  <span style={{ color: 'hsl(var(--c-fg))' }}>{lang === 'en' ? 'Level up ' : 'Развивай се '}</span>
-                  <span style={{ color: 'hsl(var(--c-gold))' }}>2× {lang === 'en' ? 'faster.' : 'по-бързо.'}</span>
-                </p>
-
-                {/* Features */}
-                <div className="space-y-2 mb-5 relative">
-                  {[
-                    { icon: '✦',  en: 'All premium modules unlocked',  bg: 'Всички модули отключени' },
-                    { icon: '⚡', en: '2× XP on every lesson',         bg: '2× XP за всеки урок' },
-                    { icon: '🤖', en: 'Personal money coach AI',       bg: 'Личен AI финансов треньор' },
-                    { icon: '🚫', en: 'Ad-free experience',            bg: 'Без реклами' },
-                  ].map(f => (
-                    <div key={f.en} className="flex items-center gap-2 text-sm" style={{ color: 'hsl(var(--c-fg-muted))' }}>
-                      <span style={{ fontSize: '13px', width: '16px', textAlign: 'center', flexShrink: 0 }}>{f.icon}</span>
-                      {lang === 'en' ? f.en : f.bg}
-                    </div>
-                  ))}
-                </div>
-
-                {/* Price */}
-                <div className="flex items-baseline gap-2 mb-4 relative">
-                  <span className="mono font-black text-2xl" style={{ color: 'hsl(var(--c-fg))' }}>€4.99</span>
-                  <span className="text-sm line-through" style={{ color: 'hsl(var(--c-fg-subtle))' }}>€9.99</span>
-                  <span className="text-sm" style={{ color: 'hsl(var(--c-fg-subtle))' }}>/month</span>
-                </div>
-
-                {/* CTA button */}
-                <button className="w-full py-3 rounded-xl font-bold text-sm relative transition-all"
-                  style={{
-                    background: 'linear-gradient(90deg, hsl(var(--c-primary)), hsl(var(--c-green)))',
-                    color: '#fff',
-                    border: 'none',
-                    letterSpacing: '0.01em',
-                  }}
-                  onMouseEnter={e => (e.currentTarget.style.filter = 'brightness(1.1)')}
-                  onMouseLeave={e => (e.currentTarget.style.filter = '')}>
-                  ✦ {lang === 'en' ? 'Try Pro free for 7 days' : 'Пробвай Pro безплатно 7 дни'}
-                </button>
-                <p className="text-center text-xs mt-2 relative tracking-wider" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
-                  {lang === 'en' ? 'CANCEL ANYTIME · OFFER ENDS IN 2D 14H' : 'ОТКАЖИ ПО ВСЯКО ВРЕМЕ'}
-                </p>
-              </div>
+              {/* Subscription card — different content for Pro vs Free */}
+              {user?.is_pro ? (
+                <SubscriptionCard token={token} lang={lang} />
+              ) : (
+                <ProUpsellCard token={token} lang={lang} />
+              )}
 
               {/* League card */}
               <div className="glass-card rounded-2xl p-5">
@@ -721,48 +660,165 @@ export function Profile() {
               )}
             </div>
 
-            {/* DEV — Pro toggle (remove before launch) */}
-            <div className="px-5 py-4" style={{ borderTop: '1px solid var(--c-border)' }}>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-semibold" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
-                    🛠 Dev: Pro status
-                  </p>
-                  <p className="text-xs mt-0.5" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
-                    {user?.is_pro ? '✦ Currently PRO' : 'Currently Free'}
-                  </p>
-                </div>
-                <button
-                  onClick={async () => {
-                    try {
-                      const res = await fetch('/api/auth/dev/toggle-pro', {
-                        method: 'POST',
-                        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-                      });
-                      const data = await res.json();
-                      if (res.ok) {
-                        updateUser({ is_pro: data.is_pro });
-                      } else {
-                        alert(data.error ?? 'Toggle failed');
-                      }
-                    } catch (e) {
-                      alert('Network error: ' + e);
-                    }
-                  }}
-                  className="text-sm font-bold px-4 py-2 rounded-xl transition-all"
-                  style={{
-                    background: user?.is_pro ? 'hsl(var(--c-orange)/0.15)' : 'hsl(var(--c-primary)/0.15)',
-                    color: user?.is_pro ? 'hsl(var(--c-orange))' : 'hsl(var(--c-primary))',
-                    border: `1px solid ${user?.is_pro ? 'hsl(var(--c-orange)/0.3)' : 'hsl(var(--c-primary)/0.3)'}`,
-                  }}>
-                  {user?.is_pro ? 'Switch to Free' : 'Switch to Pro'}
-                </button>
-              </div>
-            </div>
           </div>
         )}
 
       </div>
+    </div>
+  );
+}
+
+/* ─── Pro upsell card (free users) ─── */
+function ProUpsellCard({ token, lang }: { token: string | null; lang: 'en' | 'bg' }) {
+  const [loading, setLoading] = useState(false);
+
+  const handleUpgrade = async () => {
+    if (!token || loading) return;
+    setLoading(true);
+    try {
+      const res = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+      else { alert(data.error ?? 'Checkout failed'); setLoading(false); }
+    } catch {
+      alert('Network error');
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="glass-card relative overflow-hidden rounded-2xl p-5"
+      style={{ border: '1px solid hsl(var(--c-gold)/0.35)', boxShadow: '0 0 32px hsl(var(--c-gold)/0.08)' }}>
+      <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full pointer-events-none"
+        style={{ background: 'radial-gradient(circle, hsl(var(--c-primary)/0.18), transparent 70%)', filter: 'blur(20px)' }} />
+      <div className="absolute -bottom-10 -left-6 w-36 h-36 rounded-full pointer-events-none"
+        style={{ background: 'radial-gradient(circle, hsl(var(--c-gold)/0.14), transparent 70%)', filter: 'blur(20px)' }} />
+
+      <div className="flex items-center gap-2 mb-3 relative">
+        <span className="text-xs font-black px-2.5 py-1 rounded-full tracking-wider"
+          style={{ background: 'hsl(var(--c-primary)/0.25)', color: 'hsl(var(--c-primary))', border: '1px solid hsl(var(--c-primary)/0.45)' }}>
+          OCTOLIO PRO
+        </span>
+        <span className="text-xs font-bold tracking-wider" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+          LIMITED · 50% OFF
+        </span>
+      </div>
+
+      <p className="font-black text-xl leading-tight mb-0.5 relative" style={{ color: 'hsl(var(--c-fg))' }}>
+        {lang === 'en' ? 'Unlock everything.' : 'Отключи всичко.'}
+      </p>
+      <p className="font-black text-xl leading-tight mb-4 relative">
+        <span style={{ color: 'hsl(var(--c-fg))' }}>{lang === 'en' ? 'Level up ' : 'Развивай се '}</span>
+        <span style={{ color: 'hsl(var(--c-gold))' }}>2× {lang === 'en' ? 'faster.' : 'по-бързо.'}</span>
+      </p>
+
+      <div className="space-y-2 mb-5 relative">
+        {[
+          { icon: '✦',  en: 'All premium modules unlocked',  bg: 'Всички модули отключени' },
+          { icon: '⚡', en: '2× XP on every lesson',         bg: '2× XP за всеки урок' },
+          { icon: '🤖', en: 'Personal money coach AI',       bg: 'Личен AI финансов треньор' },
+          { icon: '🚫', en: 'Ad-free experience',            bg: 'Без реклами' },
+        ].map(f => (
+          <div key={f.en} className="flex items-center gap-2 text-sm" style={{ color: 'hsl(var(--c-fg-muted))' }}>
+            <span style={{ fontSize: '13px', width: '16px', textAlign: 'center', flexShrink: 0 }}>{f.icon}</span>
+            {lang === 'en' ? f.en : f.bg}
+          </div>
+        ))}
+      </div>
+
+      <div className="flex items-baseline gap-2 mb-4 relative">
+        <span className="mono font-black text-2xl" style={{ color: 'hsl(var(--c-fg))' }}>€4.99</span>
+        <span className="text-sm line-through" style={{ color: 'hsl(var(--c-fg-subtle))' }}>€9.99</span>
+        <span className="text-sm" style={{ color: 'hsl(var(--c-fg-subtle))' }}>/month</span>
+      </div>
+
+      <button onClick={handleUpgrade} disabled={loading}
+        className="w-full py-3 rounded-xl font-bold text-sm relative transition-all disabled:opacity-50"
+        style={{
+          background: 'linear-gradient(90deg, hsl(var(--c-primary)), hsl(var(--c-green)))',
+          color: '#fff',
+          border: 'none',
+          letterSpacing: '0.01em',
+        }}
+        onMouseEnter={e => (e.currentTarget.style.filter = 'brightness(1.1)')}
+        onMouseLeave={e => (e.currentTarget.style.filter = '')}>
+        {loading
+          ? (lang === 'en' ? 'Opening checkout…' : 'Отваряне…')
+          : `✦ ${lang === 'en' ? 'Try Pro free for 7 days' : 'Пробвай Pro безплатно 7 дни'}`}
+      </button>
+      <p className="text-center text-xs mt-2 relative tracking-wider" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+        {lang === 'en' ? 'CANCEL ANYTIME · OFFER ENDS IN 2D 14H' : 'ОТКАЖИ ПО ВСЯКО ВРЕМЕ'}
+      </p>
+    </div>
+  );
+}
+
+/* ─── Subscription management card (Pro users) ─── */
+function SubscriptionCard({ token, lang }: { token: string | null; lang: 'en' | 'bg' }) {
+  const [loading, setLoading] = useState(false);
+
+  const handleManage = async () => {
+    if (!token || loading) return;
+    setLoading(true);
+    try {
+      const res = await fetch('/api/stripe/portal', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+      else { alert(data.error ?? 'Could not open billing portal'); setLoading(false); }
+    } catch {
+      alert('Network error');
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="glass-card relative overflow-hidden rounded-2xl p-5"
+      style={{ border: '1px solid hsl(var(--c-primary)/0.35)', boxShadow: '0 0 32px hsl(var(--c-primary)/0.08)' }}>
+      <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full pointer-events-none"
+        style={{ background: 'radial-gradient(circle, hsl(var(--c-primary)/0.18), transparent 70%)', filter: 'blur(20px)' }} />
+
+      <div className="flex items-center gap-2 mb-3 relative">
+        <span className="text-xs font-black px-2.5 py-1 rounded-full tracking-wider"
+          style={{ background: 'hsl(var(--c-primary)/0.25)', color: 'hsl(var(--c-primary))', border: '1px solid hsl(var(--c-primary)/0.45)' }}>
+          ✦ OCTOLIO PRO
+        </span>
+        <span className="text-xs font-bold tracking-wider" style={{ color: 'hsl(var(--c-green))' }}>
+          {lang === 'en' ? 'ACTIVE' : 'АКТИВЕН'}
+        </span>
+      </div>
+
+      <p className="font-black text-xl leading-tight mb-1 relative" style={{ color: 'hsl(var(--c-fg))' }}>
+        {lang === 'en' ? 'You\'re a Pro member.' : 'Ти си Pro член.'}
+      </p>
+      <p className="text-sm leading-snug mb-4 relative" style={{ color: 'hsl(var(--c-fg-muted))' }}>
+        {lang === 'en'
+          ? 'Manage your subscription, update your payment method, or cancel anytime. Cancellation takes effect at the end of your current billing period — no surprise charges.'
+          : 'Управлявай абонамента, обнови метода на плащане или откажи по всяко време. Отказът влиза в сила в края на текущия период — без изненадващи такси.'}
+      </p>
+
+      <button onClick={handleManage} disabled={loading}
+        className="w-full py-3 rounded-xl font-bold text-sm relative transition-all disabled:opacity-50"
+        style={{
+          background: 'linear-gradient(90deg, hsl(var(--c-primary)), hsl(var(--c-green)))',
+          color: '#fff',
+          border: 'none',
+          letterSpacing: '0.01em',
+        }}
+        onMouseEnter={e => (e.currentTarget.style.filter = 'brightness(1.1)')}
+        onMouseLeave={e => (e.currentTarget.style.filter = '')}>
+        {loading
+          ? (lang === 'en' ? 'Opening…' : 'Отваряне…')
+          : (lang === 'en' ? 'Manage subscription' : 'Управление на абонамента')}
+      </button>
+      <p className="text-center text-xs mt-2 relative" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+        {lang === 'en' ? 'Securely handled by Stripe' : 'Сигурно управление чрез Stripe'}
+      </p>
     </div>
   );
 }
