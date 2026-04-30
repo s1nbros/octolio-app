@@ -42,6 +42,18 @@ async function initDb() {
     await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS stripe_customer_id TEXT`);
     await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS stripe_subscription_id TEXT`);
     await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS onboarding_done BOOLEAN DEFAULT FALSE`);
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS email_verified BOOLEAN DEFAULT FALSE`);
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS email_verification_token TEXT`);
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS email_verification_code TEXT`);
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS email_verification_expires_at TIMESTAMP`);
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS password_reset_token TEXT`);
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS password_reset_expires_at TIMESTAMP`);
+    // Existing accounts predate the verification flow — grandfather them in so the
+    // upgrade doesn't lock active users out.
+    await pool.query(`
+    UPDATE users SET email_verified = TRUE
+    WHERE email_verified = FALSE AND (xp > 0 OR last_active IS NOT NULL)
+  `);
     // Mark existing users (with any XP or existing activity) as onboarding complete
     // so they don't get stuck on the plan selection page after the upgrade
     await pool.query(`

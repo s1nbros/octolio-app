@@ -1,9 +1,24 @@
 import { Router, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 import { getPool } from '../db';
 import { signToken, authenticate, AuthRequest } from '../middleware/auth';
+import { isNicknameBanned } from '../data/banned-words';
+import { sendVerificationEmail, sendPasswordResetEmail } from '../services/email';
 
 export const authRouter = Router();
+
+const VERIFICATION_TTL_MS = 30 * 60 * 1000; // 30 min
+const RESET_TTL_MS = 60 * 60 * 1000; // 1 h
+
+function generateVerificationCode(): string {
+  // 6 digits, zero-padded
+  return crypto.randomInt(0, 1_000_000).toString().padStart(6, '0');
+}
+
+function generateUrlToken(): string {
+  return crypto.randomBytes(32).toString('hex');
+}
 
 authRouter.post('/register', async (req: Request, res: Response): Promise<void> => {
   const { name, email, password } = req.body;
@@ -18,6 +33,10 @@ authRouter.post('/register', async (req: Request, res: Response): Promise<void> 
   }
   if (name.trim().length < 2) {
     res.status(400).json({ error: 'Username must be at least 2 characters' });
+    return;
+  }
+  if (isNicknameBanned(name)) {
+    res.status(400).json({ error: 'This nickname is not allowed. Please choose another.' });
     return;
   }
   if (password.length < 8) {
@@ -36,30 +55,142 @@ authRouter.post('/register', async (req: Request, res: Response): Promise<void> 
 
   try {
     const pool = getPool();
+    const lowerEmail = email.toLowerCase();
 
-    const existing = await pool.query('SELECT id FROM users WHERE email = $1', [email.toLowerCase()]);
+    const existing = await pool.query(
+      'SELECT id, email_verified FROM users WHERE email = $1',
+      [lowerEmail]
+    );
     if (existing.rows.length > 0) {
-      res.status(409).json({ error: 'Email already registered' });
+      const row = existing.rows[0];
+      // If the existing record is unverified, we can re-issue a fresh code
+      // instead of permanently blocking the email. Verified accounts must use login/forgot.
+      if (row.email_verified) {
+        res.status(409).json({ error: 'Email already registered' });
+        return;
+      }
+      const passwordHash = await bcrypt.hash(password, 12);
+      const code = generateVerificationCode();
+      const token = generateUrlToken();
+      const expires = new Date(Date.now() + VERIFICATION_TTL_MS);
+      await pool.query(
+        `UPDATE users SET name = $1, password_hash = $2,
+           email_verification_code = $3, email_verification_token = $4,
+           email_verification_expires_at = $5
+         WHERE id = $6`,
+        [name.trim(), passwordHash, code, token, expires, row.id]
+      );
+      try { await sendVerificationEmail(lowerEmail, name.trim(), code, token); } catch (e) { console.error('email send failed:', e); }
+      res.status(202).json({ pending: true, email: lowerEmail });
+      return;
+    }
+
+    // Reject if name is already taken (verified) — case-insensitive.
+    const taken = await pool.query('SELECT id FROM users WHERE LOWER(name) = LOWER($1)', [name.trim()]);
+    if (taken.rows.length > 0) {
+      res.status(409).json({ error: 'Name already taken' });
       return;
     }
 
     const passwordHash = await bcrypt.hash(password, 12);
     const today = new Date().toISOString().split('T')[0];
+    const code = generateVerificationCode();
+    const token = generateUrlToken();
+    const expires = new Date(Date.now() + VERIFICATION_TTL_MS);
 
-    const result = await pool.query(
-      'INSERT INTO users (name, email, password_hash, xp, streak, last_active) VALUES ($1, $2, $3, 0, 1, $4) RETURNING id',
-      [name.trim(), email.toLowerCase(), passwordHash, today]
+    await pool.query(
+      `INSERT INTO users
+         (name, email, password_hash, xp, streak, last_active,
+          email_verified, email_verification_code, email_verification_token, email_verification_expires_at)
+       VALUES ($1, $2, $3, 0, 1, $4, FALSE, $5, $6, $7)`,
+      [name.trim(), lowerEmail, passwordHash, today, code, token, expires]
     );
 
-    const userId = result.rows[0].id;
-    const token = signToken(userId);
+    try { await sendVerificationEmail(lowerEmail, name.trim(), code, token); } catch (e) { console.error('email send failed:', e); }
 
-    res.status(201).json({
-      token,
-      user: { id: userId, name: name.trim(), email: email.toLowerCase(), xp: 0, streak: 1, avatar: '🦊' },
-    });
+    res.status(202).json({ pending: true, email: lowerEmail });
   } catch (err) {
     console.error('Register error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+authRouter.post('/verify-email', async (req: Request, res: Response): Promise<void> => {
+  const { email, code, token } = req.body;
+  if (!token && !(email && code)) {
+    res.status(400).json({ error: 'Provide either a token or email + code' });
+    return;
+  }
+  try {
+    const pool = getPool();
+    const result = token
+      ? await pool.query(
+          `SELECT id, name, email, email_verification_expires_at FROM users
+             WHERE email_verification_token = $1`,
+          [token]
+        )
+      : await pool.query(
+          `SELECT id, name, email, email_verification_expires_at FROM users
+             WHERE email = $1 AND email_verification_code = $2`,
+          [String(email).toLowerCase(), String(code)]
+        );
+    const user = result.rows[0];
+    if (!user) {
+      res.status(400).json({ error: 'Invalid or expired verification' });
+      return;
+    }
+    if (user.email_verification_expires_at && new Date(user.email_verification_expires_at).getTime() < Date.now()) {
+      res.status(400).json({ error: 'Verification expired — request a new one' });
+      return;
+    }
+    await pool.query(
+      `UPDATE users SET email_verified = TRUE,
+         email_verification_code = NULL,
+         email_verification_token = NULL,
+         email_verification_expires_at = NULL
+       WHERE id = $1`,
+      [user.id]
+    );
+    const jwt = signToken(user.id, true);
+    res.json({
+      token: jwt,
+      user: { id: user.id, name: user.name, email: user.email },
+    });
+  } catch (err) {
+    console.error('Verify error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+authRouter.post('/resend-verification', async (req: Request, res: Response): Promise<void> => {
+  const { email } = req.body;
+  if (!email) { res.status(400).json({ error: 'Email is required' }); return; }
+  try {
+    const pool = getPool();
+    const result = await pool.query(
+      'SELECT id, name, email, email_verified FROM users WHERE email = $1',
+      [String(email).toLowerCase()]
+    );
+    const user = result.rows[0];
+    // Always respond ok to avoid leaking which emails are registered.
+    if (!user || user.email_verified) {
+      res.json({ ok: true });
+      return;
+    }
+    const code = generateVerificationCode();
+    const token = generateUrlToken();
+    const expires = new Date(Date.now() + VERIFICATION_TTL_MS);
+    await pool.query(
+      `UPDATE users SET email_verification_code = $1,
+         email_verification_token = $2,
+         email_verification_expires_at = $3
+       WHERE id = $4`,
+      [code, token, expires, user.id]
+    );
+    try { await sendVerificationEmail(user.email, user.name, code, token); } catch (e) { console.error('email send failed:', e); }
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Resend verification error:', err);
     res.status(500).json({ error: 'Server error' });
   }
 });
@@ -77,7 +208,7 @@ authRouter.post('/login', async (req: Request, res: Response): Promise<void> => 
     const result = await pool.query('SELECT * FROM users WHERE email = $1', [email.toLowerCase()]);
     const user = result.rows[0] as {
       id: number; name: string; email: string; password_hash: string;
-      xp: number; streak: number; last_active: string;
+      xp: number; streak: number; last_active: string; email_verified: boolean;
     } | undefined;
 
     if (!user) {
@@ -88,6 +219,11 @@ authRouter.post('/login', async (req: Request, res: Response): Promise<void> => 
     const valid = await bcrypt.compare(password, user.password_hash);
     if (!valid) {
       res.status(401).json({ error: 'Invalid email or password' });
+      return;
+    }
+
+    if (!user.email_verified) {
+      res.status(403).json({ error: 'Email not verified', emailNotVerified: true, email: user.email });
       return;
     }
 
@@ -117,24 +253,100 @@ authRouter.post('/login', async (req: Request, res: Response): Promise<void> => 
   }
 });
 
+authRouter.post('/forgot-password', async (req: Request, res: Response): Promise<void> => {
+  const { email } = req.body;
+  if (!email) { res.status(400).json({ error: 'Email is required' }); return; }
+  try {
+    const pool = getPool();
+    const result = await pool.query(
+      'SELECT id, name, email, email_verified FROM users WHERE email = $1',
+      [String(email).toLowerCase()]
+    );
+    const user = result.rows[0];
+    // Respond ok regardless to avoid leaking which addresses are registered.
+    if (user && user.email_verified) {
+      const token = generateUrlToken();
+      const expires = new Date(Date.now() + RESET_TTL_MS);
+      await pool.query(
+        `UPDATE users SET password_reset_token = $1, password_reset_expires_at = $2 WHERE id = $3`,
+        [token, expires, user.id]
+      );
+      try { await sendPasswordResetEmail(user.email, user.name, token); } catch (e) { console.error('email send failed:', e); }
+    }
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Forgot password error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+authRouter.post('/reset-password', async (req: Request, res: Response): Promise<void> => {
+  const { token, newPassword } = req.body;
+  if (!token || !newPassword) {
+    res.status(400).json({ error: 'Token and new password are required' });
+    return;
+  }
+  if (newPassword.length < 8) {
+    res.status(400).json({ error: 'Password must be at least 8 characters' });
+    return;
+  }
+  if (!/[A-Z]/.test(newPassword)) {
+    res.status(400).json({ error: 'Password must contain at least one uppercase letter' });
+    return;
+  }
+  try {
+    const pool = getPool();
+    const result = await pool.query(
+      `SELECT id, password_reset_expires_at FROM users WHERE password_reset_token = $1`,
+      [token]
+    );
+    const user = result.rows[0];
+    if (!user) {
+      res.status(400).json({ error: 'Invalid or expired reset link' });
+      return;
+    }
+    if (user.password_reset_expires_at && new Date(user.password_reset_expires_at).getTime() < Date.now()) {
+      res.status(400).json({ error: 'Reset link expired — request a new one' });
+      return;
+    }
+    const hash = await bcrypt.hash(newPassword, 12);
+    await pool.query(
+      `UPDATE users SET password_hash = $1,
+         password_reset_token = NULL,
+         password_reset_expires_at = NULL
+       WHERE id = $2`,
+      [hash, user.id]
+    );
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Reset password error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 authRouter.get('/me', authenticate, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const pool = getPool();
 
-    // Incremental energy refill: +3 per hour since refill started
+    // Incremental energy refill: +1 per 15 minutes (full 0→12 in 3 hours)
     const energyRow = await pool.query(
       'SELECT energy, energy_refill_at FROM users WHERE id = $1',
       [req.userId]
     );
     const er = energyRow.rows[0] as { energy: number; energy_refill_at: string | null } | undefined;
     if (er && er.energy < 12 && er.energy_refill_at) {
-      const hoursElapsed = (Date.now() - new Date(er.energy_refill_at).getTime()) / 3600000;
-      const toAdd = Math.floor(hoursElapsed * 3);
-      if (toAdd > 0) {
-        const newEnergy = Math.min(12, er.energy + toAdd);
+      const REFILL_INTERVAL_MS = 15 * 60 * 1000;
+      const refillAtMs = new Date(er.energy_refill_at).getTime();
+      const intervals = Math.floor((Date.now() - refillAtMs) / REFILL_INTERVAL_MS);
+      if (intervals > 0) {
+        const toAdd = Math.min(intervals, 12 - er.energy);
+        const newEnergy = er.energy + toAdd;
+        const newRefillAt = newEnergy >= 12
+          ? null
+          : new Date(refillAtMs + toAdd * REFILL_INTERVAL_MS).toISOString();
         await pool.query(
           'UPDATE users SET energy = $1, energy_refill_at = $2 WHERE id = $3',
-          [newEnergy, newEnergy >= 12 ? null : er.energy_refill_at, req.userId]
+          [newEnergy, newRefillAt, req.userId]
         );
       }
     }
@@ -172,6 +384,7 @@ authRouter.post('/onboarding', authenticate, async (req: AuthRequest, res: Respo
 authRouter.get('/check-name', authenticate, async (req: AuthRequest, res: Response): Promise<void> => {
   const name = (req.query.name as string)?.trim();
   if (!name || name.length < 2) { res.json({ available: false }); return; }
+  if (isNicknameBanned(name)) { res.json({ available: false, banned: true }); return; }
   try {
     const pool = getPool();
     const result = await pool.query(
@@ -194,6 +407,11 @@ authRouter.patch('/profile', authenticate, async (req: AuthRequest, res: Respons
 
   if (name !== undefined && (typeof name !== 'string' || name.trim().length < 2)) {
     res.status(400).json({ error: 'Name must be at least 2 characters' });
+    return;
+  }
+
+  if (name !== undefined && isNicknameBanned(name)) {
+    res.status(400).json({ error: 'This nickname is not allowed. Please choose another.' });
     return;
   }
 
@@ -302,4 +520,3 @@ authRouter.patch('/password', authenticate, async (req: AuthRequest, res: Respon
     res.status(500).json({ error: 'Server error' });
   }
 });
-

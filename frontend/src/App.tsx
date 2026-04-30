@@ -14,6 +14,9 @@ import { League } from './pages/League';
 import { Onboarding } from './pages/Onboarding';
 import { GeneratedLesson } from './pages/GeneratedLesson';
 import { AiAdvisor } from './pages/AiAdvisor';
+import { VerifyEmail } from './pages/VerifyEmail';
+import { ForgotPassword } from './pages/ForgotPassword';
+import { ResetPassword } from './pages/ResetPassword';
 
 function Spinner() {
   return (
@@ -61,6 +64,9 @@ function AppRoutes() {
           <Route path="/" element={<PublicRoute><Landing /></PublicRoute>} />
           <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
           <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+          <Route path="/verify-email" element={<VerifyEmail />} />
+          <Route path="/forgot-password" element={<PublicRoute><ForgotPassword /></PublicRoute>} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/onboarding" element={<OnboardingRoute><Onboarding /></OnboardingRoute>} />
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/modules" element={<ProtectedRoute><Modules /></ProtectedRoute>} />

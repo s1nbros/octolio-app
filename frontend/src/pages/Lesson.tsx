@@ -199,8 +199,8 @@ export function Lesson() {
   // No energy screen
   if (state === 'no_energy') {
     const minsUntilNext = energyRefillAt
-      ? Math.ceil((3600000 - ((Date.now() - new Date(energyRefillAt).getTime()) % 3600000)) / 60000)
-      : 60;
+      ? Math.max(1, Math.ceil((900000 - ((Date.now() - new Date(energyRefillAt).getTime()) % 900000)) / 60000))
+      : 15;
     return (
       <div className="relative min-h-screen flex items-center justify-center px-4">
         <FloatingOrbs />
@@ -212,8 +212,8 @@ export function Lesson() {
             </h2>
             <p className="text-sm mb-2" style={{ color: 'hsl(var(--c-fg-muted))' }}>
               {lang === 'en'
-                ? `Each lesson costs 3 energy. You get +3 energy every hour. Next refill in ~${minsUntilNext}min. Upgrade to Pro for unlimited energy.`
-                : `Всеки урок струва 3 енергия. Получаваш +3 енергия на час. Следващо зареждане след ~${minsUntilNext}мин. Надгради до Pro за неограничена енергия.`}
+                ? `Each lesson costs 3 energy. Energy refills +1 every 15 minutes — fully restored in 3 hours. Next +1 in ~${minsUntilNext}min. Or upgrade to Pro for unlimited energy.`
+                : `Всеки урок струва 3 енергия. Енергията се възстановява с +1 на всеки 15 минути — напълно за 3 часа. Следващо +1 след ~${minsUntilNext}мин. Или надгради до Pro за неограничена енергия.`}
             </p>
             <p className="mono text-sm font-semibold mb-6" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
               {lang === 'en' ? `Current energy: ${user?.energy ?? 0}/12` : `Текуща енергия: ${user?.energy ?? 0}/12`}

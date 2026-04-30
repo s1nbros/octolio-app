@@ -33,7 +33,11 @@ interface AuthContextType {
   token: string | null;
   isLoading: boolean;
   login: (email: string, password: string, rememberMe: boolean) => Promise<void>;
-  register: (name: string, email: string, password: string) => Promise<void>;
+  register: (name: string, email: string, password: string) => Promise<{ pending: true; email: string }>;
+  verifyEmail: (params: { email?: string; code?: string; token?: string }) => Promise<void>;
+  resendVerification: (email: string) => Promise<void>;
+  forgotPassword: (email: string) => Promise<void>;
+  resetPassword: (token: string, newPassword: string) => Promise<void>;
   logout: () => void;
   updateUser: (updates: Partial<User>) => void;
   refreshUser: () => Promise<void>;
@@ -100,10 +104,55 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Registration failed');
 
-    // Always remember on registration
+    // Registration now requires email verification — no token issued yet.
+    return { pending: true as const, email: data.email ?? email.toLowerCase() };
+  };
+
+  const verifyEmail = async (params: { email?: string; code?: string; token?: string }) => {
+    const res = await fetch('/api/auth/verify-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Verification failed');
     saveToken(data.token, true);
     setToken(data.token);
     setUser(data.user);
+  };
+
+  const resendVerification = async (email: string) => {
+    const res = await fetch('/api/auth/resend-verification', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.error || 'Failed to resend verification email');
+    }
+  };
+
+  const forgotPassword = async (email: string) => {
+    const res = await fetch('/api/auth/forgot-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.error || 'Failed to send reset email');
+    }
+  };
+
+  const resetPassword = async (token: string, newPassword: string) => {
+    const res = await fetch('/api/auth/reset-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, newPassword }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || 'Failed to reset password');
   };
 
   const logout = () => {
@@ -151,7 +200,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, isLoading, login, register, logout, updateUser, refreshUser, updateProfile, changePassword, completeOnboarding }}>
+    <AuthContext.Provider value={{ user, token, isLoading, login, register, verifyEmail, resendVerification, forgotPassword, resetPassword, logout, updateUser, refreshUser, updateProfile, changePassword, completeOnboarding }}>
       {children}
     </AuthContext.Provider>
   );

@@ -32,8 +32,8 @@ export function Register() {
     if (!nameOk || !emailOk || !passwordOk) return;
     setIsLoading(true);
     try {
-      await register(name, email, password);
-      navigate('/dashboard');
+      const { email: registeredEmail } = await register(name, email, password);
+      navigate('/verify-email', { state: { email: registeredEmail } });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Registration failed');
     } finally {

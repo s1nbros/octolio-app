@@ -5,7 +5,7 @@ import { useLang } from '../contexts/LanguageContext';
 import { FloatingOrbs } from '../components/FloatingOrbs';
 
 export function Login() {
-  const { login } = useAuth();
+  const { login, resendVerification } = useAuth();
   const { ui } = useLang();
   const navigate = useNavigate();
 
@@ -14,21 +14,37 @@ export function Login() {
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [needsVerify, setNeedsVerify] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [forgotOpen, setForgotOpen] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setNeedsVerify(null);
     setIsLoading(true);
 
     try {
       await login(email, password, rememberMe);
       navigate('/dashboard');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed');
+      const msg = err instanceof Error ? err.message : 'Login failed';
+      if (/not verified/i.test(msg)) {
+        setNeedsVerify(email.toLowerCase());
+      } else {
+        setError(msg);
+      }
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleResend = async () => {
+    if (!needsVerify) return;
+    try {
+      await resendVerification(needsVerify);
+      navigate('/verify-email', { state: { email: needsVerify } });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to resend');
     }
   };
 
@@ -56,6 +72,18 @@ export function Login() {
             <div className="rounded-xl p-3.5 mb-5 text-sm"
               style={{ background: 'hsl(var(--c-red)/0.1)', border: '1px solid hsl(var(--c-red)/0.3)', color: 'hsl(var(--c-red))' }}>
               ⚠ {error}
+            </div>
+          )}
+
+          {needsVerify && (
+            <div className="rounded-xl p-3.5 mb-5 text-sm"
+              style={{ background: 'hsl(var(--c-primary)/0.08)', border: '1px solid hsl(var(--c-primary)/0.3)', color: 'hsl(var(--c-fg))' }}>
+              {ui.login_verify_required ?? 'Your email is not yet verified.'}{' '}
+              <button type="button" onClick={handleResend}
+                className="font-semibold underline"
+                style={{ color: 'hsl(var(--c-primary))' }}>
+                {ui.verify_resend ?? 'Resend verification email'}
+              </button>
             </div>
           )}
 
@@ -110,23 +138,14 @@ export function Login() {
                   {ui.remember_me ?? 'Remember me'}
                 </span>
               </label>
-              <button
-                type="button"
-                onClick={() => setForgotOpen(o => !o)}
+              <Link
+                to="/forgot-password"
                 className="text-sm font-semibold transition-colors"
                 style={{ color: 'hsl(var(--c-primary))' }}
               >
-                Forgot password?
-              </button>
+                {ui.forgot_link ?? 'Forgot password?'}
+              </Link>
             </div>
-
-            {forgotOpen && (
-              <div className="rounded-xl p-3.5 text-sm"
-                style={{ background: 'hsl(var(--c-primary)/0.08)', border: '1px solid hsl(var(--c-primary)/0.2)', color: 'hsl(var(--c-fg-muted))' }}>
-                To reset your password, go to <strong style={{ color: 'hsl(var(--c-fg))' }}>Profile → Account Settings → Password</strong> after logging in, or contact us at{' '}
-                <span style={{ color: 'hsl(var(--c-primary))' }}>support@octolio.com</span>.
-              </div>
-            )}
 
             <button
               type="submit"

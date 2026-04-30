@@ -61,15 +61,19 @@ progressRouter.post('/energy/use', authenticate, async (req: AuthRequest, res: R
       return;
     }
 
-    // Apply incremental refill (+3/hour) before deducting
+    // Apply incremental refill (+1 per 15 minutes) before deducting
     let currentEnergy = user.energy;
     let refillAt = user.energy_refill_at;
     if (currentEnergy < 12 && refillAt) {
-      const hoursElapsed = (Date.now() - new Date(refillAt).getTime()) / 3600000;
-      const toAdd = Math.floor(hoursElapsed * 3);
-      if (toAdd > 0) {
-        currentEnergy = Math.min(12, currentEnergy + toAdd);
-        if (currentEnergy >= 12) refillAt = null;
+      const REFILL_INTERVAL_MS = 15 * 60 * 1000;
+      const refillAtMs = new Date(refillAt).getTime();
+      const intervals = Math.floor((Date.now() - refillAtMs) / REFILL_INTERVAL_MS);
+      if (intervals > 0) {
+        const toAdd = Math.min(intervals, 12 - currentEnergy);
+        currentEnergy += toAdd;
+        refillAt = currentEnergy >= 12
+          ? null
+          : new Date(refillAtMs + toAdd * REFILL_INTERVAL_MS).toISOString();
       }
     }
 
