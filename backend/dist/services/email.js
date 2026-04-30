@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.isSmtpConfigured = isSmtpConfigured;
+exports.isEmailConfigured = isEmailConfigured;
 exports.logSmtpStatus = logSmtpStatus;
 exports.sendVerificationEmail = sendVerificationEmail;
 exports.sendPasswordResetEmail = sendPasswordResetEmail;
@@ -13,9 +14,20 @@ const SMTP_PORT = process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT, 10) : 
 const SMTP_USER = process.env.SMTP_USER;
 const SMTP_PASS = process.env.SMTP_PASS;
 const MAIL_FROM = process.env.MAIL_FROM || 'Octolio <no-reply@octolio.me>';
+/**
+ * Resend's HTTP API is preferred over SMTP because Render (and several other
+ * hosts) silently block outbound TCP on SMTP ports. HTTPS port 443 is always
+ * open. The Resend `re_…` API key works for both; we reuse SMTP_PASS when
+ * SMTP_HOST points at Resend so no extra env var is needed.
+ */
+const RESEND_API_KEY = process.env.RESEND_API_KEY
+    || (SMTP_HOST === 'smtp.resend.com' && SMTP_PASS?.startsWith('re_') ? SMTP_PASS : undefined);
 let transporter = null;
 function isSmtpConfigured() {
     return !!(SMTP_HOST && SMTP_USER && SMTP_PASS);
+}
+function isEmailConfigured() {
+    return !!RESEND_API_KEY || isSmtpConfigured();
 }
 function getTransporter() {
     if (transporter)
@@ -27,45 +39,71 @@ function getTransporter() {
         port: SMTP_PORT,
         secure: SMTP_PORT === 465,
         auth: { user: SMTP_USER, pass: SMTP_PASS },
-        // Tight timeouts so a misconfigured SMTP host can't hang the API request
         connectionTimeout: 8000,
         greetingTimeout: 8000,
         socketTimeout: 10000,
     });
     return transporter;
 }
-async function send({ to, subject, html, text }) {
-    const t = getTransporter();
-    if (!t) {
-        // Dev fallback — no SMTP creds. Print loudly so the verification code is easy to spot.
-        console.warn('\n========================================');
-        console.warn('[email] SMTP NOT CONFIGURED — email not sent.');
-        console.warn('  Missing one of: SMTP_HOST, SMTP_USER, SMTP_PASS');
-        console.warn(`  To:      ${to}`);
-        console.warn(`  Subject: ${subject}`);
-        console.warn('--- body ---');
-        console.warn(text);
-        console.warn('========================================\n');
-        return;
+async function sendViaResendApi({ to, subject, html, text }) {
+    console.log(`[email] sending → ${to} (subject: "${subject}") via Resend HTTP API`);
+    const res = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+            Authorization: `Bearer ${RESEND_API_KEY}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ from: MAIL_FROM, to, subject, html, text }),
+    });
+    if (!res.ok) {
+        const body = await res.text();
+        throw new Error(`Resend API ${res.status}: ${body}`);
     }
+    const data = await res.json();
+    console.log(`[email] sent ✓ (resend api) id=${data.id ?? '?'}`);
+}
+async function sendViaSmtp({ to, subject, html, text }) {
+    const t = getTransporter();
+    if (!t)
+        throw new Error('SMTP transport unavailable');
     console.log(`[email] sending → ${to} (subject: "${subject}") via ${SMTP_HOST}:${SMTP_PORT}`);
     const info = await t.sendMail({ from: MAIL_FROM, to, subject, html, text });
     console.log(`[email] sent ✓ messageId=${info.messageId} response="${info.response}"`);
 }
-/* Print SMTP config status at startup so the Render logs answer
- * "is the email service even configured?" in one glance. */
-function logSmtpStatus() {
+async function send(args) {
+    if (RESEND_API_KEY) {
+        await sendViaResendApi(args);
+        return;
+    }
     if (isSmtpConfigured()) {
-        console.log(`[email] SMTP configured: host=${SMTP_HOST} port=${SMTP_PORT} user=${SMTP_USER} from=${MAIL_FROM}`);
+        await sendViaSmtp(args);
+        return;
     }
-    else {
-        const missing = [
-            !SMTP_HOST && 'SMTP_HOST',
-            !SMTP_USER && 'SMTP_USER',
-            !SMTP_PASS && 'SMTP_PASS',
-        ].filter(Boolean).join(', ');
-        console.warn(`[email] SMTP NOT configured — missing: ${missing}. Verification codes will be logged to console only.`);
+    // Dev fallback — no creds at all. Print loudly so the code is easy to spot.
+    console.warn('\n========================================');
+    console.warn('[email] EMAIL NOT CONFIGURED — email not sent.');
+    console.warn('  Set RESEND_API_KEY (preferred) or SMTP_HOST/USER/PASS.');
+    console.warn(`  To:      ${args.to}`);
+    console.warn(`  Subject: ${args.subject}`);
+    console.warn('--- body ---');
+    console.warn(args.text);
+    console.warn('========================================\n');
+}
+/* Print email config status at startup so the Render logs make the failure
+ * mode obvious in one glance. */
+function logSmtpStatus() {
+    if (RESEND_API_KEY) {
+        console.log(`[email] using Resend HTTP API (from=${MAIL_FROM})`);
+        return;
     }
+    if (isSmtpConfigured()) {
+        console.log(`[email] using SMTP: host=${SMTP_HOST} port=${SMTP_PORT} user=${SMTP_USER} from=${MAIL_FROM}`);
+        if (SMTP_HOST === 'smtp.resend.com' && (SMTP_PORT === 465 || SMTP_PORT === 587)) {
+            console.warn('[email] WARNING: Render blocks outbound SMTP on common ports (465/587). If sends time out, switch to Resend HTTP API by setting RESEND_API_KEY=<your re_… key> (you can keep or remove SMTP_*).');
+        }
+        return;
+    }
+    console.warn('[email] NOT configured — set RESEND_API_KEY (preferred) or SMTP_HOST/USER/PASS. Codes will be logged to console.');
 }
 // Accept either APP_URL or FRONTEND_URL — both are common conventions.
 const APP_URL = process.env.APP_URL || process.env.FRONTEND_URL || 'http://localhost:5173';

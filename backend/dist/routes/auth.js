@@ -50,10 +50,10 @@ exports.authRouter.post('/email-diag', async (req, res) => {
     }
     try {
         await (0, email_1.sendVerificationEmail)(String(to), 'Octolio diag', '000000', 'diag-token');
-        res.json({ ok: true, smtpConfigured: (0, email_1.isSmtpConfigured)() });
+        res.json({ ok: true, smtpConfigured: (0, email_1.isEmailConfigured)() });
     }
     catch (err) {
-        res.status(500).json({ ok: false, smtpConfigured: (0, email_1.isSmtpConfigured)(), error: err instanceof Error ? err.message : String(err) });
+        res.status(500).json({ ok: false, smtpConfigured: (0, email_1.isEmailConfigured)(), error: err instanceof Error ? err.message : String(err) });
     }
 });
 /* Public availability check used by the registration form for live hints. */
@@ -157,9 +157,9 @@ exports.authRouter.post('/register', async (req, res) => {
         res.status(202).json({
             pending: true,
             email: lowerEmail,
-            emailSent: (0, email_1.isSmtpConfigured)(),
+            emailSent: (0, email_1.isEmailConfigured)(),
             // No SMTP configured → expose the code so dev flow isn't blocked.
-            ...((0, email_1.isSmtpConfigured)() ? {} : { devCode: code }),
+            ...((0, email_1.isEmailConfigured)() ? {} : { devCode: code }),
         });
     }
     catch (err) {
@@ -236,7 +236,7 @@ exports.authRouter.post('/resend-verification', async (req, res) => {
          SET verification_code = $1, verification_token = $2, expires_at = $3
        WHERE email = $4`, [code, token, expires, pending.email]);
         fireEmail((0, email_1.sendVerificationEmail)(pending.email, pending.name, code, token), 'verification');
-        res.json({ ok: true, emailSent: (0, email_1.isSmtpConfigured)(), ...((0, email_1.isSmtpConfigured)() ? {} : { devCode: code }) });
+        res.json({ ok: true, emailSent: (0, email_1.isEmailConfigured)(), ...((0, email_1.isEmailConfigured)() ? {} : { devCode: code }) });
     }
     catch (err) {
         console.error('Resend verification error:', err);

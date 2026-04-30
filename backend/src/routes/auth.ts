@@ -4,7 +4,7 @@ import crypto from 'crypto';
 import { getPool } from '../db';
 import { signToken, authenticate, AuthRequest } from '../middleware/auth';
 import { isNicknameBanned } from '../data/banned-words';
-import { sendVerificationEmail, sendPasswordResetEmail, isSmtpConfigured } from '../services/email';
+import { sendVerificationEmail, sendPasswordResetEmail, isEmailConfigured } from '../services/email';
 
 /**
  * Fire an email send without blocking the API response. Email providers can
@@ -47,9 +47,9 @@ authRouter.post('/email-diag', async (req: Request, res: Response): Promise<void
   if (!to) { res.status(400).json({ error: '"to" is required' }); return; }
   try {
     await sendVerificationEmail(String(to), 'Octolio diag', '000000', 'diag-token');
-    res.json({ ok: true, smtpConfigured: isSmtpConfigured() });
+    res.json({ ok: true, smtpConfigured: isEmailConfigured() });
   } catch (err) {
-    res.status(500).json({ ok: false, smtpConfigured: isSmtpConfigured(), error: err instanceof Error ? err.message : String(err) });
+    res.status(500).json({ ok: false, smtpConfigured: isEmailConfigured(), error: err instanceof Error ? err.message : String(err) });
   }
 });
 
@@ -169,9 +169,9 @@ authRouter.post('/register', async (req: Request, res: Response): Promise<void> 
     res.status(202).json({
       pending: true,
       email: lowerEmail,
-      emailSent: isSmtpConfigured(),
+      emailSent: isEmailConfigured(),
       // No SMTP configured → expose the code so dev flow isn't blocked.
-      ...(isSmtpConfigured() ? {} : { devCode: code }),
+      ...(isEmailConfigured() ? {} : { devCode: code }),
     });
   } catch (err) {
     console.error('Register error:', err);
@@ -263,7 +263,7 @@ authRouter.post('/resend-verification', async (req: Request, res: Response): Pro
       [code, token, expires, pending.email]
     );
     fireEmail(sendVerificationEmail(pending.email, pending.name, code, token), 'verification');
-    res.json({ ok: true, emailSent: isSmtpConfigured(), ...(isSmtpConfigured() ? {} : { devCode: code }) });
+    res.json({ ok: true, emailSent: isEmailConfigured(), ...(isEmailConfigured() ? {} : { devCode: code }) });
   } catch (err) {
     console.error('Resend verification error:', err);
     res.status(500).json({ error: 'Server error' });
