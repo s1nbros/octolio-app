@@ -67,7 +67,8 @@ function logSmtpStatus() {
         console.warn(`[email] SMTP NOT configured — missing: ${missing}. Verification codes will be logged to console only.`);
     }
 }
-const APP_URL = process.env.APP_URL || 'http://localhost:5173';
+// Accept either APP_URL or FRONTEND_URL — both are common conventions.
+const APP_URL = process.env.APP_URL || process.env.FRONTEND_URL || 'http://localhost:5173';
 function shell(title, body) {
     return `<!doctype html><html><body style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;background:#0a0e1a;color:#e6e8ef;margin:0;padding:24px">
   <div style="max-width:520px;margin:0 auto;background:#141a2c;border-radius:16px;padding:32px;border:1px solid #232a40">

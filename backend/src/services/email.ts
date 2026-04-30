@@ -69,7 +69,8 @@ export function logSmtpStatus(): void {
   }
 }
 
-const APP_URL = process.env.APP_URL || 'http://localhost:5173';
+// Accept either APP_URL or FRONTEND_URL — both are common conventions.
+const APP_URL = process.env.APP_URL || process.env.FRONTEND_URL || 'http://localhost:5173';
 
 function shell(title: string, body: string): string {
   return `<!doctype html><html><body style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;background:#0a0e1a;color:#e6e8ef;margin:0;padding:24px">
