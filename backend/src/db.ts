@@ -64,6 +64,21 @@ export async function initDb(): Promise<void> {
     WHERE onboarding_done = FALSE AND (xp > 0 OR last_active IS NOT NULL)
   `);
 
+  // Holds registrations that haven't been email-verified yet. The actual
+  // `users` row is only created once the verification code/link is consumed.
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS pending_registrations (
+      email TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      password_hash TEXT NOT NULL,
+      verification_code TEXT NOT NULL,
+      verification_token TEXT NOT NULL UNIQUE,
+      expires_at TIMESTAMP NOT NULL,
+      created_at TIMESTAMP DEFAULT NOW()
+    )
+  `);
+  await pool.query(`CREATE INDEX IF NOT EXISTS pending_registrations_name_lower_idx ON pending_registrations (LOWER(name))`);
+
   await pool.query(`
     CREATE TABLE IF NOT EXISTS progress (
       id SERIAL PRIMARY KEY,

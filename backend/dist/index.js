@@ -10,6 +10,7 @@ const cors_1 = __importDefault(require("cors"));
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const db_1 = require("./db");
+const email_1 = require("./services/email");
 const auth_1 = require("./routes/auth");
 const modules_1 = require("./routes/modules");
 const progress_1 = require("./routes/progress");
@@ -47,6 +48,7 @@ if (fs_1.default.existsSync(frontendDist)) {
 }
 (0, db_1.initDb)()
     .then(() => {
+    (0, email_1.logSmtpStatus)();
     app.listen(PORT, () => {
         console.log(`🚀 Octolio backend running on http://localhost:${PORT}`);
     });

@@ -1,8 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLang } from '../contexts/LanguageContext';
 import { FloatingOrbs } from '../components/FloatingOrbs';
+
+interface Availability {
+  state: 'idle' | 'checking' | 'ok' | 'taken' | 'banned' | 'error';
+}
 
 export function Register() {
   const { register } = useAuth();
@@ -17,13 +21,66 @@ export function Register() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  const [nameAvail, setNameAvail] = useState<Availability>({ state: 'idle' });
+  const [emailAvail, setEmailAvail] = useState<Availability>({ state: 'idle' });
+
   const nameNoSpaces = !name.includes(' ');
   const nameLengthOk = name.trim().length >= 2;
-  const nameOk = nameLengthOk && nameNoSpaces;
-  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const nameLocallyOk = nameLengthOk && nameNoSpaces;
+  const emailFormatOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const pwLength = password.length >= 8;
   const pwUppercase = /[A-Z]/.test(password);
   const passwordOk = pwLength && pwUppercase;
+
+  const nameOk = nameLocallyOk && nameAvail.state === 'ok';
+  const emailOk = emailFormatOk && emailAvail.state === 'ok';
+
+  // Debounced server-side check (banned + uniqueness) for the nickname.
+  const nameSeq = useRef(0);
+  useEffect(() => {
+    if (!nameLocallyOk) {
+      setNameAvail({ state: 'idle' });
+      return;
+    }
+    setNameAvail({ state: 'checking' });
+    const seq = ++nameSeq.current;
+    const handle = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/auth/check-availability?name=${encodeURIComponent(name.trim())}`);
+        const data = await res.json();
+        if (seq !== nameSeq.current) return;
+        if (data.name?.banned) setNameAvail({ state: 'banned' });
+        else if (data.name?.available) setNameAvail({ state: 'ok' });
+        else setNameAvail({ state: 'taken' });
+      } catch {
+        if (seq === nameSeq.current) setNameAvail({ state: 'error' });
+      }
+    }, 350);
+    return () => clearTimeout(handle);
+  }, [name, nameLocallyOk]);
+
+  // Same pattern for email — only blocks when an already-verified account owns it.
+  const emailSeq = useRef(0);
+  useEffect(() => {
+    if (!emailFormatOk) {
+      setEmailAvail({ state: 'idle' });
+      return;
+    }
+    setEmailAvail({ state: 'checking' });
+    const seq = ++emailSeq.current;
+    const handle = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/auth/check-availability?email=${encodeURIComponent(email.trim().toLowerCase())}`);
+        const data = await res.json();
+        if (seq !== emailSeq.current) return;
+        if (data.email?.available) setEmailAvail({ state: 'ok' });
+        else setEmailAvail({ state: 'taken' });
+      } catch {
+        if (seq === emailSeq.current) setEmailAvail({ state: 'error' });
+      }
+    }, 350);
+    return () => clearTimeout(handle);
+  }, [email, emailFormatOk]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,12 +105,12 @@ export function Register() {
     }
   };
 
-  const hint = (show: boolean, ok: boolean, msg: string) =>
-    show ? (
-      <p className="text-xs mt-1.5 font-medium" style={{ color: ok ? 'hsl(var(--c-green))' : 'hsl(var(--c-red))' }}>
-        {ok ? '✓' : '✗'} {msg}
-      </p>
-    ) : null;
+  const Hint = ({ ok, msg, muted }: { ok: boolean; msg: string; muted?: boolean }) => (
+    <p className="text-xs mt-1.5 font-medium"
+      style={{ color: muted ? 'hsl(var(--c-fg-subtle))' : ok ? 'hsl(var(--c-green))' : 'hsl(var(--c-red))' }}>
+      {muted ? '…' : ok ? '✓' : '✗'} {msg}
+    </p>
+  );
 
   return (
     <div className="relative min-h-screen flex items-center justify-center px-4 py-12">
@@ -95,13 +152,22 @@ export function Register() {
                 autoComplete="username"
               />
               {(submitted || name.length > 0) && !nameLengthOk && (
-                <p className="text-xs mt-1.5 font-medium" style={{ color: 'hsl(var(--c-red))' }}>✗ At least 2 characters</p>
+                <Hint ok={false} msg={ui.reg_name_min ?? 'At least 2 characters'} />
               )}
               {(submitted || name.length > 0) && nameLengthOk && !nameNoSpaces && (
-                <p className="text-xs mt-1.5 font-medium" style={{ color: 'hsl(var(--c-red))' }}>✗ No spaces allowed in username</p>
+                <Hint ok={false} msg={ui.reg_name_no_spaces ?? 'No spaces allowed in username'} />
               )}
-              {(submitted || name.length > 0) && nameOk && (
-                <p className="text-xs mt-1.5 font-medium" style={{ color: 'hsl(var(--c-green))' }}>✓ Looks good</p>
+              {nameLocallyOk && nameAvail.state === 'checking' && (
+                <Hint ok={false} muted msg={ui.reg_checking ?? 'Checking availability…'} />
+              )}
+              {nameLocallyOk && nameAvail.state === 'banned' && (
+                <Hint ok={false} msg={ui.reg_name_banned ?? 'This nickname is not allowed'} />
+              )}
+              {nameLocallyOk && nameAvail.state === 'taken' && (
+                <Hint ok={false} msg={ui.reg_name_taken ?? 'This nickname is already taken'} />
+              )}
+              {nameLocallyOk && nameAvail.state === 'ok' && (
+                <Hint ok msg={ui.reg_name_available ?? 'Nickname available'} />
               )}
             </div>
 
@@ -118,8 +184,18 @@ export function Register() {
                 onChange={e => setEmail(e.target.value)}
                 autoComplete="email"
               />
-              {hint(submitted || email.length > 0, emailOk,
-                emailOk ? 'Valid email' : 'Enter a valid email address')}
+              {(submitted || email.length > 0) && !emailFormatOk && (
+                <Hint ok={false} msg={ui.reg_email_invalid ?? 'Enter a valid email address'} />
+              )}
+              {emailFormatOk && emailAvail.state === 'checking' && (
+                <Hint ok={false} muted msg={ui.reg_checking ?? 'Checking…'} />
+              )}
+              {emailFormatOk && emailAvail.state === 'taken' && (
+                <Hint ok={false} msg={ui.reg_email_taken ?? 'This email is already registered'} />
+              )}
+              {emailFormatOk && emailAvail.state === 'ok' && (
+                <Hint ok msg={ui.reg_email_ok ?? 'Email available'} />
+              )}
             </div>
 
             <div>
@@ -154,7 +230,11 @@ export function Register() {
               )}
             </div>
 
-            <button type="submit" className="btn-green w-full mt-2" disabled={isLoading}>
+            <button
+              type="submit"
+              className="btn-green w-full mt-2"
+              disabled={isLoading || !nameOk || !emailOk || !passwordOk}
+            >
               {isLoading
                 ? <span className="flex items-center gap-2">
                     <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />

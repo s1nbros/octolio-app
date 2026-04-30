@@ -28,6 +28,66 @@ function generateVerificationCode() {
 function generateUrlToken() {
     return crypto_1.default.randomBytes(32).toString('hex');
 }
+/**
+ * Diagnostic endpoint — hits SMTP and reports the result. Guarded by the
+ * EMAIL_DEBUG_TOKEN env var so it can't be abused. Use it to confirm that
+ * the configured SMTP creds actually work from the deployed environment:
+ *
+ *   curl -X POST https://<api>/api/auth/email-diag \
+ *     -H 'Content-Type: application/json' \
+ *     -d '{"token":"<EMAIL_DEBUG_TOKEN>","to":"you@example.com"}'
+ */
+exports.authRouter.post('/email-diag', async (req, res) => {
+    const { token, to } = req.body ?? {};
+    const expected = process.env.EMAIL_DEBUG_TOKEN;
+    if (!expected || token !== expected) {
+        res.status(404).json({ error: 'Not found' });
+        return;
+    }
+    if (!to) {
+        res.status(400).json({ error: '"to" is required' });
+        return;
+    }
+    try {
+        await (0, email_1.sendVerificationEmail)(String(to), 'Octolio diag', '000000', 'diag-token');
+        res.json({ ok: true, smtpConfigured: (0, email_1.isSmtpConfigured)() });
+    }
+    catch (err) {
+        res.status(500).json({ ok: false, smtpConfigured: (0, email_1.isSmtpConfigured)(), error: err instanceof Error ? err.message : String(err) });
+    }
+});
+/* Public availability check used by the registration form for live hints. */
+exports.authRouter.get('/check-availability', async (req, res) => {
+    const name = typeof req.query.name === 'string' ? req.query.name.trim() : '';
+    const email = typeof req.query.email === 'string' ? req.query.email.trim().toLowerCase() : '';
+    const out = {};
+    try {
+        const pool = (0, db_1.getPool)();
+        if (name.length >= 2) {
+            if ((0, banned_words_1.isNicknameBanned)(name)) {
+                out.name = { available: false, banned: true };
+            }
+            else {
+                const [u, p] = await Promise.all([
+                    pool.query('SELECT 1 FROM users WHERE LOWER(name) = LOWER($1) LIMIT 1', [name]),
+                    pool.query('SELECT 1 FROM pending_registrations WHERE LOWER(name) = LOWER($1) LIMIT 1', [name]),
+                ]);
+                out.name = { available: u.rowCount === 0 && p.rowCount === 0, banned: false };
+            }
+        }
+        if (email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            // Only verified, real accounts block re-registration. A pending row for the
+            // same address is fine — register will refresh it.
+            const u = await pool.query('SELECT 1 FROM users WHERE email = $1 LIMIT 1', [email]);
+            out.email = { available: u.rowCount === 0 };
+        }
+        res.json(out);
+    }
+    catch (err) {
+        console.error('check-availability error:', err);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
 exports.authRouter.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
     if (!name || !email || !password) {
@@ -62,54 +122,43 @@ exports.authRouter.post('/register', async (req, res) => {
     try {
         const pool = (0, db_1.getPool)();
         const lowerEmail = email.toLowerCase();
-        const existing = await pool.query('SELECT id, email_verified FROM users WHERE email = $1', [lowerEmail]);
-        if (existing.rows.length > 0) {
-            const row = existing.rows[0];
-            // If the existing record is unverified, we can re-issue a fresh code
-            // instead of permanently blocking the email. Verified accounts must use login/forgot.
-            if (row.email_verified) {
-                res.status(409).json({ error: 'Email already registered' });
-                return;
-            }
-            const passwordHash = await bcryptjs_1.default.hash(password, 12);
-            const code = generateVerificationCode();
-            const token = generateUrlToken();
-            const expires = new Date(Date.now() + VERIFICATION_TTL_MS);
-            await pool.query(`UPDATE users SET name = $1, password_hash = $2,
-           email_verification_code = $3, email_verification_token = $4,
-           email_verification_expires_at = $5
-         WHERE id = $6`, [name.trim(), passwordHash, code, token, expires, row.id]);
-            fireEmail((0, email_1.sendVerificationEmail)(lowerEmail, name.trim(), code, token), 'verification');
-            res.status(202).json({
-                pending: true,
-                email: lowerEmail,
-                emailSent: (0, email_1.isSmtpConfigured)(),
-                // When SMTP isn't configured the user cannot receive the email, so we
-                // expose the code in the response to keep the dev flow unblocked.
-                ...((0, email_1.isSmtpConfigured)() ? {} : { devCode: code }),
-            });
+        const trimmedName = name.trim();
+        // Block only if a verified account already owns this email.
+        const verified = await pool.query('SELECT 1 FROM users WHERE email = $1 LIMIT 1', [lowerEmail]);
+        if ((verified.rowCount ?? 0) > 0) {
+            res.status(409).json({ error: 'Email already registered', field: 'email' });
             return;
         }
-        // Reject if name is already taken (verified) — case-insensitive.
-        const taken = await pool.query('SELECT id FROM users WHERE LOWER(name) = LOWER($1)', [name.trim()]);
-        if (taken.rows.length > 0) {
-            res.status(409).json({ error: 'Name already taken' });
+        // Name uniqueness across both real users AND other pending registrations.
+        const [nameInUsers, nameInPending] = await Promise.all([
+            pool.query('SELECT 1 FROM users WHERE LOWER(name) = LOWER($1) LIMIT 1', [trimmedName]),
+            pool.query('SELECT 1 FROM pending_registrations WHERE LOWER(name) = LOWER($1) AND email != $2 LIMIT 1', [trimmedName, lowerEmail]),
+        ]);
+        if ((nameInUsers.rowCount ?? 0) > 0 || (nameInPending.rowCount ?? 0) > 0) {
+            res.status(409).json({ error: 'Name already taken', field: 'name' });
             return;
         }
         const passwordHash = await bcryptjs_1.default.hash(password, 12);
-        const today = new Date().toISOString().split('T')[0];
         const code = generateVerificationCode();
         const token = generateUrlToken();
         const expires = new Date(Date.now() + VERIFICATION_TTL_MS);
-        await pool.query(`INSERT INTO users
-         (name, email, password_hash, xp, streak, last_active,
-          email_verified, email_verification_code, email_verification_token, email_verification_expires_at)
-       VALUES ($1, $2, $3, 0, 1, $4, FALSE, $5, $6, $7)`, [name.trim(), lowerEmail, passwordHash, today, code, token, expires]);
-        fireEmail((0, email_1.sendVerificationEmail)(lowerEmail, name.trim(), code, token), 'verification');
+        // Upsert: same email re-attempting registration overwrites the previous pending row.
+        await pool.query(`INSERT INTO pending_registrations
+         (email, name, password_hash, verification_code, verification_token, expires_at)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       ON CONFLICT (email) DO UPDATE SET
+         name = EXCLUDED.name,
+         password_hash = EXCLUDED.password_hash,
+         verification_code = EXCLUDED.verification_code,
+         verification_token = EXCLUDED.verification_token,
+         expires_at = EXCLUDED.expires_at,
+         created_at = NOW()`, [lowerEmail, trimmedName, passwordHash, code, token, expires]);
+        fireEmail((0, email_1.sendVerificationEmail)(lowerEmail, trimmedName, code, token), 'verification');
         res.status(202).json({
             pending: true,
             email: lowerEmail,
             emailSent: (0, email_1.isSmtpConfigured)(),
+            // No SMTP configured → expose the code so dev flow isn't blocked.
             ...((0, email_1.isSmtpConfigured)() ? {} : { devCode: code }),
         });
     }
@@ -127,24 +176,33 @@ exports.authRouter.post('/verify-email', async (req, res) => {
     try {
         const pool = (0, db_1.getPool)();
         const result = token
-            ? await pool.query(`SELECT id, name, email, email_verification_expires_at FROM users
-             WHERE email_verification_token = $1`, [token])
-            : await pool.query(`SELECT id, name, email, email_verification_expires_at FROM users
-             WHERE email = $1 AND email_verification_code = $2`, [String(email).toLowerCase(), String(code)]);
-        const user = result.rows[0];
-        if (!user) {
+            ? await pool.query(`SELECT email, name, password_hash, expires_at FROM pending_registrations
+             WHERE verification_token = $1`, [token])
+            : await pool.query(`SELECT email, name, password_hash, expires_at FROM pending_registrations
+             WHERE email = $1 AND verification_code = $2`, [String(email).toLowerCase(), String(code)]);
+        const pending = result.rows[0];
+        if (!pending) {
             res.status(400).json({ error: 'Invalid or expired verification' });
             return;
         }
-        if (user.email_verification_expires_at && new Date(user.email_verification_expires_at).getTime() < Date.now()) {
+        if (new Date(pending.expires_at).getTime() < Date.now()) {
             res.status(400).json({ error: 'Verification expired — request a new one' });
             return;
         }
-        await pool.query(`UPDATE users SET email_verified = TRUE,
-         email_verification_code = NULL,
-         email_verification_token = NULL,
-         email_verification_expires_at = NULL
-       WHERE id = $1`, [user.id]);
+        // Race-safe: in case someone else verified or registered in the meantime.
+        const dup = await pool.query('SELECT 1 FROM users WHERE email = $1 OR LOWER(name) = LOWER($2) LIMIT 1', [pending.email, pending.name]);
+        if ((dup.rowCount ?? 0) > 0) {
+            await pool.query('DELETE FROM pending_registrations WHERE email = $1', [pending.email]);
+            res.status(409).json({ error: 'Email or name was just claimed by another account. Please register again.' });
+            return;
+        }
+        const today = new Date().toISOString().split('T')[0];
+        const inserted = await pool.query(`INSERT INTO users
+         (name, email, password_hash, xp, streak, last_active, email_verified)
+       VALUES ($1, $2, $3, 0, 1, $4, TRUE)
+       RETURNING id, name, email`, [pending.name, pending.email, pending.password_hash, today]);
+        await pool.query('DELETE FROM pending_registrations WHERE email = $1', [pending.email]);
+        const user = inserted.rows[0];
         const jwt = (0, auth_1.signToken)(user.id, true);
         res.json({
             token: jwt,
@@ -164,21 +222,20 @@ exports.authRouter.post('/resend-verification', async (req, res) => {
     }
     try {
         const pool = (0, db_1.getPool)();
-        const result = await pool.query('SELECT id, name, email, email_verified FROM users WHERE email = $1', [String(email).toLowerCase()]);
-        const user = result.rows[0];
-        // Always respond ok to avoid leaking which emails are registered.
-        if (!user || user.email_verified) {
+        const result = await pool.query('SELECT email, name FROM pending_registrations WHERE email = $1', [String(email).toLowerCase()]);
+        const pending = result.rows[0];
+        // Always respond ok to avoid leaking which emails are pending/verified.
+        if (!pending) {
             res.json({ ok: true });
             return;
         }
         const code = generateVerificationCode();
         const token = generateUrlToken();
         const expires = new Date(Date.now() + VERIFICATION_TTL_MS);
-        await pool.query(`UPDATE users SET email_verification_code = $1,
-         email_verification_token = $2,
-         email_verification_expires_at = $3
-       WHERE id = $4`, [code, token, expires, user.id]);
-        fireEmail((0, email_1.sendVerificationEmail)(user.email, user.name, code, token), 'verification');
+        await pool.query(`UPDATE pending_registrations
+         SET verification_code = $1, verification_token = $2, expires_at = $3
+       WHERE email = $4`, [code, token, expires, pending.email]);
+        fireEmail((0, email_1.sendVerificationEmail)(pending.email, pending.name, code, token), 'verification');
         res.json({ ok: true, emailSent: (0, email_1.isSmtpConfigured)(), ...((0, email_1.isSmtpConfigured)() ? {} : { devCode: code }) });
     }
     catch (err) {

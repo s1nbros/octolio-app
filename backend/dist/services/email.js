@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.isSmtpConfigured = isSmtpConfigured;
+exports.logSmtpStatus = logSmtpStatus;
 exports.sendVerificationEmail = sendVerificationEmail;
 exports.sendPasswordResetEmail = sendPasswordResetEmail;
 const nodemailer_1 = __importDefault(require("nodemailer"));
@@ -39,14 +40,32 @@ async function send({ to, subject, html, text }) {
         // Dev fallback — no SMTP creds. Print loudly so the verification code is easy to spot.
         console.warn('\n========================================');
         console.warn('[email] SMTP NOT CONFIGURED — email not sent.');
-        console.warn(`To:      ${to}`);
-        console.warn(`Subject: ${subject}`);
+        console.warn('  Missing one of: SMTP_HOST, SMTP_USER, SMTP_PASS');
+        console.warn(`  To:      ${to}`);
+        console.warn(`  Subject: ${subject}`);
         console.warn('--- body ---');
         console.warn(text);
         console.warn('========================================\n');
         return;
     }
-    await t.sendMail({ from: MAIL_FROM, to, subject, html, text });
+    console.log(`[email] sending → ${to} (subject: "${subject}") via ${SMTP_HOST}:${SMTP_PORT}`);
+    const info = await t.sendMail({ from: MAIL_FROM, to, subject, html, text });
+    console.log(`[email] sent ✓ messageId=${info.messageId} response="${info.response}"`);
+}
+/* Print SMTP config status at startup so the Render logs answer
+ * "is the email service even configured?" in one glance. */
+function logSmtpStatus() {
+    if (isSmtpConfigured()) {
+        console.log(`[email] SMTP configured: host=${SMTP_HOST} port=${SMTP_PORT} user=${SMTP_USER} from=${MAIL_FROM}`);
+    }
+    else {
+        const missing = [
+            !SMTP_HOST && 'SMTP_HOST',
+            !SMTP_USER && 'SMTP_USER',
+            !SMTP_PASS && 'SMTP_PASS',
+        ].filter(Boolean).join(', ');
+        console.warn(`[email] SMTP NOT configured — missing: ${missing}. Verification codes will be logged to console only.`);
+    }
 }
 const APP_URL = process.env.APP_URL || 'http://localhost:5173';
 function shell(title, body) {

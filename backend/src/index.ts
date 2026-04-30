@@ -5,6 +5,7 @@ import cors from 'cors';
 import path from 'path';
 import fs from 'fs';
 import { initDb } from './db';
+import { logSmtpStatus } from './services/email';
 import { authRouter } from './routes/auth';
 import { modulesRouter } from './routes/modules';
 import { progressRouter } from './routes/progress';
@@ -51,6 +52,7 @@ if (fs.existsSync(frontendDist)) {
 
 initDb()
   .then(() => {
+    logSmtpStatus();
     app.listen(PORT, () => {
       console.log(`🚀 Octolio backend running on http://localhost:${PORT}`);
     });
