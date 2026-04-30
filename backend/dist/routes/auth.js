@@ -11,6 +11,13 @@ const db_1 = require("../db");
 const auth_1 = require("../middleware/auth");
 const banned_words_1 = require("../data/banned-words");
 const email_1 = require("../services/email");
+/**
+ * Fire an email send without blocking the API response. Email providers can
+ * stall for tens of seconds on bad creds — that must not freeze the user.
+ */
+function fireEmail(p, label) {
+    p.catch(err => console.error(`[email] ${label} failed:`, err));
+}
 exports.authRouter = (0, express_1.Router)();
 const VERIFICATION_TTL_MS = 30 * 60 * 1000; // 30 min
 const RESET_TTL_MS = 60 * 60 * 1000; // 1 h
@@ -72,13 +79,15 @@ exports.authRouter.post('/register', async (req, res) => {
            email_verification_code = $3, email_verification_token = $4,
            email_verification_expires_at = $5
          WHERE id = $6`, [name.trim(), passwordHash, code, token, expires, row.id]);
-            try {
-                await (0, email_1.sendVerificationEmail)(lowerEmail, name.trim(), code, token);
-            }
-            catch (e) {
-                console.error('email send failed:', e);
-            }
-            res.status(202).json({ pending: true, email: lowerEmail });
+            fireEmail((0, email_1.sendVerificationEmail)(lowerEmail, name.trim(), code, token), 'verification');
+            res.status(202).json({
+                pending: true,
+                email: lowerEmail,
+                emailSent: (0, email_1.isSmtpConfigured)(),
+                // When SMTP isn't configured the user cannot receive the email, so we
+                // expose the code in the response to keep the dev flow unblocked.
+                ...((0, email_1.isSmtpConfigured)() ? {} : { devCode: code }),
+            });
             return;
         }
         // Reject if name is already taken (verified) — case-insensitive.
@@ -96,13 +105,13 @@ exports.authRouter.post('/register', async (req, res) => {
          (name, email, password_hash, xp, streak, last_active,
           email_verified, email_verification_code, email_verification_token, email_verification_expires_at)
        VALUES ($1, $2, $3, 0, 1, $4, FALSE, $5, $6, $7)`, [name.trim(), lowerEmail, passwordHash, today, code, token, expires]);
-        try {
-            await (0, email_1.sendVerificationEmail)(lowerEmail, name.trim(), code, token);
-        }
-        catch (e) {
-            console.error('email send failed:', e);
-        }
-        res.status(202).json({ pending: true, email: lowerEmail });
+        fireEmail((0, email_1.sendVerificationEmail)(lowerEmail, name.trim(), code, token), 'verification');
+        res.status(202).json({
+            pending: true,
+            email: lowerEmail,
+            emailSent: (0, email_1.isSmtpConfigured)(),
+            ...((0, email_1.isSmtpConfigured)() ? {} : { devCode: code }),
+        });
     }
     catch (err) {
         console.error('Register error:', err);
@@ -169,13 +178,8 @@ exports.authRouter.post('/resend-verification', async (req, res) => {
          email_verification_token = $2,
          email_verification_expires_at = $3
        WHERE id = $4`, [code, token, expires, user.id]);
-        try {
-            await (0, email_1.sendVerificationEmail)(user.email, user.name, code, token);
-        }
-        catch (e) {
-            console.error('email send failed:', e);
-        }
-        res.json({ ok: true });
+        fireEmail((0, email_1.sendVerificationEmail)(user.email, user.name, code, token), 'verification');
+        res.json({ ok: true, emailSent: (0, email_1.isSmtpConfigured)(), ...((0, email_1.isSmtpConfigured)() ? {} : { devCode: code }) });
     }
     catch (err) {
         console.error('Resend verification error:', err);
@@ -245,12 +249,7 @@ exports.authRouter.post('/forgot-password', async (req, res) => {
             const token = generateUrlToken();
             const expires = new Date(Date.now() + RESET_TTL_MS);
             await pool.query(`UPDATE users SET password_reset_token = $1, password_reset_expires_at = $2 WHERE id = $3`, [token, expires, user.id]);
-            try {
-                await (0, email_1.sendPasswordResetEmail)(user.email, user.name, token);
-            }
-            catch (e) {
-                console.error('email send failed:', e);
-            }
+            fireEmail((0, email_1.sendPasswordResetEmail)(user.email, user.name, token), 'password reset');
         }
         res.json({ ok: true });
     }

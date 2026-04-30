@@ -33,7 +33,7 @@ interface AuthContextType {
   token: string | null;
   isLoading: boolean;
   login: (email: string, password: string, rememberMe: boolean) => Promise<void>;
-  register: (name: string, email: string, password: string) => Promise<{ pending: true; email: string }>;
+  register: (name: string, email: string, password: string) => Promise<{ pending: true; email: string; emailSent: boolean; devCode?: string }>;
   verifyEmail: (params: { email?: string; code?: string; token?: string }) => Promise<void>;
   resendVerification: (email: string) => Promise<void>;
   forgotPassword: (email: string) => Promise<void>;
@@ -105,7 +105,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!res.ok) throw new Error(data.error || 'Registration failed');
 
     // Registration now requires email verification — no token issued yet.
-    return { pending: true as const, email: data.email ?? email.toLowerCase() };
+    return {
+      pending: true as const,
+      email: data.email ?? email.toLowerCase(),
+      emailSent: !!data.emailSent,
+      devCode: data.devCode as string | undefined,
+    };
   };
 
   const verifyEmail = async (params: { email?: string; code?: string; token?: string }) => {

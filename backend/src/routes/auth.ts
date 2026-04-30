@@ -4,7 +4,15 @@ import crypto from 'crypto';
 import { getPool } from '../db';
 import { signToken, authenticate, AuthRequest } from '../middleware/auth';
 import { isNicknameBanned } from '../data/banned-words';
-import { sendVerificationEmail, sendPasswordResetEmail } from '../services/email';
+import { sendVerificationEmail, sendPasswordResetEmail, isSmtpConfigured } from '../services/email';
+
+/**
+ * Fire an email send without blocking the API response. Email providers can
+ * stall for tens of seconds on bad creds — that must not freeze the user.
+ */
+function fireEmail(p: Promise<void>, label: string): void {
+  p.catch(err => console.error(`[email] ${label} failed:`, err));
+}
 
 export const authRouter = Router();
 
@@ -80,8 +88,15 @@ authRouter.post('/register', async (req: Request, res: Response): Promise<void> 
          WHERE id = $6`,
         [name.trim(), passwordHash, code, token, expires, row.id]
       );
-      try { await sendVerificationEmail(lowerEmail, name.trim(), code, token); } catch (e) { console.error('email send failed:', e); }
-      res.status(202).json({ pending: true, email: lowerEmail });
+      fireEmail(sendVerificationEmail(lowerEmail, name.trim(), code, token), 'verification');
+      res.status(202).json({
+        pending: true,
+        email: lowerEmail,
+        emailSent: isSmtpConfigured(),
+        // When SMTP isn't configured the user cannot receive the email, so we
+        // expose the code in the response to keep the dev flow unblocked.
+        ...(isSmtpConfigured() ? {} : { devCode: code }),
+      });
       return;
     }
 
@@ -106,9 +121,14 @@ authRouter.post('/register', async (req: Request, res: Response): Promise<void> 
       [name.trim(), lowerEmail, passwordHash, today, code, token, expires]
     );
 
-    try { await sendVerificationEmail(lowerEmail, name.trim(), code, token); } catch (e) { console.error('email send failed:', e); }
+    fireEmail(sendVerificationEmail(lowerEmail, name.trim(), code, token), 'verification');
 
-    res.status(202).json({ pending: true, email: lowerEmail });
+    res.status(202).json({
+      pending: true,
+      email: lowerEmail,
+      emailSent: isSmtpConfigured(),
+      ...(isSmtpConfigured() ? {} : { devCode: code }),
+    });
   } catch (err) {
     console.error('Register error:', err);
     res.status(500).json({ error: 'Server error' });
@@ -187,8 +207,8 @@ authRouter.post('/resend-verification', async (req: Request, res: Response): Pro
        WHERE id = $4`,
       [code, token, expires, user.id]
     );
-    try { await sendVerificationEmail(user.email, user.name, code, token); } catch (e) { console.error('email send failed:', e); }
-    res.json({ ok: true });
+    fireEmail(sendVerificationEmail(user.email, user.name, code, token), 'verification');
+    res.json({ ok: true, emailSent: isSmtpConfigured(), ...(isSmtpConfigured() ? {} : { devCode: code }) });
   } catch (err) {
     console.error('Resend verification error:', err);
     res.status(500).json({ error: 'Server error' });
@@ -271,7 +291,7 @@ authRouter.post('/forgot-password', async (req: Request, res: Response): Promise
         `UPDATE users SET password_reset_token = $1, password_reset_expires_at = $2 WHERE id = $3`,
         [token, expires, user.id]
       );
-      try { await sendPasswordResetEmail(user.email, user.name, token); } catch (e) { console.error('email send failed:', e); }
+      fireEmail(sendPasswordResetEmail(user.email, user.name, token), 'password reset');
     }
     res.json({ ok: true });
   } catch (err) {

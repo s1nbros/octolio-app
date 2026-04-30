@@ -4,20 +4,30 @@ import { useAuth } from '../contexts/AuthContext';
 import { useLang } from '../contexts/LanguageContext';
 import { FloatingOrbs } from '../components/FloatingOrbs';
 
+interface VerifyState {
+  email?: string;
+  emailSent?: boolean;
+  devCode?: string;
+  justRegistered?: boolean;
+}
+
 export function VerifyEmail() {
   const { verifyEmail, resendVerification } = useAuth();
   const { ui } = useLang();
   const navigate = useNavigate();
   const location = useLocation();
   const [params] = useSearchParams();
+  const state = (location.state as VerifyState | null) ?? {};
 
-  const stateEmail = (location.state as { email?: string } | null)?.email;
-  const [email, setEmail] = useState<string>(stateEmail ?? '');
+  const [email, setEmail] = useState<string>(state.email ?? '');
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
   const [info, setInfo] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [resending, setResending] = useState(false);
+  const [resentAt, setResentAt] = useState<number>(0);
+  const [emailSent, setEmailSent] = useState<boolean>(state.emailSent ?? true);
+  const [devCode, setDevCode] = useState<string | undefined>(state.devCode);
   const linkAttempted = useRef(false);
 
   // Auto-verify if a ?token=... is present (link from the email)
@@ -54,11 +64,18 @@ export function VerifyEmail() {
 
   const handleResend = async () => {
     if (!email) { setError(ui.verify_email_required ?? 'Enter your email first'); return; }
+    if (Date.now() - resentAt < 30_000) {
+      setInfo(ui.verify_resend_wait ?? 'Wait a few seconds before resending again.');
+      return;
+    }
     setResending(true);
     setError('');
     setInfo('');
     try {
       await resendVerification(email);
+      setResentAt(Date.now());
+      setEmailSent(true);
+      setDevCode(undefined);
       setInfo(ui.verify_resent ?? 'Verification email sent. Check your inbox.');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Resend failed');
@@ -67,23 +84,69 @@ export function VerifyEmail() {
     }
   };
 
+  const inboxLabel = email
+    ? (ui.verify_inbox_with_email ?? 'We sent a verification email to')
+    : (ui.verify_inbox_generic ?? 'We sent a verification email to your inbox.');
+
   return (
-    <div className="relative min-h-screen flex items-center justify-center px-4">
+    <div className="relative min-h-screen flex items-center justify-center px-4 py-12">
       <FloatingOrbs />
       <div className="relative w-full max-w-md animate-scale-in" style={{ zIndex: 1 }}>
         <div className="glass-card rounded-3xl p-8">
           <div className="text-center mb-6">
-            <div className="flex justify-center mb-2">
-              <img src="/logo.png" alt="Octolio" className="w-20 h-20 object-contain"
-                style={{ filter: 'drop-shadow(0 4px 16px hsl(160, 55%, 55%, 0.3))' }} />
+            <div className="flex justify-center mb-3">
+              <div style={{
+                width: 72, height: 72, borderRadius: 20,
+                background: 'hsl(var(--c-primary)/0.12)',
+                border: '1px solid hsl(var(--c-primary)/0.3)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 36,
+              }}>
+                ✉️
+              </div>
             </div>
             <h1 className="text-2xl font-bold" style={{ color: 'hsl(var(--c-fg))' }}>
-              {ui.verify_title ?? 'Verify your email'}
+              {state.justRegistered
+                ? (ui.verify_check_inbox ?? 'Check your inbox')
+                : (ui.verify_title ?? 'Verify your email')}
             </h1>
             <p className="text-sm mt-2" style={{ color: 'hsl(var(--c-fg-muted))' }}>
-              {ui.verify_sub ?? "We sent a 6-digit code to your inbox. Enter it below to activate your account."}
+              {inboxLabel}
+              {email && (
+                <>
+                  {' '}
+                  <strong style={{ color: 'hsl(var(--c-fg))' }}>{email}</strong>.
+                </>
+              )}
+            </p>
+            <p className="text-xs mt-2" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+              {ui.verify_instructions ?? 'Click the link in the email or enter the 6-digit code below. The code expires in 30 minutes.'}
+            </p>
+            <p className="text-xs mt-1" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+              {ui.verify_check_spam ?? "Don't see it? Check your spam folder."}
             </p>
           </div>
+
+          {!emailSent && (
+            <div className="rounded-xl p-3.5 mb-4 text-xs"
+              style={{ background: 'hsl(45 90% 55%/0.1)', border: '1px solid hsl(45 90% 55%/0.3)', color: 'hsl(45 90% 70%)' }}>
+              ⚙️ Email delivery isn't configured on the server yet, so no email was actually sent.
+              {devCode && (
+                <>
+                  {' '}For testing, your verification code is:
+                  <div style={{
+                    marginTop: 8, padding: '8px 12px', borderRadius: 8,
+                    background: 'hsl(var(--c-bg))', textAlign: 'center',
+                    fontFamily: 'ui-monospace, Menlo, monospace',
+                    fontSize: 22, letterSpacing: '0.5em', color: 'hsl(var(--c-primary))',
+                    fontWeight: 700,
+                  }}>
+                    {devCode}
+                  </div>
+                </>
+              )}
+            </div>
+          )}
 
           {error && (
             <div className="rounded-xl p-3.5 mb-4 text-sm"
@@ -111,6 +174,7 @@ export function VerifyEmail() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 autoComplete="email"
+                disabled={!!state.email}
               />
             </div>
             <div>
@@ -130,7 +194,7 @@ export function VerifyEmail() {
                 required
               />
             </div>
-            <button type="submit" className="btn-primary w-full mt-2" disabled={isLoading}>
+            <button type="submit" className="btn-primary w-full mt-2" disabled={isLoading || code.length !== 6}>
               {isLoading ? '…' : (ui.verify_button ?? 'Verify email')}
             </button>
           </form>

@@ -8,14 +8,22 @@ const MAIL_FROM = process.env.MAIL_FROM || 'Octolio <no-reply@octolio.me>';
 
 let transporter: Transporter | null = null;
 
+export function isSmtpConfigured(): boolean {
+  return !!(SMTP_HOST && SMTP_USER && SMTP_PASS);
+}
+
 function getTransporter(): Transporter | null {
   if (transporter) return transporter;
-  if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS) return null;
+  if (!isSmtpConfigured()) return null;
   transporter = nodemailer.createTransport({
     host: SMTP_HOST,
     port: SMTP_PORT,
     secure: SMTP_PORT === 465,
     auth: { user: SMTP_USER, pass: SMTP_PASS },
+    // Tight timeouts so a misconfigured SMTP host can't hang the API request
+    connectionTimeout: 8000,
+    greetingTimeout: 8000,
+    socketTimeout: 10000,
   });
   return transporter;
 }
@@ -30,12 +38,14 @@ interface SendArgs {
 async function send({ to, subject, html, text }: SendArgs): Promise<void> {
   const t = getTransporter();
   if (!t) {
-    // Dev fallback — no SMTP creds, just log so the flow can be tested
-    console.warn('[email] SMTP not configured — printing email to console:');
-    console.log(`  To: ${to}`);
-    console.log(`  From: ${MAIL_FROM}`);
-    console.log(`  Subject: ${subject}`);
-    console.log(`  Body: ${text}`);
+    // Dev fallback — no SMTP creds. Print loudly so the verification code is easy to spot.
+    console.warn('\n========================================');
+    console.warn('[email] SMTP NOT CONFIGURED — email not sent.');
+    console.warn(`To:      ${to}`);
+    console.warn(`Subject: ${subject}`);
+    console.warn('--- body ---');
+    console.warn(text);
+    console.warn('========================================\n');
     return;
   }
   await t.sendMail({ from: MAIL_FROM, to, subject, html, text });
