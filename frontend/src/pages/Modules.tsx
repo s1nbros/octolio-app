@@ -68,7 +68,6 @@ export function Modules() {
   return (
     <div className="relative min-h-screen pb-24 sm:pb-12 overflow-hidden">
       <FloatingOrbs />
-      <FinanceDecorations />
 
       <div className="relative max-w-md md:max-w-lg mx-auto px-4 sm:px-6 md:px-8 py-6 sm:py-10 md:py-14" style={{ zIndex: 1 }}>
         {/* Header */}
@@ -133,50 +132,6 @@ export function Modules() {
   );
 }
 
-/* ───────── Floating finance decorations behind the path ───────── */
-function FinanceDecorations() {
-  // Each decoration: emoji, top%, left%, size px, opacity, float delay seconds
-  const items: Array<{ icon: string; top: string; left: string; size: number; opacity: number; delay: number; rotate: number }> = [
-    { icon: '💰', top: '8%',  left: '8%',   size: 38, opacity: 0.18, delay: 0,   rotate: -12 },
-    { icon: '📈', top: '14%', left: '82%',  size: 42, opacity: 0.16, delay: 1.2, rotate: 8 },
-    { icon: '🪙', top: '24%', left: '12%',  size: 28, opacity: 0.20, delay: 2.4, rotate: 18 },
-    { icon: '💎', top: '32%', left: '88%',  size: 34, opacity: 0.18, delay: 3.6, rotate: -10 },
-    { icon: '🏦', top: '42%', left: '6%',   size: 36, opacity: 0.15, delay: 0.8, rotate: 4 },
-    { icon: '💳', top: '50%', left: '85%',  size: 32, opacity: 0.18, delay: 2.0, rotate: -6 },
-    { icon: '📊', top: '58%', left: '10%',  size: 36, opacity: 0.16, delay: 4.2, rotate: 12 },
-    { icon: '✨', top: '65%', left: '78%',  size: 26, opacity: 0.30, delay: 1.5, rotate: 0 },
-    { icon: '💵', top: '72%', left: '14%',  size: 30, opacity: 0.18, delay: 3.0, rotate: -16 },
-    { icon: '🪙', top: '80%', left: '86%',  size: 28, opacity: 0.18, delay: 0.5, rotate: 14 },
-    { icon: '📈', top: '88%', left: '8%',   size: 38, opacity: 0.16, delay: 2.8, rotate: -4 },
-    { icon: '✨', top: '20%', left: '46%',  size: 22, opacity: 0.28, delay: 1.0, rotate: 0 },
-    { icon: '✨', top: '54%', left: '50%',  size: 22, opacity: 0.25, delay: 3.2, rotate: 0 },
-    { icon: '✨', top: '90%', left: '52%',  size: 22, opacity: 0.28, delay: 4.0, rotate: 0 },
-  ];
-
-  return (
-    <div className="absolute inset-0 pointer-events-none select-none" style={{ zIndex: 0 }}>
-      {items.map((it, i) => (
-        <span
-          key={i}
-          className="absolute animate-island-float"
-          style={{
-            top: it.top,
-            left: it.left,
-            fontSize: `${it.size}px`,
-            opacity: it.opacity,
-            transform: `rotate(${it.rotate}deg)`,
-            animationDelay: `${it.delay}s`,
-            animationDuration: `${5 + (i % 3)}s`,
-            filter: 'drop-shadow(0 2px 6px hsla(0,0%,0%,0.4))',
-          }}
-        >
-          {it.icon}
-        </span>
-      ))}
-    </div>
-  );
-}
-
 /* ───────── A single node on the path ───────── */
 function ModuleNode({
   mod,
@@ -235,81 +190,96 @@ function ModuleNode({
         </div>
       )}
 
-      {/* Progress ring around current node */}
-      {isCurrent && !blocked && total > 0 && (
-        <svg
-          className="absolute pointer-events-none"
-          viewBox="0 0 100 100"
-          style={{ width: '108px', height: '108px', top: '-6px', left: 'calc(50% - 54px)' }}
-        >
-          <circle cx="50" cy="50" r="46" fill="none" stroke={`${palette.main}25`} strokeWidth="4" />
-          <circle
-            cx="50"
-            cy="50"
-            r="46"
-            fill="none"
-            stroke={palette.main}
-            strokeWidth="4"
-            strokeDasharray={`${Math.max(progress, 0.04) * 289} 289`}
-            strokeLinecap="round"
-            transform="rotate(-90 50 50)"
-            style={{ transition: 'stroke-dasharray 0.6s ease-out' }}
-          />
-        </svg>
-      )}
+      {/* Button + progress ring wrapper */}
+      <div className="relative">
+        {/* Progress ring around the node — shown on every unlocked module */}
+        {!blocked && total > 0 && (
+          <svg
+            className="absolute -inset-2 pointer-events-none"
+            viewBox="0 0 100 100"
+            preserveAspectRatio="none"
+          >
+            {/* Dark track groove */}
+            <circle
+              cx="50"
+              cy="50"
+              r="46"
+              fill="none"
+              stroke="hsl(228, 30%, 8%)"
+              strokeWidth="6"
+              style={{ filter: 'drop-shadow(0 0 1px hsla(0,0%,0%,0.8))' }}
+            />
+            {/* Progress arc */}
+            {progress > 0 && (
+              <circle
+                cx="50"
+                cy="50"
+                r="46"
+                fill="none"
+                stroke={palette.main}
+                strokeWidth="6"
+                strokeDasharray={`${progress * 289} 289`}
+                strokeLinecap="round"
+                transform="rotate(-90 50 50)"
+                style={{ transition: 'stroke-dasharray 0.6s ease-out', filter: `drop-shadow(0 0 8px ${palette.main}99)` }}
+              />
+            )}
+          </svg>
+        )}
 
-      {/* The 3D button */}
-      <button
-        onClick={onClick}
-        disabled={locked}
-        className="relative w-24 h-24 md:w-28 md:h-28 rounded-full flex items-center justify-center transition-transform active:translate-y-[3px] active:[box-shadow:inset_0_-2px_0_hsla(0,0%,0%,0.3)]"
-        style={{
-          background: `radial-gradient(circle at 35% 30%, ${palette.soft} 0%, ${palette.main} 60%)`,
-          boxShadow: `inset 0 -7px 0 ${palette.deep}, 0 8px 16px hsla(0,0%,0%,0.45)`,
-          opacity: locked ? 0.7 : 1,
-          cursor: locked ? 'not-allowed' : 'pointer',
-        }}
-      >
-        {/* Module icon — clean, no extra decoration */}
-        <span
-          className="text-3xl md:text-4xl select-none"
+        {/* The 3D button */}
+        <button
+          onClick={onClick}
+          disabled={locked}
+          className="relative w-24 h-24 md:w-28 md:h-28 rounded-full flex items-center justify-center transition-transform active:translate-y-[3px] active:[box-shadow:inset_0_-2px_0_hsla(0,0%,0%,0.3)]"
           style={{
-            filter: blocked ? 'grayscale(0.6) opacity(0.8)' : 'drop-shadow(0 1px 2px hsla(0,0%,0%,0.35))',
+            background: `radial-gradient(circle at 35% 30%, ${palette.soft} 0%, ${palette.main} 60%)`,
+            boxShadow: `inset 0 -7px 0 ${palette.deep}, 0 8px 16px hsla(0,0%,0%,0.45)`,
+            opacity: locked ? 0.7 : 1,
+            cursor: locked ? 'not-allowed' : 'pointer',
           }}
         >
-          {locked ? '🔒' : proLocked ? '✦' : mod.icon}
-        </span>
-
-        {/* Pro badge */}
-        {mod.proOnly && (
+          {/* Module icon */}
           <span
-            className="absolute -top-2 -right-2 px-1.5 py-0.5 rounded-full text-[9px] font-extrabold tracking-wider"
+            className="text-3xl md:text-4xl select-none"
             style={{
-              background: 'linear-gradient(90deg, hsl(var(--c-primary)), hsl(var(--c-green)))',
-              color: '#fff',
-              boxShadow: '0 0 10px hsla(280,70%,65%,0.6)',
-              border: '1px solid hsla(0,0%,100%,0.4)',
+              filter: blocked ? 'grayscale(0.6) opacity(0.8)' : 'drop-shadow(0 1px 2px hsla(0,0%,0%,0.35))',
             }}
           >
-            ✦ PRO
+            {locked ? '🔒' : proLocked ? '✦' : mod.icon}
           </span>
-        )}
 
-        {/* Done check */}
-        {allDone && !blocked && (
-          <span
-            className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full flex items-center justify-center text-xs font-extrabold"
-            style={{
-              background: 'hsl(var(--c-green))',
-              color: '#fff',
-              boxShadow: '0 3px 8px hsla(0,0%,0%,0.45)',
-              border: '2px solid hsl(228, 24%, 10%)',
-            }}
-          >
-            ✓
-          </span>
-        )}
-      </button>
+          {/* Pro badge */}
+          {mod.proOnly && (
+            <span
+              className="absolute -top-2 -right-2 px-1.5 py-0.5 rounded-full text-[9px] font-extrabold tracking-wider"
+              style={{
+                background: 'linear-gradient(90deg, hsl(var(--c-primary)), hsl(var(--c-green)))',
+                color: '#fff',
+                boxShadow: '0 0 10px hsla(280,70%,65%,0.6)',
+                border: '1px solid hsla(0,0%,100%,0.4)',
+              }}
+            >
+              ✦ PRO
+            </span>
+          )}
+
+          {/* Done check */}
+          {allDone && !blocked && (
+            <span
+              className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full flex items-center justify-center text-xs font-extrabold"
+              style={{
+                background: 'hsl(var(--c-green))',
+                color: '#fff',
+                boxShadow: '0 3px 8px hsla(0,0%,0%,0.45)',
+                border: '2px solid hsl(228, 24%, 10%)',
+              }}
+            >
+              ✓
+            </span>
+          )}
+        </button>
+      </div>
 
       {/* Label */}
       <p
