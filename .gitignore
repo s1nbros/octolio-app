@@ -1,1 +1,18 @@
 node_modules
+
+# Environment variables — NEVER commit these
+.env
+.env.local
+.env.*.local
+backend/.env
+frontend/.env
+
+# Local SQLite (legacy)
+*.db
+
+# OS
+.DS_Store
+
+# Editor
+.vscode
+.idea
