@@ -25,6 +25,7 @@ export function Lesson() {
   const [lastXp, setLastXp] = useState(0);
   const [errorMsg, setErrorMsg] = useState('');
   const [energyRefillAt, setEnergyRefillAt] = useState<string | null>(null);
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
 
   useEffect(() => {
     if (!token || !moduleId || !lessonId) return;
@@ -246,14 +247,14 @@ export function Lesson() {
       <div className="relative min-h-screen">
         <FloatingOrbs />
 
-        <div className="relative max-w-2xl mx-auto px-4 sm:px-6 py-8" style={{ zIndex: 1 }}>
+        <div className="relative max-w-2xl mx-auto px-4 sm:px-6 md:px-8 py-8 md:py-10" style={{ zIndex: 1 }}>
           {/* Top bar */}
           <div className="flex items-center gap-4 mb-8">
-            {/* Back */}
+            {/* Back — opens exit confirm modal */}
             <button
               className="text-sm p-2 rounded-lg transition-all"
               style={{ color: 'hsl(var(--c-fg-muted))', background: 'var(--c-glass)' }}
-              onClick={() => navigate('/modules')}
+              onClick={() => setShowExitConfirm(true)}
             >
               ✕
             </button>
@@ -286,7 +287,7 @@ export function Lesson() {
           </div>
 
           {/* Exercise card */}
-          <div className="glass-card rounded-3xl p-6 sm:p-8">
+          <div className="glass-card rounded-3xl p-6 sm:p-8 md:p-10">
             <ExerciseRenderer
               key={`${currentExerciseIndex}-${exercise.id}`}
               exercise={exercise}
@@ -296,6 +297,42 @@ export function Lesson() {
             />
           </div>
         </div>
+
+        {/* Exit confirmation modal */}
+        {showExitConfirm && (
+          <div
+            className="fixed inset-0 z-[100] flex items-center justify-center px-4 animate-fade-in"
+            style={{ background: 'hsla(220,60%,5%,0.7)', backdropFilter: 'blur(8px)' }}
+            onClick={() => setShowExitConfirm(false)}
+          >
+            <div
+              className="relative max-w-sm w-full glass-card rounded-3xl p-6 sm:p-7 animate-scale-in text-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="text-4xl mb-3">⚠️</div>
+              <h2 className="text-lg sm:text-xl font-extrabold mb-2" style={{ color: 'hsl(var(--c-fg))' }}>
+                {ui.exit_confirm_title}
+              </h2>
+              <p className="text-sm mb-6" style={{ color: 'hsl(var(--c-fg-muted))' }}>
+                {ui.exit_confirm_body}
+              </p>
+              <div className="flex flex-col-reverse sm:flex-row gap-2.5">
+                <button
+                  className="btn-ghost flex-1 py-2.5"
+                  onClick={() => navigate('/modules')}
+                >
+                  {ui.exit_confirm_leave}
+                </button>
+                <button
+                  className="btn-primary flex-1 py-2.5"
+                  onClick={() => setShowExitConfirm(false)}
+                >
+                  {ui.exit_confirm_stay}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }

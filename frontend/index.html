@@ -2,13 +2,78 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Octolio — Master your finances through fun, gamified lessons. Learn budgeting, saving, investing and more." />
+
+    <!-- Primary -->
+    <title>Octolio — Master your money, one lesson at a time</title>
+    <meta name="description" content="Octolio is a gamified financial literacy app — learn budgeting, saving, investing, taxes, and real estate in fun bite-sized lessons. Free to start, available in English and Bulgarian." />
+    <meta name="keywords" content="Octolio, financial literacy, money management, budgeting app, investing for beginners, Duolingo for finance, personal finance, financial education, gamified learning, Bulgaria fintech, финансова грамотност, бюджетиране, инвестиране" />
+    <meta name="author" content="Octolio" />
+    <meta name="theme-color" content="#10b981" />
+    <!-- App subdomain — do NOT index. Marketing site octolio.me is the canonical landing -->
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="googlebot" content="noindex, nofollow" />
+
+    <!-- Canonical points to the marketing site -->
+    <link rel="canonical" href="https://octolio.me/" />
+
+    <!-- Icons -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/logo.png" />
+    <link rel="shortcut icon" href="/favicon.svg" />
+
+    <!-- Open Graph (Facebook, LinkedIn, Discord, Slack) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Octolio" />
+    <meta property="og:title" content="Octolio — Master your money, one lesson at a time" />
+    <meta property="og:description" content="Gamified financial literacy app. Learn budgeting, saving, investing and more in fun bite-sized lessons. Free to start." />
+    <meta property="og:url" content="https://octolio.me/" />
+    <meta property="og:image" content="https://octolio.me/logo.png" />
+    <meta property="og:image:width" content="512" />
+    <meta property="og:image:height" content="512" />
+    <meta property="og:image:alt" content="Octolio — Financial literacy app logo" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="bg_BG" />
+
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Octolio — Master your money, one lesson at a time" />
+    <meta name="twitter:description" content="Gamified financial literacy app. Learn budgeting, saving, investing and more in fun bite-sized lessons. Free to start." />
+    <meta name="twitter:image" content="https://octolio.me/logo.png" />
+    <meta name="twitter:image:alt" content="Octolio logo" />
+
+    <!-- Apple PWA -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Octolio" />
+
+    <!-- Structured data — helps Google understand what the site is -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Octolio",
+        "alternateName": "Octolio Finance",
+        "url": "https://octolio.me/",
+        "description": "Gamified financial literacy app. Learn budgeting, saving, investing and more in fun bite-sized lessons.",
+        "applicationCategory": "EducationalApplication",
+        "operatingSystem": "Web",
+        "inLanguage": ["en", "bg"],
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "EUR",
+          "description": "Free to start, with optional Pro plan."
+        },
+        "image": "https://octolio.me/logo.png",
+        "logo": "https://octolio.me/logo.png"
+      }
+    </script>
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <title>Octolio — Financial Literacy App</title>
   </head>
   <body>
     <div id="root"></div>

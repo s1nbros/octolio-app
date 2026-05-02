@@ -54,18 +54,18 @@ export function Onboarding() {
   ];
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center px-4 py-12">
+    <div className="relative min-h-screen flex items-center justify-center px-4 sm:px-6 md:px-8 py-12 md:py-16">
       <FloatingOrbs />
 
       <div className="relative w-full max-w-4xl" style={{ zIndex: 1 }}>
         {/* Header */}
-        <div className="text-center mb-10 animate-fade-up">
-          <img src="/logo.png" alt="Octolio" className="w-14 h-14 mx-auto mb-4 object-contain"
+        <div className="text-center mb-10 md:mb-12 animate-fade-up">
+          <img src="/logo.png" alt="Octolio" className="w-14 h-14 md:w-16 md:h-16 mx-auto mb-4 object-contain"
             style={{ filter: 'drop-shadow(0 0 8px hsl(var(--c-green)/0.5))' }} />
-          <h1 className="font-black text-4xl mb-2" style={{ color: 'hsl(var(--c-fg))', letterSpacing: '-0.02em' }}>
+          <h1 className="font-black text-4xl md:text-5xl mb-2" style={{ color: 'hsl(var(--c-fg))', letterSpacing: '-0.02em' }}>
             {lang === 'en' ? 'Choose your plan' : 'Избери своя план'}
           </h1>
-          <p style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+          <p className="md:text-lg" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
             {lang === 'en'
               ? 'Start free anytime. Upgrade when you\'re ready.'
               : 'Започни безплатно. Надгради когато си готов.'}
@@ -73,7 +73,7 @@ export function Onboarding() {
         </div>
 
         {/* Plans grid */}
-        <div className="grid sm:grid-cols-2 gap-5 animate-fade-up delay-100">
+        <div className="grid sm:grid-cols-2 gap-5 md:gap-6 animate-fade-up delay-100">
 
           {/* FREE card */}
           <div className="glass-card rounded-2xl p-6 flex flex-col">

@@ -135,7 +135,7 @@ export function Navbar() {
   return (
     <>
     <header className="nav-bar sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 h-14 flex items-center gap-2 sm:gap-4">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 md:px-8 h-14 md:h-16 flex items-center gap-2 sm:gap-4 md:gap-5">
 
         {/* Logo */}
         <Link to={user ? '/dashboard' : '/'} className="flex items-center gap-2 flex-shrink-0">

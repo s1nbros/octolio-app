@@ -268,16 +268,16 @@ export function Profile() {
     <div className="relative min-h-screen pb-24 sm:pb-8">
       <FloatingOrbs />
 
-      <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-8" style={{ zIndex: 1 }}>
+      <div className="relative max-w-5xl mx-auto px-4 sm:px-6 md:px-8 py-8 md:py-10" style={{ zIndex: 1 }}>
 
         {/* ── PROFILE HEADER ── */}
-        <div className="glass-card rounded-2xl p-5 sm:p-6 mb-5 animate-fade-up">
+        <div className="glass-card rounded-2xl p-5 sm:p-6 md:p-7 mb-5 md:mb-6 animate-fade-up">
 
-          <div className="flex flex-col sm:flex-row sm:items-start gap-5">
+          <div className="flex flex-col sm:flex-row sm:items-start gap-5 md:gap-6">
             {/* Square avatar */}
             <div className="relative flex-shrink-0 self-start">
               <button onClick={() => fileRef.current?.click()}
-                className="block w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden"
+                className="block w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-2xl overflow-hidden"
                 style={{ border: '3px solid hsl(var(--c-bg-elevated))' }}>
                 {displayAvatar?.startsWith('data:')
                   ? <img src={displayAvatar} alt="avatar" className="w-full h-full object-cover" />
@@ -299,7 +299,7 @@ export function Profile() {
               {/* Name + level badge + action buttons */}
               <div className="flex flex-wrap items-start justify-between gap-3 mb-2">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h1 className="font-black text-2xl leading-tight" style={{ color: 'hsl(var(--c-fg))', letterSpacing: '-0.02em' }}>
+                  <h1 className="font-black text-2xl md:text-3xl leading-tight" style={{ color: 'hsl(var(--c-fg))', letterSpacing: '-0.02em' }}>
                     {user?.name}
                   </h1>
                   <span className="text-xs font-bold px-2.5 py-0.5 rounded-full"
@@ -379,7 +379,7 @@ export function Profile() {
                 <p className="text-sm mb-4" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
                   {lang === 'en' ? 'Your lifetime stats on Octolio' : 'Твоята статистика в Octolio'}
                 </p>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
                   <StatCard
                     icon={<IconBolt />}
                     badge={lang === 'en' ? '+today' : '+днес'}
@@ -509,7 +509,7 @@ export function Profile() {
             <p className="text-sm mb-5" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
               {earnedCount} {lang === 'en' ? 'of' : 'от'} {achievements.length} {lang === 'en' ? 'earned' : 'спечелени'}
             </p>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 md:gap-5">
               {achievements.map(a => (
                 <div key={a.en} className="rounded-2xl p-5 flex flex-col items-center gap-2.5 text-center relative overflow-hidden"
                   style={{

@@ -1,3 +1,5 @@
+import dotenv from 'dotenv';
+dotenv.config();
 import dns from 'dns';
 dns.setDefaultResultOrder('ipv4first');
 import express from 'express';

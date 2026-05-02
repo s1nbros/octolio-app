@@ -417,10 +417,10 @@ export function Dashboard() {
   return (
     <div className="relative min-h-screen pb-20 sm:pb-0">
       <FloatingOrbs />
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-6" style={{ zIndex: 1 }}>
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-6 md:py-8" style={{ zIndex: 1 }}>
 
         {/* ── Hero card ── */}
-        <div className="glass-card rounded-2xl p-5 mb-5 animate-fade-up overflow-hidden"
+        <div className="glass-card rounded-2xl p-5 md:p-6 mb-5 md:mb-6 animate-fade-up overflow-hidden"
           style={{ background: 'linear-gradient(135deg, hsl(var(--c-bg-card)), hsl(var(--c-primary)/0.06))' }}>
           {/* Single row — ring · text · button, never wraps */}
           <div className="flex items-center gap-5" style={{ minWidth: 0 }}>
@@ -435,10 +435,10 @@ export function Dashboard() {
                 style={{ color: 'hsl(var(--c-fg-subtle))' }}>
                 {lang === 'en' ? 'Welcome back' : 'Добре дошъл'}
               </p>
-              <h1 className="text-2xl font-extrabold truncate mb-1.5" style={{ color: 'hsl(var(--c-fg))' }}>
+              <h1 className="text-2xl md:text-3xl font-extrabold truncate mb-1.5" style={{ color: 'hsl(var(--c-fg))' }}>
                 {user?.name} 👋
               </h1>
-              <p className="text-sm" style={{ color: 'hsl(var(--c-fg-muted))' }}>
+              <p className="text-sm md:text-base" style={{ color: 'hsl(var(--c-fg-muted))' }}>
                 <span className="mono font-bold" style={{ color: 'hsl(var(--c-primary))' }}>{xp.toLocaleString()}</span>
                 {' / '}
                 <span className="mono font-bold">{nextLevel ? nextLevel.minXp.toLocaleString() : '∞'}</span>
@@ -496,13 +496,13 @@ export function Dashboard() {
         )}
 
         {/* ── Two-column layout ── */}
-        <div className="flex gap-5">
+        <div className="flex gap-5 md:gap-6">
 
           {/* ── Main column ── */}
-          <div className="flex-1 min-w-0 space-y-5">
+          <div className="flex-1 min-w-0 space-y-5 md:space-y-6">
 
             {/* Stats row */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 animate-fade-up delay-100">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4 animate-fade-up delay-100">
               {[
                 { icon: '⚡', label: lang === 'en' ? 'Total XP'       : 'Общо XP',    value: xp.toLocaleString(),                    accent: 'var(--c-primary)' },
                 { icon: '🔔', label: lang === 'en' ? 'Day streak'     : 'Поред',       value: streak.toString(),                      accent: 'var(--c-orange)'  },
@@ -547,7 +547,7 @@ export function Dashboard() {
                 </Link>
               </div>
 
-              <div className="grid sm:grid-cols-3 gap-3">
+              <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
                 {modules.map((mod, idx) => (
                   <DashModuleCard key={mod.id} mod={mod} idx={idx} prevMod={idx > 0 ? modules[idx - 1] : null} lang={lang} isPro={user?.is_pro ?? false} />
                 ))}

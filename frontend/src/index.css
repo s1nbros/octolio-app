@@ -361,6 +361,9 @@ body::after {
 @keyframes shimmer    { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
 @keyframes card-flip-in { 0%{opacity:0;transform:rotateY(-15deg) translateX(-20px)} 100%{opacity:1;transform:rotateY(0) translateX(0)} }
 @keyframes pulse-ring { 0%{box-shadow:0 0 0 0 hsl(var(--c-green)/0.5)} 70%{box-shadow:0 0 0 12px hsl(var(--c-green)/0)} 100%{box-shadow:0 0 0 0 hsl(var(--c-green)/0)} }
+@keyframes octo-bob   { 0%,100%{transform:translateY(0) rotate(-3deg)} 50%{transform:translateY(-8px) rotate(3deg)} }
+@keyframes wave-drift { 0%{transform:translateX(0)} 100%{transform:translateX(-100px)} }
+@keyframes island-float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
 
 .animate-orb-1      { animation: orb-float-1 18s ease-in-out infinite; }
 .animate-orb-2      { animation: orb-float-2 22s ease-in-out infinite; }
@@ -374,6 +377,9 @@ body::after {
 .animate-shimmer    { animation: shimmer      2s linear infinite; }
 .animate-card-flip  { animation: card-flip-in 0.4s ease-out both; }
 .animate-pulse-ring { animation: pulse-ring   1.5s ease-out; }
+.animate-octo-bob   { animation: octo-bob     3s ease-in-out infinite; }
+.animate-wave-drift { animation: wave-drift   12s linear infinite; }
+.animate-island-float { animation: island-float 5s ease-in-out infinite; }
 
 .delay-50  { animation-delay:  50ms; }
 .delay-100 { animation-delay: 100ms; }

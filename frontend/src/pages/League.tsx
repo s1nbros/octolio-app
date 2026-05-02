@@ -70,15 +70,15 @@ export function League() {
   return (
     <div className="relative min-h-screen pb-20 sm:pb-0">
       <FloatingOrbs />
-      <div className="relative max-w-2xl mx-auto px-4 sm:px-6 py-8" style={{ zIndex: 1 }}>
+      <div className="relative max-w-2xl md:max-w-3xl mx-auto px-4 sm:px-6 md:px-8 py-8 md:py-10" style={{ zIndex: 1 }}>
 
         {/* Header */}
-        <div className="text-center mb-8 animate-fade-up">
+        <div className="text-center mb-8 md:mb-10 animate-fade-up">
           <span className="text-xs font-bold px-3 py-1 rounded-full"
             style={{ background: 'hsl(var(--c-gold)/0.15)', color: 'hsl(var(--c-gold))', border: '1px solid hsl(var(--c-gold)/0.25)' }}>
             🏅 GOLD LEAGUE
           </span>
-          <h1 className="font-extrabold text-3xl mt-3 mb-1" style={{ color: 'hsl(var(--c-fg))' }}>
+          <h1 className="font-extrabold text-3xl md:text-4xl mt-3 mb-1" style={{ color: 'hsl(var(--c-fg))' }}>
             {lang === 'en' ? 'Weekly Race' : 'Седмично надбягване'}
           </h1>
           <p className="text-sm" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
