@@ -195,33 +195,37 @@ function ModuleNode({
         {/* Progress ring around the node — shown on every unlocked module */}
         {!blocked && total > 0 && (
           <svg
-            className="absolute -inset-2 pointer-events-none"
+            className="absolute pointer-events-none"
             viewBox="0 0 100 100"
-            preserveAspectRatio="none"
+            style={{
+              width: 'calc(100% + 20px)',
+              height: 'calc(100% + 20px)',
+              top: '-10px',
+              left: '-10px',
+            }}
           >
             {/* Dark track groove */}
             <circle
               cx="50"
               cy="50"
-              r="46"
+              r="45"
               fill="none"
               stroke="hsl(228, 30%, 8%)"
-              strokeWidth="6"
-              style={{ filter: 'drop-shadow(0 0 1px hsla(0,0%,0%,0.8))' }}
+              strokeWidth="5"
             />
             {/* Progress arc */}
             {progress > 0 && (
               <circle
                 cx="50"
                 cy="50"
-                r="46"
+                r="45"
                 fill="none"
                 stroke={palette.main}
-                strokeWidth="6"
-                strokeDasharray={`${progress * 289} 289`}
+                strokeWidth="5"
+                strokeDasharray={`${progress * 282.7} 282.7`}
                 strokeLinecap="round"
                 transform="rotate(-90 50 50)"
-                style={{ transition: 'stroke-dasharray 0.6s ease-out', filter: `drop-shadow(0 0 8px ${palette.main}99)` }}
+                style={{ transition: 'stroke-dasharray 0.6s ease-out', filter: `drop-shadow(0 0 6px ${palette.main}aa)` }}
               />
             )}
           </svg>
