@@ -134,11 +134,12 @@ export function Navbar() {
 
   return (
     <>
-    <header className="nav-bar sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 md:px-8 h-14 md:h-16 flex items-center gap-2 sm:gap-4 md:gap-5">
+    {/* Top bar — only on mobile/sm. AppShell handles md+ with its own sidebar + top stats. */}
+    <header className="nav-bar sticky top-0 z-50 md:hidden">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 h-14 flex items-center gap-2 sm:gap-4">
 
         {/* Logo */}
-        <Link to={user ? '/dashboard' : '/'} className="flex items-center gap-2 flex-shrink-0">
+        <Link to={user ? '/modules' : '/'} className="flex items-center gap-2 flex-shrink-0">
           <img src="/logo.png" alt="Octolio" className="w-9 h-9 object-contain"
             style={{ filter: 'drop-shadow(0 0 6px hsl(var(--c-green)/0.4))' }} />
           <span className="font-extrabold text-base tracking-tight hidden sm:block" style={{ color: 'hsl(var(--c-fg))' }}>
@@ -149,8 +150,8 @@ export function Navbar() {
         {/* Center nav tabs */}
         {user && (
           <nav className="hidden sm:flex items-center gap-0.5 flex-1">
-            <NavTab to="/dashboard" active={isActive('/dashboard')} label="Dashboard" />
             <NavTab to="/modules"   active={isActive('/modules') || isActive('/lesson')} label="Learn" />
+            <NavTab to="/quests"    active={isActive('/quests')} label="Quests" />
             <NavTab to="/league"    active={isActive('/league')} label="League" />
             {user.is_pro && (
               <NavTab to="/advisor" active={isActive('/advisor')} label="✦ AI Advisor" disabled />
@@ -288,8 +289,8 @@ export function Navbar() {
         <div className="flex items-center justify-around px-2 pt-2 pb-safe"
           style={{ paddingBottom: 'max(8px, env(safe-area-inset-bottom))' }}>
 
-          <BottomTab to="/dashboard" active={isActive('/dashboard')} icon={<IconHome />} label="Home" />
           <BottomTab to="/modules"   active={isActive('/modules') || isActive('/lesson')} icon={<IconLearn />} label="Learn" />
+          <BottomTab to="/quests"    active={isActive('/quests')}    icon={<IconHome />} label="Quests" />
           <BottomTab to="/league"    active={isActive('/league')}    icon={<IconLeague />} label="League" />
           {user.is_pro && (
             <BottomTab to="/advisor" active={isActive('/advisor')} icon={<IconAdvisor />} label="AI" disabled />

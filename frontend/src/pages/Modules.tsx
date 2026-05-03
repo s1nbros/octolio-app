@@ -13,7 +13,10 @@ const COLORS: Record<string, { main: string; deep: string; soft: string }> = {
   orange: { main: 'hsl(28, 85%, 60%)',  deep: 'hsl(28, 80%, 40%)',  soft: 'hsl(28, 85%, 72%)' },
 };
 const LOCKED = { main: 'hsl(228, 12%, 30%)', deep: 'hsl(228, 14%, 18%)', soft: 'hsl(228, 12%, 40%)' };
-const PRO_COLOR = { main: 'hsl(280, 70%, 65%)', deep: 'hsl(280, 55%, 42%)', soft: 'hsl(280, 70%, 78%)' };
+
+type Palette = { main: string; deep: string; soft: string };
+
+interface CurrentPosition { moduleIdx: number; lessonIdx: number; }
 
 export function Modules() {
   const { token, user } = useAuth();
@@ -21,7 +24,6 @@ export function Modules() {
   const navigate = useNavigate();
   const [modules, setModules] = useState<ModuleMeta[]>([]);
   const [loading, setLoading] = useState(true);
-  const [openModule, setOpenModule] = useState<ModuleMeta | null>(null);
 
   useEffect(() => {
     if (!token) return;
@@ -33,201 +35,263 @@ export function Modules() {
 
   const isPro = user?.is_pro ?? false;
 
-  const isLocked = (index: number) => {
-    if (isPro || index === 0) return false;
-    const prev = modules[index - 1];
+  const isModuleLocked = (idx: number): boolean => {
+    if (isPro || idx === 0) return false;
+    const prev = modules[idx - 1];
     if (!prev) return false;
     if (prev.proOnly) return false;
     const prevDone = prev.lessons.filter((l) => l.completed).length;
     return prevDone < 2;
   };
-  const isProLocked = (mod: ModuleMeta) => mod.proOnly && !isPro;
+  const isModuleProLocked = (m: ModuleMeta) => m.proOnly && !isPro;
 
-  // First unlocked, not-fully-completed module → that's where the octopus sits
-  const currentIdx = useMemo(() => {
-    for (let i = 0; i < modules.length; i++) {
-      if (isLocked(i) || isProLocked(modules[i])) continue;
-      const done = modules[i].lessons.filter((l) => l.completed).length;
-      if (done < modules[i].lessons.length) return i;
+  /* Current = first unlocked, not-completed lesson across all modules */
+  const currentPos = useMemo<CurrentPosition | null>(() => {
+    for (let mi = 0; mi < modules.length; mi++) {
+      if (isModuleLocked(mi) || isModuleProLocked(modules[mi])) continue;
+      const lessons = modules[mi].lessons;
+      for (let li = 0; li < lessons.length; li++) {
+        if (!lessons[li].completed) return { moduleIdx: mi, lessonIdx: li };
+      }
     }
-    return modules.length > 0 ? 0 : -1;
+    return null;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modules, isPro]);
 
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div
-          className="w-10 h-10 rounded-full border-2 border-t-transparent animate-spin"
-          style={{ borderColor: 'hsl(var(--c-primary))', borderTopColor: 'transparent' }}
-        />
+        <div className="w-10 h-10 rounded-full border-2 border-t-transparent animate-spin"
+          style={{ borderColor: 'hsl(var(--c-primary))', borderTopColor: 'transparent' }} />
       </div>
     );
   }
 
   return (
-    <div className="relative min-h-screen pb-24 sm:pb-12 overflow-hidden">
-      <FloatingOrbs />
+    <div className="relative pb-24 sm:pb-12 overflow-hidden">
+      <div className="md:hidden"><FloatingOrbs /></div>
 
-      <div className="relative max-w-md md:max-w-lg mx-auto px-4 sm:px-6 md:px-8 py-6 sm:py-10 md:py-14" style={{ zIndex: 1 }}>
-        {/* Header */}
-        <div className="mb-16 sm:mb-20 md:mb-24 text-center animate-fade-up">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-2" style={{ color: 'hsl(var(--c-fg))' }}>
+      <div className="relative max-w-md md:max-w-2xl mx-auto px-4 sm:px-6 md:px-0 py-2 sm:py-4 md:py-2" style={{ zIndex: 1 }}>
+        {/* Page header */}
+        <div className="mb-6 md:mb-8 text-center md:text-left animate-fade-up">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-1" style={{ color: 'hsl(var(--c-fg))' }}>
             {ui.modules_title}
           </h1>
-          <p className="text-sm md:text-base leading-relaxed" style={{ color: 'hsl(var(--c-fg-muted))' }}>
+          <p className="text-sm md:text-base" style={{ color: 'hsl(var(--c-fg-muted))' }}>
             {ui.modules_sub}
           </p>
         </div>
 
-        {/* Path of nodes */}
-        <div className="relative flex flex-col items-center gap-12 sm:gap-14 md:gap-16">
-          {modules.map((mod, i) => {
-            const locked = isLocked(i);
-            const proLocked = isProLocked(mod);
-            const done = mod.lessons.filter((l) => l.completed).length;
-            const total = mod.lessons.length;
-            const isCurrent = i === currentIdx;
-            // Zig-zag offset (5-step sine for a soft snake path)
-            const positions = [0, 60, 80, 60, 0, -60, -80, -60];
-            const xPx = locked ? positions[i % positions.length] : positions[i % positions.length];
+        {/* Sections */}
+        <div className="space-y-10 md:space-y-14">
+          {modules.map((mod, mi) => {
+            const moduleLocked = isModuleLocked(mi);
+            const moduleProLocked = isModuleProLocked(mod);
+            const moduleBlocked = moduleLocked || moduleProLocked;
+            const palette: Palette = moduleBlocked ? LOCKED : (COLORS[mod.color] ?? COLORS.blue);
 
             return (
-              <ModuleNode
-                key={mod.id}
-                mod={mod}
-                locked={locked}
-                proLocked={proLocked}
-                isCurrent={isCurrent}
-                done={done}
-                total={total}
-                xOffsetPx={xPx}
-                lang={lang}
-                onClick={() => {
-                  if (locked) return;
-                  if (proLocked) {
-                    navigate('/profile');
-                    return;
-                  }
-                  setOpenModule(mod);
-                }}
-              />
+              <section key={mod.id} className="animate-fade-up">
+                <SectionBanner
+                  mod={mod}
+                  idx={mi}
+                  palette={palette}
+                  blocked={moduleBlocked}
+                  proLocked={moduleProLocked}
+                  locked={moduleLocked}
+                  lang={lang}
+                />
+
+                {/* Lesson nodes path */}
+                <div className="relative flex flex-col items-center gap-8 md:gap-10 mt-8 md:mt-10">
+                  {mod.lessons.map((lesson, li) => {
+                    // Within an unlocked module, lessons unlock sequentially
+                    const lessonLocked =
+                      moduleBlocked ||
+                      (li > 0 && !mod.lessons[li - 1].completed && !lesson.completed);
+                    const isLessonCurrent =
+                      currentPos !== null &&
+                      currentPos.moduleIdx === mi &&
+                      currentPos.lessonIdx === li;
+                    // Snake-pattern offset
+                    const positions = [0, 60, 80, 60, 0, -60, -80, -60];
+                    const xPx = positions[li % positions.length];
+
+                    return (
+                      <LessonNode
+                        key={lesson.id}
+                        lesson={lesson}
+                        locked={lessonLocked}
+                        proLocked={moduleProLocked}
+                        isCurrent={isLessonCurrent}
+                        xOffsetPx={xPx}
+                        palette={palette}
+                        lang={lang}
+                        onClick={() => {
+                          if (lessonLocked) return;
+                          if (moduleProLocked) { navigate('/profile'); return; }
+                          navigate(`/lesson/${mod.id}/${lesson.id}`);
+                        }}
+                      />
+                    );
+                  })}
+                </div>
+              </section>
             );
           })}
         </div>
       </div>
-
-      {openModule && (
-        <LessonPopup
-          mod={openModule}
-          lang={lang}
-          pickLabel={ui.pick_lesson}
-          onClose={() => setOpenModule(null)}
-          onPick={(lesson) => {
-            navigate(`/lesson/${openModule.id}/${lesson.id}`);
-          }}
-        />
-      )}
     </div>
   );
 }
 
-/* ───────── A single node on the path ───────── */
-function ModuleNode({
+/* ───────── Section banner (the pink-style heading from Duolingo) ───────── */
+function SectionBanner({
   mod,
+  idx,
+  palette,
+  blocked,
   locked,
   proLocked,
-  isCurrent,
-  done,
-  total,
-  xOffsetPx,
   lang,
-  onClick,
 }: {
   mod: ModuleMeta;
+  idx: number;
+  palette: Palette;
+  blocked: boolean;
   locked: boolean;
   proLocked: boolean;
-  isCurrent: boolean;
-  done: number;
-  total: number;
-  xOffsetPx: number;
   lang: 'en' | 'bg';
-  onClick: () => void;
 }) {
-  const blocked = locked || proLocked;
+  const done = mod.lessons.filter((l) => l.completed).length;
+  const total = mod.lessons.length;
   const allDone = done === total && total > 0;
-  const hasStarted = done > 0;
-  const palette = blocked ? LOCKED : proLocked ? PRO_COLOR : (COLORS[mod.color] ?? COLORS.blue);
-  const progress = total > 0 ? done / total : 0;
 
   return (
     <div
-      className="relative flex flex-col items-center"
+      className="relative rounded-2xl px-5 py-4 md:px-6 md:py-5 overflow-hidden"
+      style={{
+        background: blocked
+          ? 'linear-gradient(135deg, hsl(228, 14%, 16%), hsl(228, 14%, 12%))'
+          : `linear-gradient(135deg, ${palette.main}, ${palette.deep})`,
+        boxShadow: blocked
+          ? 'inset 0 -3px 0 hsla(0,0%,0%,0.4), 0 4px 12px hsla(0,0%,0%,0.3)'
+          : `inset 0 -4px 0 ${palette.deep}, 0 8px 20px hsla(0,0%,0%,0.4)`,
+        border: '1px solid ' + (blocked ? 'var(--c-border)' : 'hsla(0,0%,100%,0.18)'),
+      }}
+    >
+      <div className="flex items-center gap-3">
+        <span
+          className="text-3xl md:text-4xl flex-shrink-0"
+          style={{
+            filter: blocked
+              ? 'grayscale(0.6) opacity(0.85)'
+              : 'drop-shadow(0 2px 4px hsla(0,0%,0%,0.45))',
+          }}
+        >
+          {locked ? '🔒' : proLocked ? '✦' : mod.icon}
+        </span>
+        <div className="flex-1 min-w-0">
+          <p
+            className="text-[10px] md:text-xs font-bold uppercase tracking-widest mb-0.5"
+            style={{ color: blocked ? 'hsl(var(--c-fg-subtle))' : 'hsla(0,0%,100%,0.75)' }}
+          >
+            {lang === 'en' ? `Section ${idx + 1}` : `Раздел ${idx + 1}`}
+            {proLocked && ' · ✦ PRO'}
+          </p>
+          <h2
+            className="font-extrabold text-base md:text-lg leading-tight truncate"
+            style={{
+              color: blocked ? 'hsl(var(--c-fg-subtle))' : '#fff',
+              textShadow: blocked ? 'none' : '0 1px 2px hsla(0,0%,0%,0.4)',
+            }}
+          >
+            {mod.title[lang]}
+          </h2>
+        </div>
+        {!blocked && (
+          <div className="flex-shrink-0 text-right">
+            <p className="mono text-base md:text-lg font-extrabold" style={{ color: '#fff' }}>
+              {done}/{total}
+            </p>
+            <p className="text-[10px] uppercase tracking-wider" style={{ color: 'hsla(0,0%,100%,0.7)' }}>
+              {lang === 'en' ? 'lessons' : 'урока'}
+            </p>
+          </div>
+        )}
+        {allDone && !blocked && <span className="text-xl ml-2">✓</span>}
+      </div>
+    </div>
+  );
+}
+
+/* ───────── Single lesson node on the path ───────── */
+function LessonNode({
+  lesson,
+  locked,
+  proLocked,
+  isCurrent,
+  xOffsetPx,
+  palette,
+  lang,
+  onClick,
+}: {
+  lesson: LessonMeta;
+  locked: boolean;
+  proLocked: boolean;
+  isCurrent: boolean;
+  xOffsetPx: number;
+  palette: Palette;
+  lang: 'en' | 'bg';
+  onClick: () => void;
+}) {
+  const completed = lesson.completed;
+  const nodePalette: Palette = locked ? LOCKED : palette;
+
+  return (
+    <div
+      className="relative flex flex-col items-center transition-transform"
       style={{ transform: `translateX(${xOffsetPx}px)` }}
     >
-      {/* START / CONTINUE bubble — only on current */}
-      {isCurrent && !blocked && (
+      {/* START bubble — only on current lesson */}
+      {isCurrent && !locked && (
         <div
-          className="absolute -top-12 left-1/2 -translate-x-1/2 px-3.5 py-1 rounded-lg font-extrabold text-xs tracking-widest animate-fade-in"
+          className="absolute -top-11 left-1/2 -translate-x-1/2 px-3.5 py-1 rounded-lg font-extrabold text-xs tracking-widest animate-fade-in"
           style={{
             background: 'hsl(228, 24%, 10%)',
-            color: palette.main,
-            border: `2px solid ${palette.main}`,
-            boxShadow: `0 0 16px ${palette.main}55`,
+            color: nodePalette.main,
+            border: `2px solid ${nodePalette.main}`,
+            boxShadow: `0 0 16px ${nodePalette.main}55`,
             whiteSpace: 'nowrap',
           }}
         >
-          {hasStarted ? (lang === 'en' ? 'CONTINUE' : 'ПРОДЪЛЖИ') : (lang === 'en' ? 'START' : 'СТАРТ')}
-          {/* Pointer */}
+          {lang === 'en' ? 'START' : 'СТАРТ'}
           <span
             className="absolute left-1/2 -bottom-[7px] -translate-x-1/2 w-2.5 h-2.5 rotate-45"
             style={{
               background: 'hsl(228, 24%, 10%)',
-              borderRight: `2px solid ${palette.main}`,
-              borderBottom: `2px solid ${palette.main}`,
+              borderRight: `2px solid ${nodePalette.main}`,
+              borderBottom: `2px solid ${nodePalette.main}`,
             }}
           />
         </div>
       )}
 
-      {/* Button + progress ring wrapper */}
+      {/* Button + ring wrapper */}
       <div className="relative">
-        {/* Progress ring around the node — shown on every unlocked module */}
-        {!blocked && total > 0 && (
+        {/* Dark groove ring around current lesson */}
+        {isCurrent && !locked && (
           <svg
             className="absolute pointer-events-none"
             viewBox="0 0 100 100"
             style={{
-              width: 'calc(100% + 20px)',
-              height: 'calc(100% + 20px)',
-              top: '-10px',
-              left: '-10px',
+              width: 'calc(100% + 18px)',
+              height: 'calc(100% + 18px)',
+              top: '-9px',
+              left: '-9px',
             }}
           >
-            {/* Dark track groove */}
-            <circle
-              cx="50"
-              cy="50"
-              r="45"
-              fill="none"
-              stroke="hsl(228, 30%, 8%)"
-              strokeWidth="5"
-            />
-            {/* Progress arc */}
-            {progress > 0 && (
-              <circle
-                cx="50"
-                cy="50"
-                r="45"
-                fill="none"
-                stroke={palette.main}
-                strokeWidth="5"
-                strokeDasharray={`${progress * 282.7} 282.7`}
-                strokeLinecap="round"
-                transform="rotate(-90 50 50)"
-                style={{ transition: 'stroke-dasharray 0.6s ease-out', filter: `drop-shadow(0 0 6px ${palette.main}aa)` }}
-              />
-            )}
+            <circle cx="50" cy="50" r="45" fill="none" stroke="hsl(228, 30%, 8%)" strokeWidth="5" />
           </svg>
         )}
 
@@ -235,47 +299,36 @@ function ModuleNode({
         <button
           onClick={onClick}
           disabled={locked}
-          className="relative w-24 h-24 md:w-28 md:h-28 rounded-full flex items-center justify-center transition-transform active:translate-y-[3px] active:[box-shadow:inset_0_-2px_0_hsla(0,0%,0%,0.3)]"
+          className="relative w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center transition-transform active:translate-y-[3px]"
           style={{
-            background: `radial-gradient(circle at 35% 30%, ${palette.soft} 0%, ${palette.main} 60%)`,
-            boxShadow: `inset 0 -7px 0 ${palette.deep}, 0 8px 16px hsla(0,0%,0%,0.45)`,
-            opacity: locked ? 0.7 : 1,
+            background: `radial-gradient(circle at 35% 30%, ${nodePalette.soft} 0%, ${nodePalette.main} 60%)`,
+            boxShadow: locked
+              ? `inset 0 -5px 0 ${LOCKED.deep}, 0 4px 10px hsla(0,0%,0%,0.4)`
+              : `inset 0 -6px 0 ${nodePalette.deep}, 0 6px 14px hsla(0,0%,0%,0.45)`,
+            opacity: locked ? 0.65 : 1,
             cursor: locked ? 'not-allowed' : 'pointer',
           }}
         >
-          {/* Module icon */}
+          {/* Lesson icon */}
           <span
-            className="text-3xl md:text-4xl select-none"
+            className="text-2xl md:text-3xl select-none"
             style={{
-              filter: blocked ? 'grayscale(0.6) opacity(0.8)' : 'drop-shadow(0 1px 2px hsla(0,0%,0%,0.35))',
+              filter: locked
+                ? 'grayscale(0.8) opacity(0.85)'
+                : 'drop-shadow(0 1px 2px hsla(0,0%,0%,0.35))',
             }}
           >
-            {locked ? '🔒' : proLocked ? '✦' : mod.icon}
+            {locked ? (proLocked ? '✦' : '🔒') : completed ? '⭐' : lesson.icon}
           </span>
 
-          {/* Pro badge */}
-          {mod.proOnly && (
+          {/* Done check on completed lessons */}
+          {completed && !locked && (
             <span
-              className="absolute -top-2 -right-2 px-1.5 py-0.5 rounded-full text-[9px] font-extrabold tracking-wider"
-              style={{
-                background: 'linear-gradient(90deg, hsl(var(--c-primary)), hsl(var(--c-green)))',
-                color: '#fff',
-                boxShadow: '0 0 10px hsla(280,70%,65%,0.6)',
-                border: '1px solid hsla(0,0%,100%,0.4)',
-              }}
-            >
-              ✦ PRO
-            </span>
-          )}
-
-          {/* Done check */}
-          {allDone && !blocked && (
-            <span
-              className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full flex items-center justify-center text-xs font-extrabold"
+              className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-extrabold"
               style={{
                 background: 'hsl(var(--c-green))',
                 color: '#fff',
-                boxShadow: '0 3px 8px hsla(0,0%,0%,0.45)',
+                boxShadow: '0 2px 6px hsla(0,0%,0%,0.5)',
                 border: '2px solid hsl(228, 24%, 10%)',
               }}
             >
@@ -285,106 +338,22 @@ function ModuleNode({
         </button>
       </div>
 
-      {/* Label */}
+      {/* Lesson title */}
       <p
-        className="mt-3 text-xs sm:text-sm md:text-base font-semibold text-center max-w-[160px] md:max-w-[200px]"
+        className="mt-2 text-xs md:text-sm font-semibold text-center max-w-[150px] leading-tight"
         style={{
-          color: blocked ? 'hsl(var(--c-fg-subtle))' : 'hsl(var(--c-fg))',
+          color: locked ? 'hsl(var(--c-fg-subtle))' : completed ? 'hsl(var(--c-fg-muted))' : 'hsl(var(--c-fg))',
         }}
       >
-        {mod.title[lang]}
+        {lesson.title[lang]}
       </p>
+      {/* XP reward */}
       <p
-        className="text-[11px] mt-0.5"
-        style={{ color: 'hsl(var(--c-fg-subtle))' }}
+        className="text-[10px] md:text-xs mt-0.5 mono font-semibold"
+        style={{ color: locked ? 'hsl(var(--c-fg-subtle))' : nodePalette.main }}
       >
-        {locked
-          ? lang === 'en' ? 'Locked' : 'Заключен'
-          : proLocked
-            ? lang === 'en' ? 'Unlock with Pro' : 'Отключи с Pro'
-            : `${done}/${total}`}
+        +{lesson.xpReward} XP
       </p>
-    </div>
-  );
-}
-
-/* ───────── Lesson popup ───────── */
-function LessonPopup({
-  mod,
-  lang,
-  pickLabel,
-  onClose,
-  onPick,
-}: {
-  mod: ModuleMeta;
-  lang: 'en' | 'bg';
-  pickLabel: string;
-  onClose: () => void;
-  onPick: (lesson: LessonMeta) => void;
-}) {
-  return (
-    <div
-      className="fixed inset-0 z-[100] flex items-center justify-center px-4 animate-fade-in"
-      style={{ background: 'hsla(228,40%,3%,0.7)', backdropFilter: 'blur(8px)' }}
-      onClick={onClose}
-    >
-      <div
-        className="relative max-w-md w-full glass-card rounded-3xl p-5 sm:p-7 animate-scale-in max-h-[85vh] overflow-y-auto"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button
-          onClick={onClose}
-          className="absolute top-3 right-3 w-9 h-9 rounded-full flex items-center justify-center text-base transition-all"
-          style={{ background: 'var(--c-glass)', color: 'hsl(var(--c-fg-muted))', border: '1px solid var(--c-border)' }}
-          aria-label="Close"
-        >
-          ✕
-        </button>
-
-        <div className="text-center mb-5">
-          <div className="text-5xl mb-3">{mod.icon}</div>
-          <h2 className="text-xl sm:text-2xl font-extrabold mb-1" style={{ color: 'hsl(var(--c-fg))' }}>
-            {mod.title[lang]}
-          </h2>
-          <p className="text-sm" style={{ color: 'hsl(var(--c-fg-muted))' }}>
-            {mod.description[lang]}
-          </p>
-        </div>
-
-        <p className="text-xs uppercase tracking-wider font-bold mb-2" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
-          {pickLabel}
-        </p>
-
-        <div className="space-y-2">
-          {mod.lessons.map((lesson) => (
-            <button
-              key={lesson.id}
-              onClick={() => onPick(lesson)}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all hover:scale-[1.01] active:scale-[0.99]"
-              style={{
-                background: lesson.completed ? 'hsl(var(--c-green)/0.10)' : 'var(--c-glass)',
-                border: `1px solid ${lesson.completed ? 'hsl(var(--c-green)/0.3)' : 'var(--c-border)'}`,
-              }}
-            >
-              <span className="text-xl flex-shrink-0">{lesson.completed ? '✅' : lesson.icon}</span>
-              <span
-                className="flex-1 text-left text-sm font-semibold truncate"
-                style={{
-                  color: lesson.completed ? 'hsl(var(--c-fg-subtle))' : 'hsl(var(--c-fg))',
-                }}
-              >
-                {lesson.title[lang]}
-              </span>
-              <span
-                className="text-xs font-bold px-2 py-0.5 rounded-full flex-shrink-0"
-                style={{ background: 'hsl(var(--c-primary)/0.15)', color: 'hsl(var(--c-primary))' }}
-              >
-                +{lesson.xpReward}
-              </span>
-            </button>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }

@@ -19,9 +19,9 @@ export function AiAdvisor() {
               ? 'We\'re working on it. Check back soon — your personal money coach will be here shortly.'
               : 'Работим по него. Върнете се скоро — вашият личен финансов треньор ще бъде тук скоро.'}
           </p>
-          <Link to="/dashboard">
+          <Link to="/modules">
             <button className="btn-ghost w-full">
-              {lang === 'en' ? '← Back to Dashboard' : '← Към Таблото'}
+              {lang === 'en' ? '← Back to Learn' : '← Към Учене'}
             </button>
           </Link>
         </div>

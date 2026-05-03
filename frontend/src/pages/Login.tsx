@@ -25,7 +25,7 @@ export function Login() {
 
     try {
       await login(email, password, rememberMe);
-      navigate('/dashboard');
+      navigate('/modules');
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Login failed';
       if (/not verified/i.test(msg)) {

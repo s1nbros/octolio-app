@@ -3,11 +3,12 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { Navbar } from './components/Navbar';
+import { AppShell } from './components/AppShell';
 import { Landing } from './pages/Landing';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
-import { Dashboard } from './pages/Dashboard';
 import { Modules } from './pages/Modules';
+import { Quests } from './pages/Quests';
 import { Lesson } from './pages/Lesson';
 import { Profile } from './pages/Profile';
 import { League } from './pages/League';
@@ -27,13 +28,14 @@ function Spinner() {
   );
 }
 
-/** Requires logged in + onboarding complete */
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
+/** Requires logged in + onboarding complete. Wraps in the AppShell layout. */
+function ProtectedRoute({ children, bare = false }: { children: React.ReactNode; bare?: boolean }) {
   const { user, isLoading } = useAuth();
   if (isLoading) return <Spinner />;
   if (!user) return <Navigate to="/login" replace />;
   if (!user.onboarding_done) return <Navigate to="/onboarding" replace />;
-  return <>{children}</>;
+  if (bare) return <>{children}</>; // Lesson view skips the shell for full-screen exercises
+  return <AppShell>{children}</AppShell>;
 }
 
 /** Requires logged in but redirects away if onboarding already done */
@@ -41,7 +43,7 @@ function OnboardingRoute({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
   if (isLoading) return <Spinner />;
   if (!user) return <Navigate to="/login" replace />;
-  if (user.onboarding_done) return <Navigate to="/dashboard" replace />;
+  if (user.onboarding_done) return <Navigate to="/modules" replace />;
   return <>{children}</>;
 }
 
@@ -50,7 +52,7 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
   if (isLoading) return null;
   if (user) {
-    return <Navigate to={user.onboarding_done ? '/dashboard' : '/onboarding'} replace />;
+    return <Navigate to={user.onboarding_done ? '/modules' : '/onboarding'} replace />;
   }
   return <>{children}</>;
 }
@@ -68,10 +70,11 @@ function AppRoutes() {
           <Route path="/forgot-password" element={<PublicRoute><ForgotPassword /></PublicRoute>} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/onboarding" element={<OnboardingRoute><Onboarding /></OnboardingRoute>} />
-          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/dashboard" element={<Navigate to="/modules" replace />} />
           <Route path="/modules" element={<ProtectedRoute><Modules /></ProtectedRoute>} />
-          <Route path="/lesson/:moduleId/:lessonId" element={<ProtectedRoute><Lesson /></ProtectedRoute>} />
-          <Route path="/generate" element={<ProtectedRoute><GeneratedLesson /></ProtectedRoute>} />
+          <Route path="/quests" element={<ProtectedRoute><Quests /></ProtectedRoute>} />
+          <Route path="/lesson/:moduleId/:lessonId" element={<ProtectedRoute bare><Lesson /></ProtectedRoute>} />
+          <Route path="/generate" element={<ProtectedRoute bare><GeneratedLesson /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/league" element={<ProtectedRoute><League /></ProtectedRoute>} />
           <Route path="/advisor" element={<ProtectedRoute><AiAdvisor /></ProtectedRoute>} />

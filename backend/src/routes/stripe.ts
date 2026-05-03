@@ -40,7 +40,7 @@ stripeRouter.post('/checkout', authenticate, async (req: AuthRequest, res: Respo
       mode: 'subscription',
       payment_method_types: ['card'],
       line_items: [{ price: process.env.STRIPE_PRICE_ID!, quantity: 1 }],
-      success_url: `${frontendUrl}/dashboard?pro=1`,
+      success_url: `${frontendUrl}/modules?pro=1`,
       cancel_url: `${frontendUrl}/onboarding`,
       metadata: { userId: String(req.userId) },
     });

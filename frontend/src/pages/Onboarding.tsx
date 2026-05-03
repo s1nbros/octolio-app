@@ -34,7 +34,7 @@ export function Onboarding() {
     setLoading('free');
     await completeOnboarding();
     await refreshUser();
-    navigate('/dashboard');
+    navigate('/modules');
   };
 
   const proFeatures = [

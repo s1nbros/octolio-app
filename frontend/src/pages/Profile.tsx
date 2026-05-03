@@ -265,10 +265,10 @@ export function Profile() {
   };
 
   return (
-    <div className="relative min-h-screen pb-24 sm:pb-8">
-      <FloatingOrbs />
+    <div className="relative pb-24 sm:pb-8">
+      <div className="md:hidden"><FloatingOrbs /></div>
 
-      <div className="relative max-w-5xl mx-auto px-4 sm:px-6 md:px-8 py-8 md:py-10" style={{ zIndex: 1 }}>
+      <div className="relative max-w-5xl mx-auto px-4 sm:px-6 md:px-0 py-8 md:py-2" style={{ zIndex: 1 }}>
 
         {/* ── PROFILE HEADER ── */}
         <div className="glass-card rounded-2xl p-5 sm:p-6 md:p-7 mb-5 md:mb-6 animate-fade-up">
