@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLang } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { ProfileSheet } from './ProfileSheet';
 
 /* SVG icons for the bottom nav */
 function IconHome() {
@@ -121,13 +122,12 @@ function EnergyPopover({ energy, refillAt, isPro, onClose }: { energy: number; r
 }
 
 export function Navbar() {
-  const { user, logout } = useAuth();
-  const { lang, setLang } = useLang();
+  const { user } = useAuth();
   const { isDark, toggleTheme } = useTheme();
   const location = useLocation();
-  const navigate = useNavigate();
   const isActive = (p: string) => location.pathname.startsWith(p);
   const [energyOpen, setEnergyOpen] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   return (
     <>
@@ -137,37 +137,32 @@ export function Navbar() {
         style={{ position: 'relative' }}>
 
         {/* Logo */}
-        <Link to={user ? '/modules' : '/'} className="flex items-center gap-2 flex-shrink-0 z-10">
-          <img src="/logo.png" alt="Octolio" className="w-8 h-8 object-contain"
+        <Link to={user ? '/modules' : '/'} className="flex items-center gap-2 flex-shrink-0 z-10 active:scale-95 transition-transform">
+          <img src="/logo.png" alt="Octolio" className="w-9 h-9 object-contain"
             style={{ filter: 'drop-shadow(0 0 6px hsl(var(--c-green)/0.4))' }} />
         </Link>
 
-        {/* Center nav tabs (sm only — phones use bottom nav) */}
-        {user && (
-          <nav className="hidden sm:flex items-center gap-0.5 flex-1 z-10">
-            <NavTab to="/modules"   active={isActive('/modules') || isActive('/lesson')} label="Learn" />
-            <NavTab to="/quests"    active={isActive('/quests')} label="Quests" />
-            <NavTab to="/league"    active={isActive('/league')} label="League" />
-            {user.is_pro && (
-              <NavTab to="/advisor" active={isActive('/advisor')} label="✦ AI" disabled />
-            )}
-          </nav>
-        )}
-
-        {/* Right controls */}
-        <div className="flex items-center gap-1.5 ml-auto z-10">
+        {/* Right controls — kept minimal: streak + energy + avatar */}
+        <div className="flex items-center gap-2 ml-auto z-10">
           {user ? (
             <>
-              {/* Energy pill — visible on phones now */}
+              {/* Streak chip — bigger touch target */}
+              <div className="liquid-glass-pill flex items-center gap-1.5 px-3 h-9 rounded-full"
+                style={{ color: 'hsl(var(--c-orange))' }}>
+                <span className="text-base">🔥</span>
+                <span className="mono text-sm font-bold">{user.streak}</span>
+              </div>
+
+              {/* Energy chip — bigger, color-coded */}
               <div className="relative">
                 <button
                   onClick={() => setEnergyOpen(o => !o)}
-                  className="liquid-glass-pill flex items-center gap-1 px-2.5 py-1.5 rounded-full transition-all active:scale-95"
+                  className="liquid-glass-pill flex items-center gap-1.5 px-3 h-9 rounded-full transition-all active:scale-95"
                   style={{
                     color: user.is_pro ? 'hsl(var(--c-primary))' : user.energy > 3 ? 'hsl(var(--c-green))' : '#f87171',
                   }}>
-                  <span className="text-sm">⚡</span>
-                  <span className="mono text-xs font-bold">
+                  <span className="text-base">⚡</span>
+                  <span className="mono text-sm font-bold">
                     {user.is_pro ? '∞' : user.energy}
                   </span>
                 </button>
@@ -181,67 +176,25 @@ export function Navbar() {
                 )}
               </div>
 
-              {/* Streak pill */}
-              <div className="liquid-glass-pill flex items-center gap-1 px-2.5 py-1.5 rounded-full"
-                style={{ color: 'hsl(var(--c-orange))' }}>
-                <span className="text-sm">🔥</span>
-                <span className="mono text-xs font-bold">{user.streak}</span>
-              </div>
-
-              {/* Pro badge (sm+) */}
-              {user.is_pro && (
-                <div className="hidden sm:flex liquid-glass-pill items-center px-2.5 py-1.5 rounded-full"
-                  style={{ color: 'hsl(var(--c-primary))' }}>
-                  <span className="text-[10px] font-black tracking-wider">✦ PRO</span>
-                </div>
-              )}
-
-              {/* Language toggle (sm+) */}
-              <button onClick={() => setLang(lang === 'en' ? 'bg' : 'en')}
-                className="hidden sm:flex liquid-glass-pill items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-bold transition-all active:scale-95"
-                style={{ color: 'hsl(var(--c-fg-muted))' }}>
-                <span>{lang === 'en' ? '🇬🇧' : '🇧🇬'}</span>
-                <span>{lang === 'en' ? 'EN' : 'BG'}</span>
-              </button>
-
-              {/* Theme toggle */}
-              <button onClick={toggleTheme}
-                className="liquid-glass-pill w-8 h-8 rounded-full flex items-center justify-center text-sm transition-all active:scale-95"
-                title={isDark ? 'Light mode' : 'Dark mode'}>
-                {isDark ? '☀️' : '🌙'}
-              </button>
-
-              {/* Avatar */}
+              {/* Avatar — opens profile sheet */}
               <button
-                onClick={() => navigate('/profile')}
-                className="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden text-sm font-bold transition-all active:scale-95"
+                onClick={() => setSheetOpen(true)}
+                className="w-9 h-9 rounded-full flex items-center justify-center overflow-hidden text-sm font-bold transition-all active:scale-95"
                 style={{
                   background: 'hsl(var(--c-primary)/0.2)',
-                  border: `2px solid ${isActive('/profile') ? 'hsl(var(--c-primary))' : 'hsla(0,0%,100%,0.15)'}`,
+                  border: '2px solid hsla(0,0%,100%,0.18)',
                   color: 'hsl(var(--c-fg))',
-                }}>
+                }}
+                aria-label="Open menu">
                 {user.avatar?.startsWith('data:')
                   ? <img src={user.avatar} alt="avatar" className="w-full h-full object-cover" />
                   : <span>{user.name?.[0]?.toUpperCase() ?? '?'}</span>}
-              </button>
-
-              {/* Log out — icon-only button, always visible */}
-              <button onClick={logout}
-                className="liquid-glass-pill w-8 h-8 rounded-full flex items-center justify-center transition-all active:scale-95"
-                style={{ color: '#f87171' }}
-                title="Log out"
-                aria-label="Log out">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                  <polyline points="16 17 21 12 16 7" />
-                  <line x1="21" y1="12" x2="9" y2="12" />
-                </svg>
               </button>
             </>
           ) : (
             <>
               <button onClick={toggleTheme}
-                className="liquid-glass-pill w-8 h-8 rounded-full flex items-center justify-center text-sm transition-all active:scale-95"
+                className="liquid-glass-pill w-9 h-9 rounded-full flex items-center justify-center text-sm transition-all active:scale-95"
                 title={isDark ? 'Light mode' : 'Dark mode'}>
                 {isDark ? '☀️' : '🌙'}
               </button>
@@ -256,6 +209,9 @@ export function Navbar() {
         </div>
       </div>
     </header>
+
+    {/* Profile sheet — mounts in the DOM so transitions work */}
+    {user && <ProfileSheet open={sheetOpen} onClose={() => setSheetOpen(false)} />}
 
     {/* ── Mobile bottom nav — phones only (xs) ── */}
     {user && (
@@ -282,31 +238,28 @@ export function Navbar() {
 
 function BottomTab({ to, active, icon, label, disabled }: { to: string; active: boolean; icon: React.ReactNode; label: string; disabled?: boolean }) {
   return (
-    <Link to={to} className="flex flex-col items-center gap-0.5 px-4 py-1 rounded-2xl transition-all"
+    <Link
+      to={to}
+      className="flex-1 flex flex-col items-center justify-center gap-1 py-1.5 rounded-2xl transition-transform active:scale-[0.92]"
       style={{
         color: disabled ? 'hsl(var(--c-fg-subtle)/0.5)' : active ? 'hsl(var(--c-primary))' : 'hsl(var(--c-fg-subtle))',
         opacity: disabled ? 0.5 : 1,
-      }}>
-      {/* Active pill highlight behind icon */}
-      <div className="relative flex items-center justify-center w-10 h-7 rounded-full transition-all"
-        style={{ background: !disabled && active ? 'hsl(var(--c-primary)/0.18)' : 'transparent' }}>
+        minHeight: '52px', // thumb-friendly Apple HIG min target
+      }}
+    >
+      {/* Active pill highlight — animated in/out */}
+      <div
+        className="relative flex items-center justify-center w-12 h-8 rounded-full transition-all duration-300"
+        style={{
+          background: !disabled && active ? 'hsl(var(--c-primary)/0.18)' : 'transparent',
+          transform: active ? 'scale(1)' : 'scale(0.92)',
+        }}
+      >
         {icon}
       </div>
-      <span className="text-xs font-semibold tracking-wide">{label}</span>
-    </Link>
-  );
-}
-
-function NavTab({ to, active, label, disabled }: { to: string; active: boolean; label: string; disabled?: boolean }) {
-  return (
-    <Link to={to}
-      className="px-4 py-1.5 rounded-lg text-sm font-semibold transition-all"
-      style={{
-        color: disabled ? 'hsl(var(--c-fg-subtle)/0.6)' : active ? 'hsl(var(--c-fg))' : 'hsl(var(--c-fg-subtle))',
-        background: !disabled && active ? 'hsl(var(--c-primary)/0.12)' : 'transparent',
-        opacity: disabled ? 0.5 : 1,
-      }}>
-      {label}
+      <span className="text-[11px] font-bold tracking-wide" style={{ letterSpacing: active ? '0.02em' : '0' }}>
+        {label}
+      </span>
     </Link>
   );
 }

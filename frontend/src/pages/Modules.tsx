@@ -256,18 +256,18 @@ function LessonNode({
       {/* START bubble — only on current lesson */}
       {isCurrent && !locked && (
         <div
-          className="absolute -top-11 left-1/2 -translate-x-1/2 px-3.5 py-1 rounded-lg font-extrabold text-xs tracking-widest animate-fade-in"
+          className="absolute -top-12 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-xl font-extrabold text-sm tracking-widest animate-fade-in"
           style={{
             background: 'hsl(228, 24%, 10%)',
             color: nodePalette.main,
             border: `2px solid ${nodePalette.main}`,
-            boxShadow: `0 0 16px ${nodePalette.main}55`,
+            boxShadow: `0 0 20px ${nodePalette.main}66, 0 4px 12px hsla(0,0%,0%,0.4)`,
             whiteSpace: 'nowrap',
           }}
         >
           {lang === 'en' ? 'START' : 'СТАРТ'}
           <span
-            className="absolute left-1/2 -bottom-[7px] -translate-x-1/2 w-2.5 h-2.5 rotate-45"
+            className="absolute left-1/2 -bottom-[7px] -translate-x-1/2 w-3 h-3 rotate-45"
             style={{
               background: 'hsl(228, 24%, 10%)',
               borderRight: `2px solid ${nodePalette.main}`,
@@ -299,7 +299,7 @@ function LessonNode({
         <button
           onClick={onClick}
           disabled={locked}
-          className="relative w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center transition-transform active:translate-y-[3px]"
+          className="relative w-24 h-24 md:w-24 md:h-24 rounded-full flex items-center justify-center transition-transform active:translate-y-[3px]"
           style={{
             background: `radial-gradient(circle at 35% 30%, ${nodePalette.soft} 0%, ${nodePalette.main} 60%)`,
             boxShadow: locked
@@ -311,7 +311,7 @@ function LessonNode({
         >
           {/* Lesson icon */}
           <span
-            className="text-2xl md:text-3xl select-none"
+            className="text-3xl md:text-3xl select-none"
             style={{
               filter: locked
                 ? 'grayscale(0.8) opacity(0.85)'

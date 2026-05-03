@@ -117,6 +117,14 @@ html.light {
     min-height: 100vh;
     margin: 0;
     transition: background 0.3s, color 0.3s;
+    /* iOS-style momentum scroll + tap feedback */
+    -webkit-overflow-scrolling: touch;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior-y: none;
+  }
+  /* Disable default tap highlight on all interactive elements */
+  button, a {
+    -webkit-tap-highlight-color: transparent;
   }
 
   * { box-sizing: border-box; }
