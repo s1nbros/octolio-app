@@ -3,7 +3,6 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLang } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
-import { getLevel } from '../types';
 
 /* SVG icons for the bottom nav */
 function IconHome() {
@@ -130,75 +129,46 @@ export function Navbar() {
   const isActive = (p: string) => location.pathname.startsWith(p);
   const [energyOpen, setEnergyOpen] = useState(false);
 
-  const level = user ? getLevel(user.xp) : null;
-
   return (
     <>
-    {/* Top bar — only on mobile/sm. AppShell handles md+ with its own sidebar + top stats. */}
-    <header className="nav-bar sticky top-0 z-50 md:hidden">
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 h-14 flex items-center gap-2 sm:gap-4">
+    {/* Top bar — mobile + sm only. AppShell handles md+ with its own sidebar. */}
+    <header className="sticky top-0 z-50 md:hidden px-3 pt-3 pb-1">
+      <div className="liquid-glass max-w-7xl mx-auto rounded-2xl px-3 h-14 flex items-center gap-2"
+        style={{ position: 'relative' }}>
 
         {/* Logo */}
-        <Link to={user ? '/modules' : '/'} className="flex items-center gap-2 flex-shrink-0">
-          <img src="/logo.png" alt="Octolio" className="w-9 h-9 object-contain"
+        <Link to={user ? '/modules' : '/'} className="flex items-center gap-2 flex-shrink-0 z-10">
+          <img src="/logo.png" alt="Octolio" className="w-8 h-8 object-contain"
             style={{ filter: 'drop-shadow(0 0 6px hsl(var(--c-green)/0.4))' }} />
-          <span className="font-extrabold text-base tracking-tight hidden sm:block" style={{ color: 'hsl(var(--c-fg))' }}>
-            Octolio
-          </span>
         </Link>
 
-        {/* Center nav tabs */}
+        {/* Center nav tabs (sm only — phones use bottom nav) */}
         {user && (
-          <nav className="hidden sm:flex items-center gap-0.5 flex-1">
+          <nav className="hidden sm:flex items-center gap-0.5 flex-1 z-10">
             <NavTab to="/modules"   active={isActive('/modules') || isActive('/lesson')} label="Learn" />
             <NavTab to="/quests"    active={isActive('/quests')} label="Quests" />
             <NavTab to="/league"    active={isActive('/league')} label="League" />
             {user.is_pro && (
-              <NavTab to="/advisor" active={isActive('/advisor')} label="✦ AI Advisor" disabled />
+              <NavTab to="/advisor" active={isActive('/advisor')} label="✦ AI" disabled />
             )}
           </nav>
         )}
 
         {/* Right controls */}
-        <div className="flex items-center gap-2 ml-auto">
-          {/* Theme */}
-          <button onClick={toggleTheme}
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-base transition-all"
-            style={{ background: 'var(--c-glass)', border: '1px solid var(--c-border)' }}
-            title={isDark ? 'Light mode' : 'Dark mode'}>
-            {isDark ? '☀️' : '🌙'}
-          </button>
-
+        <div className="flex items-center gap-1.5 ml-auto z-10">
           {user ? (
             <>
-              {/* Language toggle — single button */}
-              <button onClick={() => setLang(lang === 'en' ? 'bg' : 'en')}
-                className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-semibold transition-all"
-                style={{ background: 'var(--c-glass)', border: '1px solid var(--c-border)', color: 'hsl(var(--c-fg-muted))' }}>
-                <span>{lang === 'en' ? '🇬🇧' : '🇧🇬'}</span>
-                <span>{lang === 'en' ? 'EN' : 'BG'}</span>
-              </button>
-
-              {/* Pro badge */}
-              {user.is_pro && (
-                <div className="hidden sm:flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full"
-                  style={{ background: 'hsl(var(--c-primary)/0.15)', border: '1px solid hsl(var(--c-primary)/0.35)' }}>
-                  <span className="text-xs font-black tracking-wider" style={{ color: 'hsl(var(--c-primary))' }}>✦ PRO</span>
-                </div>
-              )}
-
-              {/* Energy pill — shown from sm+, clickable tooltip */}
-              <div className="hidden sm:block relative">
+              {/* Energy pill — visible on phones now */}
+              <div className="relative">
                 <button
                   onClick={() => setEnergyOpen(o => !o)}
-                  className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full transition-all"
+                  className="liquid-glass-pill flex items-center gap-1 px-2.5 py-1.5 rounded-full transition-all active:scale-95"
                   style={{
-                    background: user.is_pro ? 'hsl(var(--c-primary)/0.1)' : user.energy > 3 ? 'hsl(var(--c-green)/0.1)' : 'hsl(0,70%,55%,0.12)',
-                    border: `1px solid ${user.is_pro ? 'hsl(var(--c-primary)/0.25)' : user.energy > 3 ? 'hsl(var(--c-green)/0.25)' : 'hsl(0,70%,55%,0.35)'}`,
+                    color: user.is_pro ? 'hsl(var(--c-primary))' : user.energy > 3 ? 'hsl(var(--c-green))' : '#f87171',
                   }}>
                   <span className="text-sm">⚡</span>
-                  <span className="mono text-sm font-semibold" style={{ color: user.is_pro ? 'hsl(var(--c-primary))' : user.energy > 3 ? 'hsl(var(--c-green))' : '#f87171' }}>
-                    {user.is_pro ? '∞' : `${user.energy}/12`}
+                  <span className="mono text-xs font-bold">
+                    {user.is_pro ? '∞' : user.energy}
                   </span>
                 </button>
                 {energyOpen && (
@@ -211,42 +181,43 @@ export function Navbar() {
                 )}
               </div>
 
-              {/* XP pill */}
-              <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full"
-                style={{ background: 'hsl(var(--c-primary)/0.1)', border: '1px solid hsl(var(--c-primary)/0.2)' }}>
-                <span className="text-sm" style={{ color: 'hsl(var(--c-primary))' }}>🪙</span>
-                <span className="mono text-sm font-semibold" style={{ color: 'hsl(var(--c-primary))' }}>
-                  {user.xp.toLocaleString()}
-                </span>
+              {/* Streak pill */}
+              <div className="liquid-glass-pill flex items-center gap-1 px-2.5 py-1.5 rounded-full"
+                style={{ color: 'hsl(var(--c-orange))' }}>
+                <span className="text-sm">🔥</span>
+                <span className="mono text-xs font-bold">{user.streak}</span>
               </div>
 
-              {/* Level pill */}
-              {level && (
-                <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full"
-                  style={{ background: 'hsl(var(--c-green)/0.1)', border: '1px solid hsl(var(--c-green)/0.2)' }}>
-                  <span className="text-sm" style={{ color: 'hsl(var(--c-green))' }}>🏆</span>
-                  <span className="mono text-sm font-semibold" style={{ color: 'hsl(var(--c-green))' }}>
-                    Lv.{level.level}
-                  </span>
+              {/* Pro badge (sm+) */}
+              {user.is_pro && (
+                <div className="hidden sm:flex liquid-glass-pill items-center px-2.5 py-1.5 rounded-full"
+                  style={{ color: 'hsl(var(--c-primary))' }}>
+                  <span className="text-[10px] font-black tracking-wider">✦ PRO</span>
                 </div>
               )}
 
-              {/* Streak */}
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
-                style={{ background: 'hsl(var(--c-orange)/0.1)', border: '1px solid hsl(var(--c-orange)/0.2)' }}>
-                <span className="text-sm">🔥</span>
-                <span className="mono text-sm font-semibold" style={{ color: 'hsl(var(--c-orange))' }}>
-                  {user.streak}
-                </span>
-              </div>
+              {/* Language toggle (sm+) */}
+              <button onClick={() => setLang(lang === 'en' ? 'bg' : 'en')}
+                className="hidden sm:flex liquid-glass-pill items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-bold transition-all active:scale-95"
+                style={{ color: 'hsl(var(--c-fg-muted))' }}>
+                <span>{lang === 'en' ? '🇬🇧' : '🇧🇬'}</span>
+                <span>{lang === 'en' ? 'EN' : 'BG'}</span>
+              </button>
+
+              {/* Theme toggle */}
+              <button onClick={toggleTheme}
+                className="liquid-glass-pill w-8 h-8 rounded-full flex items-center justify-center text-sm transition-all active:scale-95"
+                title={isDark ? 'Light mode' : 'Dark mode'}>
+                {isDark ? '☀️' : '🌙'}
+              </button>
 
               {/* Avatar */}
               <button
                 onClick={() => navigate('/profile')}
-                className="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden text-sm font-bold transition-all"
+                className="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden text-sm font-bold transition-all active:scale-95"
                 style={{
                   background: 'hsl(var(--c-primary)/0.2)',
-                  border: `2px solid ${isActive('/profile') ? 'hsl(var(--c-primary))' : 'hsl(var(--c-primary)/0.3)'}`,
+                  border: `2px solid ${isActive('/profile') ? 'hsl(var(--c-primary))' : 'hsla(0,0%,100%,0.15)'}`,
                   color: 'hsl(var(--c-fg))',
                 }}>
                 {user.avatar?.startsWith('data:')
@@ -254,15 +225,26 @@ export function Navbar() {
                   : <span>{user.name?.[0]?.toUpperCase() ?? '?'}</span>}
               </button>
 
-              {/* Log out */}
+              {/* Log out — icon-only button, always visible */}
               <button onClick={logout}
-                className="hidden sm:block text-sm font-semibold px-3 py-1.5 rounded-lg transition-all"
-                style={{ color: 'hsl(var(--c-fg-muted))', background: 'var(--c-glass)', border: '1px solid var(--c-border)' }}>
-                Log out
+                className="liquid-glass-pill w-8 h-8 rounded-full flex items-center justify-center transition-all active:scale-95"
+                style={{ color: '#f87171' }}
+                title="Log out"
+                aria-label="Log out">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                  <polyline points="16 17 21 12 16 7" />
+                  <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
               </button>
             </>
           ) : (
             <>
+              <button onClick={toggleTheme}
+                className="liquid-glass-pill w-8 h-8 rounded-full flex items-center justify-center text-sm transition-all active:scale-95"
+                title={isDark ? 'Light mode' : 'Dark mode'}>
+                {isDark ? '☀️' : '🌙'}
+              </button>
               <Link to="/login">
                 <button className="btn-ghost text-sm py-1.5 px-3">Log in</button>
               </Link>
@@ -275,28 +257,22 @@ export function Navbar() {
       </div>
     </header>
 
-    {/* ── Mobile bottom nav — visible only on small screens ── */}
+    {/* ── Mobile bottom nav — phones only (xs) ── */}
     {user && (
-      <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-50"
-        style={{
-          background: 'rgba(14,12,28,0.72)',
-          backdropFilter: 'blur(24px) saturate(180%)',
-          WebkitBackdropFilter: 'blur(24px) saturate(180%)',
-          borderTop: '1px solid rgba(160,140,220,0.18)',
-          boxShadow: '0 -8px 32px rgba(0,0,0,0.4)',
-        }}>
-        {/* Safe-area padding for iPhone home indicator */}
-        <div className="flex items-center justify-around px-2 pt-2 pb-safe"
-          style={{ paddingBottom: 'max(8px, env(safe-area-inset-bottom))' }}>
-
-          <BottomTab to="/modules"   active={isActive('/modules') || isActive('/lesson')} icon={<IconLearn />} label="Learn" />
-          <BottomTab to="/quests"    active={isActive('/quests')}    icon={<IconHome />} label="Quests" />
-          <BottomTab to="/league"    active={isActive('/league')}    icon={<IconLeague />} label="League" />
-          {user.is_pro && (
-            <BottomTab to="/advisor" active={isActive('/advisor')} icon={<IconAdvisor />} label="AI" disabled />
-          )}
-          <BottomTab to="/profile"   active={isActive('/profile')}   icon={<IconProfile />} label="Profile" />
-
+      <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-50 px-3 pb-3 pt-1 pointer-events-none">
+        <div className="liquid-glass max-w-7xl mx-auto rounded-2xl pointer-events-auto"
+          style={{
+            paddingBottom: 'max(0px, env(safe-area-inset-bottom))',
+          }}>
+          <div className="flex items-center justify-around px-1.5 pt-2 pb-2">
+            <BottomTab to="/modules"   active={isActive('/modules') || isActive('/lesson')} icon={<IconLearn />} label="Learn" />
+            <BottomTab to="/quests"    active={isActive('/quests')}    icon={<IconHome />} label="Quests" />
+            <BottomTab to="/league"    active={isActive('/league')}    icon={<IconLeague />} label="League" />
+            {user.is_pro && (
+              <BottomTab to="/advisor" active={isActive('/advisor')} icon={<IconAdvisor />} label="AI" disabled />
+            )}
+            <BottomTab to="/profile"   active={isActive('/profile')}   icon={<IconProfile />} label="Profile" />
+          </div>
         </div>
       </nav>
     )}
