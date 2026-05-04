@@ -32,14 +32,6 @@ function IconLeague() {
     </svg>
   );
 }
-function IconProfile() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-      <circle cx="12" cy="7" r="4" />
-    </svg>
-  );
-}
 function IconAdvisor() {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -215,9 +207,7 @@ function LeftSidebar() {
   const labels = {
     learn:    lang === 'en' ? 'Learn'    : 'Учи',
     league:   lang === 'en' ? 'League'   : 'Лига',
-    profile:  lang === 'en' ? 'Profile'  : 'Профил',
     advisor:  lang === 'en' ? 'AI Coach' : 'AI Коуч',
-    logout:   lang === 'en' ? 'Log out'  : 'Изход',
   };
 
   return (
@@ -240,7 +230,6 @@ function LeftSidebar() {
         <SidebarLink to="/modules" active={isActive('/modules') || isActive('/lesson')} label={labels.learn} icon={<IconLearn />} />
         <SidebarLink to="/quests" active={isActive('/quests')} label={lang === 'en' ? 'Quests' : 'Куестове'} icon={<IconQuests />} />
         <SidebarLink to="/league" active={isActive('/league')} label={labels.league} icon={<IconLeague />} />
-        <SidebarLink to="/profile" active={isActive('/profile')} label={labels.profile} icon={<IconProfile />} />
         {user.is_pro && (
           <SidebarLink to="/advisor" active={isActive('/advisor')} label={`✦ ${labels.advisor}`} icon={<IconAdvisor />} disabled />
         )}
