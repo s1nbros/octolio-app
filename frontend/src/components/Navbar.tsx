@@ -30,14 +30,6 @@ function IconLeague() {
     </svg>
   );
 }
-function IconProfile() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-      <circle cx="12" cy="7" r="4" />
-    </svg>
-  );
-}
 function IconAdvisor() {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -227,7 +219,6 @@ export function Navbar() {
             {user.is_pro && (
               <BottomTab to="/advisor" active={isActive('/advisor')} icon={<IconAdvisor />} label="AI" disabled />
             )}
-            <BottomTab to="/profile"   active={isActive('/profile')}   icon={<IconProfile />} label="Profile" />
           </div>
         </div>
       </nav>

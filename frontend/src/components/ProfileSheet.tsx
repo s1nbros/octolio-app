@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLang } from '../contexts/LanguageContext';
@@ -36,6 +36,43 @@ export function ProfileSheet({ open, onClose }: Props) {
     return () => { document.body.style.overflow = original; };
   }, [open]);
 
+  // Swipe-down-to-dismiss
+  const dragStartY = useRef<number | null>(null);
+  const [dragY, setDragY] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const DISMISS_THRESHOLD = 120; // pixels — drag farther than this and we close
+
+  // Reset drag state whenever the sheet's open state changes
+  useEffect(() => {
+    if (!open) {
+      setDragY(0);
+      setIsDragging(false);
+      dragStartY.current = null;
+    }
+  }, [open]);
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    dragStartY.current = e.touches[0].clientY;
+    setIsDragging(true);
+  };
+  const onTouchMove = (e: React.TouchEvent) => {
+    if (dragStartY.current === null) return;
+    const delta = e.touches[0].clientY - dragStartY.current;
+    // Only drag DOWN. Add slight resistance for upward motion.
+    setDragY(delta > 0 ? delta : delta / 4);
+  };
+  const onTouchEnd = () => {
+    if (dragY > DISMISS_THRESHOLD) {
+      // Animate the rest of the way out
+      onClose();
+    } else {
+      // Snap back
+      setDragY(0);
+    }
+    setIsDragging(false);
+    dragStartY.current = null;
+  };
+
   if (!user) return null;
   const level = getLevel(user.xp);
 
@@ -54,16 +91,35 @@ export function ProfileSheet({ open, onClose }: Props) {
 
       {/* Sheet */}
       <div
-        className={`fixed left-0 right-0 bottom-0 z-[101] transition-transform duration-300 ease-out
-                   ${open ? 'translate-y-0' : 'translate-y-full'}`}
-        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+        className={`fixed left-0 right-0 bottom-0 z-[101] ${isDragging ? '' : 'transition-transform duration-300 ease-out'}`}
+        style={{
+          paddingBottom: 'env(safe-area-inset-bottom)',
+          transform: open ? `translateY(${dragY}px)` : 'translateY(100%)',
+          // Slight opacity fade as the user drags it away — adds polish
+          opacity: open ? Math.max(0.5, 1 - dragY / 400) : 0,
+        }}
       >
         <div className="liquid-glass mx-3 mb-3 rounded-3xl overflow-hidden"
           style={{ maxHeight: 'calc(85vh - env(safe-area-inset-bottom))' }}>
 
-          {/* Drag handle */}
-          <div className="flex justify-center pt-2.5 pb-1">
-            <div className="w-10 h-1 rounded-full" style={{ background: 'hsla(0,0%,100%,0.2)' }} />
+          {/* Drag handle — generous hit area, attached drag listeners */}
+          <div
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+            onTouchCancel={onTouchEnd}
+            className="flex justify-center items-center py-4 cursor-grab active:cursor-grabbing select-none"
+            style={{ touchAction: 'none' }}
+            role="button"
+            aria-label="Swipe down to close"
+          >
+            <div
+              className="w-12 rounded-full transition-all"
+              style={{
+                height: isDragging ? '5px' : '4px',
+                background: isDragging ? 'hsla(0,0%,100%,0.5)' : 'hsla(0,0%,100%,0.25)',
+              }}
+            />
           </div>
 
           <div className="px-5 pb-5 overflow-y-auto" style={{ maxHeight: 'calc(85vh - 60px)' }}>
