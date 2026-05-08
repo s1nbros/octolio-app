@@ -235,6 +235,114 @@ const staticModules = [
                     },
                 ],
             },
+            // ── Lesson 4: Credit Score Mastery ──
+            {
+                id: 'credit-score-mastery',
+                moduleId: 'budgeting',
+                title: { en: 'Credit Score Mastery', bg: 'Овладей кредитния рейтинг' },
+                description: { en: 'Understand the number that controls your financial doors — and how to improve it.', bg: 'Разбери числото, което контролира финансовите ти врати — и как да го подобриш.' },
+                icon: '📊', xpReward: 120, order: 4,
+                exercises: [
+                    // 1. Theory block
+                    {
+                        id: 'cs-theory',
+                        type: 'theory',
+                        xp: 0,
+                        slides: [
+                            {
+                                emoji: '📊',
+                                title: { en: 'What Is a Credit Score?', bg: 'Какво е кредитен рейтинг?' },
+                                body: { en: 'Your credit score is a 3-digit number (300–850) that tells lenders how risky it is to lend you money. A higher score means lower interest rates, better loan terms, and easier approvals.\n\nThink of it as your financial reputation — built over years, damaged in days.', bg: 'Кредитният рейтинг е 3-цифрено число (300–850), което казва на кредиторите колко рисковано е да ти заемат пари. По-висок рейтинг означава по-ниски лихви, по-добри условия и по-лесно одобрение.\n\nМисли за него като за финансовата ти репутация — изгражда се с години, разрушава се за дни.' },
+                                highlight: { en: '680 = Fair | 700 = Good | 750+ = Excellent — each tier unlocks better financial products.', bg: '680 = Задоволителен | 700 = Добър | 750+ = Отличен — всяко ниво отключва по-добри финансови продукти.' },
+                            },
+                            {
+                                emoji: '🧩',
+                                title: { en: 'The 5 Factors', bg: 'Петте фактора' },
+                                body: { en: 'Your credit score is built from 5 key factors:\n\n35% — Payment history (pay on time!)\n30% — Credit utilization (keep below 30%)\n15% — Length of credit history\n10% — Credit mix (cards + loans)\n10% — New credit inquiries\n\nThe first two factors alone account for 65% of your score.', bg: 'Кредитният рейтинг се изгражда от 5 ключови фактора:\n\n35% — Плащания навреме\n30% — Използване на кредит (под 30%)\n15% — Дължина на кредитна история\n10% — Микс от кредити\n10% — Нови запитвания\n\nПървите два фактора сами по себе си съставляват 65% от рейтинга.' },
+                                highlight: { en: '💡 A single missed payment can drop your score by 50-100 points!', bg: '💡 Едно пропуснато плащане може да свали рейтинга ти с 50-100 точки!' },
+                            },
+                            {
+                                emoji: '💰',
+                                title: { en: 'Why It Matters: Real Money', bg: 'Защо е важно: Реални пари' },
+                                body: { en: 'With a 680 score, you might pay 8.5% on a car loan.\nWith a 750 score, you would pay 5.2%.\n\nOn a €25,000 car over 5 years:\n680 score: €3,400 more in interest!\n\nOver a lifetime, your credit score can cost or save you €100,000+ in interest charges.', bg: 'С рейтинг 680, може да плащаш 8.5% на автокредит.\nС рейтинг 750, ще плащаш 5.2%.\n\nНа кола за €25,000 за 5 години:\nРейтинг 680: €3,400 повече лихва!\n\nПрез целия живот, кредитният рейтинг може да ти струва или спести €100,000+ в лихви.' },
+                            },
+                        ],
+                    },
+                    // 2. Match Terms — financial vocabulary
+                    {
+                        id: 'cs-match',
+                        type: 'match_terms',
+                        xp: 15,
+                        matchPairs: [
+                            { term: { en: 'Credit utilization', bg: 'Използване на кредит' }, definition: { en: 'Percentage of your credit limit you are using', bg: 'Процент от кредитния лимит, който използваш' } },
+                            { term: { en: 'Hard inquiry', bg: 'Твърдо запитване' }, definition: { en: 'Credit check by a lender that temporarily lowers your score', bg: 'Проверка от кредитор, която временно понижава рейтинга' } },
+                            { term: { en: 'Payment history', bg: 'История на плащанията' }, definition: { en: 'Record of whether you pay bills on time', bg: 'Запис дали плащаш сметките навреме' } },
+                            { term: { en: 'Credit mix', bg: 'Кредитен микс' }, definition: { en: 'Variety of credit types you have (cards, loans, mortgage)', bg: 'Разнообразие от видове кредити (карти, заеми, ипотека)' } },
+                        ],
+                    },
+                    // 3. True/False — myth busting
+                    {
+                        id: 'cs-tf-1',
+                        type: 'true_false',
+                        xp: 15,
+                        statement: { en: 'Checking your own credit score will lower it.', bg: 'Проверката на собствения ти кредитен рейтинг го понижава.' },
+                        isTrue: false,
+                        explanation: { en: 'This is a common myth! Checking your own score is a "soft inquiry" which has zero impact. Only "hard inquiries" from lenders (when you apply for credit) temporarily lower your score by 5-10 points.', bg: 'Това е често срещан мит! Проверката на собствения рейтинг е "меко запитване", което няма никакво влияние. Само "твърди запитвания" от кредитори (когато кандидатстваш за кредит) временно понижават рейтинга с 5-10 точки.' },
+                    },
+                    // 4. Order Items — rank credit score factors
+                    {
+                        id: 'cs-order',
+                        type: 'order_items',
+                        xp: 20,
+                        orderInstruction: { en: 'Rank these factors by their impact on your credit score (most important first)', bg: 'Подреди тези фактори по влиянието им върху кредитния рейтинг (най-важните първо)' },
+                        orderItems: [
+                            { label: { en: 'Payment history (35%)', bg: 'История на плащанията (35%)' }, emoji: '📅' },
+                            { label: { en: 'Credit utilization (30%)', bg: 'Използване на кредит (30%)' }, emoji: '💳' },
+                            { label: { en: 'Length of history (15%)', bg: 'Дължина на историята (15%)' }, emoji: '📆' },
+                            { label: { en: 'Credit mix (10%)', bg: 'Кредитен микс (10%)' }, emoji: '🎯' },
+                            { label: { en: 'New inquiries (10%)', bg: 'Нови запитвания (10%)' }, emoji: '🔍' },
+                        ],
+                        correctOrder: [0, 1, 2, 3, 4],
+                        explanation: { en: 'Payment history and credit utilization together make up 65% of your score. Focus on paying on time and keeping balances low!', bg: 'Историята на плащанията и използването на кредит заедно съставляват 65% от рейтинга. Фокусирай се върху навременните плащания и ниските баланси!' },
+                    },
+                    // 5. Fill Number — calculate utilization
+                    {
+                        id: 'cs-calc',
+                        type: 'fill_number',
+                        xp: 20,
+                        fillNumberScenario: { en: 'Your credit card has a €10,000 limit. Financial experts recommend keeping your utilization below 30%. What is the maximum balance you should carry?', bg: 'Кредитната ти карта има лимит от €10,000. Финансовите експерти препоръчват да държиш използването под 30%. Какъв е максималният баланс, който трябва да имаш?' },
+                        question: { en: 'Maximum recommended balance:', bg: 'Максимален препоръчителен баланс:' },
+                        fillNumberAnswer: 3000,
+                        fillNumberTolerance: 100,
+                        fillNumberUnit: '€',
+                        fillNumberHint: { en: 'Multiply the credit limit by the recommended utilization percentage.', bg: 'Умножи кредитния лимит по препоръчания процент на използване.' },
+                        explanation: { en: '€10,000 × 30% = €3,000. Keeping your utilization below 30% shows lenders you manage credit responsibly. Below 10% is even better for your score!', bg: '€10,000 × 30% = €3,000. Поддържането на използването под 30% показва на кредиторите, че управляваш кредита отговорно. Под 10% е още по-добре за рейтинга!' },
+                    },
+                    // 6. Scenario Decision — real dilemma
+                    {
+                        id: 'cs-decision',
+                        type: 'scenario_decision',
+                        xp: 20,
+                        decisionScenario: { en: 'You have 3 credit cards. Your oldest card (8 years old) has a €50 annual fee and you rarely use it. You\'re thinking about closing it to save money. Your credit score is currently 720.', bg: 'Имаш 3 кредитни карти. Най-старата (8 години) има €50 годишна такса и рядко я използваш. Мислиш да я затвориш, за да спестиш пари. Кредитният ти рейтинг е 720.' },
+                        decisionAvatar: '🤔',
+                        decisionChoices: [
+                            { label: { en: 'Close the card — save €50/year', bg: 'Затвори картата — спести €50/година' }, emoji: '✂️', outcome: { en: 'Closing your oldest card shortens your credit history (15% of score) and increases your utilization ratio. Your score could drop 30-50 points. That drop could cost you thousands on your next loan.', bg: 'Затварянето на най-старата карта скъсява кредитната история (15% от рейтинга) и увеличава съотношението на използване. Рейтингът може да падне с 30-50 точки, което може да ти струва хиляди на следващия заем.' }, isBest: false },
+                            { label: { en: 'Keep it open — use it once a month', bg: 'Дръж я отворена — използвай я веднъж месечно' }, emoji: '💳', outcome: { en: 'Smart! Making one small purchase per month keeps the card active, preserves your 8-year credit history, and maintains your available credit. The €50/year fee is worth the credit score protection.', bg: 'Умно! Една малка покупка на месец поддържа картата активна, запазва 8-годишната кредитна история и поддържа наличния кредит. €50/година такса си заслужава защитата на рейтинга.' }, isBest: true },
+                            { label: { en: 'Ask to downgrade to a no-fee card', bg: 'Помоли за преминаване към карта без такса' }, emoji: '📞', outcome: { en: 'Also a great option! Many banks let you downgrade to a no-fee version of the same card, preserving your history and credit limit. Always call and ask before closing.', bg: 'Също чудесен вариант! Много банки позволяват преминаване към версия без такса, запазвайки историята и кредитния лимит. Винаги се обади и попитай преди да затвориш.' }, isBest: true },
+                        ],
+                        explanation: { en: 'The general rule: never close your oldest credit card. The credit history length and available credit are worth more than the annual fee. If the fee is too high, call your bank to negotiate or downgrade.', bg: 'Общо правило: никога не затваряй най-старата кредитна карта. Дължината на кредитната история и наличният кредит струват повече от годишната такса. Ако таксата е висока, обади се в банката, за да преговаряш или преминеш на по-евтин вариант.' },
+                    },
+                    // 7. True/False — another myth
+                    {
+                        id: 'cs-tf-2',
+                        type: 'true_false',
+                        xp: 15,
+                        statement: { en: 'You need to carry a balance on your credit card to build credit.', bg: 'Трябва да поддържаш баланс по кредитната карта, за да изграждаш кредит.' },
+                        isTrue: false,
+                        explanation: { en: 'Myth busted! You build credit by using your card and paying the FULL balance each month. Carrying a balance just means you pay interest for nothing. The credit bureaus see your on-time payment regardless of whether you carry a balance or not.', bg: 'Митът е разбит! Изграждаш кредит, като използваш картата и плащаш ПЪЛНИЯ баланс всеки месец. Поддържането на баланс просто означава, че плащаш лихва без причина. Кредитните бюра виждат навременното плащане, независимо дали поддържаш баланс или не.' },
+                    },
+                ],
+            },
         ],
     },
     // ─────────────────────────────────────────────

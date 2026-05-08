@@ -7,6 +7,11 @@ import { BudgetSlider } from './exercises/BudgetSlider';
 import { RatRaceGame } from './exercises/RatRaceGame';
 import { CompoundSim } from './exercises/CompoundSim';
 import { SortItems } from './exercises/SortItems';
+import { MatchTerms } from './exercises/MatchTerms';
+import { OrderItems } from './exercises/OrderItems';
+import { TrueFalse } from './exercises/TrueFalse';
+import { ScenarioDecision } from './exercises/ScenarioDecision';
+import { FillNumber } from './exercises/FillNumber';
 
 interface Props {
   exercise: Exercise;
@@ -78,6 +83,56 @@ export function ExerciseRenderer({ exercise, onAnswer, questionNumber, totalQues
       <div>
         <ExerciseHeader questionNumber={questionNumber} totalQuestions={totalQuestions} xp={exercise.xp} />
         <SortItems exercise={exercise} onAnswer={onAnswer} />
+      </div>
+    );
+  }
+
+  // ── Match Terms ──
+  if (exercise.type === 'match_terms') {
+    return (
+      <div>
+        <ExerciseHeader questionNumber={questionNumber} totalQuestions={totalQuestions} xp={exercise.xp} />
+        <MatchTerms exercise={exercise} onAnswer={onAnswer} />
+      </div>
+    );
+  }
+
+  // ── Order Items ──
+  if (exercise.type === 'order_items') {
+    return (
+      <div>
+        <ExerciseHeader questionNumber={questionNumber} totalQuestions={totalQuestions} xp={exercise.xp} />
+        <OrderItems exercise={exercise} onAnswer={onAnswer} />
+      </div>
+    );
+  }
+
+  // ── True False ──
+  if (exercise.type === 'true_false') {
+    return (
+      <div>
+        <ExerciseHeader questionNumber={questionNumber} totalQuestions={totalQuestions} xp={exercise.xp} />
+        <TrueFalse exercise={exercise} onAnswer={onAnswer} />
+      </div>
+    );
+  }
+
+  // ── Scenario Decision ──
+  if (exercise.type === 'scenario_decision') {
+    return (
+      <div>
+        <ExerciseHeader questionNumber={questionNumber} totalQuestions={totalQuestions} xp={exercise.xp} />
+        <ScenarioDecision exercise={exercise} onAnswer={onAnswer} />
+      </div>
+    );
+  }
+
+  // ── Fill Number ──
+  if (exercise.type === 'fill_number') {
+    return (
+      <div>
+        <ExerciseHeader questionNumber={questionNumber} totalQuestions={totalQuestions} xp={exercise.xp} />
+        <FillNumber exercise={exercise} onAnswer={onAnswer} />
       </div>
     );
   }

@@ -10,7 +10,7 @@ export interface TheorySlide {
 
 export interface Exercise {
   id: string;
-  type: 'theory' | 'choice' | 'fill_blank' | 'budget_slider' | 'rpg_scenario' | 'rat_race' | 'compound_sim' | 'sort_items';
+  type: 'theory' | 'choice' | 'fill_blank' | 'budget_slider' | 'rpg_scenario' | 'rat_race' | 'compound_sim' | 'sort_items' | 'match_terms' | 'order_items' | 'true_false' | 'scenario_decision' | 'fill_number';
   xp: number;
   // theory
   slides?: TheorySlide[];
@@ -49,6 +49,30 @@ export interface Exercise {
   compoundConfig?: { defaultPrincipal: number; defaultRate: number; defaultYears: number; defaultMonthly: number; };
   // sort_items
   sortItems?: { label: LocalizedText; emoji: string; isAsset: boolean; }[];
+  // match_terms
+  matchPairs?: { term: LocalizedText; definition: LocalizedText; }[];
+  // order_items
+  orderItems?: { label: LocalizedText; emoji: string; }[];
+  correctOrder?: number[];
+  orderInstruction?: LocalizedText;
+  // true_false
+  statement?: LocalizedText;
+  isTrue?: boolean;
+  // scenario_decision
+  decisionScenario?: LocalizedText;
+  decisionAvatar?: string;
+  decisionChoices?: {
+    label: LocalizedText;
+    emoji: string;
+    outcome: LocalizedText;
+    isBest: boolean;
+  }[];
+  // fill_number
+  fillNumberScenario?: LocalizedText;
+  fillNumberAnswer?: number;
+  fillNumberTolerance?: number;
+  fillNumberUnit?: string;
+  fillNumberHint?: LocalizedText;
 }
 
 export interface LessonMeta {
