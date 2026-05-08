@@ -250,7 +250,7 @@ function LessonNode({
 
   return (
     <div
-      className="relative flex flex-col items-center transition-transform"
+      className={`relative flex flex-col items-center transition-transform ${isCurrent && !locked ? 'mt-6' : ''}`}
       style={{ transform: `translateX(${xOffsetPx}px)` }}
     >
       {/* START bubble — only on current lesson */}
