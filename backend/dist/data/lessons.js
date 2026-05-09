@@ -1562,6 +1562,7 @@ const staticModules = [
     },
     // ─────────────────────────────────────────────
     // PRO MODULE 3 — TAX STRATEGY
+    // Signature interactive: tax_brackets (live bracket visualizer)
     // ─────────────────────────────────────────────
     {
         id: 'tax-strategy',
@@ -1569,80 +1570,100 @@ const staticModules = [
         description: { en: 'The legal game the wealthy play. Learn every trick — without breaking any laws.', bg: 'Законната игра, която богатите играят. Научи всеки трик — без да нарушаваш закони.' },
         icon: '🧾', color: 'purple', order: 12, proOnly: true,
         lessons: [
+            // ── Lesson 1: Tax Brackets & Strategy ──
             {
                 id: 'tax-basics',
                 moduleId: 'tax-strategy',
-                title: { en: 'The Tax Bracket Myth That Costs People Thousands', bg: 'Митът за данъчните скоби, който струва хиляди' },
-                description: { en: 'Bust the biggest tax misconception and learn how brackets actually work.', bg: 'Разбий най-голямото данъчно заблуждение и научи как реално работят скобите.' },
-                icon: '💡', xpReward: 130, order: 1,
+                title: { en: 'Tax Brackets & Legal Strategy', bg: 'Данъчни скоби и законна стратегия' },
+                description: { en: 'Visualize brackets, kill the marginal-rate myth, and learn what wealthy people actually do.', bg: 'Виж скобите, разбий мита за пределната ставка и научи какво правят богатите.' },
+                icon: '💡', xpReward: 180, order: 1,
                 exercises: [
                     {
                         id: 'tax-theory-1', type: 'theory', xp: 0,
                         slides: [
                             {
                                 emoji: '🤦',
-                                title: { en: 'The Myth That Makes People Refuse Raises', bg: 'Митът, заради който хора отказват повишения' },
-                                body: { en: 'True story: An employee refused a €5,000 raise because "it would push me into the higher tax bracket and I\'d take home less."\n\nThis is 100% wrong. Here\'s why:\n\nTax brackets are MARGINAL. You only pay the higher rate on income ABOVE the threshold.\n\nExample with simplified brackets:\n€0-30k: 20%\n€30k-70k: 35%\n\nIf you earn €31,000:\n• First €30k: taxed at 20% = €6,000\n• Last €1,000: taxed at 35% = €350\n• Total: €6,350 tax\n\nA raise ALWAYS means more money in your pocket.', bg: 'Вярна история: Служител отказа повишение от €5,000, защото "ще ме вкара в по-висока данъчна скоба и ще взема по-малко".\n\nТова е 100% грешно. Ето защо:\n\nДанъчните скоби са ПРЕДЕЛНИ. Плащаш по-високата ставка само за дохода НАД прага.\n\nПример с опростени скоби:\n€0-30k: 20%\n€30k-70k: 35%\n\nАко печелиш €31,000:\n• Първите €30k: данък 20% = €6,000\n• Послед��ите €1,000: данък 35% = €350\n• Общо: €6,350 данък\n\nПовишението ВИНАГИ означава повече пари в джоба ти.' },
-                                highlight: { en: '💡 Never refuse a raise because of tax brackets. You will always take home more money.', bg: '💡 Никога не отказвай повишение заради данъчни скоби. Винаги ще взимаш повече пари у дома.' },
+                                title: { en: 'The Bracket Myth', bg: 'Митът за скобите' },
+                                body: { en: 'True story: an employee refused a €5,000 raise "because it would push me into a higher bracket and I\'d take home less."\n\n100% wrong. Brackets are MARGINAL — only the income ABOVE each threshold gets the higher rate.\n\nSimple example:\n€0–30k: 20% | €30k–70k: 35%\n\nEarn €31k:\n• First €30k × 20% = €6,000\n• Last €1k × 35% = €350\n• Total tax: €6,350 (effective ~20.5%)\n\nA raise ALWAYS leaves more in your pocket.', bg: 'Истинска история: служител отказа €5,000 повишение, "защото ще съм в по-висока скоба и ще взема по-малко".\n\n100% грешно. Скобите са ПРЕДЕЛНИ — само доходът НАД прага получава по-високата ставка.\n\nПример:\n€0–30к: 20% | €30к–70к: 35%\n\nПечелиш €31к:\n• Първите €30к × 20% = €6,000\n• Последните €1к × 35% = €350\n• Общо: €6,350 (ефективно ~20.5%)\n\nПовишение = винаги повече в джоба.' },
+                                highlight: { en: '💡 Effective rate < Marginal rate. Always. Refusing raises for "tax reasons" is the most expensive financial myth.', bg: '💡 Ефективна < пределна. Винаги. Отказът от повишение заради "данъци" е най-скъпият мит.' },
                             },
                             {
                                 emoji: '🎯',
-                                title: { en: 'The Three Legal Tax Weapons', bg: 'Трите законни данъчни оръжия' },
-                                body: { en: 'Every person has access to these:\n\n🏦 1. PENSION / RETIREMENT ACCOUNT\nMoney goes in tax-free. Grows tax-free. Taxed only when you withdraw — at retirement when you\'re in a lower bracket.\n\n📉 2. TAX LOSS HARVESTING\nSell losing investments to offset gains. The losses reduce your taxable income.\n\n🏠 3. BUSINESS EXPENSES\nIf you freelance or have a business, many expenses become deductible — laptop, internet, workspace.', bg: 'Всеки има достъп до тях:\n\n🏦 1. ПЕНСИОННА СМЕТКА\nПарите влизат без данък. Растат без данък. Облагат се само при теглене — при пенсиониране, когато си в по-ниска скоба.\n\n📉 2. ДАНЪЧНА РЕАЛИЗАЦИЯ НА ЗАГУБИ\nПродай губещи инвестиции, за да компенсираш печалби. Загубите намаляват облагаемия ти доход.\n\n🏠 3. БИЗНЕС РАЗХОДИ\nАко работиш на свободна практика или имаш бизнес, много разходи стават приспадаеми — лаптоп, интернет, работно пространство.' },
-                                highlight: { en: '⚠️ These are legal strategies used by millions. Tax evasion (hiding income) is illegal. Tax optimisation (using the rules) is smart.', bg: '⚠️ Това са законни стратегии, използвани от милиони. Данъчното укриване (скриване на доход) е незаконно. Данъчната оптимизация (използване на правилата) е умно.' },
+                                title: { en: 'The 3 Legal Tax Weapons', bg: '3-те законни данъчни оръжия' },
+                                body: { en: '🏦 1. Pension / retirement account\nContributions reduce taxable income. Money grows tax-free. Taxed only on withdrawal — typically in a lower bracket.\n\n📉 2. Tax-loss harvesting\nSell losers to offset gains. Up to a per-year limit can offset ordinary income too.\n\n🏠 3. Business / freelance expenses\nLaptop, internet, courses, home-office — fully or partially deductible if used for income-generating work.', bg: '🏦 1. Пенсионна сметка\nВноски намаляват облагаемия доход. Растат без данък. Данък само при теглене — обикновено в по-ниска скоба.\n\n📉 2. Реализация на загуби\nПродай губещи за компенсиране на печалби. До годишен лимит може да компенсира и обикновен доход.\n\n🏠 3. Бизнес / freelance разходи\nЛаптоп, интернет, курсове, домашен офис — изцяло или частично приспадаеми, ако са за приход.' },
+                                highlight: { en: '⚠️ Tax avoidance (using the rules) = legal. Tax evasion (hiding income) = illegal. Know the difference.', bg: '⚠️ Данъчно избягване (по правилата) = законно. Укриване (скриване на доход) = незаконно. Знай разликата.' },
                             },
                         ],
                     },
                     {
-                        id: 'tax-rpg-1', type: 'rpg_scenario', xp: 35,
-                        scenario: { en: 'You\'re a freelance developer earning €60,000/year. Your accountant friend tells you: "You could set up a simple business structure, deduct your laptop, home office, and courses — saving around €4,000/year in taxes. Takes 2 hours to set up." Your other friend says: "Don\'t bother, it sounds complicated." What do you do?', bg: 'Ти си фрийлансър разработчик, печелиш €60,000/година. Приятелят ти счетоводител казва: "Можеш да създадеш проста бизнес структура, да приспаднеш лаптопа, домашния офис и курсовете — спестявайки около €4,000/година данъци. Отнема 2 часа за настройка." Другият ти приятел казва: "Не си прави труда, звучи сложно." Какво правиш?' },
-                        avatar: '💻',
-                        choices: [
-                            {
-                                label: { en: 'Skip it — too complicated', bg: 'Пропусни — прекалено сложно' },
-                                emoji: '😴',
-                                consequence: { en: 'You pay €4,000 extra in taxes every year. Over 10 years that\'s €40,000 given to the government that you didn\'t have to. Your lazy friend cost you a car.', bg: 'Плащаш €4,000 допълнителни данъци всяка година. За 10 години това са €40,000 дадени на правителството, без да е трябвало. Мързеливият ти приятел те е струвал кола.' },
-                                cashFlowChange: -333,
-                                isGood: false,
-                            },
-                            {
-                                label: { en: 'Do it — €4,000/year saved is worth 2 hours', bg: 'Направи го — €4,000/година спестени си заслужава 2 часа' },
-                                emoji: '✅',
-                                consequence: { en: 'Smart. €4,000/year saved and invested at 8% for 20 years = €197,000. That 2-hour investment paid for your retirement.', bg: 'Умно. €4,000/година спестени и инвестирани при 8% за 20 години = €197,000. Тази 2-часова инвестиция плати за пенсионирането ти.' },
-                                cashFlowChange: 333,
-                                isGood: true,
-                            },
-                            {
-                                label: { en: 'Consult a real tax advisor first', bg: 'Първо се консултирай с истински данъчен съветник' },
-                                emoji: '🧑‍💼',
-                                consequence: { en: 'Excellent. The advisor confirms the strategy and finds 2 more deductions you missed. Total savings: €5,500/year. Best €300 you ever spent.', bg: 'Отлично. Съветникът потвърждава стратегията и открива още 2 приспадания, които си пропуснал. Общи спестявания: €5,500/година. Най-добрите €300, които си похарчил.' },
-                                cashFlowChange: 458,
-                                isGood: true,
-                            },
+                        id: 'tax-brackets-1', type: 'tax_brackets', xp: 35,
+                        taxBrackets: {
+                            scenario: { en: 'Simplified progressive brackets:\n€0–15k: 10%\n€15k–40k: 22%\n€40k–80k: 32%\n€80k+: 40%\n\nUse the slider to explore — then answer for the test income shown.', bg: 'Опростени прогресивни скоби:\n€0–15к: 10%\n€15к–40к: 22%\n€40к–80к: 32%\n€80к+: 40%\n\nИзползвай плъзгача да изследваш — после отговори за дадения доход.' },
+                            question: { en: 'At €60,000 annual income, what is your EFFECTIVE tax rate (in %)?', bg: 'При €60,000 годишен доход, каква е ЕФЕКТИВНАТА ти ставка (%)?' },
+                            brackets: [
+                                { upTo: 15000, rate: 10 },
+                                { upTo: 40000, rate: 22 },
+                                { upTo: 80000, rate: 32 },
+                                { upTo: 999999999, rate: 40 },
+                            ],
+                            testIncome: 60000,
+                            correctAnswer: 22,
+                            tolerance: 1.5,
+                            unit: '%',
+                            adjustable: true,
+                            incomeMin: 10000,
+                            incomeMax: 150000,
+                        },
+                        explanation: { en: 'At €60k: €1,500 (10% × 15k) + €5,500 (22% × 25k) + €6,400 (32% × 20k) = €13,400. €13,400 ÷ €60,000 = 22.3%. Your MARGINAL rate is 32%, but your EFFECTIVE rate is much lower — that\'s the bracket truth.', bg: 'При €60к: €1,500 (10% × 15к) + €5,500 (22% × 25к) + €6,400 (32% × 20к) = €13,400. €13,400 ÷ €60,000 = 22.3%. Пределната ти ставка е 32%, но ЕФЕКТИВНАТА е много по-ниска — това е истината за скобите.' },
+                    },
+                    {
+                        id: 'tax-match-1', type: 'match_terms', xp: 25,
+                        matchPairs: [
+                            { term: { en: 'Marginal rate', bg: 'Пределна ставка' }, definition: { en: 'Tax rate on the NEXT euro of income earned', bg: 'Ставка върху СЛЕДВАЩОТО евро доход' } },
+                            { term: { en: 'Effective rate', bg: 'Ефективна ставка' }, definition: { en: 'Total tax ÷ total income (your real %)', bg: 'Общ данък ÷ общ доход (реалният %)' } },
+                            { term: { en: 'Deduction', bg: 'Приспадане' }, definition: { en: 'Reduces taxable income before tax is calculated', bg: 'Намалява облагаемия доход преди данък' } },
+                            { term: { en: 'Tax credit', bg: 'Данъчен кредит' }, definition: { en: 'Direct €-for-€ reduction of tax owed', bg: 'Директно евро-за-евро намаление на данъка' } },
+                            { term: { en: 'Withholding', bg: 'Удържане' }, definition: { en: 'Tax taken out of paychecks during the year', bg: 'Данък удържан от заплатите през годината' } },
+                            { term: { en: 'Capital gains', bg: 'Капиталова печалба' }, definition: { en: 'Profit from selling an asset (often taxed differently)', bg: 'Печалба от продажба на актив (често различен данък)' } },
                         ],
                     },
                     {
-                        id: 'tax-budget-1', type: 'budget_slider', xp: 30,
-                        income: 5000,
-                        categories: [
-                            { label: { en: 'Pension contribution (pre-tax)', bg: 'Пенсионна вноска (преди данък)' }, emoji: '🏦', min: 0, max: 1500, ideal: 500 },
-                            { label: { en: 'Emergency fund top-up', bg: 'Попълване на спешен фонд' }, emoji: '🛡️', min: 0, max: 1000, ideal: 300 },
-                            { label: { en: 'Tax-advantaged investments', bg: 'Данъчноблагоприятни инвестиции' }, emoji: '📈', min: 0, max: 2000, ideal: 700 },
-                            { label: { en: 'Living expenses', bg: 'Разходи за живот' }, emoji: '🏠', min: 1500, max: 3500, ideal: 2500 },
-                            { label: { en: 'Fun money', bg: 'Пари за забавление' }, emoji: '🎉', min: 0, max: 1000, ideal: 300 },
+                        id: 'tax-tf-1', type: 'true_false', xp: 15,
+                        statement: { en: 'A €1 tax credit and a €1 deduction reduce your tax bill by the same amount.', bg: '€1 данъчен кредит и €1 приспадане намаляват данъка с еднаква сума.' },
+                        isTrue: false,
+                        explanation: { en: 'FALSE. A €1 CREDIT cuts tax by €1 directly. A €1 DEDUCTION cuts taxable income by €1, which only saves the marginal rate (e.g. 32%) of that €1 = €0.32. Credits are 3–4× more valuable euro-for-euro than deductions.', bg: 'НЕВЯРНО. €1 КРЕДИТ маха €1 от данъка директно. €1 ПРИСПАДАНЕ намалява облагаемия доход с €1, което спестява само пределната ставка (напр. 32%) на това €1 = €0.32. Кредитите са 3–4× по-ценни.' },
+                    },
+                    {
+                        id: 'tax-fill-num-1', type: 'fill_number', xp: 25,
+                        fillNumberScenario: { en: 'Brackets: €0–30k @ 20%, €30k–60k @ 35%, €60k+ @ 45%. You earn €40,000/year.', bg: 'Скоби: €0–30к @ 20%, €30к–60к @ 35%, €60к+ @ 45%. Печелиш €40,000/год.' },
+                        question: { en: 'How much total tax do you owe (€)?', bg: 'Колко общо данък дължиш (€)?' },
+                        fillNumberAnswer: 9500, fillNumberTolerance: 100, fillNumberUnit: '€',
+                        fillNumberHint: { en: 'First €30k × 20% + next €10k × 35%', bg: 'Първите €30к × 20% + следващите €10к × 35%' },
+                        explanation: { en: '€30k × 20% = €6,000 + €10k × 35% = €3,500 → Total: €9,500. Effective rate = 9,500 ÷ 40,000 = 23.75% (not the 35% marginal bracket). Always think effective.', bg: '€30к × 20% = €6,000 + €10к × 35% = €3,500 → Общо: €9,500. Ефективна ставка = 9,500 ÷ 40,000 = 23.75% (не 35% пределна). Винаги мисли ефективна.' },
+                    },
+                    {
+                        id: 'tax-decision-1', type: 'scenario_decision', xp: 30,
+                        decisionAvatar: '💼',
+                        decisionScenario: { en: 'Year-end. €10,000 bonus arrives. You\'re in the 35% marginal bracket. Pension annual cap not yet hit. Where does the bonus go for the BIGGEST tax win?', bg: 'Край на годината. €10,000 бонус. Пределна ставка 35%. Годишният лимит на пенсията не е достигнат. Къде отива за НАЙ-ГОЛЯМО данъчно предимство?' },
+                        decisionChoices: [
+                            { label: { en: 'Pension (pre-tax) — €10k contribution', bg: 'Пенсия (преди данък) — €10к вноска' }, emoji: '🏦', outcome: { en: 'Cuts taxable income by €10k → saves €3,500 immediately. Money also grows TAX-FREE until retirement. At 7% for 25 years that €10k becomes €54k. Best move by far.', bg: 'Намалява облагаемия с €10к → спестяваш €3,500 веднага. Парите растат БЕЗ ДАНЪК до пенсия. При 7% за 25 г. €10к стават €54к. Най-добър ход.' }, isBest: true },
+                            { label: { en: 'Taxable brokerage (regular index fund)', bg: 'Облагаема брокерска сметка (обикн. индекс)' }, emoji: '📊', outcome: { en: 'You first pay €3,500 tax on the bonus, leaving €6,500 to invest. Future capital gains also taxable. Decent, but you forfeit ~€3,500 in immediate tax savings.', bg: 'Първо плащаш €3,500 данък, остават €6,500 за инвестиране. Бъдещите печалби — облагаеми. Прилично, но губиш ~€3,500 веднага.' }, isBest: false },
+                            { label: { en: 'Spend it on lifestyle upgrades', bg: 'Похарчи за лукс' }, emoji: '🛍️', outcome: { en: 'After tax: €6,500 of pure consumption. Zero compounding, zero future option value. Nothing wrong with celebrating once — but as a strategy this is the most expensive choice.', bg: 'След данък: €6,500 чисто потребление. Нулева капитализация, нула опции. Не е лошо да празнуваш — но като стратегия е най-скъпото.' }, isBest: false },
+                            { label: { en: 'Crypto — "no tax there"', bg: 'Крипто — "няма данък там"' }, emoji: '🪙', outcome: { en: 'Wrong premise. Crypto IS taxable in most countries — gains are reported and taxed similar to capital gains, often at higher rates than stocks. Plus volatility. Bad on both axes.', bg: 'Грешна предпоставка. Крипто Е облагаемо в повечето страни — печалбите се декларират като капиталови, често с по-високи ставки. Плюс волатилността. Лошо на всичко.' }, isBest: false },
                         ],
+                        explanation: { en: 'Pre-tax pension contributions are a triple-win: cut taxes NOW, grow tax-free, taxed at lower future rate. They\'re the closest thing to a financial cheat code that\'s 100% legal.', bg: 'Пенсионни вноски преди данък са тройна победа: намаляваш данъка СЕГА, расте без данък, плащаш по-ниска ставка после. Най-близкото до законен чийт код.' },
                     },
                     {
                         id: 'tax-choice-1', type: 'choice', xp: 20,
-                        question: { en: 'You get a €10,000 bonus. Which move saves you the most tax legally?', bg: 'Получаваш бонус от €10,000. Кой ход ти спестява най-много данъци законно?' },
+                        question: { en: 'Over a 30-year career, which strategy saves the MOST in taxes legally?', bg: 'За 30-годишна кариера, коя стратегия спестява НАЙ-МНОГО данък законно?' },
                         options: [
-                            { en: 'Put it in a savings account', bg: 'Сложи го в спестовна сметка' },
-                            { en: 'Spend it immediately before you pay taxes', bg: 'Похарчи го незабавно преди да платиш данъци' },
-                            { en: 'Contribute the maximum to your pension account', bg: 'Внеси максимума в пенсионната си сметка' },
-                            { en: 'Invest it in crypto — no taxes there', bg: 'Инвестирай в крипто — там няма данъци' },
+                            { en: 'Saving aggressively in a regular savings account', bg: 'Агресивно спестяване в обикновена сметка' },
+                            { en: 'Maxing pension contributions every single year', bg: 'Максимално запълване на пенсията всяка година' },
+                            { en: 'Always taking the standard deduction without checking alternatives', bg: 'Винаги стандартното приспадане без проверка на алтернативи' },
+                            { en: 'Hiding side-hustle income from the tax authority', bg: 'Скриване на доход от страничен бизнес от данъчните' },
                         ],
-                        correctIndex: 2,
-                        explanation: { en: 'Pension contributions reduce your taxable income directly. If you\'re in a 35% bracket, a €10,000 pension contribution saves €3,500 in taxes immediately — plus the money grows tax-free until retirement. Crypto is NOT tax-free in most countries.', bg: 'Пенсионните вноски директно намаляват облагаемия ти доход. Ако си в 35% скоба, вноска от €10,000 в пенсията спестява €3,500 в данъци незабавно — плюс парите растат без данък до пенсиониране. Крипто НЕ е без данъци в повечето страни.' },
+                        correctIndex: 1,
+                        explanation: { en: 'Maxing pension contributions consistently saves 25–40% of every contribution in immediate taxes AND defers compounding tax-free for decades. Over 30 years this is often €100k+ in tax savings. Hiding income (option 4) is illegal — never confuse evasion with optimization.', bg: 'Максимални пенсионни вноски постоянно спестяват 25–40% от всяка вноска веднага И отлагат капитализацията без данък десетилетия. За 30 г. — често €100к+ спестени. Скриване на доход (4) е незаконно — никога не бъркай укриване с оптимизация.' },
                     },
                 ],
             },

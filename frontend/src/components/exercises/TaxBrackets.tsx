@@ -10,12 +10,12 @@ function calcTax(income: number, brackets: { upTo: number; rate: number }[]): { 
   let taxOwed = 0;
   const fills: number[] = [];
   for (const b of brackets) {
-    const range = b.upTo === Infinity ? Infinity : b.upTo - prev;
+    const range = b.upTo >= 100000000 ? Infinity : b.upTo - prev;
     const taxedHere = Math.min(remaining, range);
     fills.push(Math.max(0, taxedHere));
     taxOwed += taxedHere * (b.rate / 100);
     remaining -= taxedHere;
-    if (b.upTo === Infinity) break;
+    if (b.upTo >= 100000000) break;
     prev = b.upTo;
     if (remaining <= 0) break;
   }
@@ -100,7 +100,7 @@ export function TaxBrackets({ exercise, onAnswer }: Props) {
           {cfg.brackets.map((b, i) => {
             const prev = i === 0 ? 0 : cfg.brackets[i - 1].upTo;
             const fill = bracketFills[i];
-            const range = b.upTo === Infinity ? (income - prev) : (b.upTo - prev);
+            const range = b.upTo >= 100000000 ? (income - prev) : (b.upTo - prev);
             const fillPct = range > 0 ? (fill / range) * 100 : 0;
             const taxFromBracket = fill * (b.rate / 100);
             const c = colors[i % colors.length];
@@ -109,7 +109,7 @@ export function TaxBrackets({ exercise, onAnswer }: Props) {
                 <div className="flex justify-between text-xs mb-0.5" style={{ color: 'hsl(var(--c-fg-muted))' }}>
                   <span className="mono">
                     €{prev.toLocaleString()}
-                    {b.upTo === Infinity ? '+' : `–€${b.upTo.toLocaleString()}`} @ {b.rate}%
+                    {b.upTo >= 100000000 ? '+' : `–€${b.upTo.toLocaleString()}`} @ {b.rate}%
                   </span>
                   <span className="mono font-bold" style={{ color: fill > 0 ? c : 'hsl(var(--c-fg-subtle))' }}>
                     {fill > 0 ? `€${Math.round(taxFromBracket).toLocaleString()}` : '—'}
