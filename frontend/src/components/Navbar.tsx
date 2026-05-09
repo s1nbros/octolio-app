@@ -6,22 +6,6 @@ import { useTheme } from '../contexts/ThemeContext';
 import { ProfileSheet } from './ProfileSheet';
 
 /* SVG icons for the drawer */
-function IconMenu() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="4" y1="7" x2="20" y2="7" />
-      <line x1="4" y1="12" x2="20" y2="12" />
-      <line x1="4" y1="17" x2="20" y2="17" />
-    </svg>
-  );
-}
-function IconLockSmall() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M17 8h-1V6c0-2.76-2.24-5-5-5S6 3.24 6 6v2H5c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H7.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2z"/>
-    </svg>
-  );
-}
 function IconHome() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -295,22 +279,32 @@ export function Navbar() {
       <div className="liquid-glass max-w-7xl mx-auto rounded-2xl px-3 h-14 flex items-center gap-2"
         style={{ position: 'relative' }}>
 
-        {/* Hamburger menu button (replaces logo) — disabled during lessons */}
+        {/* Logo button — opens nav drawer; locked during lessons */}
         {user ? (
           <button
             onClick={() => !inLesson && setDrawerOpen(true)}
             disabled={inLesson}
             aria-label={inLesson ? 'Menu disabled during lesson' : 'Open menu'}
-            className="w-10 h-10 rounded-xl flex items-center justify-center transition-all flex-shrink-0 z-10 active:scale-95"
+            className="relative flex items-center justify-center flex-shrink-0 z-10 active:scale-95 transition-transform"
             style={{
-              background: inLesson ? 'hsla(0,0%,100%,0.04)' : 'hsl(var(--c-primary)/0.12)',
-              color: inLesson ? 'hsl(var(--c-fg-subtle))' : 'hsl(var(--c-primary))',
-              border: `1px solid ${inLesson ? 'hsla(0,0%,100%,0.06)' : 'hsl(var(--c-primary)/0.25)'}`,
-              opacity: inLesson ? 0.55 : 1,
+              opacity: inLesson ? 0.5 : 1,
               cursor: inLesson ? 'not-allowed' : 'pointer',
+              filter: inLesson ? 'grayscale(0.6)' : undefined,
             }}
           >
-            {inLesson ? <IconLockSmall /> : <IconMenu />}
+            <img src="/logo.png" alt="Octolio" className="w-9 h-9 object-contain"
+              style={{ filter: inLesson ? 'none' : 'drop-shadow(0 0 6px hsl(var(--c-green)/0.4))' }} />
+            {inLesson && (
+              <span
+                className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center"
+                style={{ background: 'hsl(228, 24%, 10%)', color: 'hsl(var(--c-fg-subtle))', border: '1.5px solid hsl(228, 24%, 10%)' }}
+                aria-hidden="true"
+              >
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M17 8h-1V6c0-2.76-2.24-5-5-5S6 3.24 6 6v2H5c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H7.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2z"/>
+                </svg>
+              </span>
+            )}
           </button>
         ) : (
           <Link to="/" className="flex items-center gap-2 flex-shrink-0 z-10 active:scale-95 transition-transform">
