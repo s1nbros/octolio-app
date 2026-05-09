@@ -1371,6 +1371,7 @@ const staticModules = [
     },
     // ─────────────────────────────────────────────
     // PRO MODULE 2 — REAL ESTATE INVESTING
+    // Signature interactive: rat_race (landlord cashflow simulator)
     // ─────────────────────────────────────────────
     {
         id: 'real-estate',
@@ -1378,28 +1379,54 @@ const staticModules = [
         description: { en: 'Analyse real deals, survive landlord nightmares, and decide: buy or invest in REITs?', bg: 'Анализирай реални сделки, преживей кошмари на наемодатели и реши: купувай или инвестирай в REIT-и?' },
         icon: '🏠', color: 'orange', order: 11, proOnly: true,
         lessons: [
+            // ── Lesson 1: The Landlord Game ──
             {
                 id: 'reit-fundamentals',
                 moduleId: 'real-estate',
                 title: { en: 'The Landlord Game', bg: 'Играта на наемодателя' },
-                description: { en: 'Run the numbers on real deals. Can you spot the cashflow traps?', bg: 'Пресметни реалните сделки. Можеш ли да забележиш капаните на паричния поток?' },
-                icon: '🏢', xpReward: 160, order: 1,
+                description: { en: 'Run the numbers on real deals. Spot the cashflow traps.', bg: 'Пресметни реалните сделки. Открий капаните на паричния поток.' },
+                icon: '🏢', xpReward: 170, order: 1,
                 exercises: [
                     {
                         id: 're-theory-1', type: 'theory', xp: 0,
                         slides: [
                             {
                                 emoji: '🏠',
-                                title: { en: 'The Glamour vs Reality of Real Estate', bg: 'Блясъкът срещу Реалността на недвижимите имоти' },
-                                body: { en: 'The Instagram version:\n📸 "Passive income from my rental property!"\n\nThe real version:\n📞 3am call — tenant flooded the bathroom\n🔧 €2,400 boiler repair out of nowhere\n📋 6-month eviction process for non-paying tenant\n💸 3 months of vacancy between tenants\n\nReal estate CAN be great — but only if the numbers actually work.', bg: 'Instagram версията:\n📸 "Пасивен доход от имота ми под наем!"\n\nРеалната версия:\n📞 Обаждане в 3 сутринта — наемателят е наводнил банята\n🔧 Ремонт на бойлер за €2,400 от нищото\n📋 6-месечен процес на изгонване на наемател, който не плаща\n💸 3 месеца незаетост между наемателите\n\nНедвижимите имоти МОГАТ да бъдат страхотни — но само ако числата реално работят.' },
-                                highlight: { en: '🧮 The formula: Monthly Cashflow = Rent − Mortgage − Insurance − Maintenance (10%) − Vacancy (8%)', bg: '🧮 Формулата: Месечен поток = Наем − Ипотека − Застраховка − Поддръжка (10%) − Незаетост (8%)' },
+                                title: { en: 'Glamour vs Reality', bg: 'Блясък срещу реалност' },
+                                body: { en: 'The Instagram version:\n📸 "Passive income from my rental!"\n\nThe real version:\n📞 3am call: tenant flooded the bathroom\n🔧 €2,400 boiler repair out of nowhere\n📋 6-month eviction for non-paying tenant\n💸 3 months vacancy between tenants\n\nReal estate CAN beat stocks — but only if the numbers actually work.', bg: 'Instagram версия:\n📸 "Пасивен доход от наема!"\n\nРеалната версия:\n📞 3 ч. сутринта: наемателят наводни банята\n🔧 €2,400 ремонт на бойлер от нищото\n📋 6-месечно изгонване на неплащащ\n💸 3 месеца незаетост между наематели\n\nИмотите МОГАТ да бият акциите — но само ако числата работят.' },
+                                highlight: { en: '🧮 Cashflow = Rent − Mortgage − Insurance − Maintenance (10%) − Vacancy (8%)', bg: '🧮 Поток = Наем − Ипотека − Застраховка − Поддръжка (10%) − Незаетост (8%)' },
                             },
                             {
                                 emoji: '🎯',
-                                title: { en: 'The 1% Rule — Your Quick Filter', bg: 'Правилото за 1% — Бързият ти филтър' },
-                                body: { en: 'Before deep analysis, use this quick test:\n\nMonthly rent ÷ Purchase price ≥ 1%\n\nExamples:\n✅ €120,000 property → needs €1,200/month rent\n❌ €250,000 property → would need €2,500/month — rare!\n\nIf a deal doesn\'t pass the 1% rule, the math rarely works out. Move on and find better deals.', bg: 'Преди задълбочен анализ, използвай този бърз тест:\n\nМесечен наем ÷ Цена на покупка ≥ 1%\n\nПримери:\n✅ Имот за €120,000 → нужни са €1,200/месец наем\n❌ Имот за €250,000 → ще са нужни €2,500/месец — рядко!\n\nАко сделката не преминава правилото за 1%, математиката рядко се получава. Продължавай и намирай по-добри сделки.' },
+                                title: { en: 'The 1% Rule — Quick Filter', bg: 'Правилото 1% — бърз филтър' },
+                                body: { en: 'Before deep analysis, use this 5-second test:\n\nMonthly rent ÷ Purchase price ≥ 1%\n\nExamples:\n✅ €120k property → needs €1,200/mo rent\n❌ €250k property → needs €2,500/mo (rare!)\n\nFails the 1% rule? The math almost never works out after costs. Move on.', bg: 'Преди задълбочен анализ, 5-секунден тест:\n\nМесечен наем ÷ Цена ≥ 1%\n\nПримери:\n✅ €120k имот → нужни €1,200/мес\n❌ €250k имот → нужни €2,500/мес (рядко!)\n\nНе минава 1%? Числата почти никога не работят. Продължи.' },
+                                highlight: { en: '⚡ Better cap rate target: 6%+ (NOI ÷ price). Anything under 5% rarely beats a REIT after the headaches.', bg: '⚡ По-добра цел за cap rate: 6%+ (NOI ÷ цена). Под 5% рядко бие REIT след главоболията.' },
                             },
                         ],
+                    },
+                    {
+                        id: 're-match-1', type: 'match_terms', xp: 25,
+                        matchPairs: [
+                            { term: { en: 'Cap rate', bg: 'Cap rate' }, definition: { en: 'NOI ÷ purchase price — annual unlevered yield', bg: 'NOI ÷ цена — годишна доходност без ливъридж' } },
+                            { term: { en: 'NOI', bg: 'NOI' }, definition: { en: 'Net Operating Income = rent − operating expenses', bg: 'Чист оперативен доход = наем − оперативни разходи' } },
+                            { term: { en: 'Cash-on-cash', bg: 'Cash-on-cash' }, definition: { en: 'Annual cashflow ÷ cash invested (with leverage)', bg: 'Годишен поток ÷ вложен кеш (с ливъридж)' } },
+                            { term: { en: 'Vacancy rate', bg: 'Норма на незаетост' }, definition: { en: 'Average % of months a unit sits empty per year', bg: 'Среден % месеци, в които имот е празен годишно' } },
+                            { term: { en: 'Equity', bg: 'Капитал' }, definition: { en: 'Property value minus the mortgage balance', bg: 'Стойност на имота минус остатъка по ипотеката' } },
+                        ],
+                    },
+                    {
+                        id: 're-fill-num-1', type: 'fill_number', xp: 25,
+                        fillNumberScenario: { en: 'A €180,000 apartment can be rented for €1,000/month. Apply the 1% rule: monthly rent ÷ price × 100.', bg: 'Апартамент €180,000 може да се отдава за €1,000/мес. Приложи правилото 1%: месечен наем ÷ цена × 100.' },
+                        question: { en: 'What is the 1%-rule percentage for this deal?', bg: 'Какъв е процентът по правилото 1% за тази сделка?' },
+                        fillNumberAnswer: 0.56, fillNumberTolerance: 0.05, fillNumberUnit: '',
+                        fillNumberHint: { en: '€1,000 ÷ €180,000 × 100 = ?', bg: '€1,000 ÷ €180,000 × 100 = ?' },
+                        explanation: { en: '0.56% — well under 1%. Without significant rent increases, this deal cashflows poorly. Cap rate would also be borderline. Look for properties with stronger rent-to-price ratios.', bg: '0.56% — далеч под 1%. Без големи увеличения на наема, тази сделка е със слаб поток. Cap rate също би бил граничен. Търси имоти с по-добро съотношение наем/цена.' },
+                    },
+                    {
+                        id: 're-tf-1', type: 'true_false', xp: 15,
+                        statement: { en: 'Real estate values always go up over the long term — you can\'t lose buying property.', bg: 'Стойностите на имотите винаги растат — не можеш да загубиш, купувайки имот.' },
+                        isTrue: false,
+                        explanation: { en: 'FALSE. Japanese real estate dropped 70%+ in the 1990s and never recovered. US prices fell 30% in 2008–2012. Spain dropped 40%. Long-term direction is up, but specific markets, neighbourhoods, and decades can lose money. Cashflow protects you when appreciation doesn\'t come.', bg: 'НЕВЯРНО. Японските имоти паднаха 70%+ в 90-те и не се възстановиха. САЩ -30% в 2008–2012. Испания -40%. Дългосрочната посока е нагоре, но конкретни пазари и десетилетия могат да губят. Потокът те пази, когато поскъпването закъснее.' },
                     },
                     {
                         id: 're-rat-race-1', type: 'rat_race', xp: 40,
@@ -1415,88 +1442,119 @@ const staticModules = [
                                 { label: { en: 'Vacancy reserve', bg: 'Резерв за незаетост' }, emoji: '🚪', amount: 64 },
                             ],
                             opportunities: [
-                                { label: { en: 'Buy a REIT ETF with cashflow', bg: 'Купи REIT ETF с паричния поток' }, emoji: '📈', cost: 0, monthlyPassive: 8, isGood: true },
-                                { label: { en: 'Hire a property manager (8% of rent)', bg: 'Наеми управител на имот (8% от наема)' }, emoji: '👔', cost: 0, monthlyPassive: -64, isGood: false },
+                                { label: { en: 'Buy a REIT ETF with cashflow', bg: 'Купи REIT ETF с потока' }, emoji: '📈', cost: 0, monthlyPassive: 8, isGood: true },
+                                { label: { en: 'Hire a property manager (8% of rent)', bg: 'Наеми управител (8% от наема)' }, emoji: '👔', cost: 0, monthlyPassive: -64, isGood: false },
                                 { label: { en: 'Renovate kitchen — higher rent', bg: 'Ремонт на кухня — по-висок наем' }, emoji: '🍳', cost: 3000, monthlyPassive: 80, isGood: true },
-                                { label: { en: 'Take out 2nd mortgage for vacation', bg: 'Вземи 2-ра ипотека за ваканция' }, emoji: '🏖️', cost: 0, monthlyPassive: -200, isGood: false },
+                                { label: { en: 'Take 2nd mortgage for a vacation', bg: '2-ра ипотека за ваканция' }, emoji: '🏖️', cost: 0, monthlyPassive: -200, isGood: false },
                             ],
                         },
                     },
                     {
-                        id: 're-choice-1', type: 'choice', xp: 25,
-                        question: { en: 'Deal: €180,000 apartment. Rent: €900/month. Mortgage: €700. Running costs: €130/month. Is this a good investment?', bg: 'Сделка: Апартамент за €180,000. Наем: €900/месец. Ипотека: €700. Текущи разходи: €130/месец. Добра инвестиция ли е?' },
+                        id: 're-decision-1', type: 'scenario_decision', xp: 30,
+                        decisionAvatar: '🏘️',
+                        decisionScenario: { en: 'Three deals on your desk. €40k cash for the down payment. Pick the BEST cashflow opportunity.', bg: 'Три сделки на бюрото ти. €40к кеш за първоначална вноска. Избери НАЙ-ДОБРАТА сделка за поток.' },
+                        decisionChoices: [
+                            { label: { en: 'A: €200k apartment, €1,800/mo rent, "trendy" area', bg: 'А: €200к апартамент, €1,800/мес наем, "моден" район' }, emoji: '🌆', outcome: { en: 'Passes 1% rule (0.9%, borderline). After mortgage €1,100 + costs €260, cashflow is ~€440/mo. Decent, but trendy areas can have rapid value swings. Solid but not exceptional.', bg: 'Минава 1% (0.9%, граница). След ипотека €1,100 + разходи €260, поток ~€440/мес. Прилично, но модните райони имат рискове. Стабилно, но не изключително.' }, isBest: false },
+                            { label: { en: 'B: €120k smaller flat, €1,250/mo rent, "boring" steady neighbourhood', bg: 'Б: €120к по-малък апартамент, €1,250/мес наем, "скучен" стабилен район' }, emoji: '🏘️', outcome: { en: 'Passes 1% rule (1.04%) easily. Mortgage €700 + costs €175 → cashflow ~€375/mo on €24k down. Cash-on-cash ≈ 18%. Boring areas have stable rents and lower vacancy. Best risk-adjusted return.', bg: 'Минава 1% (1.04%) лесно. Ипотека €700 + разходи €175 → поток ~€375/мес при €24к първоначални. Cash-on-cash ≈ 18%. Скучните райони имат стабилни наеми. Най-добра възвращаемост на риск.' }, isBest: true },
+                            { label: { en: 'C: €350k modern apartment, €2,000/mo rent, prestige location', bg: 'В: €350к модерен, €2,000/мес наем, престижна локация' }, emoji: '✨', outcome: { en: 'Fails the 1% rule (0.57%). Mortgage €2,000 + costs €260 → cashflow is NEGATIVE €260/mo. Banking on appreciation = speculation, not investing.', bg: 'Не минава 1% (0.57%). Ипотека €2,000 + разходи €260 → поток е МИНУС €260/мес. Залог на поскъпване = спекулация.' }, isBest: false },
+                        ],
+                        explanation: { en: '"Boring" properties with strong rent-to-price ratios beat trendy/prestige ones for cashflow. Trendy may appreciate, but speculation isn\'t investing — predictable cashflow is.', bg: '"Скучните" имоти с добро наем/цена бият модните за поток. Модните може да поскъпнат, но спекулацията не е инвестиране — предсказуемият поток е.' },
+                    },
+                    {
+                        id: 're-choice-1', type: 'choice', xp: 15,
+                        question: { en: 'Deal: €180k apartment, €900/mo rent, mortgage €700, costs €130. Is this a good investment?', bg: 'Сделка: €180к апартамент, €900/мес наем, ипотека €700, разходи €130. Добра инвестиция?' },
                         options: [
-                            { en: 'Yes — €70/month positive cashflow is great', bg: 'Да — €70/месец положителен поток е страхотно' },
-                            { en: 'No — barely breaks even, one repair wipes the year\'s profit', bg: 'Не — едва покрива разходите, един ремонт заличава годишната печалба' },
-                            { en: 'Yes — property always goes up in value', bg: 'Да — имотите винаги растат в стойност' },
+                            { en: 'Yes — €70/mo positive cashflow is great', bg: 'Да — €70/мес положителен поток е страхотно' },
+                            { en: 'No — barely breaks even, one repair wipes a year of profit', bg: 'Не — едва излиза, един ремонт изтрива година печалба' },
+                            { en: 'Yes — property always goes up', bg: 'Да — имотите винаги растат' },
                             { en: 'It depends on the neighbourhood', bg: 'Зависи от квартала' },
                         ],
                         correctIndex: 1,
-                        explanation: { en: '€900 − €700 − €130 = €70/month = €840/year. One boiler breakdown (€1,500+) wipes 2 years of profit. This deal also fails the 1% rule (€900/€180k = 0.5%). Keep looking.', bg: '€900 − €700 − €130 = €70/месец = €840/година. Един авариен бойлер (€1,500+) заличава 2 години печалба. Тази сделка също не преминава правилото за 1% (€900/€180k = 0.5%). Продължавай да търсиш.' },
+                        explanation: { en: '€70/mo = €840/yr. A single boiler repair (€1,500+) wipes 2 years of profit. Fails the 1% rule (€900/€180k = 0.5%). Walk away — better deals exist.', bg: '€70/мес = €840/год. Един ремонт на бойлер (€1,500+) трие 2 години печалба. Не минава 1% (0.5%). Откажи — има по-добри сделки.' },
                     },
                 ],
             },
+            // ── Lesson 2: REIT vs Buy ──
             {
                 id: 'rental-cashflow',
                 moduleId: 'real-estate',
-                title: { en: 'REIT vs Buy — The Ultimate Showdown', bg: 'REIT срещу Купуване — Финалното противостоене' },
-                description: { en: 'Run a head-to-head simulation: what builds more wealth over 20 years?', bg: 'Стартирай симулация очи в очи: какво изгражда повече богатство за 20 години?' },
-                icon: '⚔️', xpReward: 170, order: 2,
+                title: { en: 'REIT vs Buy — The Showdown', bg: 'REIT срещу купуване — дуелът' },
+                description: { en: 'Run head-to-head: what builds more wealth over 20 years with less stress?', bg: 'Очи в очи: какво трупа повече богатство за 20 г. с по-малко стрес?' },
+                icon: '⚔️', xpReward: 180, order: 2,
                 exercises: [
                     {
                         id: 'reit-theory-1', type: 'theory', xp: 0,
                         slides: [
                             {
                                 emoji: '⚔️',
-                                title: { en: 'Two Friends. Same €50,000. Different Choices.', bg: 'Двама приятели. Еднакви €50,000. Различни избори.' },
-                                body: { en: 'Alex buys a rental apartment:\n🏠 €200,000 apartment, €50k down payment\n📈 Property appreciates 3%/year\n💰 €150/month cashflow after all costs\n😤 1 nightmare tenant. 3 months vacancy. €3k roof repair.\n\nSam invests in REIT ETF:\n📊 €50,000 invested at 7%/year\n💸 Dividends auto-reinvested\n😎 Zero phone calls at 3am\n📱 Checked portfolio 0 times this year\n\n20 years later: Who wins?', bg: 'Алекс купува апартамент под наем:\n🏠 Апартамент за €200,000, €50k първоначална вноска\n📈 Имотът се поскъпва с 3%/година\n💰 €150/месец паричен поток след всички разходи\n😤 1 кошмарен наемател. 3 месеца незаетост. Ремонт на покрив за €3k.\n\nСам инвестира в REIT ETF:\n📊 €50,000 при 7%/година\n💸 Дивиденти автоматично реинвестирани\n😎 Нула обаждания в 3 сутринта\n📱 Проверил портфолиото 0 пъти тази година\n\n20 години по-късно: Кой печели?' },
-                                highlight: { en: '💡 Spoiler: Both can win — but REITs require zero work. Direct property can outperform IF the numbers work AND you are a good landlord.', bg: '💡 Спойлер: И двамата могат да спечеля�� — но REIT-ите не изискват никаква работа. Директният имот може да надмине IF числата работят И ти си добър наемодател.' },
+                                title: { en: 'Two Friends. Same €50k. Different Choices.', bg: 'Двама приятели. Еднакви €50к. Различни избори.' },
+                                body: { en: 'Alex buys a rental apartment:\n🏠 €200k apartment, €50k down\n📈 +3%/yr appreciation\n💰 €150/mo cashflow after all costs\n😤 1 nightmare tenant. 3 months vacancy. €3k roof.\n\nSam buys a REIT ETF:\n📊 €50k at 7%/yr (price + dividends)\n💸 Auto-reinvested dividends\n😎 0 phone calls at 3am\n📱 Checked portfolio 0 times\n\n20 years later — who wins?', bg: 'Алекс купува апартамент:\n🏠 €200к, €50к първа вноска\n📈 +3%/г поскъпване\n💰 €150/мес поток след всички разходи\n😤 1 кошмарен наемател. 3 м. незаетост. €3к покрив.\n\nСам купува REIT ETF:\n📊 €50к при 7%/г (цена + дивиденти)\n💸 Авто-реинвестирани дивиденти\n😎 0 обаждания в 3 ч.\n📱 Проверил 0 пъти\n\n20 г. по-късно — кой печели?' },
+                                highlight: { en: '💡 Both can win. REITs = zero work. Direct property only beats IF the math works AND you\'re a good landlord.', bg: '💡 И двамата печелят. REIT = нула работа. Директният имот бие САМО ако числата работят И си добър наемодател.' },
+                            },
+                            {
+                                emoji: '🔑',
+                                title: { en: 'The Hidden Advantages of Each', bg: 'Скритите предимства на всеки' },
+                                body: { en: 'Direct property:\n• Leverage: €50k controls €250k of asset\n• Tax breaks: depreciation deduction\n• Forced appreciation: renovate to add value\n\nREITs:\n• Liquidity: sell in 3 seconds, no agent\n• Diversification: own 1,000 properties at once\n• Hands-off: no tenants, no toilets, no calls\n• Lower transaction costs (0.1% vs 8–10%)', bg: 'Директен имот:\n• Ливъридж: €50к контролира €250к актив\n• Данъчни облекчения: амортизация\n• Принудено поскъпване: ремонт = стойност\n\nREIT:\n• Ликвидност: продаваш за 3 сек\n• Диверсификация: 1,000 имота наведнъж\n• Без главоболия: без наематели, без тоалетни\n• По-ниски транзакционни разходи (0.1% vs 8–10%)' },
+                                highlight: { en: '🎯 Pick one — the answer is whichever you\'ll actually run for 10+ years.', bg: '🎯 Избери едно — отговорът е този, който наистина ще водиш 10+ години.' },
                             },
                         ],
                     },
                     {
-                        id: 'reit-compound-1', type: 'compound_sim', xp: 35,
+                        id: 'reit-compound-1', type: 'compound_sim', xp: 30,
                         compoundConfig: { defaultPrincipal: 50000, defaultRate: 7, defaultYears: 20, defaultMonthly: 150 },
                     },
                     {
-                        id: 'reit-rpg-1', type: 'rpg_scenario', xp: 35,
-                        scenario: { en: 'You have €40,000 saved. Option A: 20% down payment on a €200,000 rental apartment (needs €1,800/month rent to cashflow positive — current market rate: €950). Option B: Invest the full €40,000 in a diversified REIT ETF. What do you do?', bg: 'Имаш спестени €40,000. Вариант А: 20% първоначална вноска за апартамент под наем за €200,000 (нужен €1,800/месец наем за положителен поток — текуща пазарна ставка: €950). Вариант Б: Инвестирай пълните €40,000 в диверсифициран REIT ETF. Какво правиш?' },
-                        avatar: '🤔',
-                        choices: [
-                            {
-                                label: { en: 'Buy the apartment — real estate never loses', bg: 'Купи апартамента — недвижимите имоти никога не губят' },
-                                emoji: '🏠',
-                                consequence: { en: 'You\'re losing €850/month from day one (rent €950 vs costs €1,800). After 3 years you sell at a €15,000 loss after transaction costs.', bg: 'Губиш €850/месец от първия ден (наем €950 срещу разходи €1,800). След 3 години продаваш на загуба от €15,000 след транзакционни разходи.' },
-                                cashFlowChange: -850,
-                                isGood: false,
-                            },
-                            {
-                                label: { en: 'Invest in REIT ETF — the numbers don\'t work on the apartment', bg: 'Инвестирай в REIT ETF — числата не работят за апартамента' },
-                                emoji: '📊',
-                                consequence: { en: 'Smart call. Your €40,000 grows to €78,000 in 10 years at 7%. Meanwhile you receive quarterly dividends with zero management stress.', bg: 'Умно решение. Твоите €40,000 нарастват до €78,000 за 10 години при 7%. Получаваш тримесечни дивиденти без стрес от управление.' },
-                                cashFlowChange: 300,
-                                isGood: true,
-                            },
-                            {
-                                label: { en: 'Keep saving until I find a deal that actually cashflows', bg: 'Продължавай да спестяваш докато намериш сделка, която реално носи поток' },
-                                emoji: '⏳',
-                                consequence: { en: 'Patience is a virtue. While waiting, you park the €40k in a REIT ETF. 2 years later you find a €140k apartment renting at €950 — the numbers work. You buy.', bg: 'Търпението е добродетел. Докато чакаш, паркираш €40k в REIT ETF. 2 години по-късно намираш апартамент за €140k под наем за €950 — числата работят. Купуваш го.' },
-                                cashFlowChange: 150,
-                                isGood: true,
-                            },
+                        id: 'reit-order-1', type: 'order_items', xp: 25,
+                        orderInstruction: { en: 'Order these property-deal evaluation steps from FIRST to LAST:', bg: 'Подреди стъпките за оценка на сделка от ПЪРВА към ПОСЛЕДНА:' },
+                        orderItems: [
+                            { label: { en: 'Apply 1%-rule quick filter', bg: 'Приложи бърз филтър 1%' }, emoji: '🎯' },
+                            { label: { en: 'Calculate full annual NOI (rent − operating costs)', bg: 'Сметни годишен NOI (наем − оп. разходи)' }, emoji: '🧮' },
+                            { label: { en: 'Compute cap rate and cash-on-cash return', bg: 'Сметни cap rate и cash-on-cash' }, emoji: '📊' },
+                            { label: { en: 'Stress-test: vacancy + 1 major repair scenario', bg: 'Стрес-тест: незаетост + 1 голям ремонт' }, emoji: '⚠️' },
+                            { label: { en: 'Compare against a passive REIT alternative', bg: 'Сравни с пасивна REIT алтернатива' }, emoji: '⚖️' },
+                        ],
+                        correctOrder: [0, 1, 2, 3, 4],
+                        explanation: { en: 'Filter fast → compute the real number → stress-test → compare to the easy alternative. Most amateurs skip stress-testing and the REIT comparison and overpay.', bg: 'Бърз филтър → реално число → стрес-тест → сравнение с лесната алтернатива. Повечето пропускат стрес-теста и сравнението и надплащат.' },
+                    },
+                    {
+                        id: 'reit-fill-num-1', type: 'fill_number', xp: 25,
+                        fillNumberScenario: { en: 'A €150,000 apartment generates €13,500 annual rent. Operating expenses (insurance, maintenance, taxes) total €4,500/year.', bg: 'Апартамент €150,000 дава €13,500 годишен наем. Оперативни разходи (застраховка, поддръжка, данъци) общо €4,500/год.' },
+                        question: { en: 'What is the cap rate, in %?', bg: 'Какъв е cap rate, в %?' },
+                        fillNumberAnswer: 6, fillNumberTolerance: 0.5, fillNumberUnit: '',
+                        fillNumberHint: { en: 'Cap rate = (Rent − Op. expenses) ÷ Price × 100', bg: 'Cap rate = (Наем − Оп. разходи) ÷ Цена × 100' },
+                        explanation: { en: 'NOI = €13,500 − €4,500 = €9,000. Cap rate = €9,000 ÷ €150,000 = 6%. A 6% cap rate is solid for residential — anything under 5% rarely beats a REIT after the headaches.', bg: 'NOI = €13,500 − €4,500 = €9,000. Cap rate = €9,000 ÷ €150,000 = 6%. 6% е добро за жилищен имот — под 5% рядко бие REIT.' },
+                    },
+                    {
+                        id: 'reit-match-1', type: 'match_terms', xp: 25,
+                        matchPairs: [
+                            { term: { en: 'Leverage', bg: 'Ливъридж' }, definition: { en: 'Using borrowed money to control a larger asset', bg: 'Заети пари за контрол на по-голям актив' } },
+                            { term: { en: 'Refinance', bg: 'Рефинансиране' }, definition: { en: 'Replace a mortgage with a new one (better terms or pull equity)', bg: 'Замяна на ипотеката с нова (по-добри условия или извличане на капитал)' } },
+                            { term: { en: 'HELOC', bg: 'HELOC' }, definition: { en: 'Home Equity Line of Credit — revolving credit secured by equity', bg: 'Кредит срещу собствения капитал — револвиращ' } },
+                            { term: { en: 'Depreciation', bg: 'Амортизация' }, definition: { en: 'Tax deduction reflecting "wear and tear" on property', bg: 'Данъчно облекчение за "износване" на имота' } },
+                            { term: { en: 'REIT', bg: 'REIT' }, definition: { en: 'Real Estate Investment Trust — stock-like share of properties', bg: 'Доверителен фонд за имоти — дял подобен на акция' } },
+                            { term: { en: '1031 exchange', bg: '1031 размяна' }, definition: { en: 'Defer capital gains tax by swapping property for property', bg: 'Отлагане на данък върху печалбата чрез размяна на имоти' } },
                         ],
                     },
                     {
-                        id: 'reit-choice-1', type: 'choice', xp: 20,
-                        question: { en: 'What is the single biggest advantage of REITs over direct property ownership?', bg: 'Кое е единственото най-голямо предимство на REIT-ите пред директното притежание на имот?' },
-                        options: [
-                            { en: 'Higher returns always', bg: 'Винаги по-висока доходност' },
-                            { en: 'Liquidity — you can sell in seconds without transaction costs', bg: 'Ликвидност — можеш да продадеш за секунди без транзакционни разходи' },
-                            { en: 'No taxes on dividends', bg: 'Без данъци върху дивидентите' },
-                            { en: 'Government guarantee of your investment', bg: 'Правителствена гаранция за инвестицията ти' },
+                        id: 'reit-rpg-1', type: 'rpg_scenario', xp: 30,
+                        scenario: { en: 'Your tenant hasn\'t paid rent in 2 months (€1,800 owed). They claim job loss. They politely ask for "another month." Your savings cover the mortgage but you\'re stressed. Choice?', bg: 'Наемателят ти не е плащал 2 месеца (€1,800 дължими). Твърди загуба на работа. Любезно иска "още един месец". Спестяванията покриват ипотеката, но ти е стресно. Избор?' },
+                        avatar: '😬',
+                        choices: [
+                            { label: { en: 'Grant another month, no paperwork', bg: 'Дай още месец, без документи' }, emoji: '🤝', consequence: { en: 'Studies show 70%+ of "one more month" tenants don\'t pay. You\'re now at 3 months unpaid (€2,700) and the eviction clock didn\'t start. Loss extends another 3–6 months minimum.', bg: 'Проучвания: 70%+ от "още един месец" наематели не плащат. Сега си на 3 м. неплатени (€2,700) и часовникът за изгонване не тече. Загубата продължава поне 3–6 м.' }, cashFlowChange: -2700, isGood: false },
+                            { label: { en: 'File formal notice + offer cash-for-keys (€500 to leave)', bg: 'Подай официално известие + cash-for-keys (€500 да напусне)' }, emoji: '📋', consequence: { en: 'Pragmatic. Eviction takes 3–6 months. Cash-for-keys often works in 30 days. €500 paid + €1,800 lost rent < a 4-month eviction (€3,600 lost rent + €1,500 legal). Net saved: ~€2,800.', bg: 'Прагматично. Изгонването отнема 3–6 м. Cash-for-keys често работи за 30 дни. €500 + €1,800 загубен наем < 4-м изгонване (€3,600 загубен наем + €1,500 правни). Чисто спестени: ~€2,800.' }, cashFlowChange: 1300, isGood: true },
+                            { label: { en: 'Skip the legal process and change the locks now', bg: 'Пропусни правния процес и смени ключалките' }, emoji: '🔒', consequence: { en: 'ILLEGAL in almost every jurisdiction. You can be sued, fined €1,000–€10,000, AND ordered to let the tenant back in with a free month. Always go through legal channels.', bg: 'НЕЗАКОННО в почти всяка юрисдикция. Можеш да си съден, глобен €1,000–€10,000, И принуден да го пуснеш с безплатен месец. Винаги по правен път.' }, cashFlowChange: -5000, isGood: false },
                         ],
-                        correctIndex: 1,
-                        explanation: { en: 'Selling a property takes months and costs 5-10% in fees. Selling a REIT takes 3 seconds and costs nearly nothing. This liquidity is incredibly valuable in emergencies or when better opportunities appear.', bg: 'Продажбата на имот отнема месеци и струва 5-10% в такси. Продажбата на REIT отнема 3 секунди и не струва почти нищо. Тази ликвидност е невероятно ценна при спешни случаи или когато се появят по-добри възможности.' },
+                    },
+                    {
+                        id: 'reit-decision-1', type: 'scenario_decision', xp: 30,
+                        decisionAvatar: '🤔',
+                        decisionScenario: { en: 'You have €40k saved. The €200k local apartment you like would need €1,800/mo rent to cashflow positive — current market rate is €950. What\'s the move?', bg: 'Имаш €40к. Местният апартамент €200к би трябвало да дава €1,800/мес наем за положителен поток — текущ пазар: €950. Ходът?' },
+                        decisionChoices: [
+                            { label: { en: 'Buy it anyway — real estate always wins long-term', bg: 'Купи го все пак — имотите винаги печелят дългосрочно' }, emoji: '🏠', outcome: { en: 'You bleed €850/mo from day 1 (€10k/yr). After 3 yrs, you\'ve lost €30k+ in cashflow plus opportunity cost. Selling triggers 8% transaction costs. Permanent ~€45k loss.', bg: 'Кървиш €850/мес от ден 1 (€10к/год). След 3 г. — €30к+ изгубени плюс пропусната възможност. Продажбата носи 8% такси. Постоянна загуба ~€45к.' }, isBest: false },
+                            { label: { en: 'Park €40k in a REIT ETF, hunt for a better deal', bg: 'Паркирай €40к в REIT ETF, търси по-добра сделка' }, emoji: '📊', outcome: { en: 'Best of both worlds. €40k earns ~7%/yr (~€2,800/yr) while you wait. After 18 months you find a €130k flat renting at €1,150 (passes 1%). Now the math works AND you have €43k+ to deploy.', bg: 'И двата свята. €40к печелят ~7%/г (~€2,800/год) докато чакаш. След 18 м. намираш €130к при €1,150 наем (минава 1%). Числата работят И имаш €43к+ за работа.' }, isBest: true },
+                            { label: { en: 'Buy a cheaper out-of-state property sight-unseen for cashflow', bg: 'Купи по-евтин имот в друг град без оглед — само за поток' }, emoji: '🚚', outcome: { en: 'Out-of-state without local knowledge = high vacancy, surprise repairs, contractor scams. Most newbies who do this lose money for 2–4 years before learning. Property managers eat 8–10% of rent.', bg: 'В друг град без местни познания = висока незаетост, изненадващи ремонти, измами. Повечето новаци губят 2–4 г. преди да научат. Управителите вземат 8–10%.' }, isBest: false },
+                        ],
+                        explanation: { en: 'When the local math doesn\'t work, the answer is patience + REIT in the meantime — not forcing a bad deal or jumping into markets you don\'t understand.', bg: 'Когато местната математика не работи, отговорът е търпение + REIT междувременно — не насилване на лоша сделка или скок в непознати пазари.' },
                     },
                 ],
             },
