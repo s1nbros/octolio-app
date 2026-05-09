@@ -12,6 +12,10 @@ import { OrderItems } from './exercises/OrderItems';
 import { TrueFalse } from './exercises/TrueFalse';
 import { ScenarioDecision } from './exercises/ScenarioDecision';
 import { FillNumber } from './exercises/FillNumber';
+import { StockChart } from './exercises/StockChart';
+import { PortfolioPie } from './exercises/PortfolioPie';
+import { DebtPayoff } from './exercises/DebtPayoff';
+import { TaxBrackets } from './exercises/TaxBrackets';
 
 interface Props {
   exercise: Exercise;
@@ -133,6 +137,46 @@ export function ExerciseRenderer({ exercise, onAnswer, questionNumber, totalQues
       <div>
         <ExerciseHeader questionNumber={questionNumber} totalQuestions={totalQuestions} xp={exercise.xp} />
         <FillNumber exercise={exercise} onAnswer={onAnswer} />
+      </div>
+    );
+  }
+
+  // ── Stock Chart ──
+  if (exercise.type === 'stock_chart') {
+    return (
+      <div>
+        <ExerciseHeader questionNumber={questionNumber} totalQuestions={totalQuestions} xp={exercise.xp} />
+        <StockChart exercise={exercise} onAnswer={onAnswer} />
+      </div>
+    );
+  }
+
+  // ── Portfolio Pie ──
+  if (exercise.type === 'portfolio_pie') {
+    return (
+      <div>
+        <ExerciseHeader questionNumber={questionNumber} totalQuestions={totalQuestions} xp={exercise.xp} />
+        <PortfolioPie exercise={exercise} onAnswer={onAnswer} />
+      </div>
+    );
+  }
+
+  // ── Debt Payoff ──
+  if (exercise.type === 'debt_payoff') {
+    return (
+      <div>
+        <ExerciseHeader questionNumber={questionNumber} totalQuestions={totalQuestions} xp={exercise.xp} />
+        <DebtPayoff exercise={exercise} onAnswer={onAnswer} />
+      </div>
+    );
+  }
+
+  // ── Tax Brackets ──
+  if (exercise.type === 'tax_brackets') {
+    return (
+      <div>
+        <ExerciseHeader questionNumber={questionNumber} totalQuestions={totalQuestions} xp={exercise.xp} />
+        <TaxBrackets exercise={exercise} onAnswer={onAnswer} />
       </div>
     );
   }

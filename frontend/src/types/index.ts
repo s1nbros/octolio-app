@@ -10,7 +10,7 @@ export interface TheorySlide {
 
 export interface Exercise {
   id: string;
-  type: 'theory' | 'choice' | 'fill_blank' | 'budget_slider' | 'rpg_scenario' | 'rat_race' | 'compound_sim' | 'sort_items' | 'match_terms' | 'order_items' | 'true_false' | 'scenario_decision' | 'fill_number';
+  type: 'theory' | 'choice' | 'fill_blank' | 'budget_slider' | 'rpg_scenario' | 'rat_race' | 'compound_sim' | 'sort_items' | 'match_terms' | 'order_items' | 'true_false' | 'scenario_decision' | 'fill_number' | 'stock_chart' | 'portfolio_pie' | 'debt_payoff' | 'tax_brackets';
   xp: number;
   // theory
   slides?: TheorySlide[];
@@ -73,6 +73,47 @@ export interface Exercise {
   fillNumberTolerance?: number;
   fillNumberUnit?: string;
   fillNumberHint?: LocalizedText;
+  // stock_chart
+  stockChart?: {
+    prices: number[];
+    labels?: string[];
+    scenario?: LocalizedText;
+    question: LocalizedText;
+    mode: 'identify_point' | 'identify_pattern';
+    correctPointIndex?: number;
+    pointTolerance?: number;
+    pointPrompt?: LocalizedText;
+    patternOptions?: LocalizedText[];
+    correctPatternIndex?: number;
+  };
+  // portfolio_pie
+  portfolioPie?: {
+    scenario?: LocalizedText;
+    question?: LocalizedText;
+    assets: { label: LocalizedText; emoji: string; color: string; ideal: number; }[];
+    tolerance: number;
+  };
+  // debt_payoff
+  debtPayoff?: {
+    scenario?: LocalizedText;
+    question: LocalizedText;
+    debts: { label: LocalizedText; emoji: string; balance: number; apr: number; minPayment: number; }[];
+    extraPayment: number;
+    correctStrategy: 'snowball' | 'avalanche' | 'even';
+  };
+  // tax_brackets
+  taxBrackets?: {
+    scenario?: LocalizedText;
+    question: LocalizedText;
+    brackets: { upTo: number; rate: number; }[];
+    testIncome: number;
+    correctAnswer: number;
+    tolerance: number;
+    unit: string;
+    adjustable?: boolean;
+    incomeMin?: number;
+    incomeMax?: number;
+  };
 }
 
 export interface LessonMeta {
