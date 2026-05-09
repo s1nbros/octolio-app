@@ -1172,6 +1172,7 @@ const staticModules = [
     },
     // ─────────────────────────────────────────────
     // PRO MODULE 1 — ADVANCED INVESTING
+    // Signature interactives: portfolio_pie + stock_chart for advanced concepts
     // ─────────────────────────────────────────────
     {
         id: 'advanced-investing',
@@ -1179,64 +1180,108 @@ const staticModules = [
         description: { en: 'ETFs, portfolio strategies and real investment decisions — learn by playing.', bg: 'ETF-и, портфолио стратегии и реални инвестиционни решения — учи чрез игра.' },
         icon: '📈', color: 'blue', order: 10, proOnly: true,
         lessons: [
+            // ── Lesson 1: ETF Mastery ──
             {
                 id: 'etf-mastery',
                 moduleId: 'advanced-investing',
-                title: { en: 'Build Your First Portfolio', bg: 'Изгради първото си портфолио' },
-                description: { en: 'Sort assets, simulate compound growth, and make your first real allocation decision.', bg: 'Сортирай активи, симулирай сложна лихва и вземи първото си реално инвестиционно решение.' },
-                icon: '🌐', xpReward: 150, order: 1,
+                title: { en: 'ETF Mastery & Portfolio Design', bg: 'Майсторство в ETF и дизайн на портфейл' },
+                description: { en: 'Build an advanced 4-asset portfolio and quantify the cost of fees.', bg: 'Изгради напреднал портфейл от 4 актива и изчисли цената на таксите.' },
+                icon: '🌐', xpReward: 160, order: 1,
                 exercises: [
                     {
                         id: 'etf-theory-1', type: 'theory', xp: 0,
                         slides: [
                             {
                                 emoji: '🌐',
-                                title: { en: 'The Boring Millionaire Secret', bg: 'Тайната на скучния милионер' },
-                                body: { en: 'The world\'s most boring investment strategy has also made the most millionaires.\n\nStep 1: Buy a total market ETF (like VTI or MSCI World)\nStep 2: Add money every month automatically\nStep 3: Do absolutely nothing else\nStep 4: Wait 20-30 years\n\nThat\'s it. No stock picking. No timing the market. No stress.', bg: 'Най-скучната инвестиционна стратегия в света е създала и най-много милионери.\n\nСтъпка 1: Купи total market ETF (като VTI или MSCI World)\nСтъпка 2: Добавяй пари всеки месец автоматично\nСтъпка 3: Не прави абсолютно нищо друго\nСтъпка 4: Изчакай 20-30 години\n\nТолкова. Без избиране на акции. Без опит за timing. Без стрес.' },
-                                highlight: { en: '📊 €300/month at 8% for 30 years = €408,000. You only put in €108,000. The rest is pure compound magic.', bg: '📊 €300/месец при 8% за 30 години = €408,000. Ти си вложил само €108,000. Останалото е чиста магия на сложната лихва.' },
+                                title: { en: 'The Boring Millionaire Recipe', bg: 'Рецептата на скучния милионер' },
+                                body: { en: 'The most boring strategy in the world has also made the most millionaires.\n\n1. Buy a total-market ETF (VTI / MSCI World)\n2. Auto-add money every month\n3. Do absolutely nothing else\n4. Wait 20–30 years\n\n€300/mo at 8% for 30 years = €408,000. You contributed €108,000. The other €300,000 is pure compounding.', bg: 'Най-скучната стратегия е направила най-много милионери.\n\n1. Купи total-market ETF (VTI / MSCI World)\n2. Авто-добавяй пари всеки месец\n3. Нищо повече\n4. Чакай 20–30 г.\n\n€300/мес при 8% за 30 г. = €408,000. Ти внасяш €108,000. Останалите €300,000 са капитализация.' },
+                                highlight: { en: '📊 95% of active traders underperform the index. Boring wins.', bg: '📊 95% от активните търговци губят от индекса. Скучното печели.' },
                             },
                             {
                                 emoji: '🧠',
-                                title: { en: 'ETF vs "Hot Tips"', bg: 'ETF срещу "Горещи съвети"' },
-                                body: { en: 'Your friend just told you about an amazing crypto coin.\nYour uncle swears this mining stock will 10x.\nA TikToker says this is the next Amazon.\n\nHere\'s what the data says:\n• 95% of active traders underperform the index\n• Professional fund managers beat the market less than 20% of the time\n• The S&P 500 has never had a 20-year period with negative returns\n\nThe boring ETF wins. Every time.', bg: 'Приятелят ти току-що ти разказа за невероятна крипто монета.\nЧичо ти се кълне, че тази минна акция ще стане 10x.\nTikToker казва, че това е следващият Amazon.\n\nЕто какво казват данните:\n• 95% от активните търговци се представят по-зле от индекса\n• Професионалните мениджъри на фондове бият пазара по-малко от 20% от времето\n• S&P 500 никога не е имал 20-годишен период с отрицателна доходност\n\nСкучният ETF печели. Всеки път.' },
-                                highlight: { en: '⚠️ "Hot tips" feel exciting. But excitement is the enemy of good investing.', bg: '⚠️ "Горещите съвети" звучат вълнуващо. Но вълнението е враг на доброто инвестиране.' },
+                                title: { en: '4-Asset Diversification', bg: 'Диверсификация в 4 актива' },
+                                body: { en: 'A textbook "advanced lazy" portfolio:\n• 60% domestic stocks\n• 25% international stocks\n• 10% bonds\n• 5% small-cap or REITs (extra growth)\n\nMore moving parts, but each adds true diversification (not just more stocks). Rebalance once a year and it beats most paid advisors.', bg: 'Класически "лазя но напреднало" портфейл:\n• 60% местни акции\n• 25% международни\n• 10% облигации\n• 5% малки компании или REIT-и\n\nПовече части, но всяка дава истинска диверсификация. Ребалансирай 1× годишно и биеш повечето платени съветници.' },
+                                highlight: { en: '🎯 4 funds beat 4,000 stock picks for 99% of investors.', bg: '🎯 4 фонда бият 4,000 акции за 99% от инвеститорите.' },
                             },
                         ],
                     },
                     {
-                        id: 'etf-sort-1', type: 'sort_items', xp: 25,
-                        sortItems: [
-                            { label: { en: 'MSCI World ETF', bg: 'MSCI World ETF' }, emoji: '🌐', isAsset: true },
-                            { label: { en: 'Friend\'s hot stock tip', bg: 'Горещ съвет от приятел за акция' }, emoji: '🎰', isAsset: false },
-                            { label: { en: 'S&P 500 index fund', bg: 'S&P 500 индексен фонд' }, emoji: '📈', isAsset: true },
-                            { label: { en: 'Crypto meme coin', bg: 'Крипто мем монета' }, emoji: '🐸', isAsset: false },
-                            { label: { en: 'Monthly auto-invest plan', bg: 'Месечен план за автоматично инвестиране' }, emoji: '⚙️', isAsset: true },
-                            { label: { en: 'Leveraged day-trading', bg: 'Ливъридж дневна търговия' }, emoji: '📉', isAsset: false },
+                        id: 'etf-match-1', type: 'match_terms', xp: 25,
+                        matchPairs: [
+                            { term: { en: 'Expense ratio', bg: 'Коеф. на разходите' }, definition: { en: 'Annual fee as a % of assets in the fund', bg: 'Годишна такса като % от активите' } },
+                            { term: { en: 'NAV', bg: 'NAV' }, definition: { en: 'Net Asset Value — share price of the fund', bg: 'Нетна стойност на актива — цена на дял' } },
+                            { term: { en: 'Tracking error', bg: 'Tracking error' }, definition: { en: 'How much an ETF\'s return drifts from its benchmark', bg: 'Колко се отклонява ETF от референтния индекс' } },
+                            { term: { en: 'Distributing ETF', bg: 'Разпределящ ETF' }, definition: { en: 'Pays out dividends to investors as cash', bg: 'Изплаща дивиденти в брой на инвеститорите' } },
+                            { term: { en: 'Accumulating ETF', bg: 'Акумулиращ ETF' }, definition: { en: 'Reinvests dividends inside the fund automatically', bg: 'Реинвестира дивидентите автоматично' } },
+                            { term: { en: 'AUM', bg: 'AUM' }, definition: { en: 'Assets under management — fund size', bg: 'Активи под управление — размер на фонда' } },
                         ],
                     },
                     {
-                        id: 'etf-compound-1', type: 'compound_sim', xp: 30,
-                        compoundConfig: { defaultPrincipal: 1000, defaultRate: 8, defaultYears: 20, defaultMonthly: 200 },
+                        id: 'etf-pie-1', type: 'portfolio_pie', xp: 35,
+                        portfolioPie: {
+                            scenario: { en: 'You\'re 35, high risk tolerance, 30-year horizon. Build a 4-asset "advanced lazy" portfolio.', bg: 'На 35 си, висока толерантност към риск, 30-годишен хоризонт. Изгради 4-активен "лазя но напреднало" портфейл.' },
+                            question: { en: 'Allocate across the 4 asset classes (sum to 100%):', bg: 'Разпредели между 4-те класа активи (общо 100%):' },
+                            assets: [
+                                { label: { en: 'Domestic stocks', bg: 'Местни акции' }, emoji: '📊', color: 'hsl(var(--c-primary))', ideal: 60 },
+                                { label: { en: 'International stocks', bg: 'Международни акции' }, emoji: '🌍', color: 'hsl(var(--c-purple))', ideal: 25 },
+                                { label: { en: 'Bonds', bg: 'Облигации' }, emoji: '📜', color: 'hsl(var(--c-green))', ideal: 10 },
+                                { label: { en: 'Small-cap / REITs', bg: 'Малки компании / REIT' }, emoji: '🏘️', color: 'hsl(var(--c-orange))', ideal: 5 },
+                            ],
+                            tolerance: 8,
+                        },
+                        explanation: { en: 'A 60/25/10/5 split delivers ~85% equity (growth), 10% bond ballast, and a 5% "tilt" toward small-cap or REITs for extra long-term return. Rebalance to these targets yearly.', bg: 'Сплит 60/25/10/5 дава ~85% акции (растеж), 10% облигационен баласт и 5% наклон към малки компании / REIT за допълнителна доходност. Ребалансирай годишно.' },
                     },
                     {
-                        id: 'etf-choice-1', type: 'choice', xp: 20,
-                        question: { en: 'You have €5,000 to invest. You\'re 22 years old. Best strategy?', bg: 'Имаш €5,000 за инвестиране. На 22 години си. Най-добрата стратегия?' },
-                        options: [
-                            { en: 'Wait for the market to drop before buying', bg: 'Изчакай пазарът да падне преди да купиш' },
-                            { en: 'Put it in a savings account — investing is risky', bg: 'Сложи го в спестовна сметка — инвестирането е рисково' },
-                            { en: 'Buy a total market ETF today and set up monthly contributions', bg: 'Купи total market ETF днес и настрой месечни вноски' },
-                            { en: 'Split between 20 individual stocks to diversify', bg: 'Раздели между 20 отделни акции за диверсификация' },
+                        id: 'etf-tf-1', type: 'true_false', xp: 15,
+                        statement: { en: 'A fund with a 1% expense ratio is "almost free" since 1% sounds tiny.', bg: 'Фонд с 1% такса е "почти безплатен", защото 1% звучи малко.' },
+                        isTrue: false,
+                        explanation: { en: 'FALSE. 1%/yr compounds against you. On €100,000 over 30 years at 7% gross, a 1% fee gap costs ~€220,000 in lost wealth. Always pick the lowest-cost fund tracking the same index.', bg: 'НЕВЯРНО. 1% годишно се натрупва срещу теб. При €100,000 за 30 г. при 7% бруто, 1% такса струва ~€220,000 загубено богатство. Винаги най-евтиния фонд за същия индекс.' },
+                    },
+                    {
+                        id: 'etf-fill-num-1', type: 'fill_number', xp: 25,
+                        fillNumberScenario: { en: 'Two ETFs track the same index. Both return 8% gross. ETF A charges 0.05%; ETF B charges 0.75%. You invest €50,000 once and let it run for 30 years.', bg: 'Два ETF проследяват същия индекс. И двата дават 8% бруто. ETF A — 0.05% такси; ETF B — 0.75%. Инвестираш €50,000 еднократно за 30 г.' },
+                        question: { en: 'How much MORE will ETF A be worth than ETF B (in thousands €)?', bg: 'С колко ПОВЕЧЕ ще е ETF A срещу ETF B (хил. €)?' },
+                        fillNumberAnswer: 90, fillNumberTolerance: 20, fillNumberUnit: '',
+                        fillNumberHint: { en: 'A net = 7.95%, B net = 7.25%. Compute €50k at each over 30 yrs.', bg: 'A нетно = 7.95%, B = 7.25%. Сметни €50k при всяка ставка за 30 г.' },
+                        explanation: { en: '€50k @ 7.95% × 30 ≈ €494k. @ 7.25% × 30 ≈ €406k. Difference ~€88k — almost double the original investment, lost just to fees.', bg: '€50k @ 7.95% × 30 ≈ €494k. @ 7.25% × 30 ≈ €406k. Разлика ~€88k — почти двойно колкото инвестицията, загубено само от такси.' },
+                    },
+                    {
+                        id: 'etf-chart-1', type: 'stock_chart', xp: 30,
+                        stockChart: {
+                            prices: [100, 105, 110, 108, 115, 120, 118, 125, 130, 128, 135, 140, 138, 145, 150, 148, 155, 160, 158, 165, 170, 168, 175, 180],
+                            labels: ['Jan22', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan23', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                            scenario: { en: 'A 2-year price chart with steady ~+80% growth and only mild dips along the way.', bg: '2-годишна графика с ~+80% растеж и само малки спадове.' },
+                            question: { en: 'This pattern is most consistent with which holding?', bg: 'Този модел най-вероятно идва от кой актив?' },
+                            mode: 'identify_pattern',
+                            patternOptions: [
+                                { en: 'A diversified total-market ETF in a bull run', bg: 'Диверсифициран total-market ETF в бичи цикъл' },
+                                { en: 'A leveraged 3× ETF', bg: 'Ливъридж 3× ETF' },
+                                { en: 'A single small-cap stock', bg: 'Единична малка компания' },
+                                { en: 'A short-term Treasury ETF', bg: 'Краткосрочен държавен ETF' },
+                            ],
+                            correctPatternIndex: 0,
+                        },
+                        explanation: { en: 'Smooth ~3–5% monthly upticks with mild pullbacks is signature broad-index behaviour during a bull run. 3× leveraged ETFs would show wider swings; small-caps would be more chaotic; bonds would barely move.', bg: 'Гладко ~3–5% месечно с малки корекции е типично за широк индекс в бичи цикъл. 3× фондове — по-големи колебания; малките — хаотични; облигации — почти не мърдат.' },
+                    },
+                    {
+                        id: 'etf-decision-1', type: 'scenario_decision', xp: 30,
+                        decisionAvatar: '💼',
+                        decisionScenario: { en: 'You inherit €10,000. You already own a 4-asset diversified portfolio. A friend pitches "this AI startup ETF is up 80% YTD — you HAVE to buy it before it doubles again."', bg: 'Наследяваш €10,000. Имаш диверсифициран портфейл от 4 актива. Приятел те убеждава: "този AI startup ETF е +80% от началото на годината — ТРЯБВА да купиш преди пак да се удвои."' },
+                        decisionChoices: [
+                            { label: { en: 'Add the entire €10k into the existing 4-asset portfolio per allocation', bg: 'Добави целите €10к в текущия портфейл по разпределение' }, emoji: '🎯', outcome: { en: 'You stick to your plan. Boring but bulletproof. Most "hot ETFs" mean-revert hard within 12–18 months. Your 4-asset portfolio still beats 90% of FOMO trades long-term.', bg: 'Стои се на плана. Скучно, но непоклатимо. Повечето "горещи ETF" се връщат жестоко за 12–18 м. 4-активният портфейл бие 90% от FOMO.' }, isBest: true },
+                            { label: { en: '€7k into the 4-asset, €3k into the AI ETF (capped speculation)', bg: '€7к в 4-активния, €3к в AI ETF (ограничена спекулация)' }, emoji: '⚖️', outcome: { en: 'Acceptable: kept speculation under 30%, kept core. Even if AI ETF -50%, you lose €1,500 — survivable. Just don\'t add MORE to it on the way down.', bg: 'Приемливо: спекулацията под 30%, ядрото запазено. Дори при -50% AI ETF губиш €1,500 — поносимо. Не добавяй повече при спад.' }, isBest: false },
+                            { label: { en: 'All-in on the AI ETF — momentum trading', bg: 'Всичко в AI ETF — momentum търговия' }, emoji: '🔥', outcome: { en: 'Buying after +80% means you\'re paying for someone else\'s gains. Sector ETFs that rip up usually retrace 40–60% within a year. €10k → €4k–€6k is the common outcome.', bg: 'Купуването след +80% значи плащаш за чужди печалби. Секторни ETF след скок се връщат с 40–60% за година. €10к → €4к–€6к е обичайното.' }, isBest: false },
                         ],
-                        correctIndex: 2,
-                        explanation: { en: 'Time in the market beats timing the market. Buying today and adding monthly is far better than waiting for a "perfect" moment that never comes. Total market ETF gives instant diversification.', bg: 'Времето в пазара побеждава опита за timing. Купуването днес и добавянето месечно е много по-добро от чакането за "перфектен" момент, който никога не идва. Total market ETF дава моментална диверсификация.' },
+                        explanation: { en: 'Your existing diversification is the wealth-building system. Speculation in addition to it is fine; speculation INSTEAD of it is gambling.', bg: 'Текущата ти диверсификация е системата за богатство. Спекулация ДОПЪЛНИТЕЛНО — ОК; спекулация ВМЕСТО — хазарт.' },
                     },
                 ],
             },
+            // ── Lesson 2: The Investor's Greatest Enemy ──
             {
                 id: 'investor-mindset',
                 moduleId: 'advanced-investing',
                 title: { en: 'The Investor\'s Greatest Enemy', bg: 'Най-големият враг на инвеститора' },
-                description: { en: 'Play through real market crash scenarios and learn to control your emotions.', bg: 'Преживей реални сценарии за пазарни сривове и се научи да контролираш емоциите си.' },
+                description: { en: 'Behavioral pitfalls — and how to read your own emotions through real charts.', bg: 'Поведенчески капани — и как да четеш емоциите си през реални графики.' },
                 icon: '🧘', xpReward: 160, order: 2,
                 exercises: [
                     {
@@ -1244,51 +1289,81 @@ const staticModules = [
                         slides: [
                             {
                                 emoji: '📉',
-                                title: { en: 'The Market Just Crashed 40%', bg: 'Пазарът току-що се срина с 40%' },
-                                body: { en: 'It\'s March 2020. COVID hits. Your portfolio drops 40% in 3 weeks.\n\nYour friends are panic selling.\nThe news says "worst crash since 1929".\nYou feel sick every time you open your app.\n\nWhat should you actually do?\n\nAbsolutely nothing. Keep your monthly contributions going.\n\nBy August 2020 the market had fully recovered. Those who held (and kept buying) made a fortune. Those who sold locked in their losses forever.', bg: 'Март 2020. COVID удря. Портфолиото ти пада с 40% за 3 седмици.\n\nПриятелите ти продават в паника.\nНовините казват "най-лошият срив от 1929".\nТи се чувстваш зле всеки път, когато отваряш приложението.\n\nКакво трябва реално да направиш?\n\nАбсолютно нищо. Продължавай месечните вноски.\n\nДо август 2020 пазарът напълно се възстанови. Тези, които задържаха (и продължиха да купуват), спечелиха много. Тези, които продадоха, заключиха загубите си завинаги.' },
-                                highlight: { en: '🧘 The investor\'s job is not to predict the future — it\'s to survive your own emotions.', bg: '🧘 Работата на инвеститора не е да предвижда бъдещето — а да оцелее от собствените си емоции.' },
+                                title: { en: 'The Crash Test', bg: 'Тестът на срива' },
+                                body: { en: 'It\'s March 2020. COVID hits. Your portfolio drops 40% in 3 weeks.\n\nFriends are panic-selling.\nNews says "worst since 1929."\nYou feel sick checking your app.\n\nThe correct action: NOTHING. Keep auto-buying.\n\nBy August 2020 the market had fully recovered. Holders + buyers built fortunes; sellers locked in permanent losses.', bg: 'Март 2020. COVID удря. Портфейлът -40% за 3 седмици.\n\nПриятелите продават паник.\nНовините: "най-лошият от 1929."\nТи се чувстваш зле да отвориш app-а.\n\nПравилно: НИЩО. Продължи авто-покупките.\n\nДо авг 2020 пазарът се възстанови напълно. Държащите + купуващите забогатяха; продавачите закотвиха загубите.' },
+                                highlight: { en: '🧘 The investor\'s job is not to predict — it\'s to survive their own emotions.', bg: '🧘 Работата на инвеститора не е да предсказва — а да оцелее от собствените си емоции.' },
+                            },
+                            {
+                                emoji: '🧠',
+                                title: { en: 'The 4 Cognitive Traps', bg: '4-те когнитивни капана' },
+                                body: { en: '1. Loss aversion — losses feel 2× worse than gains feel good\n2. Recency bias — recent moves feel like permanent trends\n3. Herd behaviour — selling because "everyone is selling"\n4. Anchoring — refusing to sell because "it was higher last week"\n\nKnowing the names helps you spot them mid-spiral. The pause is what saves you.', bg: '1. Аверсия към загуби — загубата боли 2× повече\n2. Recency bias — последните движения изглеждат като постоянен тренд\n3. Стадно поведение — продаваш защото "всички продават"\n4. Anchoring — не продаваш защото "беше по-горе"\n\nЗнанието на имената ти помага да ги разпознаваш. Паузата те спасява.' },
+                                highlight: { en: '⏸️ "Don\'t just do something — sit there." — Jack Bogle', bg: '⏸️ "Не прави нищо — просто седни." — Джак Богъл' },
                             },
                         ],
                     },
                     {
-                        id: 'mindset-rpg-1', type: 'rpg_scenario', xp: 35,
-                        scenario: { en: 'It\'s January 2022. Your €10,000 portfolio has dropped 25% to €7,500 over 3 months. Your colleague says "I sold everything, this is going to zero." Your phone notification: "BREAKING: Analysts predict further 30% drop." What do you do?', bg: 'Януари 2022. Портфолиото ти от €10,000 е паднало с 25% до €7,500 за 3 месеца. Колегата ти казва "Продадох всичко, това ще стане нула." Известие на телефона ти: "BREAKING: Анализатори предвиждат допълнителен спад от 30%." Какво правиш?' },
+                        id: 'mindset-chart-1', type: 'stock_chart', xp: 30,
+                        stockChart: {
+                            prices: [100, 105, 102, 108, 112, 115, 113, 118, 120, 116, 122, 120, 118, 110, 95, 78, 65, 70, 85, 100, 115, 125, 132, 140],
+                            labels: ['M1', 'M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8', 'M9', 'M10', 'M11', 'M12', 'M13', 'M14', 'M15', 'M16', 'M17', 'M18', 'M19', 'M20', 'M21', 'M22', 'M23', 'M24'],
+                            scenario: { en: 'Your portfolio over 24 months. Months 13–17 brought a brutal -47% drawdown before a strong recovery.', bg: 'Портфейлът ти за 24 м. Месеци 13–17 донесоха -47% спад преди силно възстановяване.' },
+                            question: { en: 'Click the month when adding a LARGER-than-usual contribution would have paid off the most.', bg: 'Кликни месеца, в който добавянето на ПО-ГОЛЯМА от обичайната вноска би се изплатило най-много.' },
+                            mode: 'identify_point',
+                            correctPointIndex: 16,
+                            pointTolerance: 1,
+                            pointPrompt: { en: 'Look for the bottom — that\'s where extra money buys the most shares.', bg: 'Търси дъното — там допълнителните пари купуват най-много дялове.' },
+                        },
+                        explanation: { en: 'The bottom (M17, price 65) is where every extra euro bought ~2× the shares it bought 6 months earlier. Those who added during the panic crushed those who DCA-ed normally and DESTROYED those who panic-sold.', bg: 'Дъното (M17, цена 65) е където всяко евро купи ~2× повече дялове отпреди 6 м. Тези, които добавяха в паниката, биха обикновените DCA и УНИЩОЖИХА паниците.' },
+                    },
+                    {
+                        id: 'mindset-tf-1', type: 'true_false', xp: 15,
+                        statement: { en: '"This time is different" is usually a reliable signal that markets won\'t recover.', bg: '"Този път е различно" обикновено е надежден сигнал, че пазарите няма да се възстановят.' },
+                        isTrue: false,
+                        explanation: { en: 'FALSE. "This time is different" is the most expensive phrase in investing. EVERY major crash in history (1929, 1973, 1987, 2000, 2008, 2020) was called "different" — and EVERY one fully recovered. The pattern repeats because human emotion repeats.', bg: 'НЕВЯРНО. "Този път е различно" е най-скъпата фраза в инвестирането. ВСЕКИ голям срив (1929, 1973, 1987, 2000, 2008, 2020) беше наречен "различен" — и ВСЕКИ се възстанови. Моделът се повтаря, защото емоциите се повтарят.' },
+                    },
+                    {
+                        id: 'mindset-order-1', type: 'order_items', xp: 25,
+                        orderInstruction: { en: 'Order these investor mistakes from MOST damaging (long-term) to LEAST damaging:', bg: 'Подреди тези грешки от НАЙ-РАЗРУШИТЕЛНА към НАЙ-МАЛКА (дългосрочно):' },
+                        orderItems: [
+                            { label: { en: 'Panic-selling near the bottom of a crash', bg: 'Паническа продажба на дъното' }, emoji: '🚨' },
+                            { label: { en: 'Picking only single stocks (no diversification)', bg: 'Само единични акции (без диверсификация)' }, emoji: '🎰' },
+                            { label: { en: 'Trying to time the market by sitting in cash', bg: 'Опит за тайминг чрез седене в кеш' }, emoji: '⏰' },
+                            { label: { en: 'Paying high (1%+) fund management fees', bg: 'Високи (1%+) такси на фонд' }, emoji: '💸' },
+                            { label: { en: 'Rebalancing slightly more often than yearly', bg: 'Ребалансиране по-често от годишно' }, emoji: '🔁' },
+                        ],
+                        correctOrder: [0, 1, 2, 3, 4],
+                        explanation: { en: 'Panic selling permanently locks losses (irreversible). Concentration in single stocks risks total loss. Cash-timing typically misses 30–50% of long-run returns. Fees compound silently. Over-rebalancing is a minor annoyance by comparison.', bg: 'Паника закотвя загубите (необратимо). Концентрация = риск от пълна загуба. Кеш-тайминг пропуска 30–50% от доходността. Таксите се натрупват тихо. Прекомерно ребалансиране е дребен проблем.' },
+                    },
+                    {
+                        id: 'mindset-match-1', type: 'match_terms', xp: 20,
+                        matchPairs: [
+                            { term: { en: 'Loss aversion', bg: 'Аверсия към загуби' }, definition: { en: 'Losses feel ~2× more painful than gains feel good', bg: 'Загубата боли ~2× повече от радостта на печалбата' } },
+                            { term: { en: 'Recency bias', bg: 'Recency bias' }, definition: { en: 'Treating the recent past as a long-term trend', bg: 'Взимаш близкото минало за дългосрочен тренд' } },
+                            { term: { en: 'Anchoring', bg: 'Anchoring' }, definition: { en: 'Refusing to act because of an irrelevant past price', bg: 'Не действаш заради ирелевантна минала цена' } },
+                            { term: { en: 'Herd behaviour', bg: 'Стадно поведение' }, definition: { en: 'Doing what the crowd is doing without analysis', bg: 'Правиш каквото тълпата без анализ' } },
+                            { term: { en: 'Sunk cost fallacy', bg: 'Sunk cost' }, definition: { en: 'Holding a bad asset because of money already lost', bg: 'Държиш лош актив заради вече загубените пари' } },
+                        ],
+                    },
+                    {
+                        id: 'mindset-decision-1', type: 'scenario_decision', xp: 30,
+                        decisionAvatar: '🚀',
+                        decisionScenario: { en: 'A coworker just made €40,000 on a meme stock that\'s up 800% in 6 weeks. He\'s posting screenshots in the group chat: "still going to a million." You feel intense FOMO.', bg: 'Колега току-що направи €40,000 на мемна акция +800% за 6 седмици. Постит скрийншоти: "още до милион." Чувстваш силен FOMO.' },
+                        decisionChoices: [
+                            { label: { en: 'Buy €5k at the new high — "ride the trend"', bg: 'Купи €5к на новия връх — "качи се на вълната"' }, emoji: '🎢', outcome: { en: 'Classic top-buying. Meme spikes mean-revert: 90% of buyers AT THE HIGH are underwater within 6 months. Average loss: -60% to -80%. Your €5k often becomes €1k–€2k.', bg: 'Класическо купуване на върха. Мемните скокове се връщат: 90% от купувачите НА ВЪРХА са под водата за 6 м. Средна загуба: -60% до -80%. €5к често стават €1к–€2к.' }, isBest: false },
+                            { label: { en: 'Note the FOMO, write down "I am feeling X", and go invest the €5k in your normal ETF', bg: 'Забележи FOMO, запиши "чувствам X", и инвестирай €5к в обичайния ETF' }, emoji: '📝', outcome: { en: 'Naming the emotion breaks its grip. Investing the SAME money in your boring ETF turns the urge into wealth-building behaviour. This is the move that separates pros from gamblers.', bg: 'Назоваването на емоцията къса хватката. Инвестирането в обичайния ETF превръща импулса в богатство. Това разделя професионалистите от хазартниците.' }, isBest: true },
+                            { label: { en: 'Sell some of your boring ETF to buy the meme', bg: 'Продай част от ETF, за да купиш мема' }, emoji: '💸', outcome: { en: 'Worst-case scenario: you exit a winner to chase a top. If meme drops 70% AND your ETF rallies 15%, you can lose €4–5k of net worth on a single emotional decision.', bg: 'Най-лошото: излизаш от печелещ за връх. Ако мемът падне 70% И ETF се качи 15%, губиш €4–5к от една емоционална решение.' }, isBest: false },
+                        ],
+                        explanation: { en: 'FOMO is information about your emotions, NOT about the asset. The professional move is to use the urge as fuel for your existing plan.', bg: 'FOMO е информация за емоциите ти, НЕ за актива. Професионалният ход е да използваш импулса като гориво за плана си.' },
+                    },
+                    {
+                        id: 'mindset-rpg-1', type: 'rpg_scenario', xp: 30,
+                        scenario: { en: 'January 2022. Your €10,000 portfolio is at €7,500 after a 25% drop. Coworker: "I sold everything." Headline: "Analysts warn -30% more incoming." Your move?', bg: 'Януари 2022. Портфейлът €10,000 е €7,500 след -25%. Колега: "продадох всичко." Заглавие: "анализатори: -30% още." Ходът ти?' },
                         avatar: '😰',
                         choices: [
-                            {
-                                label: { en: 'Sell everything — protect what\'s left', bg: 'Продай всичко — защити останалото' },
-                                emoji: '🚨',
-                                consequence: { en: 'You sold at the bottom. The market recovered 60% over the next 18 months. You locked in a permanent €2,500 loss.', bg: 'Продаде на дъното. Пазарът се възстанови с 60% в следващите 18 месеца. Заключи постоянна загуба от €2,500.' },
-                                cashFlowChange: -2500,
-                                isGood: false,
-                            },
-                            {
-                                label: { en: 'Do nothing — stay the course', bg: 'Не прави нищо — продължавай курса' },
-                                emoji: '🧘',
-                                consequence: { en: 'Hard but correct. 18 months later your portfolio is worth €13,200 — a 32% gain from today\'s low.', bg: 'Трудно, но правилно. 18 месеца по-късно портфолиото ти струва €13,200 — 32% печалба от днешното дъно.' },
-                                cashFlowChange: 0,
-                                isGood: true,
-                            },
-                            {
-                                label: { en: 'Buy more — the sale of the decade', bg: 'Купи още — разпродажбата на десетилетието' },
-                                emoji: '🛒',
-                                consequence: { en: 'You invested €2,000 more at the dip. Your total portfolio hit €17,800 eighteen months later. Legendary move.', bg: 'Инвестира още €2,000 при спада. Общото ти портфолио достигна €17,800 осемнадесет месеца по-късно. Легендарен ход.' },
-                                cashFlowChange: 2000,
-                                isGood: true,
-                            },
+                            { label: { en: 'Sell everything to "stop the bleeding"', bg: 'Продай всичко да "спреш кръвта"' }, emoji: '🚨', consequence: { en: 'You sold near the bottom. The market rallied +60% over the next 18 months. You locked in a permanent €2,500 loss and missed the entire recovery.', bg: 'Продаде близо до дъното. Пазарът +60% за 18 м. Закотви €2,500 загуба и пропусна цялото възстановяване.' }, cashFlowChange: -2500, isGood: false },
+                            { label: { en: 'Hold + continue €300/mo DCA', bg: 'Дръж + продължи €300/мес DCA' }, emoji: '🧘', consequence: { en: 'Hard but correct. 18 months later your portfolio is worth ~€13,200 — beating pre-crash levels. Discipline > prediction.', bg: 'Трудно, но правилно. 18 м. по-късно портфейлът е ~€13,200 — над предсривните нива. Дисциплина > прогноза.' }, cashFlowChange: 5700, isGood: true },
+                            { label: { en: 'Add an extra €2,000 lump-sum into the dip', bg: 'Добави €2,000 еднократно в спада' }, emoji: '🛒', consequence: { en: 'Aggressive but mathematically optimal. €17,800 portfolio 18 months later. Only do this with money you don\'t need for 5+ years.', bg: 'Агресивно, но математически оптимално. €17,800 за 18 м. Само с пари за 5+ г. напред.' }, cashFlowChange: 8300, isGood: true },
                         ],
-                    },
-                    {
-                        id: 'mindset-choice-1', type: 'choice', xp: 20,
-                        question: { en: 'The stock market drops 30% in one month. What does a smart long-term investor do?', bg: 'Фондовият пазар пада с 30% за един месец. Какво прави умният дългосрочен инвеститор?' },
-                        options: [
-                            { en: 'Sell and wait for the bottom before re-entering', bg: 'Продай и изчакай дъното преди да влезеш отново' },
-                            { en: 'Panic — this time really is different', bg: 'Паникьосай се — този път наистина е различно' },
-                            { en: 'Continue regular contributions and ignore the noise', bg: 'Продължи редовните вноски и игнорирай шума' },
-                            { en: 'Move everything to gold and wait', bg: 'Премести всичко в злато и изчакай' },
-                        ],
-                        correctIndex: 2,
-                        explanation: { en: 'Every crash in history has been followed by a full recovery. The investors who kept buying during dips ended up far ahead. "This time is different" is the most expensive phrase in investing.', bg: 'Всеки срив в историята е бил последван от пълно възстановяване. Инвеститорите, които продължиха да купуват по време на спадовете, се оказаха далеч напред. "Този път е различно" е най-скъпата фраза в инвестирането.' },
                     },
                 ],
             },
