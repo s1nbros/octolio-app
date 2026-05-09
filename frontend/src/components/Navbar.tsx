@@ -5,10 +5,26 @@ import { useLang } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { ProfileSheet } from './ProfileSheet';
 
-/* SVG icons for the bottom nav */
+/* SVG icons for the drawer */
+function IconMenu() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="4" y1="7" x2="20" y2="7" />
+      <line x1="4" y1="12" x2="20" y2="12" />
+      <line x1="4" y1="17" x2="20" y2="17" />
+    </svg>
+  );
+}
+function IconLockSmall() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M17 8h-1V6c0-2.76-2.24-5-5-5S6 3.24 6 6v2H5c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H7.9V6c0-1.71 1.39-3.1 3.1-3.1s3.1 1.39 3.1 3.1v2z"/>
+    </svg>
+  );
+}
 function IconHome() {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z" />
       <polyline points="9 21 9 12 15 12 15 21" />
     </svg>
@@ -16,7 +32,7 @@ function IconHome() {
 }
 function IconLearn() {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
       <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
     </svg>
@@ -24,7 +40,7 @@ function IconLearn() {
 }
 function IconLeague() {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="12" cy="8" r="6" />
       <path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11" />
     </svg>
@@ -32,9 +48,17 @@ function IconLeague() {
 }
 function IconAdvisor() {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7H3a7 7 0 0 1 7-7h1V5.73A2 2 0 0 1 10 4a2 2 0 0 1 2-2z" />
       <path d="M3 14v1a9 9 0 0 0 18 0v-1" />
+    </svg>
+  );
+}
+function IconProfile() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+      <circle cx="12" cy="7" r="4" />
     </svg>
   );
 }
@@ -113,13 +137,156 @@ function EnergyPopover({ energy, refillAt, isPro, onClose }: { energy: number; r
   );
 }
 
+/* ───────── Mobile slide-in drawer ───────── */
+function MobileDrawer({
+  open,
+  onClose,
+  isPro,
+}: {
+  open: boolean;
+  onClose: () => void;
+  isPro: boolean;
+}) {
+  const { isDark, toggleTheme } = useTheme();
+  const { lang, setLang } = useLang();
+  const location = useLocation();
+  const isActive = (p: string) => location.pathname.startsWith(p);
+
+  // Lock body scroll while drawer is open
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
+  }, [open]);
+
+  // Close on Escape
+  useEffect(() => {
+    if (!open) return;
+    function onKey(e: KeyboardEvent) { if (e.key === 'Escape') onClose(); }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open, onClose]);
+
+  const items = [
+    { to: '/modules', label: { en: 'Learn', bg: 'Учи' }, icon: <IconLearn />, active: isActive('/modules') || isActive('/lesson') },
+    { to: '/quests',  label: { en: 'Quests', bg: 'Куестове' }, icon: <IconHome />, active: isActive('/quests') },
+    { to: '/league',  label: { en: 'League', bg: 'Лига' }, icon: <IconLeague />, active: isActive('/league') },
+    ...(isPro ? [{ to: '/advisor', label: { en: 'AI Advisor', bg: 'AI Съветник' }, icon: <IconAdvisor />, active: isActive('/advisor') }] : []),
+    { to: '/profile', label: { en: 'Profile', bg: 'Профил' }, icon: <IconProfile />, active: isActive('/profile') },
+  ];
+
+  return (
+    <>
+      {/* Backdrop */}
+      <div
+        onClick={onClose}
+        className="md:hidden fixed inset-0 z-[60] transition-opacity duration-200"
+        style={{
+          background: 'rgba(0,0,0,0.55)',
+          opacity: open ? 1 : 0,
+          pointerEvents: open ? 'auto' : 'none',
+        }}
+      />
+      {/* Panel */}
+      <aside
+        className="md:hidden fixed top-0 left-0 bottom-0 z-[61] w-[78vw] max-w-[320px] transition-transform duration-300 ease-out flex flex-col"
+        style={{
+          background: 'hsl(228, 24%, 10%)',
+          borderRight: '1px solid hsla(0,0%,100%,0.08)',
+          transform: open ? 'translateX(0)' : 'translateX(-100%)',
+          paddingTop: 'max(20px, env(safe-area-inset-top))',
+          paddingBottom: 'max(20px, env(safe-area-inset-bottom))',
+        }}
+        aria-hidden={!open}
+      >
+        {/* Header inside drawer */}
+        <div className="flex items-center gap-2 px-5 mb-6">
+          <img src="/logo.png" alt="Octolio" className="w-9 h-9 object-contain"
+            style={{ filter: 'drop-shadow(0 0 6px hsl(var(--c-green)/0.4))' }} />
+          <span className="font-extrabold text-lg" style={{ color: 'hsl(var(--c-fg))' }}>
+            Octolio
+          </span>
+          <button
+            onClick={onClose}
+            className="ml-auto w-9 h-9 rounded-full flex items-center justify-center active:scale-95 transition-transform"
+            style={{ color: 'hsl(var(--c-fg-muted))', background: 'hsla(0,0%,100%,0.06)' }}
+            aria-label="Close menu"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="6" y1="6" x2="18" y2="18" />
+              <line x1="18" y1="6" x2="6" y2="18" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Nav links */}
+        <nav className="flex-1 px-3 space-y-1.5">
+          {items.map((it) => (
+            <Link
+              key={it.to}
+              to={it.to}
+              onClick={onClose}
+              className="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors active:scale-[0.98]"
+              style={{
+                background: it.active ? 'hsl(var(--c-primary)/0.15)' : 'transparent',
+                color: it.active ? 'hsl(var(--c-primary))' : 'hsl(var(--c-fg))',
+                border: `1px solid ${it.active ? 'hsl(var(--c-primary)/0.3)' : 'transparent'}`,
+              }}
+            >
+              <span className="flex-shrink-0">{it.icon}</span>
+              <span className="font-bold text-[15px]">{it.label[lang]}</span>
+            </Link>
+          ))}
+        </nav>
+
+        {/* Footer controls */}
+        <div className="px-5 mt-4 pt-4 border-t" style={{ borderColor: 'hsla(0,0%,100%,0.08)' }}>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={toggleTheme}
+              className="flex-1 h-10 rounded-xl flex items-center justify-center gap-2 text-sm font-semibold active:scale-95 transition-transform"
+              style={{
+                background: 'hsla(0,0%,100%,0.06)',
+                border: '1px solid hsla(0,0%,100%,0.08)',
+                color: 'hsl(var(--c-fg))',
+              }}
+            >
+              <span>{isDark ? '☀️' : '🌙'}</span>
+              <span>{isDark ? (lang === 'en' ? 'Light' : 'Светъл') : (lang === 'en' ? 'Dark' : 'Тъмен')}</span>
+            </button>
+            <button
+              onClick={() => setLang(lang === 'en' ? 'bg' : 'en')}
+              className="h-10 px-3 rounded-xl flex items-center justify-center gap-1 text-sm font-bold mono active:scale-95 transition-transform"
+              style={{
+                background: 'hsla(0,0%,100%,0.06)',
+                border: '1px solid hsla(0,0%,100%,0.08)',
+                color: 'hsl(var(--c-fg))',
+              }}
+              aria-label="Toggle language"
+            >
+              {lang === 'en' ? '🇬🇧 EN' : '🇧🇬 BG'}
+            </button>
+          </div>
+        </div>
+      </aside>
+    </>
+  );
+}
+
 export function Navbar() {
   const { user } = useAuth();
   const { isDark, toggleTheme } = useTheme();
   const location = useLocation();
-  const isActive = (p: string) => location.pathname.startsWith(p);
   const [energyOpen, setEnergyOpen] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  // Disable the hamburger while doing a lesson — user shouldn't navigate away mid-flow
+  const inLesson = location.pathname.startsWith('/lesson/');
+
+  // Defensive: close drawer if route changes while it's open
+  useEffect(() => { setDrawerOpen(false); }, [location.pathname]);
 
   return (
     <>
@@ -128,24 +295,42 @@ export function Navbar() {
       <div className="liquid-glass max-w-7xl mx-auto rounded-2xl px-3 h-14 flex items-center gap-2"
         style={{ position: 'relative' }}>
 
-        {/* Logo */}
-        <Link to={user ? '/modules' : '/'} className="flex items-center gap-2 flex-shrink-0 z-10 active:scale-95 transition-transform">
-          <img src="/logo.png" alt="Octolio" className="w-9 h-9 object-contain"
-            style={{ filter: 'drop-shadow(0 0 6px hsl(var(--c-green)/0.4))' }} />
-        </Link>
+        {/* Hamburger menu button (replaces logo) — disabled during lessons */}
+        {user ? (
+          <button
+            onClick={() => !inLesson && setDrawerOpen(true)}
+            disabled={inLesson}
+            aria-label={inLesson ? 'Menu disabled during lesson' : 'Open menu'}
+            className="w-10 h-10 rounded-xl flex items-center justify-center transition-all flex-shrink-0 z-10 active:scale-95"
+            style={{
+              background: inLesson ? 'hsla(0,0%,100%,0.04)' : 'hsl(var(--c-primary)/0.12)',
+              color: inLesson ? 'hsl(var(--c-fg-subtle))' : 'hsl(var(--c-primary))',
+              border: `1px solid ${inLesson ? 'hsla(0,0%,100%,0.06)' : 'hsl(var(--c-primary)/0.25)'}`,
+              opacity: inLesson ? 0.55 : 1,
+              cursor: inLesson ? 'not-allowed' : 'pointer',
+            }}
+          >
+            {inLesson ? <IconLockSmall /> : <IconMenu />}
+          </button>
+        ) : (
+          <Link to="/" className="flex items-center gap-2 flex-shrink-0 z-10 active:scale-95 transition-transform">
+            <img src="/logo.png" alt="Octolio" className="w-9 h-9 object-contain"
+              style={{ filter: 'drop-shadow(0 0 6px hsl(var(--c-green)/0.4))' }} />
+          </Link>
+        )}
 
-        {/* Right controls — kept minimal: streak + energy + avatar */}
+        {/* Right controls — streak + energy + avatar */}
         <div className="flex items-center gap-2 ml-auto z-10">
           {user ? (
             <>
-              {/* Streak chip — bigger touch target */}
+              {/* Streak chip */}
               <div className="liquid-glass-pill flex items-center gap-1.5 px-3 h-9 rounded-full"
                 style={{ color: 'hsl(var(--c-orange))' }}>
                 <span className="text-base">🔥</span>
                 <span className="mono text-sm font-bold">{user.streak}</span>
               </div>
 
-              {/* Energy chip — bigger, color-coded */}
+              {/* Energy chip */}
               <div className="relative">
                 <button
                   onClick={() => setEnergyOpen(o => !o)}
@@ -177,7 +362,7 @@ export function Navbar() {
                   border: '2px solid hsla(0,0%,100%,0.18)',
                   color: 'hsl(var(--c-fg))',
                 }}
-                aria-label="Open menu">
+                aria-label="Open profile">
                 {user.avatar?.startsWith('data:')
                   ? <img src={user.avatar} alt="avatar" className="w-full h-full object-cover" />
                   : <span>{user.name?.[0]?.toUpperCase() ?? '?'}</span>}
@@ -202,55 +387,11 @@ export function Navbar() {
       </div>
     </header>
 
+    {/* Mobile slide-in nav drawer (only when logged in) */}
+    {user && <MobileDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} isPro={user.is_pro} />}
+
     {/* Profile sheet — mounts in the DOM so transitions work */}
     {user && <ProfileSheet open={sheetOpen} onClose={() => setSheetOpen(false)} />}
-
-    {/* ── Mobile bottom nav — phones only (xs) ── */}
-    {user && (
-      <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-50 px-3 pb-3 pt-1 pointer-events-none">
-        <div className="liquid-glass max-w-7xl mx-auto rounded-2xl pointer-events-auto"
-          style={{
-            paddingBottom: 'max(0px, env(safe-area-inset-bottom))',
-          }}>
-          <div className="flex items-center justify-around px-1.5 pt-2 pb-2">
-            <BottomTab to="/modules"   active={isActive('/modules') || isActive('/lesson')} icon={<IconLearn />} label="Learn" />
-            <BottomTab to="/quests"    active={isActive('/quests')}    icon={<IconHome />} label="Quests" />
-            <BottomTab to="/league"    active={isActive('/league')}    icon={<IconLeague />} label="League" />
-            {user.is_pro && (
-              <BottomTab to="/advisor" active={isActive('/advisor')} icon={<IconAdvisor />} label="AI" disabled />
-            )}
-          </div>
-        </div>
-      </nav>
-    )}
     </>
-  );
-}
-
-function BottomTab({ to, active, icon, label, disabled }: { to: string; active: boolean; icon: React.ReactNode; label: string; disabled?: boolean }) {
-  return (
-    <Link
-      to={to}
-      className="flex-1 flex flex-col items-center justify-center gap-1 py-1.5 rounded-2xl transition-transform active:scale-[0.92]"
-      style={{
-        color: disabled ? 'hsl(var(--c-fg-subtle)/0.5)' : active ? 'hsl(var(--c-primary))' : 'hsl(var(--c-fg-subtle))',
-        opacity: disabled ? 0.5 : 1,
-        minHeight: '52px', // thumb-friendly Apple HIG min target
-      }}
-    >
-      {/* Active pill highlight — animated in/out */}
-      <div
-        className="relative flex items-center justify-center w-12 h-8 rounded-full transition-all duration-300"
-        style={{
-          background: !disabled && active ? 'hsl(var(--c-primary)/0.18)' : 'transparent',
-          transform: active ? 'scale(1)' : 'scale(0.92)',
-        }}
-      >
-        {icon}
-      </div>
-      <span className="text-[11px] font-bold tracking-wide" style={{ letterSpacing: active ? '0.02em' : '0' }}>
-        {label}
-      </span>
-    </Link>
   );
 }

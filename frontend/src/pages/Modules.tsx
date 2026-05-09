@@ -68,7 +68,7 @@ export function Modules() {
   }
 
   return (
-    <div className="relative pb-24 sm:pb-12 overflow-hidden">
+    <div className="relative pb-12 overflow-hidden">
       <div className="md:hidden"><FloatingOrbs /></div>
 
       <div className="relative max-w-md md:max-w-2xl mx-auto px-4 sm:px-6 md:px-0 py-2 sm:py-4 md:py-2" style={{ zIndex: 1 }}>

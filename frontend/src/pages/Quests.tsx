@@ -80,7 +80,7 @@ export function Quests() {
   }
 
   return (
-    <div className="relative pb-24 sm:pb-12">
+    <div className="relative pb-12">
       <div className="md:hidden"><FloatingOrbs /></div>
 
       <div className="relative max-w-3xl mx-auto px-4 sm:px-6 md:px-0 py-2 sm:py-4 md:py-2" style={{ zIndex: 1 }}>

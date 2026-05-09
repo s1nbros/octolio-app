@@ -265,7 +265,7 @@ export function Profile() {
   };
 
   return (
-    <div className="relative pb-24 sm:pb-8">
+    <div className="relative pb-8">
       <div className="md:hidden"><FloatingOrbs /></div>
 
       <div className="relative max-w-5xl mx-auto px-4 sm:px-6 md:px-0 py-8 md:py-2" style={{ zIndex: 1 }}>
