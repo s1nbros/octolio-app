@@ -36,13 +36,17 @@ export function MatchTerms({ exercise, onAnswer }: Props) {
     setSelectedTerm(null);
   };
 
+  const correctCount = Object.entries(matches).filter(
+    ([termIdx, defIdx]) => Number(termIdx) === defIdx
+  ).length;
+  const score = pairs.length > 0 ? correctCount / pairs.length : 0;
+  const isPassing = score >= 0.7;
+
   const handleSubmit = () => {
     setSubmitted(true);
-    const correct = Object.entries(matches).filter(
-      ([termIdx, defIdx]) => Number(termIdx) === defIdx
-    ).length;
-    const score = correct / pairs.length;
-    setTimeout(() => onAnswer(score >= 0.7, score >= 0.7 ? exercise.xp : Math.floor(exercise.xp * score)), 1800);
+    if (isPassing) {
+      setTimeout(() => onAnswer(true, exercise.xp), 1800);
+    }
   };
 
   const getMatchColor = (termIdx: number) => {
@@ -152,6 +156,11 @@ export function MatchTerms({ exercise, onAnswer }: Props) {
       {!submitted && (
         <button className="btn-primary w-full" onClick={handleSubmit} disabled={!allMatched}>
           {lang === 'en' ? 'Check Matches →' : 'Провери съвпаденията →'}
+        </button>
+      )}
+      {submitted && !isPassing && (
+        <button className="btn-primary w-full" onClick={() => onAnswer(false, 0)}>
+          {lang === 'en' ? 'Continue →' : 'Продължи →'}
         </button>
       )}
     </div>

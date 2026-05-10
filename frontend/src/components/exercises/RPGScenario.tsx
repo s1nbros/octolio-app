@@ -14,7 +14,9 @@ export function RPGScenario({ exercise, onAnswer }: Props) {
     if (chosen !== null) return;
     setChosen(i);
     const c = choices[i];
-    setTimeout(() => onAnswer(c.isGood, c.isGood ? exercise.xp : 0), 2200);
+    if (c.isGood) {
+      setTimeout(() => onAnswer(true, exercise.xp), 2200);
+    }
   };
 
   return (
@@ -94,6 +96,12 @@ export function RPGScenario({ exercise, onAnswer }: Props) {
             {t(selected.consequence)}
           </p>
         </div>
+      )}
+
+      {selected && !selected.isGood && (
+        <button className="btn-primary w-full mt-4" onClick={() => onAnswer(false, 0)}>
+          {lang === 'en' ? 'Continue →' : 'Продължи →'}
+        </button>
       )}
     </div>
   );

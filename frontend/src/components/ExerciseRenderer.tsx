@@ -16,6 +16,10 @@ import { StockChart } from './exercises/StockChart';
 import { PortfolioPie } from './exercises/PortfolioPie';
 import { DebtPayoff } from './exercises/DebtPayoff';
 import { TaxBrackets } from './exercises/TaxBrackets';
+import { IncomeStreams } from './exercises/IncomeStreams';
+import { CoverageCalc } from './exercises/CoverageCalc';
+import { RiskMatrix } from './exercises/RiskMatrix';
+import { UnitPrice } from './exercises/UnitPrice';
 
 interface Props {
   exercise: Exercise;
@@ -181,13 +185,55 @@ export function ExerciseRenderer({ exercise, onAnswer, questionNumber, totalQues
     );
   }
 
+  // ── Income Streams ──
+  if (exercise.type === 'income_streams') {
+    return (
+      <div>
+        <ExerciseHeader questionNumber={questionNumber} totalQuestions={totalQuestions} xp={exercise.xp} />
+        <IncomeStreams exercise={exercise} onAnswer={onAnswer} />
+      </div>
+    );
+  }
+
+  // ── Coverage Calc ──
+  if (exercise.type === 'coverage_calc') {
+    return (
+      <div>
+        <ExerciseHeader questionNumber={questionNumber} totalQuestions={totalQuestions} xp={exercise.xp} />
+        <CoverageCalc exercise={exercise} onAnswer={onAnswer} />
+      </div>
+    );
+  }
+
+  // ── Risk Matrix ──
+  if (exercise.type === 'risk_matrix') {
+    return (
+      <div>
+        <ExerciseHeader questionNumber={questionNumber} totalQuestions={totalQuestions} xp={exercise.xp} />
+        <RiskMatrix exercise={exercise} onAnswer={onAnswer} />
+      </div>
+    );
+  }
+
+  // ── Unit Price ──
+  if (exercise.type === 'unit_price') {
+    return (
+      <div>
+        <ExerciseHeader questionNumber={questionNumber} totalQuestions={totalQuestions} xp={exercise.xp} />
+        <UnitPrice exercise={exercise} onAnswer={onAnswer} />
+      </div>
+    );
+  }
+
   // ── Choice ──
   if (exercise.type === 'choice') {
     const handleCheck = () => {
       if (selectedIndex === null) return;
       const correct = selectedIndex === exercise.correctIndex;
       setAnswerState(correct ? 'correct' : 'wrong');
-      setTimeout(() => onAnswer(correct, correct ? exercise.xp : 0), 1400);
+      if (correct) {
+        setTimeout(() => onAnswer(true, exercise.xp), 1400);
+      }
     };
 
     return (
@@ -235,6 +281,11 @@ export function ExerciseRenderer({ exercise, onAnswer, questionNumber, totalQues
             {ui.check}
           </button>
         )}
+        {isChecked && answerState === 'wrong' && (
+          <button className="btn-primary w-full" onClick={() => onAnswer(false, 0)}>
+            {lang === 'en' ? 'Continue →' : 'Продължи →'}
+          </button>
+        )}
       </div>
     );
   }
@@ -248,7 +299,9 @@ export function ExerciseRenderer({ exercise, onAnswer, questionNumber, totalQues
       const max = exercise.answerMax ?? exercise.correctAnswer! + 0.01;
       const correct = val >= min && val <= max;
       setAnswerState(correct ? 'correct' : 'wrong');
-      setTimeout(() => onAnswer(correct, correct ? exercise.xp : 0), 1400);
+      if (correct) {
+        setTimeout(() => onAnswer(true, exercise.xp), 1400);
+      }
     };
 
     return (
@@ -296,6 +349,11 @@ export function ExerciseRenderer({ exercise, onAnswer, questionNumber, totalQues
         {!isChecked && (
           <button className="btn-primary w-full" onClick={handleCheck} disabled={!fillValue.trim()}>
             {ui.check}
+          </button>
+        )}
+        {isChecked && answerState === 'wrong' && (
+          <button className="btn-primary w-full" onClick={() => onAnswer(false, 0)}>
+            {lang === 'en' ? 'Continue →' : 'Продължи →'}
           </button>
         )}
       </div>

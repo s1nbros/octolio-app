@@ -36,14 +36,15 @@ export function OrderItems({ exercise, onAnswer }: Props) {
     }
   };
 
+  const correctCount = order.reduce((sum, itemIdx, posIdx) => sum + (itemIdx === correctOrder[posIdx] ? 1 : 0), 0);
+  const score = items.length > 0 ? correctCount / items.length : 0;
+  const isPassing = score >= 0.7;
+
   const handleSubmit = () => {
     setSubmitted(true);
-    let correct = 0;
-    order.forEach((itemIdx, posIdx) => {
-      if (itemIdx === correctOrder[posIdx]) correct++;
-    });
-    const score = correct / items.length;
-    setTimeout(() => onAnswer(score >= 0.7, score >= 0.7 ? exercise.xp : Math.floor(exercise.xp * score)), 1800);
+    if (isPassing) {
+      setTimeout(() => onAnswer(true, exercise.xp), 1800);
+    }
   };
 
   const isItemCorrect = (posIdx: number) => order[posIdx] === correctOrder[posIdx];
@@ -131,6 +132,11 @@ export function OrderItems({ exercise, onAnswer }: Props) {
       {!submitted && (
         <button className="btn-primary w-full" onClick={handleSubmit}>
           {lang === 'en' ? 'Check Order →' : 'Провери реда →'}
+        </button>
+      )}
+      {submitted && !isPassing && (
+        <button className="btn-primary w-full" onClick={() => onAnswer(false, 0)}>
+          {lang === 'en' ? 'Continue →' : 'Продължи →'}
         </button>
       )}
     </div>

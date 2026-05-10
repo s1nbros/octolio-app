@@ -51,7 +51,9 @@ export function TaxBrackets({ exercise, onAnswer }: Props) {
   const handleSubmit = () => {
     if (isNaN(parsedAnswer)) return;
     setSubmitted(true);
-    setTimeout(() => onAnswer(isCorrect, isCorrect ? exercise.xp : 0), 1800);
+    if (isCorrect) {
+      setTimeout(() => onAnswer(true, exercise.xp), 1800);
+    }
   };
 
   const colors = ['hsl(var(--c-green))', 'hsl(var(--c-primary))', 'hsl(var(--c-purple))', 'hsl(var(--c-orange))', 'hsl(var(--c-red))'];
@@ -200,6 +202,11 @@ export function TaxBrackets({ exercise, onAnswer }: Props) {
       {!submitted && (
         <button className="btn-primary w-full" onClick={handleSubmit} disabled={!answer.trim()}>
           {lang === 'en' ? 'Check Answer →' : 'Провери отговора →'}
+        </button>
+      )}
+      {submitted && !isCorrect && (
+        <button className="btn-primary w-full" onClick={() => onAnswer(false, 0)}>
+          {lang === 'en' ? 'Continue →' : 'Продължи →'}
         </button>
       )}
     </div>

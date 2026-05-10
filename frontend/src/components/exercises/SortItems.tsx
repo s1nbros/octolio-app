@@ -21,13 +21,17 @@ export function SortItems({ exercise, onAnswer }: Props) {
     setSorted(prev => ({ ...prev, [idx]: prev[idx] === bucket ? 'unsorted' : bucket }));
   };
 
+  const correctCount = items.filter((item, i) =>
+    (item.isAsset && sorted[i] === 'asset') || (!item.isAsset && sorted[i] === 'liability')
+  ).length;
+  const score = items.length > 0 ? correctCount / items.length : 0;
+  const isPassing = score >= 0.7;
+
   const handleSubmit = () => {
     setSubmitted(true);
-    const correct = items.filter((item, i) =>
-      (item.isAsset && sorted[i] === 'asset') || (!item.isAsset && sorted[i] === 'liability')
-    ).length;
-    const score = correct / items.length;
-    setTimeout(() => onAnswer(score >= 0.7, score >= 0.7 ? exercise.xp : Math.floor(exercise.xp * score)), 1800);
+    if (isPassing) {
+      setTimeout(() => onAnswer(true, exercise.xp), 1800);
+    }
   };
 
   const unsorted = items.filter((_, i) => sorted[i] === 'unsorted');
@@ -151,6 +155,11 @@ export function SortItems({ exercise, onAnswer }: Props) {
       {!submitted && (
         <button className="btn-primary w-full" onClick={handleSubmit} disabled={!allSorted}>
           {lang === 'en' ? 'Check Answers →' : 'Провери отговорите →'}
+        </button>
+      )}
+      {submitted && !isPassing && (
+        <button className="btn-primary w-full" onClick={() => onAnswer(false, 0)}>
+          {lang === 'en' ? 'Continue →' : 'Продължи →'}
         </button>
       )}
     </div>

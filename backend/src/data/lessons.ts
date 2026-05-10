@@ -26,7 +26,11 @@ export interface Exercise {
     | 'stock_chart'         // interactive price chart (investing)
     | 'portfolio_pie'       // allocate % across asset classes (investing)
     | 'debt_payoff'         // pick debt payoff strategy (credit/debt)
-    | 'tax_brackets';       // tax bracket visualizer (tax)
+    | 'tax_brackets'        // tax bracket visualizer (tax)
+    | 'income_streams'      // pick a mix of side hustles (side-hustles)
+    | 'coverage_calc'       // tune insurance premium/deductible (insurance)
+    | 'risk_matrix'         // sort risks into 2x2 grid (risk-management)
+    | 'unit_price';         // pick best price-per-unit option (smart-shopping)
   // theory
   slides?: TheorySlide[];
   // choice / fill_blank shared
@@ -139,6 +143,63 @@ export interface Exercise {
     adjustable?: boolean;
     incomeMin?: number;
     incomeMax?: number;
+  };
+  // income_streams
+  incomeStreams?: {
+    scenario?: LocalizedText;
+    question: LocalizedText;
+    targetIncome: number;
+    maxHoursPerWeek: number;
+    minPicks: number;
+    maxPicks: number;
+    streams: {
+      label: LocalizedText;
+      emoji: string;
+      hoursPerWeek: number;
+      eurPerHour: number;
+      scalability: number;
+      note?: LocalizedText;
+    }[];
+  };
+  // coverage_calc
+  coverageCalc?: {
+    scenario?: LocalizedText;
+    question: LocalizedText;
+    claimProbability: number;
+    expectedLoss: number;
+    premiumMin: number;
+    premiumMax: number;
+    premiumStep: number;
+    deductibleOptions: number[];
+    coverageLimitOptions: number[];
+    correctPremium: number;
+    correctDeductible: number;
+    correctCoverageLimit: number;
+    tolerance: number;
+  };
+  // risk_matrix
+  riskMatrix?: {
+    scenario?: LocalizedText;
+    question: LocalizedText;
+    risks: {
+      label: LocalizedText;
+      emoji: string;
+      correctQuadrant: 0 | 1 | 2 | 3;
+      explanation?: LocalizedText;
+    }[];
+  };
+  // unit_price
+  unitPrice?: {
+    scenario?: LocalizedText;
+    question: LocalizedText;
+    unit: string;
+    options: {
+      label: LocalizedText;
+      emoji: string;
+      price: number;
+      quantity: number;
+      note?: LocalizedText;
+    }[];
   };
   xp: number;
 }

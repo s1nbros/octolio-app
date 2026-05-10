@@ -13,7 +13,9 @@ export function TrueFalse({ exercise, onAnswer }: Props) {
   const handleChoice = (value: boolean) => {
     if (isAnswered) return;
     setChosen(value);
-    setTimeout(() => onAnswer(value === exercise.isTrue, value === exercise.isTrue ? exercise.xp : 0), 2200);
+    if (value === exercise.isTrue) {
+      setTimeout(() => onAnswer(true, exercise.xp), 2200);
+    }
   };
 
   return (
@@ -110,6 +112,12 @@ export function TrueFalse({ exercise, onAnswer }: Props) {
             </p>
           )}
         </div>
+      )}
+
+      {isAnswered && !isCorrect && (
+        <button className="btn-primary w-full mt-4" onClick={() => onAnswer(false, 0)}>
+          {lang === 'en' ? 'Continue →' : 'Продължи →'}
+        </button>
       )}
     </div>
   );

@@ -86,7 +86,9 @@ export function DebtPayoff({ exercise, onAnswer }: Props) {
     if (strategy === null) return;
     setSubmitted(true);
     const correct = strategy === cfg.correctStrategy;
-    setTimeout(() => onAnswer(correct, correct ? exercise.xp : 0), 2200);
+    if (correct) {
+      setTimeout(() => onAnswer(true, exercise.xp), 2200);
+    }
   };
 
   const totalDebt = cfg.debts.reduce((s, d) => s + d.balance, 0);
@@ -224,6 +226,11 @@ export function DebtPayoff({ exercise, onAnswer }: Props) {
       {!submitted && (
         <button className="btn-primary w-full" onClick={handleSubmit} disabled={strategy === null}>
           {lang === 'en' ? 'Run Simulation →' : 'Стартирай симулация →'}
+        </button>
+      )}
+      {submitted && strategy !== cfg.correctStrategy && (
+        <button className="btn-primary w-full" onClick={() => onAnswer(false, 0)}>
+          {lang === 'en' ? 'Continue →' : 'Продължи →'}
         </button>
       )}
     </div>

@@ -33,7 +33,9 @@ export function BudgetSlider({ exercise, onAnswer }: Props) {
   const handleSubmit = () => {
     if (overBudget) return;
     setSubmitted(true);
-    setTimeout(() => onAnswer(isGood, isGood ? exercise.xp : Math.floor(exercise.xp / 2)), 2000);
+    if (isGood) {
+      setTimeout(() => onAnswer(true, exercise.xp), 2000);
+    }
   };
 
   return (
@@ -132,6 +134,11 @@ export function BudgetSlider({ exercise, onAnswer }: Props) {
       {!submitted && (
         <button className="btn-primary w-full" onClick={handleSubmit} disabled={overBudget}>
           {lang === 'en' ? 'Submit Budget →' : 'Изпрати бюджета →'}
+        </button>
+      )}
+      {submitted && !isGood && (
+        <button className="btn-primary w-full" onClick={() => onAnswer(false, 0)}>
+          {lang === 'en' ? 'Continue →' : 'Продължи →'}
         </button>
       )}
     </div>
