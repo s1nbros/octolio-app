@@ -1407,7 +1407,314 @@ const staticModules: Module[] = [
     ],
   },
 
+  // ─────────────────────────────────────────────
+  // MODULE 5 — SIDE HUSTLES & EXTRA INCOME
+  // Signature interactive: income_streams (pick a mix of streams to hit a target)
+  // ─────────────────────────────────────────────
+  {
+    id: 'side-hustles',
+    title: { en: 'Side Hustles & Extra Income', bg: 'Странични бизнеси и допълнителен доход' },
+    description: { en: 'Turn your skills into income streams without burning out.', bg: 'Превърни уменията си в потоци доход без да изгориш.' },
+    icon: '💼', color: 'green', order: 5,
+    lessons: [
+      // ── Lesson 1: Launch Your Side Hustle ──
+      {
+        id: 'side-hustle-launch',
+        moduleId: 'side-hustles',
+        title: { en: 'Launch Your Side Hustle', bg: 'Стартирай страничен бизнес' },
+        description: { en: 'Why side income matters, how to validate, and what mix actually fits your life.', bg: 'Защо страничният доход е важен, как да валидираш и какъв микс пасва на живота ти.' },
+        icon: '🚀', xpReward: 140, order: 1,
+        exercises: [
+          {
+            id: 'sh1-theory-1', type: 'theory', xp: 0,
+            slides: [
+              {
+                emoji: '🚀',
+                title: { en: 'Why Side Income Changes Everything', bg: 'Защо страничният доход променя всичко' },
+                body: { en: 'A salary is a single income stream — and single streams are fragile.\n\nMath: an extra €500/mo from age 25, invested at 7% for 40 years = €1.3M at retirement. From a hobby.\n\nSide hustles also give you:\n• A safety net if your job changes\n• Real-world skills your CV can\'t show\n• Optionality — the freedom to say no\n\nThis isn\'t about grinding 24/7. It\'s about building one tiny stream that pays you while you sleep.', bg: 'Заплатата е единствен поток — а единствените потоци са крехки.\n\nМатематика: допълнителни €500/мес от 25 г., инвестирани при 7% за 40 г. = €1.3М до пенсия. От хоби.\n\nСтраничният бизнес ти дава:\n• Резервна мрежа, ако работата се промени\n• Реални умения, които CV не може да покаже\n• Свобода — възможността да кажеш не\n\nНе е за бачкане 24/7. За изграждане на едно мъничко потокче, което плаща докато спиш.' },
+                highlight: { en: '💡 The goal isn\'t to replace your job — it\'s to make your job optional.', bg: '💡 Целта не е да замениш работата — а да я направиш по избор.' },
+              },
+              {
+                emoji: '🔬',
+                title: { en: 'The 3-Stage Validation Loop', bg: 'Тристепенната валидационна примка' },
+                body: { en: 'Most side hustles fail because people build BEFORE asking if anyone wants to pay.\n\nThe right order:\n\n1️⃣ Talk to 5 potential customers — would they pay?\n2️⃣ Build the smallest possible version (MVP)\n3️⃣ Get 3 actual paying customers BEFORE scaling\n\nIf step 1 says no, kill it. Save months of wasted weekends.', bg: 'Повечето странични бизнеси умират, защото хората строят ПРЕДИ да попитат дали някой ще плати.\n\nПравилният ред:\n\n1️⃣ Говори с 5 потенциални клиенти — биха ли платили?\n2️⃣ Построй най-малката възможна версия (MVP)\n3️⃣ Вземи 3 реални платящи клиенти ПРЕДИ да мащабираш\n\nАко стъпка 1 е "не" — спри. Спести месеци пропилени уикенди.' },
+                highlight: { en: '🎯 If you can\'t get 3 paying customers, the problem is the offer — not the marketing.', bg: '🎯 Ако не можеш да вземеш 3 платящи клиенти, проблемът е офертата — не маркетингът.' },
+              },
+            ],
+          },
+          {
+            id: 'sh1-match-1', type: 'match_terms', xp: 20,
+            matchPairs: [
+              { term: { en: 'MVP', bg: 'MVP' }, definition: { en: 'Minimum Viable Product — smallest version that delivers value', bg: 'Минимална жизнеспособна версия с реална стойност' } },
+              { term: { en: 'Validation', bg: 'Валидация' }, definition: { en: 'Proving people will pay before you build', bg: 'Доказваш че ще платят преди да построиш' } },
+              { term: { en: 'Niche', bg: 'Ниша' }, definition: { en: 'A specific sub-market you serve deeply', bg: 'Конкретен под-пазар, който обслужваш дълбоко' } },
+              { term: { en: 'CAC', bg: 'CAC' }, definition: { en: 'Customer Acquisition Cost — €€ spent to win one customer', bg: 'Цена на придобиване на клиент — €€ за един клиент' } },
+              { term: { en: 'Recurring revenue', bg: 'Повтарящ се приход' }, definition: { en: 'Income that repeats every month from the same customer', bg: 'Доход, който се повтаря всеки месец от същия клиент' } },
+            ],
+          },
+          {
+            id: 'sh1-streams-1', type: 'income_streams', xp: 35,
+            incomeStreams: {
+              scenario: { en: 'You have 12 hours a week free outside your day job. Pick a mix that earns at least €400/month without going over 12 hours.', bg: 'Имаш 12 часа на седмица свободни извън основната работа. Избери микс за поне €400/месец без да надхвърляш 12 часа.' },
+              question: { en: 'Build a realistic €400/mo starter mix', bg: 'Изгради реалистичен стартов микс за €400/мес' },
+              targetIncome: 400,
+              maxHoursPerWeek: 12,
+              minPicks: 1,
+              maxPicks: 3,
+              streams: [
+                { label: { en: 'Freelance graphic design', bg: 'Фрийланс графичен дизайн' }, emoji: '🎨', hoursPerWeek: 8, eurPerHour: 25, scalability: 3 },
+                { label: { en: 'Weekend pet sitting', bg: 'Гледане на домашни любимци уикенди' }, emoji: '🐕', hoursPerWeek: 6, eurPerHour: 15, scalability: 2 },
+                { label: { en: 'Stock photos (passive)', bg: 'Stock снимки (пасивно)' }, emoji: '📸', hoursPerWeek: 3, eurPerHour: 10, scalability: 4, note: { en: 'Earn forever after upload', bg: 'Печелиш завинаги след качване' } },
+                { label: { en: 'Online tutoring', bg: 'Онлайн уроци' }, emoji: '🎓', hoursPerWeek: 5, eurPerHour: 30, scalability: 3 },
+                { label: { en: 'Paid survey apps', bg: 'Платени анкети' }, emoji: '📋', hoursPerWeek: 4, eurPerHour: 5, scalability: 1, note: { en: 'Low rate, no skills built', bg: 'Ниска ставка, без растеж в умения' } },
+                { label: { en: 'Reselling thrift finds', bg: 'Препродажба от второ ръка' }, emoji: '👕', hoursPerWeek: 4, eurPerHour: 20, scalability: 2 },
+              ],
+            },
+            explanation: { en: 'Good mixes: tutoring alone (5h, €600) OR design alone (8h, €800) OR photos + tutoring (8h, €720). Surveys are a trap — €80/mo at €5/h is a brutal trade.', bg: 'Добри миксове: само уроци (5ч, €600) ИЛИ само дизайн (8ч, €800) ИЛИ снимки + уроци (8ч, €720). Анкетите са капан — €80/мес при €5/ч.' },
+          },
+          {
+            id: 'sh1-tf-1', type: 'true_false', xp: 15,
+            statement: { en: '"Passive income" is truly passive — once set up, it requires zero work to maintain.', bg: '"Пасивният доход" е наистина пасивен — щом го настроиш, не изисква никаква работа.' },
+            isTrue: false,
+            explanation: { en: 'FALSE. Almost every "passive" income needs maintenance: course updates, marketing, customer support, content refresh, platform changes. The most honest term is "leveraged" income — your time scales 10×, but it\'s never 0.', bg: 'НЕВЯРНО. Почти всеки "пасивен" доход иска поддръжка: обновяване, маркетинг, поддръжка на клиенти, обновяване на съдържание. По-честно е "лост" — времето ти се умножава 10×, но никога 0.' },
+          },
+          {
+            id: 'sh1-order-1', type: 'order_items', xp: 25,
+            orderInstruction: { en: 'Order the validation steps from FIRST to LAST (do this BEFORE building anything big):', bg: 'Подреди стъпките за валидация от ПЪРВА към ПОСЛЕДНА (преди да строиш нещо голямо):' },
+            orderItems: [
+              { label: { en: 'Talk to 5 potential customers about the problem', bg: 'Говори с 5 потенциални клиенти за проблема' }, emoji: '💬' },
+              { label: { en: 'Build a minimal version (MVP) in under a week', bg: 'Построй минимална версия (MVP) за под седмица' }, emoji: '🛠️' },
+              { label: { en: 'Charge the first 3 customers FULL price', bg: 'Вземи пълна цена от първите 3 клиента' }, emoji: '💰' },
+              { label: { en: 'Get testimonials and word-of-mouth referrals', bg: 'Вземи отзиви и препоръки' }, emoji: '⭐' },
+              { label: { en: 'Scale up or pivot based on real data', bg: 'Мащабирай или промени курса на база реални данни' }, emoji: '📈' },
+            ],
+            correctOrder: [0, 1, 2, 3, 4],
+            explanation: { en: 'Most people build first and ask later — and then can\'t sell what they built. Talking to 5 humans BEFORE coding/buying inventory kills 80% of bad ideas at zero cost.', bg: 'Повечето хора първо строят, после питат — и не могат да продадат. Разговор с 5 души ПРЕДИ да кодираш/купуваш убива 80% от лошите идеи безплатно.' },
+          },
+          {
+            id: 'sh1-decision-1', type: 'scenario_decision', xp: 25,
+            decisionAvatar: '🎨',
+            decisionScenario: { en: 'You have a stable day job, 8 hours/week free, €0 inventory budget, and decent design skills. Which hustle idea is the best fit?', bg: 'Имаш стабилна работа, 8 ч/седм. свободни, €0 за инвентар, прилични дизайн умения. Коя идея пасва най-добре?' },
+            decisionChoices: [
+              { label: { en: 'Open a print-on-demand t-shirt store', bg: 'Магазин за тениски по поръчка' }, emoji: '👕', outcome: { en: 'Decent fit: uses your skills + zero inventory risk. But slow ramp — most stores take 6–12 months to find a profitable design niche. Income trickles in.', bg: 'Прилично: ползва уменията + нулев риск със стока. Но бавно — повечето магазини откриват печеливша ниша за 6–12 м.' }, isBest: false },
+              { label: { en: 'Start dropshipping electronics', bg: 'Дропшипинг електроника' }, emoji: '📦', outcome: { en: 'Bad fit on every axis: no design-skill use, brutal competition with razor-thin margins, ad-spend required to start, refund headaches. Skip.', bg: 'Лошо на всичко: не ползва уменията, жестока конкуренция с малки маржове, реклама за стартиране, главоболия с връщания.' }, isBest: false },
+              { label: { en: 'Freelance logo design on Upwork / Fiverr', bg: 'Фрийланс дизайн на лога в Upwork / Fiverr' }, emoji: '🎨', outcome: { en: 'Perfect fit. Direct match of skill to paying demand. Zero upfront cost. First clients within weeks. Predictable hourly income. Start here, scale via packages + referrals later.', bg: 'Перфектно. Директно съвпадение умение/платено търсене. Нула стартови разходи. Първи клиенти за седмици. Стартирай тук, мащабирай чрез пакети + препоръки.' }, isBest: true },
+              { label: { en: 'Quit job, raise €50k angel investment for an app', bg: 'Напусни работа, вземи €50к за апликация' }, emoji: '💸', outcome: { en: 'Wildly premature. 99% of pre-product startups die. You have no validation, no track record, no income. This is the opposite of "start small, validate fast."', bg: 'Преждевременно. 99% от стартъпите без продукт умират. Без валидация, без история, без доход.' }, isBest: false },
+            ],
+            explanation: { en: 'The best first hustle has 3 things: it uses an existing skill, has near-zero startup cost, and has buyers ALREADY looking for it. Freelancing on a marketplace nails all three.', bg: 'Най-добрият първи бизнес има 3 неща: ползва съществуващо умение, почти нулеви разходи и купувачите ВЕЧЕ търсят. Фрийлансът покрива и трите.' },
+          },
+          {
+            id: 'sh1-choice-1', type: 'choice', xp: 15,
+            question: { en: 'You earn your first €500 from your hustle. What\'s the smartest move?', bg: 'Спечели първите €500 от бизнеса. Кой е най-умният ход?' },
+            options: [
+              { en: 'Reinvest €450 into business growth tools', bg: 'Реинвестирай €450 в инструменти за растеж' },
+              { en: 'Save 30% for taxes, reinvest most, celebrate 10%', bg: 'Заделѝ 30% за данъци, реинвестирай по-голямата част, празнувай 10%' },
+              { en: 'Spend it all on the laptop you\'ve been wanting', bg: 'Похарчи всичко за лаптопа, който искаш' },
+              { en: 'Quit your day job to focus full-time', bg: 'Напусни работа за пълно фокусиране' },
+            ],
+            correctIndex: 1,
+            explanation: { en: 'Forgetting taxes is the #1 freelancer mistake. Carve them off FIRST (15–35% depending on jurisdiction). Then reinvest most for growth, leave a small celebration to stay motivated.', bg: 'Забравянето на данъци е грешка №1. Първо ги махни (15–35% според страната). После реинвестирай за растеж, остави малко за празнуване.' },
+          },
+        ],
+      },
 
+      // ── Lesson 2: Price Like a Pro ──
+      {
+        id: 'side-hustle-pricing',
+        moduleId: 'side-hustles',
+        title: { en: 'Price Like a Pro', bg: 'Ценообразувай като професионалист' },
+        description: { en: 'The 3 pricing models, when to raise rates, and how to handle discount requests.', bg: 'Трите модела на ценообразуване, кога да вдигаш и как да реагираш на отстъпки.' },
+        icon: '💸', xpReward: 150, order: 2,
+        exercises: [
+          {
+            id: 'sh2-theory-1', type: 'theory', xp: 0,
+            slides: [
+              {
+                emoji: '💸',
+                title: { en: 'The 3 Pricing Models', bg: 'Трите модела за ценообразуване' },
+                body: { en: '⏰ HOURLY: easy to understand, but caps your income at hours × rate. Penalises you for being fast.\n\n📦 PROJECT / PACKAGE: client pays for the OUTCOME. You make €€/hr go up as you get faster. Best for service work.\n\n🔁 RETAINER / SUBSCRIPTION: client pays monthly for ongoing access. Most stable income, fastest path to "boring" wealth.\n\nMost beginners start hourly and stay stuck there. The leap to packages can DOUBLE your effective rate overnight.', bg: '⏰ ПО ЧАС: лесно, но таванът е часове × ставка. Наказва те, че си бърз.\n\n📦 ПРОЕКТ / ПАКЕТ: клиентът плаща за РЕЗУЛТАТА. Ставката ти расте с бързината. Най-добро за услуги.\n\n🔁 РЕТЕЙНЕР / АБОНАМЕНТ: клиентът плаща месечно за достъп. Най-стабилен доход.\n\nПовечето започват по час и засядат там. Скокът към пакети може да УДВОИ ефективната ставка.' },
+                highlight: { en: '🚀 Price by VALUE delivered, not by hours spent. Your client doesn\'t pay for your time — they pay for their problem to disappear.', bg: '🚀 Ценообразувай по СТОЙНОСТТА, не по времето. Клиентът не плаща за часовете — плаща проблемът му да изчезне.' },
+              },
+              {
+                emoji: '📈',
+                title: { en: 'When to Raise Prices', bg: 'Кога да вдигаш цените' },
+                body: { en: 'You\'re ready to raise prices when ANY of these are true:\n\n✅ You\'re fully booked / turning work away\n✅ You\'ve delivered for 5+ happy clients at the current rate\n✅ Your effective hourly rate is below €30/h after taxes\n✅ It\'s been 6+ months since your last raise\n\nRaise by 20–30%. The clients who say no were going to leave anyway. The ones who stay value you more.', bg: 'Готов си да вдигнеш цените при ВСЯКО от:\n\n✅ Напълно си зает / отказваш работа\n✅ Доставил си на 5+ доволни клиенти\n✅ Ефективната ставка след данъци е под €30/ч\n✅ Минали са 6+ месеца от последното повишение\n\nВдигни с 20–30%. Тези, които напуснат, и без това щяха. Останалите те ценят повече.' },
+                highlight: { en: '💪 Higher prices = better clients. Cheap clients eat the most time and complain the most.', bg: '💪 По-високи цени = по-добри клиенти. Евтините клиенти ядат най-много време и се оплакват най-много.' },
+              },
+            ],
+          },
+          {
+            id: 'sh2-fill-num-1', type: 'fill_number', xp: 20,
+            fillNumberScenario: { en: 'You quoted a €500 flat fee for a logo project. It took you 8 hours total.', bg: 'Оферира €500 фиксирана такса за лого. Отне ти 8 часа.' },
+            question: { en: 'What\'s your effective hourly rate (€/h)?', bg: 'Каква е ефективната ти ставка (€/ч)?' },
+            fillNumberAnswer: 62.5, fillNumberTolerance: 2, fillNumberUnit: '€',
+            fillNumberHint: { en: 'Total paid ÷ total hours = effective rate', bg: 'Общо платено ÷ общо часове = ефективна ставка' },
+            explanation: { en: '€500 ÷ 8h = €62.50/h. The faster you get at logos, the higher this number climbs — without ever raising the quoted price. Hourly pricing punishes speed; project pricing rewards it.', bg: '€500 ÷ 8ч = €62.50/ч. Колкото по-бърз ставаш, толкова повече расте — без да вдигаш цената. По час наказва скоростта; на проект я награждава.' },
+          },
+          {
+            id: 'sh2-tf-1', type: 'true_false', xp: 15,
+            statement: { en: 'The lowest price always wins more clients in the long run.', bg: 'Най-ниската цена винаги печели повече клиенти дългосрочно.' },
+            isTrue: false,
+            explanation: { en: 'FALSE. Bottom-of-market prices attract bargain hunters who chase the next discount, demand more for less, and never refer you. Mid-to-premium prices attract clients who actually value your work and refer their friends.', bg: 'НЕВЯРНО. Най-ниските цени привличат ловци на отстъпки, които искат повече за по-малко и не препоръчват. Средните-към-премиум цени привличат хора, които ценят работата ти и препоръчват.' },
+          },
+          {
+            id: 'sh2-decision-1', type: 'scenario_decision', xp: 25,
+            decisionAvatar: '🤝',
+            decisionScenario: { en: 'Your fastest-growing client (€2,000/mo retainer) asks for a 20% discount. They say their budget is tight. What\'s your move?', bg: 'Най-бързо растящият ти клиент (€2,000/мес ретейнер) иска 20% отстъпка. Бюджетът им бил тесен. Ходът ти?' },
+            decisionChoices: [
+              { label: { en: 'Give the 20% discount to keep the relationship', bg: 'Дай 20% отстъпка да запазиш отношенията' }, emoji: '😬', outcome: { en: 'Bad precedent. You lose €400/mo (€4,800/yr) AND signal that your prices are negotiable. Other clients will ask too. Within a year you\'ll be underpaid across the board.', bg: 'Лош прецедент. Губиш €400/мес (€4,800/год.) И сигнализираш, че цените се пазарят. И други ще питат. За година си недоплатен навсякъде.' }, isBest: false },
+              { label: { en: 'Counter: same price, but reduce scope to fit their budget', bg: 'Контра: същата цена, по-малък обхват за бюджета им' }, emoji: '✂️', outcome: { en: 'Excellent. You hold your rate AND solve their problem. If they truly have budget constraints, this works. If they were testing you, your rate stays protected. Win-win.', bg: 'Отлично. Държиш ставката И решаваш проблема им. Ако наистина имат бюджет — работи. Ако те тестват — ставката остана. Печеливша.' }, isBest: true },
+              { label: { en: 'Politely decline; offer a 6-month payment plan instead', bg: 'Откажи учтиво; предложи 6-месечен план за плащане' }, emoji: '📅', outcome: { en: 'Reasonable backup. Holds your rate. Works if the client\'s issue is cash flow, not value. Slightly worse than scope-cut because you carry the risk of late payment.', bg: 'Резервен вариант. Държи ставката. Работи ако проблемът е кеш, не стойност. Малко по-зле от скоп-кът — носиш риск за закъснели плащания.' }, isBest: false },
+              { label: { en: 'Drop them — discount-seekers are red flags', bg: 'Откажи им — отстъпко-търсачите са червен флаг' }, emoji: '🚩', outcome: { en: 'Too aggressive for a long-term client asking once. Reserve this response for clients who repeatedly bargain, miss deadlines, or scope-creep. One discount request isn\'t a red flag.', bg: 'Прекалено агресивно за дългогодишен клиент с едно питане. Запази го за такива, които постоянно се пазарят, закъсняват, разширяват обхвата без плащане.' }, isBest: false },
+            ],
+            explanation: { en: 'Discount requests are about value perception, not money. Re-anchor on value: cut scope, not rate. Your rate is your rate.', bg: 'Заявките за отстъпка са за възприемана стойност, не пари. Закотви се в стойността: режи обхвата, не ставката.' },
+          },
+          {
+            id: 'sh2-match-1', type: 'match_terms', xp: 25,
+            matchPairs: [
+              { term: { en: 'COGS', bg: 'COGS' }, definition: { en: 'Cost of Goods Sold — direct cost to deliver each sale', bg: 'Директна цена за доставяне на всяка продажба' } },
+              { term: { en: 'Gross margin', bg: 'Брутен марж' }, definition: { en: '(Revenue − COGS) ÷ Revenue — your "real" % profit before overhead', bg: '(Приход − COGS) ÷ Приход — "истинският" % печалба преди разходи' } },
+              { term: { en: 'Retainer', bg: 'Ретейнер' }, definition: { en: 'Fixed monthly fee for ongoing access or work', bg: 'Фиксирана месечна такса за постоянен достъп' } },
+              { term: { en: 'Breakeven', bg: 'Точка на изравняване' }, definition: { en: 'Revenue exactly equals total costs — €0 profit', bg: 'Приходите равни на разходите — €0 печалба' } },
+              { term: { en: 'Value-based pricing', bg: 'Ценообразуване по стойност' }, definition: { en: 'Price reflects client\'s outcome, not your time spent', bg: 'Цената отразява резултата за клиента, не часовете ти' } },
+            ],
+          },
+          {
+            id: 'sh2-rpg-1', type: 'rpg_scenario', xp: 25,
+            scenario: { en: 'Sunday evening. A long-time client texts: "EMERGENCY — need the project done by tomorrow 9am. Can you?" Your normal rate is €40/h. What do you reply?', bg: 'Неделя вечер. Дълготраен клиент: "СПЕШНО — нужно е готово до утре 9 ч. Можеш ли?" Обичайна ставка €40/ч. Какво отговаряш?' },
+            avatar: '⏰',
+            choices: [
+              { label: { en: 'Do it free — they\'re a great long-term client', bg: 'Направи го безплатно — добър дългогодишен клиент' }, emoji: '🆓', consequence: { en: 'You burn your Sunday and signal that "emergency = free." They\'ll keep doing it. After 6 months you\'re resentful and quietly ghost them. Worst outcome.', bg: 'Гориш неделята си и сигнализираш "спешно = безплатно". Ще го правят постоянно. След 6 м. си обиден и тихо ги изоставяш.' }, cashFlowChange: -300, isGood: false },
+              { label: { en: 'Quote 2× rush rate (€80/h). They can accept or wait.', bg: 'Оферирай 2× спешна ставка (€80/ч). Приемат или чакат.' }, emoji: '🚀', consequence: { en: 'Best move. They accept because they truly need it (and respect you more). You lock in €640 for the night AND set the rush-fee precedent for future emergencies.', bg: 'Най-добрият ход. Приемат, защото им трябва (и те уважават повече). €640 за нощта И установяваш прецедента "спешно = по-висока ставка".' }, cashFlowChange: 640, isGood: true },
+              { label: { en: 'Refuse — Sundays are sacred', bg: 'Откажи — неделята е свещена' }, emoji: '🛑', consequence: { en: 'Fair boundary if you stick to it long-term. They\'ll find another freelancer who undercharges. You lose this gig but preserve your Sunday and your sanity.', bg: 'Честна граница, ако я държиш дълго. Те ще намерят друг евтин фрийлансър. Губиш гига, но запазваш неделята и здравия си разум.' }, cashFlowChange: 0, isGood: true },
+            ],
+          },
+          {
+            id: 'sh2-streams-1', type: 'income_streams', xp: 35,
+            incomeStreams: {
+              scenario: { en: 'You\'ve been hustling for 6 months. Skills are sharper, contacts wider. New goal: €1,200/mo with up to 20 hours/week, max 4 streams.', bg: 'След 6 месеца бизнес. Уменията остри, контактите широки. Нова цел: €1,200/мес с до 20 часа/седм., макс 4 потока.' },
+              question: { en: 'Build a €1,200/mo mix using your sharpened skills', bg: 'Изгради микс за €1,200/мес с подостри умения' },
+              targetIncome: 1200,
+              maxHoursPerWeek: 20,
+              minPicks: 2,
+              maxPicks: 4,
+              streams: [
+                { label: { en: 'Freelance web development', bg: 'Фрийланс уеб разработка' }, emoji: '💻', hoursPerWeek: 8, eurPerHour: 60, scalability: 4 },
+                { label: { en: 'Online tutoring (premium)', bg: 'Онлайн уроци (премиум)' }, emoji: '🎓', hoursPerWeek: 5, eurPerHour: 40, scalability: 3 },
+                { label: { en: 'YouTube ad revenue', bg: 'YouTube приходи от реклама' }, emoji: '📺', hoursPerWeek: 4, eurPerHour: 10, scalability: 5, note: { en: 'Builds for years', bg: 'Расте с години' } },
+                { label: { en: 'Affiliate marketing blog', bg: 'Афилиейт блог' }, emoji: '🔗', hoursPerWeek: 3, eurPerHour: 15, scalability: 4 },
+                { label: { en: 'Local handyman gigs', bg: 'Местни майсторски услуги' }, emoji: '🔧', hoursPerWeek: 6, eurPerHour: 25, scalability: 2 },
+                { label: { en: 'Freelance copywriting', bg: 'Фрийланс копирайт' }, emoji: '✍️', hoursPerWeek: 4, eurPerHour: 45, scalability: 4 },
+                { label: { en: '1:1 coaching calls', bg: '1:1 коучинг разговори' }, emoji: '💬', hoursPerWeek: 3, eurPerHour: 80, scalability: 5, note: { en: 'High leverage', bg: 'Висок лост' } },
+              ],
+            },
+            explanation: { en: 'Strong combos: web dev (8h, €1,920) alone meets it. Or tutoring + copywriting (9h, €1,520). Or coaching + affiliate (6h, €960) + YouTube (4h, €160) = €1,120 — close but builds long-term assets. Avoid handyman alone (€600).', bg: 'Силни комбинации: уеб дев (8ч, €1,920) сам стига. Уроци + копирайт (9ч, €1,520). Коучинг + афилиейт (6ч, €960) + YouTube (4ч, €160) = €1,120 — изгражда дългосрочни активи.' },
+          },
+        ],
+      },
+
+      // ── Lesson 3: From Hustle to Business ──
+      {
+        id: 'side-hustle-business',
+        moduleId: 'side-hustles',
+        title: { en: 'From Hustle to Business', bg: 'От страничен бизнес към истински бизнес' },
+        description: { en: 'When to systemize, when to quit your job, and what structure to choose.', bg: 'Кога да систематизираш, кога да напуснеш работа и каква форма да избереш.' },
+        icon: '🏛️', xpReward: 160, order: 3,
+        exercises: [
+          {
+            id: 'sh3-theory-1', type: 'theory', xp: 0,
+            slides: [
+              {
+                emoji: '🚪',
+                title: { en: 'When Is It Ready to Replace Your Job?', bg: 'Кога е готов да замени работата?' },
+                body: { en: 'Don\'t quit when hustle income MATCHES your salary — quit when it EXCEEDS it AND has been stable for 6+ months.\n\nThe checklist before resigning:\n\n✅ Hustle income > 1.3× job income (variability buffer)\n✅ 12+ months of expenses saved (runway)\n✅ Health insurance figured out\n✅ Income has been stable or growing for 6+ months\n✅ You\'ve already turned away work at current rates\n\nMost people quit too early. The cost of going back is enormous.', bg: 'Не напускай, когато бизнесът е РАВЕН на заплатата — напусни, когато я НАДВИШАВА И е стабилен 6+ месеца.\n\nСписъкът преди оставка:\n\n✅ Бизнес доход > 1.3× работа (буфер за вариация)\n✅ 12+ месеца разходи спестени\n✅ Здравна осигуровка решена\n✅ Доходът е стабилен или расте 6+ м.\n✅ Вече си отказвал работа при текущи ставки\n\nПовечето напускат рано. Цената на връщане е огромна.' },
+                highlight: { en: '🛡️ Your day job is the cheapest investment in your hustle\'s safety. Don\'t kill it prematurely.', bg: '🛡️ Основната работа е най-евтината инвестиция в безопасността на бизнеса ти. Не я убивай рано.' },
+              },
+              {
+                emoji: '🏗️',
+                title: { en: 'Pick Your Structure', bg: 'Избери структурата' },
+                body: { en: '👤 SOLE PROPRIETOR: simplest. You ARE the business. Cheap to set up but your personal assets are at risk if sued.\n\n🛡️ LLC / LIMITED: separates personal vs business assets. Slightly more paperwork + small annual fee. Right for most service businesses.\n\n🏢 CORPORATION: complex, expensive. Right only if you plan to raise investment or scale to many employees.\n\nDefault recommendation for a first real business: LLC / Limited. The liability protection is cheap insurance.', bg: '👤 ЕДНОЛИЧЕН ТЪРГОВЕЦ: най-просто. Ти СИ бизнесът. Евтино, но личните активи са на риск при съдебно дело.\n\n🛡️ ООД / Limited: разделя личните от бизнес активите. Малко документация + малка годишна такса. Подходящо за повечето услуги.\n\n🏢 КОРПОРАЦИЯ: сложно, скъпо. Само ако ще привличаш инвестиции или много служители.\n\nПрепоръка по подразбиране: ООД. Защитата от отговорност е евтина застраховка.' },
+                highlight: { en: '⚠️ Always consult an accountant in your country — tax rules vary wildly.', bg: '⚠️ Винаги се консултирай с счетоводител в страната си — данъчните правила варират силно.' },
+              },
+            ],
+          },
+          {
+            id: 'sh3-order-1', type: 'order_items', xp: 25,
+            orderInstruction: { en: 'Order these systemization steps from FIRST to LAST when turning your hustle into a real business:', bg: 'Подреди стъпките за систематизация от ПЪРВА към ПОСЛЕДНА:' },
+            orderItems: [
+              { label: { en: 'Track every euro of revenue & expense', bg: 'Записвай всяко евро приход и разход' }, emoji: '📊' },
+              { label: { en: 'Define your repeatable signature service / product', bg: 'Дефинирай повтаряема "подписана" услуга / продукт' }, emoji: '🎯' },
+              { label: { en: 'Build a simple website + intake form', bg: 'Прост сайт + форма за поръчки' }, emoji: '🌐' },
+              { label: { en: 'Create standard contracts & invoices', bg: 'Стандартни договори и фактури' }, emoji: '📄' },
+              { label: { en: 'Set up business banking + tax registration', bg: 'Бизнес банкова сметка + данъчна регистрация' }, emoji: '🏦' },
+              { label: { en: 'Hire your first contractor for low-leverage tasks', bg: 'Наеми първи изпълнител за нисколостни задачи' }, emoji: '🤝' },
+            ],
+            correctOrder: [0, 1, 2, 3, 4, 5],
+            explanation: { en: 'Order matters: you can\'t price properly without tracking, can\'t market without a service definition, can\'t protect yourself without contracts, and CAN\'T outsource without a system to outsource INTO.', bg: 'Редът е важен: не можеш да ценообразуваш без записи, да продаваш без дефиниция, да се защитиш без договори, и НЕ МОЖЕШ да делегираш без система за делегиране.' },
+          },
+          {
+            id: 'sh3-decision-1', type: 'scenario_decision', xp: 30,
+            decisionAvatar: '🎢',
+            decisionScenario: { en: 'Your hustle has hit €2,000/mo for 3 straight months. Your day job pays €3,500/mo + health insurance + retirement match. Friends are pushing you to "go all in." What do you do?', bg: 'Бизнесът ти достигна €2,000/мес 3 поредни месеца. Заплатата е €3,500/мес + здравна осигуровка + пенсионна вноска. Приятели те бутат "ва-банк". Какво правиш?' },
+            decisionChoices: [
+              { label: { en: 'Quit immediately — 100% focus will accelerate growth', bg: 'Напусни веднага — 100% фокус ще ускори растежа' }, emoji: '🔥', outcome: { en: 'Premature. €2,000 < €3,500 + benefits. Without the safety net, ANY slow month forces panic decisions: bad clients, low prices, burnout. 70% of people who quit at this stage return to a job within a year.', bg: 'Преждевременно. €2,000 < €3,500 + бонуси. Без мрежата всеки бавен месец = паника: лоши клиенти, ниски цени, прегаряне. 70% се връщат на работа за година.' }, isBest: false },
+              { label: { en: 'Wait until hustle hits €5,250+ for 6 straight months (1.5× salary)', bg: 'Изчакай бизнесът да достигне €5,250+ за 6 поредни месеца (1.5× заплата)' }, emoji: '📈', outcome: { en: 'Textbook move. 1.5× covers the loss of benefits + builds a vacancy buffer. 6 months proves it\'s real, not lucky. You quit from strength, not desperation.', bg: 'Класически ход. 1.5× покрива загубата на бонуси + буфер. 6 м. доказват реалност, не късмет. Напускаш от сила, не от отчаяние.' }, isBest: true },
+              { label: { en: 'Negotiate down to 30h/wk at the day job to grow hustle', bg: 'Договори 30 ч/седм. на основната работа за растеж' }, emoji: '⚖️', outcome: { en: 'Good compromise IF your employer allows it. You get extra hours back for hustle work while keeping benefits. Real-world adoption is rare — most employers say no.', bg: 'Добър компромис, АКО работодателят позволи. Допълнителни часове за бизнеса при запазени бонуси. На практика рядко.' }, isBest: false },
+              { label: { en: 'Keep both indefinitely — never quit, always have a safety net', bg: 'Двете завинаги — никога не напускай, винаги мрежа' }, emoji: '♾️', outcome: { en: 'Comfortable but caps your growth. At some point the hustle needs YOUR full focus to scale. The right answer is to BE READY to quit when the math works — not to commit to "never."', bg: 'Удобно, но ограничава растежа. В даден момент трябва ПЪЛЕН фокус, за да мащабираш. Правилно: бъди ГОТОВ да напуснеш — не "никога".' }, isBest: false },
+            ],
+            explanation: { en: 'The "boring" 1.5× threshold beats both fast quitters and never-quitters. Most successful founders quit AFTER the math is overwhelming, not before.', bg: 'Скучният праг 1.5× бие и бързите напускащи, и тези, които никога не напускат. Повечето успешни основатели напускат СЛЕД като математиката е очевидна.' },
+          },
+          {
+            id: 'sh3-match-1', type: 'match_terms', xp: 25,
+            matchPairs: [
+              { term: { en: 'Sole proprietor', bg: 'Едноличен търговец' }, definition: { en: 'Simplest structure — owner and business are legally the same', bg: 'Най-проста форма — собственикът и бизнесът са едно лице' } },
+              { term: { en: 'LLC / Limited', bg: 'ООД / Limited' }, definition: { en: 'Liability protection — separates personal from business assets', bg: 'Защита от отговорност — разделя личните от бизнес активите' } },
+              { term: { en: 'MRR', bg: 'MRR' }, definition: { en: 'Monthly Recurring Revenue — predictable monthly income', bg: 'Месечен повтарящ се приход — предсказуем доход' } },
+              { term: { en: 'Runway', bg: 'Runway' }, definition: { en: 'Months you can survive without new income', bg: 'Месеците, в които можеш да оцелееш без нов доход' } },
+              { term: { en: 'Sweat equity', bg: 'Sweat equity' }, definition: { en: 'Ownership earned through work instead of cash', bg: 'Собственост, спечелена чрез работа вместо пари' } },
+              { term: { en: 'Cash flow', bg: 'Паричен поток' }, definition: { en: 'Money in minus money out over a time period', bg: 'Парите вътре минус парите навън за период' } },
+            ],
+          },
+          {
+            id: 'sh3-streams-1', type: 'income_streams', xp: 40,
+            incomeStreams: {
+              scenario: { en: 'Final boss: design a €2,000/month replacement-income mix. You\'ve quit your day job and have 25 hours/week of focused business time. Pick 3–5 streams.', bg: 'Финалният тест: дизайн на микс за €2,000/мес заместване. Напусна работата и имаш 25 ч/седм. фокусирано бизнес време. Избери 3–5 потока.' },
+              question: { en: 'Design a €2,000/mo replacement-income mix in ≤25h/wk', bg: 'Дизайн на микс за €2,000/мес в ≤25ч/седм.' },
+              targetIncome: 2000,
+              maxHoursPerWeek: 25,
+              minPicks: 3,
+              maxPicks: 5,
+              streams: [
+                { label: { en: 'High-end web dev clients', bg: 'Премиум уеб дев клиенти' }, emoji: '💻', hoursPerWeek: 10, eurPerHour: 80, scalability: 4 },
+                { label: { en: 'Online course sales', bg: 'Продажба на онлайн курс' }, emoji: '🎬', hoursPerWeek: 5, eurPerHour: 30, scalability: 5, note: { en: 'Builds asset over time', bg: 'Изгражда актив във времето' } },
+                { label: { en: 'Consulting retainer (€2k/mo client)', bg: 'Ретейнер за консултации (клиент €2k/мес)' }, emoji: '💼', hoursPerWeek: 8, eurPerHour: 100, scalability: 5 },
+                { label: { en: 'Affiliate marketing site', bg: 'Афилиейт сайт' }, emoji: '🔗', hoursPerWeek: 4, eurPerHour: 25, scalability: 4 },
+                { label: { en: 'Freelance copywriting', bg: 'Фрийланс копирайт' }, emoji: '✍️', hoursPerWeek: 6, eurPerHour: 60, scalability: 4 },
+                { label: { en: 'Micro-SaaS product', bg: 'Микро-SaaS продукт' }, emoji: '⚙️', hoursPerWeek: 3, eurPerHour: 20, scalability: 5, note: { en: 'Slow start, huge ceiling', bg: 'Бавен старт, огромен таван' } },
+                { label: { en: 'Group coaching cohorts', bg: 'Групов коучинг' }, emoji: '👥', hoursPerWeek: 4, eurPerHour: 120, scalability: 5 },
+                { label: { en: 'Passive stock photos', bg: 'Пасивни stock снимки' }, emoji: '📸', hoursPerWeek: 2, eurPerHour: 15, scalability: 4 },
+              ],
+            },
+            explanation: { en: 'Strong combo: consulting retainer (8h, €3,200) + course (5h, €600) + group coaching (4h, €1,920) — 17h, €5,720, with 8h spare for marketing. The trick: stack ONE high-paying anchor with 1–2 leveraged assets.', bg: 'Силна комбинация: ретейнер (8ч, €3,200) + курс (5ч, €600) + групов коучинг (4ч, €1,920) — 17ч, €5,720, 8ч за маркетинг. Трикът: ЕДИН добре платен анкер + 1–2 лостови актива.' },
+          },
+          {
+            id: 'sh3-fill-num-1', type: 'fill_number', xp: 20,
+            fillNumberScenario: { en: 'You spend €3,000/month total (rent, food, bills). You have €18,000 in savings.', bg: 'Харчиш €3,000/месец общо (наем, храна, сметки). Имаш €18,000 спестени.' },
+            question: { en: 'How many months of runway do you have?', bg: 'Колко месеца runway имаш?' },
+            fillNumberAnswer: 6, fillNumberTolerance: 0, fillNumberUnit: '',
+            fillNumberHint: { en: 'Runway = savings ÷ monthly expenses', bg: 'Runway = спестявания ÷ месечни разходи' },
+            explanation: { en: '€18,000 ÷ €3,000 = 6 months. The startup-advice consensus says 12+ months before quitting a stable job. 6 months is enough for a 3-month "trial leave" but tight for a full quit.', bg: '€18,000 ÷ €3,000 = 6 месеца. Стандартът: 12+ месеца преди да напуснеш стабилна работа. 6 м. стигат за "пробен" период, но са малко за пълно напускане.' },
+          },
+          {
+            id: 'sh3-tf-1', type: 'true_false', xp: 15,
+            statement: { en: 'Once your side hustle replaces your salary, you have total freedom and zero risk.', bg: 'Щом бизнесът замени заплатата, имаш пълна свобода и нула риск.' },
+            isTrue: false,
+            explanation: { en: 'FALSE. You lose employer benefits (health insurance, paid leave, pension match), income becomes variable, taxes get more complex, and YOU are now the marketing, sales, ops, and support department. Freedom yes — risk-free no.', bg: 'НЕВЯРНО. Губиш бонуси (здравна, отпуск, пенсия), доходът става променлив, данъците — по-сложни, и ТИ си маркетинг, продажби, операции, поддръжка. Свобода да — без риск не.' },
+          },
+        ],
+      },
+    ],
+  },
 
   // ─────────────────────────────────────────────
   // PRO MODULE 1 — ADVANCED INVESTING
