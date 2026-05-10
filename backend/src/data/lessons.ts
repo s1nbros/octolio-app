@@ -1717,6 +1717,312 @@ const staticModules: Module[] = [
   },
 
   // ─────────────────────────────────────────────
+  // MODULE 6 — INSURANCE FUNDAMENTALS
+  // Signature interactive: coverage_calc (tune premium / deductible / limit)
+  // ─────────────────────────────────────────────
+  {
+    id: 'insurance',
+    title: { en: 'Insurance Fundamentals', bg: 'Основи на застраховането' },
+    description: { en: 'Protect your wealth before you build it — without overpaying for fear.', bg: 'Защити богатството си, без да преплащаш от страх.' },
+    icon: '🛡️', color: 'blue', order: 6,
+    lessons: [
+      // ── Lesson 1: Insurance 101 — What You Actually Need ──
+      {
+        id: 'insurance-essentials',
+        moduleId: 'insurance',
+        title: { en: 'What You Actually Need', bg: 'Какво наистина ти трябва' },
+        description: { en: 'Risk transfer basics, which policies matter, and tuning your first auto policy.', bg: 'Основи на трансфер на риск, кои полици са важни и настройка на първа автомобилна.' },
+        icon: '🛡️', xpReward: 150, order: 1,
+        exercises: [
+          {
+            id: 'ins1-theory-1', type: 'theory', xp: 0,
+            slides: [
+              {
+                emoji: '🛡️',
+                title: { en: 'Insurance = Risk Transfer', bg: 'Застраховка = трансфер на риск' },
+                body: { en: 'You don\'t buy insurance because you EXPECT to claim. You buy it for the ONE event that would otherwise destroy you financially.\n\nRules of thumb:\n✅ Cover the catastrophic (€20k+ losses you can\'t absorb)\n❌ Skip the small stuff (extended warranties, gadget insurance, low-deductible cosmetic add-ons)\n\nIf the worst case is "I have to save up €1,000" — DON\'T insure it. Self-insure with an emergency fund. If the worst case is "I lose my house" — insure it.', bg: 'Не купуваш застраховка, защото ОЧАКВАШ щета. Купуваш я за ЕДНОТО събитие, което иначе би те унищожило финансово.\n\nПравила:\n✅ Покрий катастрофичното (€20к+ загуба)\n❌ Пропусни малките (удължени гаранции, гаджет-застраховки)\n\nАко най-лошото е "трябва да спестя €1,000" — НЕ застраховай. Самозастраховай се с авариен фонд. Ако най-лошото е "губя къщата" — застраховай.' },
+                highlight: { en: '🎯 Insure the catastrophic. Self-insure the small. Skip the gadget warranties.', bg: '🎯 Застраховай катастрофичното. Самозастраховай малкото. Пропусни гаджет-гаранциите.' },
+              },
+              {
+                emoji: '⚙️',
+                title: { en: 'The 4 Levers of Every Policy', bg: '4-те лоста на всяка полица' },
+                body: { en: 'Every policy has 4 dials:\n\n💸 PREMIUM — what you pay per year\n🧾 DEDUCTIBLE — what YOU pay before insurance kicks in\n🛡️ COVERAGE LIMIT — the max insurer will pay out\n📋 EXCLUSIONS — what they refuse to cover\n\nThe trade-off: higher deductible = lower premium. Higher coverage limit = higher premium. Tuning these for YOUR risk profile is the whole game.', bg: 'Всяка полица има 4 настройки:\n\n💸 ВНОСКА — какво плащаш годишно\n🧾 САМОУЧАСТИЕ — какво ТИ плащаш преди застраховката да тръгне\n🛡️ ЛИМИТ — максималното, което застрахователят ще плати\n📋 ИЗКЛЮЧЕНИЯ — какво отказват да покрият\n\nТеглото: по-високо самоучастие = по-ниска вноска. По-висок лимит = по-висока вноска.' },
+                highlight: { en: '💡 The highest deductible you can comfortably pay = the lowest fair premium.', bg: '💡 Най-високото самоучастие, което можеш да платиш = най-ниската честна вноска.' },
+              },
+            ],
+          },
+          {
+            id: 'ins1-match-1', type: 'match_terms', xp: 25,
+            matchPairs: [
+              { term: { en: 'Premium', bg: 'Вноска' }, definition: { en: 'What you pay the insurer per month or year', bg: 'Какво плащаш на застрахователя месечно/годишно' } },
+              { term: { en: 'Deductible', bg: 'Самоучастие' }, definition: { en: 'Amount you pay yourself BEFORE insurance pays anything', bg: 'Сумата, която ти плащаш ПРЕДИ застраховката' } },
+              { term: { en: 'Coverage limit', bg: 'Лимит на покритие' }, definition: { en: 'Maximum the insurer will pay out per claim', bg: 'Максимумът, който застрахователят ще плати' } },
+              { term: { en: 'Claim', bg: 'Иск / щета' }, definition: { en: 'Formal request to be paid after a covered event', bg: 'Официална заявка за плащане след покрито събитие' } },
+              { term: { en: 'Underwriting', bg: 'Андеррайтинг' }, definition: { en: 'Insurer\'s risk assessment that sets your premium', bg: 'Оценката на риска, която определя вноската ти' } },
+            ],
+          },
+          {
+            id: 'ins1-sort-1', type: 'sort_items', xp: 25,
+            sortItems: [
+              { label: { en: 'Health insurance', bg: 'Здравна застраховка' }, emoji: '⚕️', isAsset: true },
+              { label: { en: 'Liability insurance (car/home)', bg: 'Гражданска отговорност' }, emoji: '🚗', isAsset: true },
+              { label: { en: 'Extended warranty on a €600 laptop', bg: 'Удължена гаранция за лаптоп €600' }, emoji: '💻', isAsset: false },
+              { label: { en: 'Term life if you have dependents', bg: 'Срочна Живот, ако имаш зависими' }, emoji: '👨‍👩‍👧', isAsset: true },
+              { label: { en: 'Phone screen insurance', bg: 'Застраховка на екран на телефона' }, emoji: '📱', isAsset: false },
+              { label: { en: 'Flight cancellation for a €120 ticket', bg: 'Анулиране на полет за €120 билет' }, emoji: '✈️', isAsset: false },
+              { label: { en: 'Disability insurance', bg: 'Застраховка инвалидност' }, emoji: '🦽', isAsset: true },
+              { label: { en: 'Identity theft "monitoring" service', bg: '"Мониторинг" за кражба на самоличност' }, emoji: '🕵️', isAsset: false },
+            ],
+          },
+          {
+            id: 'ins1-coverage-1', type: 'coverage_calc', xp: 35,
+            coverageCalc: {
+              scenario: { en: 'You own a €15,000 car. Annual accident odds for a safe driver: ~4%. Tune your auto policy — cover the catastrophic, accept small repairs yourself.', bg: 'Имаш кола за €15,000. Шанс за щета при безопасен шофьор: ~4%/год. Настрой полицата — покрий голямата щета, плати малките сам.' },
+              question: { en: 'Pick the smartest premium / deductible / coverage combo', bg: 'Избери най-умната комбинация вноска / самоучастие / покритие' },
+              claimProbability: 0.04,
+              expectedLoss: 15000,
+              premiumMin: 200,
+              premiumMax: 1200,
+              premiumStep: 50,
+              deductibleOptions: [200, 500, 1000, 2000],
+              coverageLimitOptions: [5000, 10000, 15000, 25000],
+              correctPremium: 500,
+              correctDeductible: 1000,
+              correctCoverageLimit: 15000,
+              tolerance: 50,
+            },
+            explanation: { en: '€1,000 deductible (you absorb routine repairs) + €15k limit (= full car replacement) + €500/yr premium. Higher coverage is wasteful (car only worth €15k). Lower deductible would cost €200+/yr extra for marginal benefit.', bg: '€1,000 самоучастие (поемаш редовните дребни) + €15к лимит (= пълна замяна) + €500/год вноска. По-висок лимит е разход без полза (колата струва €15к).' },
+          },
+          {
+            id: 'ins1-tf-1', type: 'true_false', xp: 15,
+            statement: { en: 'The lowest possible deductible is always the safest financial choice.', bg: 'Най-ниското възможно самоучастие е най-сигурният финансов избор.' },
+            isTrue: false,
+            explanation: { en: 'FALSE. Lower deductibles raise your annual premium more than they save you in deductibles over time (because most years you don\'t claim). Optimal: deductible = the biggest amount you could comfortably pay tomorrow without panic.', bg: 'НЕВЯРНО. По-ниските самоучастия вдигат вноската повече, отколкото ти спестяват с времето (защото повечето години не предявяваш иск). Оптимално: самоучастие = най-голямата сума, която можеш спокойно да платиш утре.' },
+          },
+          {
+            id: 'ins1-decision-1', type: 'scenario_decision', xp: 25,
+            decisionAvatar: '💻',
+            decisionScenario: { en: 'You\'re buying a €600 laptop. The store offers a "2-year extended warranty + accident protection" for €120 (20% of laptop price). Do you take it?', bg: 'Купуваш лаптоп за €600. Магазинът предлага "2-годишна удължена гаранция + защита от инциденти" за €120 (20% от цената). Взимаш ли?' },
+            decisionChoices: [
+              { label: { en: 'Yes — peace of mind is worth €120', bg: 'Да — спокойствието си струва €120' }, emoji: '😌', outcome: { en: 'Industry data: ~5% of laptops fail in extended-warranty period. Expected payout: 5% × €600 = €30. You paid €120. The store keeps €90 as pure profit. This is one of retail\'s most profitable products for a reason.', bg: 'Реални данни: ~5% от лаптопите се развалят в периода. Очаквана изплатена сума: 5% × €600 = €30. Платил си €120. Магазинът печели €90. Това е една от най-печелившите услуги в търговията.' }, isBest: false },
+              { label: { en: 'Skip it — self-insure with a €120 buffer in savings', bg: 'Пропусни — самозастраховай се с €120 буфер в спестявания' }, emoji: '🐷', outcome: { en: 'Smart. Across 5 laptops in a lifetime, you save €600 in declined warranties for the cost of MAYBE one €300 repair. Self-insure small, predictable risks — every time.', bg: 'Умно. През 5 лаптопа в живота, спестяваш €600 от отказани гаранции срещу евентуално един ремонт от €300.' }, isBest: true },
+              { label: { en: 'Negotiate the warranty down to €40', bg: 'Договори гаранцията до €40' }, emoji: '🗣️', outcome: { en: 'Better than €120. €40 ≈ break-even-fair price for the actual risk. But you still spend mental energy on a tiny risk. Skipping is cleaner.', bg: 'По-добре от €120. €40 ≈ справедлива цена за реалния риск. Но харчиш мисловна енергия за малък риск.' }, isBest: false },
+              { label: { en: 'Buy the laptop on a credit card with purchase protection', bg: 'Плати с кредитна карта със защита на покупки' }, emoji: '💳', outcome: { en: 'Smart hack — many premium credit cards include 90-day to 2-year purchase protection AT NO EXTRA COST. Same protection for free. Use this on big purchases.', bg: 'Умен хак — много премиум карти включват 90 дни до 2 години защита БЕЗПЛАТНО. Същата защита без разход.' }, isBest: false },
+            ],
+            explanation: { en: 'Extended warranties on items under €1,000 are almost always a bad deal — they\'re priced for the SELLER\'s margin, not for the actual risk you face.', bg: 'Удължените гаранции под €1,000 почти винаги са лоша сделка — цената е за маржа на продавача, не за реалния риск.' },
+          },
+          {
+            id: 'ins1-choice-1', type: 'choice', xp: 15,
+            question: { en: 'You\'re 25, healthy, single, renting an apartment, driving a used car. Which insurance matters MOST?', bg: 'На 25 си, здрав, неженен, наемател, караш стара кола. Коя застраховка е НАЙ-важна?' },
+            options: [
+              { en: 'Phone screen insurance', bg: 'Застраховка на екран на телефона' },
+              { en: 'Health insurance + auto liability', bg: 'Здравна + гражданска отговорност' },
+              { en: 'Whole life insurance', bg: 'Цяла Живот застраховка' },
+              { en: 'Travel insurance for every trip', bg: 'Застраховка пътуване за всяко пътуване' },
+            ],
+            correctIndex: 1,
+            explanation: { en: 'Health (one accident = €50k+ debt) + auto liability (you injure someone = €200k+ judgment) are the two policies that can financially destroy a young person. Everything else is optional or wasteful at this stage.', bg: 'Здравна (един инцидент = €50к+ дълг) + гражданска отговорност (нараниш някого = €200к+ присъда) са двете полици, които могат да разрушат финансово млад човек.' },
+          },
+        ],
+      },
+
+      // ── Lesson 2: Tuning Coverage — Deductibles & Trade-offs ──
+      {
+        id: 'insurance-tuning',
+        moduleId: 'insurance',
+        title: { en: 'Tuning Coverage', bg: 'Настройка на покритието' },
+        description: { en: 'Pick the right deductible, run claim math, and know when to claim vs eat the cost.', bg: 'Избери правилно самоучастие, смятай щети и знай кога да предявиш иск.' },
+        icon: '⚙️', xpReward: 160, order: 2,
+        exercises: [
+          {
+            id: 'ins2-theory-1', type: 'theory', xp: 0,
+            slides: [
+              {
+                emoji: '⚖️',
+                title: { en: 'The Deductible Trade-off', bg: 'Тегло на самоучастието' },
+                body: { en: 'Dropping your deductible from €1,000 to €250 typically adds €150–300 to your annual premium.\n\nBut on most policies, you claim once every 5–10 years. So in cash terms:\n\n• High deductible: 5 yrs × €0 + 1 claim × €1,000 = €1,000\n• Low deductible: 5 yrs × €250 in extra premium = €1,250 + €250 deductible on claim = €1,500\n\nThe higher deductible WINS the math — every time. The only reason to lower it is if you can\'t comfortably pay €1,000 tomorrow.', bg: 'Сваляне на самоучастието от €1,000 на €250 обикновено добавя €150–300 към годишната вноска.\n\nНо на повечето полици предявяваш иск веднъж на 5–10 г. Така че:\n\n• Високо: 5 г. × €0 + 1 иск × €1,000 = €1,000\n• Ниско: 5 г. × €250 допълнителна вноска = €1,250 + €250 при иск = €1,500\n\nВисокото самоучастие ПЕЧЕЛИ — винаги.' },
+                highlight: { en: '🎯 Match your deductible to your emergency fund: if you have €5k saved, pick a €1k deductible.', bg: '🎯 Свържи самоучастието с аварийния фонд: имаш €5к — избери €1к самоучастие.' },
+              },
+              {
+                emoji: '🤔',
+                title: { en: 'When NOT to Claim', bg: 'Кога ДА НЕ предявяваш иск' },
+                body: { en: 'A claim isn\'t "free money" — it gets recorded and can raise your premium for 3–5 years.\n\nRule: don\'t claim if the damage is less than 2× your deductible.\n\nExample:\n• €700 damage, €500 deductible → claim nets you €200, but premium goes up €150/yr × 3 yrs = €450 lost. Net: −€250.\n• €5,000 damage, €500 deductible → claim nets you €4,500, premium hike ~€450. Net: +€4,050. Claim.', bg: 'Иск не е "безплатни пари" — записва се и може да вдигне вноската 3–5 г.\n\nПравило: не предявявай, ако щетата е по-малко от 2× самоучастието.\n\nПример:\n• Щета €700, самоучастие €500 → нетна полза €200, вноска +€150/г × 3 г = −€450. Чисто: −€250.\n• Щета €5,000, самоучастие €500 → нетна полза €4,500, вноска +€450. Чисто: +€4,050.' },
+                highlight: { en: '🧾 Small claims often cost MORE than they pay. Save the policy for the big one.', bg: '🧾 Малките искове често струват ПОВЕЧЕ, отколкото плащат.' },
+              },
+            ],
+          },
+          {
+            id: 'ins2-fill-num-1', type: 'fill_number', xp: 25,
+            fillNumberScenario: { en: 'Your home insurance offers two options:\n• Plan A: €400/yr premium, €1,500 deductible\n• Plan B: €600/yr premium, €500 deductible\n\nOver 10 years you expect to claim once.', bg: 'Домашна застраховка с два варианта:\n• A: €400/год, €1,500 самоучастие\n• B: €600/год, €500 самоучастие\n\nЗа 10 г. очакваш 1 иск.' },
+            question: { en: 'How much do you SAVE over 10 years by picking Plan A (in €)?', bg: 'Колко СПЕСТЯВАШ за 10 г., ако избереш A (в €)?' },
+            fillNumberAnswer: 1000, fillNumberTolerance: 50, fillNumberUnit: '€',
+            fillNumberHint: { en: '10-yr cost A = 10×€400 + 1×€1,500. 10-yr cost B = 10×€600 + 1×€500. Difference = ?', bg: '10-г. A = 10×€400 + 1×€1,500. 10-г. B = 10×€600 + 1×€500. Разлика = ?' },
+            explanation: { en: 'A: €4,000 premiums + €1,500 deductible = €5,500. B: €6,000 + €500 = €6,500. Savings: €1,000. The higher deductible wins by €1,000 over a decade. This is why the "rich get rules-driven" — boring math compounds.', bg: 'A: €4,000 вноски + €1,500 самоучастие = €5,500. B: €6,000 + €500 = €6,500. Спестяване: €1,000.' },
+          },
+          {
+            id: 'ins2-coverage-1', type: 'coverage_calc', xp: 35,
+            coverageCalc: {
+              scenario: { en: 'Your apartment + contents are worth €80,000. Fire/theft/water-damage odds ~1.5%/year (urban area). You have €5,000 in emergency savings. Tune your home policy.', bg: 'Апартамент + вещи = €80,000. Шанс за пожар/кражба/щета от вода ~1.5%/г. Имаш €5,000 авариен фонд. Настрой полицата.' },
+              question: { en: 'Pick the optimal home insurance combo', bg: 'Избери оптимална комбинация за домашна застраховка' },
+              claimProbability: 0.015,
+              expectedLoss: 80000,
+              premiumMin: 200,
+              premiumMax: 1500,
+              premiumStep: 50,
+              deductibleOptions: [500, 1000, 2500, 5000],
+              coverageLimitOptions: [40000, 60000, 80000, 120000],
+              correctPremium: 600,
+              correctDeductible: 2500,
+              correctCoverageLimit: 80000,
+              tolerance: 50,
+            },
+            explanation: { en: 'Cover the FULL replacement value (€80k = your total exposure). Don\'t over-insure (€120k is wasted). €2,500 deductible matches your €5k emergency fund. €600/yr is the fair midpoint. Higher coverage limit doesn\'t help because your losses can\'t exceed €80k.', bg: 'Покрий ПЪЛНАТА стойност на замяна (€80к). Не свръхзастраховай (€120к е губеж). €2,500 самоучастие пасва с €5к авариен фонд. €600/год е честна средна точка.' },
+          },
+          {
+            id: 'ins2-match-1', type: 'match_terms', xp: 25,
+            matchPairs: [
+              { term: { en: 'Copay', bg: 'Доплащане' }, definition: { en: 'Fixed amount you pay per service (often health insurance)', bg: 'Фиксирана сума, която плащаш на услуга (често здравна)' } },
+              { term: { en: 'Replacement value', bg: 'Стойност на замяна' }, definition: { en: 'Cost to buy NEW equivalent — not depreciated value', bg: 'Цена за купуване на НОВ еквивалент — не амортизирана стойност' } },
+              { term: { en: 'Actual cash value', bg: 'Действителна стойност' }, definition: { en: 'Depreciated current market value of the item', bg: 'Амортизирана пазарна стойност' } },
+              { term: { en: 'Rider', bg: 'Допълнително покритие' }, definition: { en: 'Add-on coverage for specific items (jewelry, art)', bg: 'Допълнително покритие за конкретни вещи (бижута, изкуство)' } },
+              { term: { en: 'Exclusion', bg: 'Изключение' }, definition: { en: 'A risk specifically NOT covered in the policy', bg: 'Риск, специално НЕ покрит в полицата' } },
+              { term: { en: 'Out-of-pocket max', bg: 'Максимум собствени разходи' }, definition: { en: 'The most you\'ll ever pay in a year — insurer pays 100% after', bg: 'Най-многото, което ще платиш годишно — после застрахователят покрива 100%' } },
+            ],
+          },
+          {
+            id: 'ins2-rpg-1', type: 'rpg_scenario', xp: 25,
+            scenario: { en: 'A storm caused €1,400 in roof damage. Your home policy: €500 deductible. Claim history: clean. Estimated premium increase after claim: €120/yr for 3 yrs.', bg: 'Буря нанесе €1,400 щета на покрива. Полицата: €500 самоучастие. Чиста история. Очаквано увеличение след иск: €120/год за 3 г.' },
+            avatar: '🏠',
+            choices: [
+              { label: { en: 'File the claim — that\'s what insurance is for', bg: 'Предяви иск — за това е застраховката' }, emoji: '📋', consequence: { en: 'Insurer pays €900 (€1,400 − €500). Premium hike: €120 × 3 = €360. Net gain: €540. Borderline call — worth filing but not the obvious win you\'d hope.', bg: 'Застрахователят плаща €900. Вноска +€120 × 3 = €360. Чиста полза: €540. Гранично — заслужава, но не очевидна голяма победа.' }, cashFlowChange: 540, isGood: true },
+              { label: { en: 'Pay out of pocket — keep the clean record', bg: 'Плати сам — запази чистата история' }, emoji: '💰', consequence: { en: 'You\'re out €1,400 today, but no claim recorded. Premium stays flat. Better than filing IF you have 3+ years before policy renewal/comparison shopping. Marginal call.', bg: 'Губиш €1,400 днес, но няма запис. Вноската остава. По-добре от иск АКО имаш 3+ г. до подновяване.' }, cashFlowChange: -1400, isGood: false },
+              { label: { en: 'Get 3 quotes from competitors, then decide', bg: 'Вземи 3 оферти от конкуренти, тогава решавай' }, emoji: '🛒', consequence: { en: 'Best play. If competitors quote LOWER than current premium + €120 hike — file the claim and switch insurers at renewal. If higher — pay out of pocket. Information is leverage.', bg: 'Най-добрият ход. Ако конкурент дава ПО-ниско от текущата + €120 — предяви иск и смени застрахователя. Информацията е лост.' }, cashFlowChange: 800, isGood: true },
+            ],
+          },
+          {
+            id: 'ins2-tf-1', type: 'true_false', xp: 15,
+            statement: { en: 'Buying MORE coverage than your asset is worth makes you safer if disaster strikes.', bg: 'Купуването на ПОВЕЧЕ покритие, отколкото активът ти струва, те прави по-сигурен при бедствие.' },
+            isTrue: false,
+            explanation: { en: 'FALSE. Insurance only pays the lower of: your actual loss OR the coverage limit. If your apartment is worth €80k, a €120k policy still pays max €80k (your actual loss). You\'re paying for €40k of phantom coverage that can never trigger.', bg: 'НЕВЯРНО. Застраховката плаща по-малкото от: реална загуба ИЛИ лимит. Ако апартаментът е €80к, полица €120к пак плаща макс €80к. Плащаш за €40к фантомно покритие.' },
+          },
+          {
+            id: 'ins2-order-1', type: 'order_items', xp: 25,
+            orderInstruction: { en: 'Order the steps to file an insurance claim correctly, from FIRST to LAST:', bg: 'Подреди стъпките за правилно предявяване на иск, от ПЪРВА към ПОСЛЕДНА:' },
+            orderItems: [
+              { label: { en: 'Photograph / document the damage immediately', bg: 'Снимай / документирай щетата веднага' }, emoji: '📸' },
+              { label: { en: 'Read your policy — confirm event is covered', bg: 'Прочети полицата — потвърди, че събитието е покрито' }, emoji: '📄' },
+              { label: { en: 'File the claim within the time window (often 30 days)', bg: 'Подай иск в срок (често 30 дни)' }, emoji: '📋' },
+              { label: { en: 'Cooperate with the adjuster\'s inspection', bg: 'Сътрудничи на оценителя при оглед' }, emoji: '🔍' },
+              { label: { en: 'Get repair quotes (don\'t accept lowball offers)', bg: 'Вземи оферти за ремонт (не приемай ниски)' }, emoji: '🔧' },
+              { label: { en: 'Receive settlement or appeal if low', bg: 'Получи плащане или обжалвай, ако е ниско' }, emoji: '💸' },
+            ],
+            correctOrder: [0, 1, 2, 3, 4, 5],
+            explanation: { en: 'Document FIRST — memories fade and damage gets cleaned up. Read policy SECOND so you don\'t file an exclusion-covered claim. Adjusters can lowball; getting your own quotes gives you leverage to appeal.', bg: 'Документирай ПЪРВО — споменът избледнява. Прочети полицата ВТОРО — да не подаваш иск за изключение. Оценителите дават ниски оферти; собствените оферти ти дават лост.' },
+          },
+        ],
+      },
+
+      // ── Lesson 3: Health, Life & Long-Term Coverage ──
+      {
+        id: 'insurance-life-health',
+        moduleId: 'insurance',
+        title: { en: 'Health, Life & Long-Term Coverage', bg: 'Здравна, Живот и дългосрочни' },
+        description: { en: 'Tune health insurance, size term life, and skip the "investment-flavored" traps.', bg: 'Настрой здравна, оразмери срочна Живот и избягвай "инвестиционните" капани.' },
+        icon: '⚕️', xpReward: 170, order: 3,
+        exercises: [
+          {
+            id: 'ins3-theory-1', type: 'theory', xp: 0,
+            slides: [
+              {
+                emoji: '⚕️',
+                title: { en: 'Health: The One Bill That Can Bankrupt You', bg: 'Здравна: Сметката, която може да те фалира' },
+                body: { en: 'Even a moderate hospital stay can cost €30,000–€100,000+ before insurance. ONE uninsured serious event = decades of debt.\n\nHealth policy levers:\n💸 PREMIUM: monthly cost\n🧾 DEDUCTIBLE: pay before insurance kicks in\n💊 COPAY: fixed amount per visit/prescription\n🛡️ OUT-OF-POCKET MAX: the most you\'ll EVER pay in a year (your true ceiling)\n\nThe number that actually matters: out-of-pocket max. That\'s your worst-case-scenario for the year.', bg: 'Дори умерена болнична престой може да струва €30,000–€100,000+. ЕДНО незастраховано тежко събитие = десетилетия дълг.\n\nЛостове на здравна:\n💸 ВНОСКА: месечен разход\n🧾 САМОУЧАСТИЕ: преди застраховката тръгне\n💊 ДОПЛАЩАНЕ: фиксирано на посещение\n🛡️ МАКС СОБСТВЕНИ: най-многото, което ВЪОБЩЕ ще платиш годишно\n\nНомерът, който има значение: макс собствени разходи.' },
+                highlight: { en: '🚨 Always pick a plan where you can comfortably pay the out-of-pocket max in a worst-case year.', bg: '🚨 Винаги избирай план с макс собствени, които можеш спокойно да платиш при най-лошата година.' },
+              },
+              {
+                emoji: '🎯',
+                title: { en: 'Term Life vs Whole Life', bg: 'Срочна срещу Цяла Живот' },
+                body: { en: '✅ TERM LIFE — pure insurance. Pays out if you die during the term (10/20/30 yrs). Cheap (~€20–€50/mo for €500k coverage at age 30). Right answer for 95% of people with dependents.\n\n❌ WHOLE LIFE — insurance bundled with an "investment." 5–10× the premium for the same coverage. Returns are typically 2–4% — far worse than DIY-investing the difference.\n\nThe right move: buy CHEAP TERM LIFE for the coverage you need, INVEST the difference in an index fund. You\'ll end up with both protection AND wealth.', bg: '✅ СРОЧНА ЖИВОТ — чиста застраховка. Плаща, ако умреш в срока (10/20/30 г). Евтина (~€20–€50/мес за €500к покритие на 30 г). Правилно за 95% от хората със зависими.\n\n❌ ЦЯЛА ЖИВОТ — застраховка + "инвестиция". 5–10× вноската за същото покритие. Доходност 2–4% — много по-зле от индексен фонд.' },
+                highlight: { en: '💡 "Buy term, invest the difference" is the wealth-building consensus among 95% of fee-only advisors.', bg: '💡 "Купи срочна, инвестирай разликата" е консенсусът на 95% от съветниците без комисиона.' },
+              },
+            ],
+          },
+          {
+            id: 'ins3-coverage-1', type: 'coverage_calc', xp: 35,
+            coverageCalc: {
+              scenario: { en: 'You\'re 28, healthy, employed. Major medical event odds ~3%/year. Worst-case bill if uninsured: ~€50,000. Pick a smart health-insurance combo.', bg: 'На 28 си, здрав, на работа. Шанс за голямо медицинско събитие: ~3%/год. Най-лоша сметка без застраховка: ~€50,000. Избери комбинация.' },
+              question: { en: 'Tune the deductible / coverage / premium for a healthy young adult', bg: 'Настрой самоучастие / покритие / вноска за здрав млад човек' },
+              claimProbability: 0.03,
+              expectedLoss: 50000,
+              premiumMin: 600,
+              premiumMax: 3600,
+              premiumStep: 100,
+              deductibleOptions: [500, 1500, 3000, 5000],
+              coverageLimitOptions: [20000, 35000, 50000, 80000],
+              correctPremium: 1500,
+              correctDeductible: 3000,
+              correctCoverageLimit: 50000,
+              tolerance: 100,
+            },
+            explanation: { en: 'A young healthy person rarely claims. €3,000 deductible + €50,000 limit (covers your real worst case) + €1,500/yr premium = the right balance. Lower deductibles cost 2–3× more in premium without giving you more catastrophic protection.', bg: 'Млад здрав човек рядко предявява иск. €3,000 самоучастие + €50,000 лимит (покрива реалната най-лоша ситуация) + €1,500/год = правилен баланс.' },
+          },
+          {
+            id: 'ins3-order-1', type: 'order_items', xp: 25,
+            orderInstruction: { en: 'For a 30-year-old building wealth, order these insurance priorities from MOST to LEAST important:', bg: 'За 30-годишен, изграждащ богатство, подреди приоритетите от НАЙ-важен към НАЙ-маловажен:' },
+            orderItems: [
+              { label: { en: 'Health insurance (catastrophic plan minimum)', bg: 'Здравна (минимум катастрофичен план)' }, emoji: '⚕️' },
+              { label: { en: 'Auto liability (if you drive)', bg: 'Гражданска отговорност (ако шофираш)' }, emoji: '🚗' },
+              { label: { en: 'Term life insurance (if you have dependents)', bg: 'Срочна Живот (ако имаш зависими)' }, emoji: '👨‍👩‍👧' },
+              { label: { en: 'Disability insurance', bg: 'Застраховка инвалидност' }, emoji: '🦽' },
+              { label: { en: 'Renters / home contents insurance', bg: 'Имущество в наеман имот' }, emoji: '🏠' },
+              { label: { en: 'Travel / pet / gadget insurance', bg: 'Пътуване / домашен любимец / гаджет' }, emoji: '✈️' },
+            ],
+            correctOrder: [0, 1, 2, 3, 4, 5],
+            explanation: { en: 'Health and auto-liability protect you from the biggest catastrophic bills (€50k–€500k+). Life only matters if others depend on your income. Disability is statistically MORE likely than death — and often overlooked. Travel/pet/gadget are optional convenience plays.', bg: 'Здравна и гражданска те пазят от най-големите сметки (€50к–€500к+). Живот има значение само ако има зависими. Инвалидност е статистически ПО-вероятна от смърт — често пренебрегвана.' },
+          },
+          {
+            id: 'ins3-decision-1', type: 'scenario_decision', xp: 30,
+            decisionAvatar: '👨‍👩‍👧',
+            decisionScenario: { en: 'You\'re 30, earn €40,000/year, married with 2 kids. Your insurance agent pitches: "Whole-life policy for €600/mo — coverage AND investment in one." A fee-only advisor says: "Buy €400k term life for €30/mo, invest the €570 difference." Who\'s right?', bg: 'На 30 си, печелиш €40,000/год, женен с 2 деца. Агентът: "Цяла Живот за €600/мес — покритие И инвестиция." Платен съветник: "€400к срочна за €30/мес, инвестирай €570 разликата." Кой е прав?' },
+            decisionChoices: [
+              { label: { en: 'Whole life — insurance + forced savings is convenient', bg: 'Цяла Живот — застраховка + принудено спестяване е удобно' }, emoji: '🏦', outcome: { en: 'Whole-life premiums include 5–10% sales commission + admin fees. The "investment" component returns 2–4%/yr. Over 30 yrs, you build ~€280k inside the policy. Same money in a 7% index fund: ~€650k. You leave €370k on the table for "convenience."', bg: 'Цяла Живот включва 5–10% комисиона + такси. Доходността е 2–4%/год. За 30 г. трупаш ~€280к. Същите пари в индексен фонд при 7%: ~€650к. Губиш €370к за "удобство".' }, isBest: false },
+              { label: { en: 'Term life + invest the difference', bg: 'Срочна Живот + инвестирай разликата' }, emoji: '📈', outcome: { en: 'Optimal. €30/mo term gives you €400k death benefit for 30 years. €570/mo into an index fund at 7% = €650k+ at year 30. You end with BOTH protection during the high-risk years AND the wealth.', bg: 'Оптимално. €30/мес срочна = €400к смъртно обезщетение за 30 г. €570/мес в индексен фонд при 7% = €650к+ за 30 г.' }, isBest: true },
+              { label: { en: 'Skip life insurance — invest the full €600/mo', bg: 'Пропусни Живот — инвестирай целите €600/мес' }, emoji: '🚀', outcome: { en: 'Risky with dependents. If you die at 35, your family loses your income with no buffer. They\'d need to liquidate the investment account immediately at whatever value it has. Cheap term life is the safety net.', bg: 'Рисково със зависими. Ако умреш на 35, семейството губи дохода ти без буфер. Биха ликвидирали инвестицията на каквато стойност има.' }, isBest: false },
+              { label: { en: 'Buy €1M whole life — more is safer', bg: 'Купи €1М Цяла Живот — повече = по-сигурно' }, emoji: '💸', outcome: { en: 'Worst of both worlds: massive premium drains your wealth-building budget AND you\'re still locked into the 2–4% returns of the cash-value side. Almost no one needs €1M of life coverage AND can afford it correctly.', bg: 'Най-лошото от двата свята: огромна вноска изпива бюджета И си заключен в 2–4% доходност.' }, isBest: false },
+            ],
+            explanation: { en: 'The fee-only advisor wins because they\'re NOT paid by commission on insurance products. Whole-life policies pay agents 5–10× more in commission than term life — which is why they\'re pushed. Always ask: "How are you paid?"', bg: 'Съветникът без комисиона печели, защото НЕ е платен от продажба на продукти. Цяла Живот плаща 5–10× повече комисиона на агента. Винаги питай: "Как ти плащат?"' },
+          },
+          {
+            id: 'ins3-match-1', type: 'match_terms', xp: 25,
+            matchPairs: [
+              { term: { en: 'Term life', bg: 'Срочна Живот' }, definition: { en: 'Pure death benefit for a fixed period (10/20/30 yrs)', bg: 'Чисто смъртно обезщетение за период (10/20/30 г)' } },
+              { term: { en: 'Whole life', bg: 'Цяла Живот' }, definition: { en: 'Lifetime coverage bundled with a low-return savings account', bg: 'Доживотно покритие + сметка с ниска доходност' } },
+              { term: { en: 'Beneficiary', bg: 'Бенефициент' }, definition: { en: 'The person who receives the payout when you die', bg: 'Лицето, което получава плащането при смърт' } },
+              { term: { en: 'Policy lapse', bg: 'Прекратяване на полица' }, definition: { en: 'When coverage ends because premiums weren\'t paid', bg: 'Когато покритието свърши заради неплатени вноски' } },
+              { term: { en: 'Group plan', bg: 'Групов план' }, definition: { en: 'Employer-provided coverage — usually cheaper but tied to job', bg: 'Покритие от работодателя — обикновено евтино, но обвързано с работата' } },
+              { term: { en: 'Underinsured', bg: 'Недозастрахован' }, definition: { en: 'Coverage limit lower than your actual exposure', bg: 'Лимитът е по-нисък от реалния риск' } },
+            ],
+          },
+          {
+            id: 'ins3-fill-num-1', type: 'fill_number', xp: 25,
+            fillNumberScenario: { en: 'Rule of thumb for term life: coverage = 10× annual income. You earn €35,000/year and want to follow the standard.', bg: 'Правило за срочна Живот: покритие = 10× годишен доход. Печелиш €35,000/год.' },
+            question: { en: 'How much coverage should your term-life policy provide (in thousands €)?', bg: 'Какво покритие трябва да даде полицата (хил. €)?' },
+            fillNumberAnswer: 350, fillNumberTolerance: 25, fillNumberUnit: '',
+            fillNumberHint: { en: '10 × your annual income = ?', bg: '10 × годишен доход = ?' },
+            explanation: { en: '€35,000 × 10 = €350,000. The 10× rule provides ~20 years of replaced income for your family at a safe withdrawal rate (4%). For families with younger kids or single-income households, consider 12–15×.', bg: '€35,000 × 10 = €350,000. Правилото 10× осигурява ~20 г. заместен доход при безопасна 4% норма на теглене.' },
+          },
+          {
+            id: 'ins3-tf-1', type: 'true_false', xp: 15,
+            statement: { en: 'Whole-life insurance is the best long-term investment most people can buy.', bg: 'Цяла Живот е най-добрата дългосрочна инвестиция за повечето хора.' },
+            isTrue: false,
+            explanation: { en: 'FALSE. Whole-life policies typically return 2–4%/yr after fees vs 7–10% in a low-cost index fund. The "forced savings" angle is real but solved cheaper with an automated brokerage account. Whole life makes sense only in very narrow estate-planning situations for high net worth.', bg: 'НЕВЯРНО. Цяла Живот дава 2–4%/год след такси срещу 7–10% в индексен фонд. "Принудено спестяване" се решава по-евтино с автоматизирана инвестиция.' },
+          },
+        ],
+      },
+    ],
+  },
+
+  // ─────────────────────────────────────────────
   // PRO MODULE 1 — ADVANCED INVESTING
   // Signature interactives: portfolio_pie + stock_chart for advanced concepts
   // ─────────────────────────────────────────────
