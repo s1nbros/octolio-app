@@ -1,0 +1,6 @@
+# app.octolio.me — the app subdomain
+# Marketing site is at https://octolio.me/ — that's where SEO lives.
+# Block crawlers here so they don't dilute ranking signals.
+
+User-agent: *
+Disallow: /
