@@ -1780,6 +1780,296 @@ const staticModules = [
         ],
     },
     // ─────────────────────────────────────────────
+    // MODULE 7 — EMERGENCY PLANNING & RISK
+    // Signature interactive: risk_matrix (place risks into 2x2 grid)
+    // ─────────────────────────────────────────────
+    {
+        id: 'risk-management',
+        title: { en: 'Emergency Planning & Risk', bg: 'Аварийно планиране и риск' },
+        description: { en: 'Prepare for the unexpected — financially and mentally.', bg: 'Подготви се за неочакваното — финансово и психически.' },
+        icon: '🚨', color: 'orange', order: 7,
+        lessons: [
+            // ── Lesson 1: The Risk Matrix ──
+            {
+                id: 'risk-essentials',
+                moduleId: 'risk-management',
+                title: { en: 'The Risk Matrix', bg: 'Матрицата на риска' },
+                description: { en: 'Learn the 2×2 framework that decides whether to insure, mitigate, or accept any risk.', bg: 'Научи 2×2 рамката, която решава дали да застраховаш, намалиш или приемеш всеки риск.' },
+                icon: '🎯', xpReward: 150, order: 1,
+                exercises: [
+                    {
+                        id: 'rm1-theory-1', type: 'theory', xp: 0,
+                        slides: [
+                            {
+                                emoji: '🎯',
+                                title: { en: 'The 2×2 Risk Matrix', bg: '2×2 матрицата на риска' },
+                                body: { en: 'Every financial risk lives somewhere on a 2×2 grid:\n\n📏 Impact (how bad if it happens?)\n🎲 Likelihood (how often does it happen?)\n\nThe right STRATEGY follows from the quadrant:\n\n🤷 Low impact + Low chance → ACCEPT (don\'t waste energy)\n🛠️ Low impact + High chance → MITIGATE (small fixes prevent it)\n📜 High impact + Low chance → TRANSFER (this is what insurance is FOR)\n🚫 High impact + High chance → AVOID (change your life choices)', bg: 'Всеки финансов риск стои някъде в 2×2 решетка:\n\n📏 Щета (колко зле, ако се случи?)\n🎲 Вероятност (колко често се случва?)\n\nПравилната СТРАТЕГИЯ идва от квадранта:\n\n🤷 Малка щета + малък шанс → ПРИЕМИ\n🛠️ Малка щета + голям шанс → НАМАЛИ\n📜 Голяма щета + малък шанс → ПРЕХВЪРЛИ (затова е застраховката)\n🚫 Голяма щета + голям шанс → ИЗБЯГВАЙ' },
+                                highlight: { en: '🧠 Most people waste energy on accept risks and ignore avoid risks. The matrix flips this.', bg: '🧠 Повечето хора харчат енергия за приемани рискове и пренебрегват избягване. Матрицата обръща това.' },
+                            },
+                            {
+                                emoji: '💸',
+                                title: { en: 'The Most Expensive Mistake', bg: 'Най-скъпата грешка' },
+                                body: { en: 'Buying insurance for LOW-IMPACT events (phone screen, extended warranties, gadget cover) = paying €300/yr to insure something that worst-case costs €200. You pay the seller\'s profit margin.\n\nNot buying insurance for HIGH-IMPACT events (car liability, health, your income) = one bad day from financial ruin.\n\nMatch the strategy to the quadrant, not to the marketing.', bg: 'Купуване на застраховка за малки събития (екран, удължени гаранции) = плащаш €300/год за нещо, което струва €200. Плащаш маржа на продавача.\n\nНепокупка за големи (гражданска, здравна, доход) = един лош ден до финансов крах.\n\nСвържи стратегията с квадранта, не с маркетинга.' },
+                                highlight: { en: '🎯 Insure the catastrophic. Mitigate the annoying. Accept the trivial. Avoid the obvious.', bg: '🎯 Застраховай катастрофичното. Намали досадното. Приеми тривиалното. Избягвай очевидното.' },
+                            },
+                        ],
+                    },
+                    {
+                        id: 'rm1-match-1', type: 'match_terms', xp: 25,
+                        matchPairs: [
+                            { term: { en: 'Risk transfer', bg: 'Трансфер на риск' }, definition: { en: 'Paying someone else to absorb the loss (insurance)', bg: 'Плащаш на друг да поеме загубата (застраховка)' } },
+                            { term: { en: 'Risk acceptance', bg: 'Приемане на риск' }, definition: { en: 'Self-insure — the loss is small enough to absorb', bg: 'Самозастраховаш се — загубата е достатъчно малка' } },
+                            { term: { en: 'Risk mitigation', bg: 'Намаляване на риск' }, definition: { en: 'Reduce the probability or impact through action', bg: 'Намали вероятността или щетата чрез действие' } },
+                            { term: { en: 'Risk avoidance', bg: 'Избягване на риск' }, definition: { en: 'Stop doing the thing that exposes you', bg: 'Спри да правиш нещото, което те излага' } },
+                            { term: { en: 'Residual risk', bg: 'Остатъчен риск' }, definition: { en: 'What\'s left after your prevention measures', bg: 'Това, което остава след превантивните мерки' } },
+                        ],
+                    },
+                    {
+                        id: 'rm1-matrix-1', type: 'risk_matrix', xp: 35,
+                        riskMatrix: {
+                            scenario: { en: 'You\'re building a personal risk map. Place each everyday risk in the correct quadrant of the matrix.', bg: 'Изгражда си лична карта на риска. Сложи всеки риск в правилния квадрант.' },
+                            question: { en: 'Place each risk in its correct quadrant', bg: 'Сложи всеки риск в правилния квадрант' },
+                            risks: [
+                                { label: { en: 'Raincoat ruined in storm', bg: 'Дъждобран съсипан от буря' }, emoji: '🧥', correctQuadrant: 0 },
+                                { label: { en: 'Phone scratches in pocket', bg: 'Драскотини от джоба' }, emoji: '📱', correctQuadrant: 1 },
+                                { label: { en: 'Car liability injury ≥€100k', bg: 'Гражданска ≥€100к' }, emoji: '🚗', correctQuadrant: 2 },
+                                { label: { en: 'House fire / burglary', bg: 'Пожар / кражба в дома' }, emoji: '🔥', correctQuadrant: 2 },
+                                { label: { en: 'Smoking 2 packs/day', bg: 'Пушене 2 кутии/ден' }, emoji: '🚬', correctQuadrant: 3 },
+                                { label: { en: 'Forgetting reusable bag at the shop', bg: 'Забравена торба в магазина' }, emoji: '🛍️', correctQuadrant: 1 },
+                            ],
+                        },
+                        explanation: { en: 'A ruined raincoat is too small to insure or worry about (accept). Phone scratches happen often but cost almost nothing — mitigate cheaply (case). Car liability and house fires are catastrophic but rare — that\'s exactly what insurance is for. Smoking is high-impact AND high-chance for damage — avoid (or quit).', bg: 'Съсипаният дъждобран е твърде малък за тревога (приеми). Драскотините са чести, но почти нищо — намали евтино (калъф). Гражданска и пожар са катастрофични, но редки — точно за това е застраховката. Пушенето е и голяма щета, и голям шанс — избягвай.' },
+                    },
+                    {
+                        id: 'rm1-tf-1', type: 'true_false', xp: 15,
+                        statement: { en: 'Buying more insurance always makes you less exposed to risk.', bg: 'Купуването на повече застраховки винаги те прави по-малко изложен на риск.' },
+                        isTrue: false,
+                        explanation: { en: 'FALSE. Insurance for LOW-impact events is just a transfer of YOUR money to the seller\'s profit margin. The "extra insurance" costs you wealth without reducing real exposure. Match the strategy to the quadrant — don\'t default to "transfer everything."', bg: 'НЕВЯРНО. Застраховките за малки събития са просто трансфер на твоите пари към маржа на продавача. "Допълнителната" застраховка ти струва богатство без да намалява реалния риск.' },
+                    },
+                    {
+                        id: 'rm1-sort-1', type: 'sort_items', xp: 20,
+                        sortItems: [
+                            { label: { en: 'Keep a 3–6 month emergency fund', bg: 'Дръж 3–6 месеца авариен фонд' }, emoji: '🛡️', isAsset: true },
+                            { label: { en: 'Track no insurance policies you own', bg: 'Не следиш кои застраховки имаш' }, emoji: '🤷', isAsset: false },
+                            { label: { en: 'Diversify income (job + side hustle)', bg: 'Диверсифицирай дохода (работа + бизнес)' }, emoji: '💼', isAsset: true },
+                            { label: { en: 'Borrow to buy depreciating luxury', bg: 'Вземи заем за луксова обезценяваща се вещ' }, emoji: '💸', isAsset: false },
+                            { label: { en: 'Document key contacts and accounts', bg: 'Запиши важните контакти и сметки' }, emoji: '📋', isAsset: true },
+                            { label: { en: 'Hide financial emergencies from your partner', bg: 'Скривай финансовите кризи от партньора' }, emoji: '🙈', isAsset: false },
+                            { label: { en: 'Update beneficiaries every year', bg: 'Обновявай бенефициенти всяка година' }, emoji: '👨‍👩‍👧', isAsset: true },
+                        ],
+                    },
+                    {
+                        id: 'rm1-decision-1', type: 'scenario_decision', xp: 25,
+                        decisionAvatar: '🚨',
+                        decisionScenario: { en: 'Monday morning. HR calls: "Your role is being eliminated. Last day Friday — severance: 2 months pay." You have €4,000 saved and €2,500/mo expenses. First move?', bg: 'Понеделник сутрин. HR се обажда: "Позицията ти се закрива. Последен ден петък — обезщетение: 2 заплати." Имаш €4,000 спестени и €2,500/мес разходи. Първи ход?' },
+                        decisionChoices: [
+                            { label: { en: 'Panic-apply to 100 jobs in 24 hours', bg: 'Кандидатствай за 100 работи за 24 ч.' }, emoji: '😱', outcome: { en: 'Quantity without quality = generic CVs to mismatched roles. Average response rate drops to ~1%. You\'ll burn out and accept the first low-ball offer. Slow down.', bg: 'Количество без качество = общи CV-та за неподходящи роли. Средният отговор пада до ~1%. Ще изгориш и ще приемеш първата ниска оферта.' }, isBest: false },
+                            { label: { en: 'Cut expenses to €1,800/mo, list top 10 target companies, register for benefits', bg: 'Свали разходите до €1,800/мес, изброй топ 10 цел-компании, регистрирай помощи' }, emoji: '🎯', outcome: { en: 'Best of both worlds. Cash cushion stretches to ~5 months (€4k + €5k severance ÷ €1.8k). Targeted search gets 5× higher response rate. Government benefits add a real buffer. This is what "calm under fire" looks like.', bg: 'И от двете. Подушката стига до ~5 месеца (€4к + €5к обезщетение ÷ €1.8к). Целевото търсене има 5× по-висок отговор. Държавни помощи добавят буфер.' }, isBest: true },
+                            { label: { en: 'Take a sabbatical, travel for 3 months', bg: 'Вземи sabbatical, пътувай 3 месеца' }, emoji: '✈️', outcome: { en: 'Tempting but irresponsible. You have ~3 months of runway. Travel eats the runway and you return with €0 and stale skills. Save the sabbatical for AFTER you land the next role.', bg: 'Изкушаващо, но безотговорно. Имаш ~3 месеца runway. Пътуването ги изяжда и се връщаш с €0 и стари умения.' }, isBest: false },
+                            { label: { en: 'Take a credit-card cash advance to "ride it out"', bg: 'Вземи кеш аванс от карта да "издържиш"' }, emoji: '💳', outcome: { en: 'Worst move. Cash advances charge 25–30% APR + fees from day one (no grace period). You\'re trading short-term comfort for long-term debt at exactly the wrong moment.', bg: 'Най-лош ход. Кеш аванс е 25–30% ГПР + такси от ден 1 (без гратисен период). Сменяш краткосрочен комфорт за дългосрочен дълг.' }, isBest: false },
+                        ],
+                        explanation: { en: 'A real emergency response is calm + targeted + multi-pronged: extend runway by cutting, narrow the search to high-fit options, use available systems (benefits). Don\'t panic-apply, don\'t hide.', bg: 'Истинският авариен отговор е спокоен + целеви + многостранен: удължи runway с орязване, стесни търсенето към подходящи опции, ползвай налични системи.' },
+                    },
+                    {
+                        id: 'rm1-choice-1', type: 'choice', xp: 15,
+                        question: { en: 'Which financial emergency hits the most people, most often?', bg: 'Коя финансова авария удря най-много хора, най-често?' },
+                        options: [
+                            { en: 'A house burning down', bg: 'Изгоряла къща' },
+                            { en: 'Sudden major medical bill', bg: 'Внезапна голяма медицинска сметка' },
+                            { en: 'Job loss or income drop', bg: 'Загуба на работа или спад на дохода' },
+                            { en: 'Identity theft draining accounts', bg: 'Кражба на самоличност източва сметки' },
+                        ],
+                        correctIndex: 2,
+                        explanation: { en: 'Job loss or major income drop affects ~30–40% of workers AT LEAST once in their career. Compared to single-event catastrophes (fire, theft), it\'s by far the most common AND the most preventable through emergency fund + skill diversification.', bg: 'Загубата на работа или спад на доход засяга ~30–40% от работещите ПОНЕ веднъж в кариерата. В сравнение с еднократните катастрофи (пожар, кражба), е далеч най-честата И най-предотвратимата.' },
+                    },
+                ],
+            },
+            // ── Lesson 2: Build Your Emergency Plan ──
+            {
+                id: 'risk-emergency-plan',
+                moduleId: 'risk-management',
+                title: { en: 'Build Your Emergency Plan', bg: 'Изгради своя авариен план' },
+                description: { en: 'The 5-layer plan, runway math, and what to do in the first 48 hours of a crisis.', bg: '5-слойният план, математика на runway и какво да правиш в първите 48 ч на криза.' },
+                icon: '📋', xpReward: 160, order: 2,
+                exercises: [
+                    {
+                        id: 'rm2-theory-1', type: 'theory', xp: 0,
+                        slides: [
+                            {
+                                emoji: '🏗️',
+                                title: { en: 'The 5 Layers of Resilience', bg: '5-те слоя на устойчивост' },
+                                body: { en: '🥇 Layer 1: Cash buffer — €1,000 starter fund\n🥈 Layer 2: Emergency fund — 3–6 months of expenses\n🥉 Layer 3: Insurance — health + auto liability + (optional) life\n🏅 Layer 4: Income diversification — side hustle or skill stack\n🎖️ Layer 5: Long-term wealth — investment runway in case of permanent disruption\n\nMost people skip layers and overbuild one — like maxing investments without an emergency fund. The layers exist in ORDER for a reason.', bg: '🥇 Слой 1: Кеш буфер — €1,000 стартов\n🥈 Слой 2: Авариен фонд — 3–6 м. разходи\n🥉 Слой 3: Застраховки — здравна + гражданска + (по избор) Живот\n🏅 Слой 4: Диверсификация на дохода — страничен бизнес или умения\n🎖️ Слой 5: Дългосрочно богатство — инвестиционен runway\n\nПовечето прескачат слоеве и натрупват един — като инвестиции без авариен фонд. Слоевете са в ред с причина.' },
+                                highlight: { en: '🛡️ Build layer N+1 only after layer N is solid. Don\'t skip — and don\'t overbuild the same layer forever.', bg: '🛡️ Изграждай слой N+1 само след като N е готов. Не прескачай — и не претрупвай един слой завинаги.' },
+                            },
+                            {
+                                emoji: '⏱️',
+                                title: { en: 'The First 48 Hours of a Crisis', bg: 'Първите 48 ч на криза' },
+                                body: { en: 'When a real emergency hits, your decisions in the first 48 hours shape the next 12 months.\n\nThe checklist:\n• Hour 1–6: stop the bleeding (medical, safety, immediate cash)\n• Hour 6–24: notify key parties (family, employer, insurer)\n• Hour 24–48: list options + 30-day plan (income, expenses, support)\n\nThis isn\'t about being brave — it\'s about having a written list you read when your brain isn\'t working.', bg: 'При истинска криза, решенията в първите 48 ч оформят следващите 12 месеца.\n\nЧек-лист:\n• Час 1–6: спри кървенето (медицинско, безопасност, кеш)\n• Час 6–24: уведоми ключови (семейство, работодател, застраховател)\n• Час 24–48: списък опции + 30-дневен план\n\nНе става въпрос за храброст — за писан списък, който четеш, когато мозъкът ти не работи.' },
+                                highlight: { en: '📝 Write your "in case of emergency" doc BEFORE the emergency. Stress destroys executive function.', bg: '📝 Напиши "при авария" документ ПРЕДИ аварията. Стресът унищожава изпълнителните функции.' },
+                            },
+                        ],
+                    },
+                    {
+                        id: 'rm2-fill-num-1', type: 'fill_number', xp: 25,
+                        fillNumberScenario: { en: 'Your monthly expenses total €2,000. You want to build a 6-month emergency fund, contributing €250/month from your paycheck.', bg: 'Месечните разходи са €2,000. Искаш 6-месечен авариен фонд, внасяйки €250/мес от заплатата.' },
+                        question: { en: 'How many months until the fund is fully built?', bg: 'Колко месеца до пълно изграждане?' },
+                        fillNumberAnswer: 48, fillNumberTolerance: 1, fillNumberUnit: '',
+                        fillNumberHint: { en: 'Target = €2,000 × 6 months. Divide by €250/mo to get months.', bg: 'Цел = €2,000 × 6 м. Раздели на €250/мес за брой месеци.' },
+                        explanation: { en: '€2,000 × 6 = €12,000 target. €12,000 ÷ €250/mo = 48 months (4 years). That\'s long — most people speed it up with windfalls (tax refunds, bonuses) and by starting with a €1,000 buffer first, then building gradually.', bg: '€2,000 × 6 = €12,000. €12,000 ÷ €250 = 48 м. (4 г.). Дълго — повечето хора ускоряват с извънредни доходи и с €1,000 буфер първо.' },
+                    },
+                    {
+                        id: 'rm2-order-1', type: 'order_items', xp: 25,
+                        orderInstruction: { en: 'You just lost your job. Order these 5 actions from MOST to LEAST urgent in the first week:', bg: 'Току-що загуби работа. Подреди тези 5 действия от НАЙ-спешно към НАЙ-малко спешно за първата седмица:' },
+                        orderItems: [
+                            { label: { en: 'Calculate exact runway (savings ÷ expenses)', bg: 'Сметни точен runway (спестявания ÷ разходи)' }, emoji: '🧮' },
+                            { label: { en: 'Apply for unemployment / state benefits', bg: 'Кандидатствай за безработица / помощи' }, emoji: '🏛️' },
+                            { label: { en: 'Cut non-essential subscriptions and spending', bg: 'Спри неосновни абонаменти и разходи' }, emoji: '✂️' },
+                            { label: { en: 'Update CV + reach out to 5 strong contacts', bg: 'Обнови CV + свържи се с 5 силни контакта' }, emoji: '📇' },
+                            { label: { en: 'Apply to roles that match top skill', bg: 'Кандидатствай за роли с твоето топ умение' }, emoji: '🎯' },
+                        ],
+                        correctOrder: [0, 1, 2, 3, 4],
+                        explanation: { en: 'You can\'t plan without knowing your runway (step 1). Benefits (step 2) take weeks to process — start early. Cutting expenses (step 3) extends runway immediately. Network FIRST, applications second — 70% of jobs are filled through referrals before public posting.', bg: 'Не можеш да планираш без runway (1). Помощите (2) са седмици за обработка. Орязване (3) удължава runway. Мрежа ПЪРВО, кандидатства второ — 70% от работите се намират чрез препоръки.' },
+                    },
+                    {
+                        id: 'rm2-matrix-1', type: 'risk_matrix', xp: 35,
+                        riskMatrix: {
+                            scenario: { en: 'You\'re mid-career, married, one child, mortgage. Place each life-stage risk in the right quadrant.', bg: 'Средна кариера, женен, едно дете, ипотека. Сложи всеки риск в правилния квадрант.' },
+                            question: { en: 'Categorize each life-stage risk', bg: 'Категоризирай всеки риск' },
+                            risks: [
+                                { label: { en: 'Forgetting an umbrella once a year', bg: 'Забравен чадър веднъж годишно' }, emoji: '☂️', correctQuadrant: 0 },
+                                { label: { en: 'Missing a phone-bill payment', bg: 'Пропуснато плащане на телефон' }, emoji: '📱', correctQuadrant: 1 },
+                                { label: { en: 'Long-term disability cutting income', bg: 'Дългосрочна инвалидност' }, emoji: '🦽', correctQuadrant: 2 },
+                                { label: { en: 'Daily highway driving without seatbelt', bg: 'Ежедневно без колан по магистрала' }, emoji: '🚗', correctQuadrant: 3 },
+                                { label: { en: 'Sudden hospitalization', bg: 'Внезапна хоспитализация' }, emoji: '🏥', correctQuadrant: 2 },
+                                { label: { en: 'Unused gym membership', bg: 'Неизползван абонамент за фитнес' }, emoji: '🏋️', correctQuadrant: 1 },
+                            ],
+                        },
+                        explanation: { en: 'Forgotten umbrellas = accept. Phone bills + unused subs = mitigate (autopay + audit annually). Disability + hospitalization = transfer (this is what insurance is FOR). No-seatbelt driving = avoid (change behavior; insurance won\'t fix the actual injury).', bg: 'Чадърите = приеми. Сметки + ненужни абонаменти = намали (автоплащане + годишен преглед). Инвалидност + болница = прехвърли (за това е застраховката). Без колан = избягвай (промени поведението; застраховката не лекува нараняване).' },
+                    },
+                    {
+                        id: 'rm2-match-1', type: 'match_terms', xp: 25,
+                        matchPairs: [
+                            { term: { en: 'Contingency plan', bg: 'План за непредвидено' }, definition: { en: 'Pre-written plan for "if X happens, I do Y"', bg: 'Предварителен план "ако X, правя Y"' } },
+                            { term: { en: 'Runway', bg: 'Runway' }, definition: { en: 'Months you can survive on current savings', bg: 'Месеци, в които оцеляваш с текущите пари' } },
+                            { term: { en: 'Sequence-of-returns risk', bg: 'Риск от поредица доходност' }, definition: { en: 'Early bad returns hurt more than late ones in retirement', bg: 'Ранна лоша доходност вреди повече от късна при пенсиониране' } },
+                            { term: { en: 'Longevity risk', bg: 'Риск от дълголетие' }, definition: { en: 'Outliving your savings — running out of money', bg: 'Преживяваш парите си — свършват преди ти' } },
+                            { term: { en: 'Disaster recovery', bg: 'Възстановяване от бедствие' }, definition: { en: 'Documented procedure to restore key systems after a crisis', bg: 'Документирана процедура за възстановяване след криза' } },
+                            { term: { en: 'Single point of failure', bg: 'Единствена точка на провал' }, definition: { en: 'A dependency whose failure breaks everything', bg: 'Зависимост, чийто провал чупи всичко' } },
+                        ],
+                    },
+                    {
+                        id: 'rm2-rpg-1', type: 'rpg_scenario', xp: 25,
+                        scenario: { en: 'You wake up with chest pain. No health insurance. Local ER visit = €2,000+ before treatment. Friend says "it\'s probably nothing — sleep it off." Your move?', bg: 'Събуждаш се с болка в гърдите. Няма здравна. Спешен център = €2,000+ преди лечение. Приятел: "сигурно е нищо — наспи се." Ходът ти?' },
+                        avatar: '🚨',
+                        choices: [
+                            { label: { en: 'Sleep it off — ER is too expensive', bg: 'Наспи се — спешният е твърде скъп' }, emoji: '😴', consequence: { en: 'Worst outcome path. If it WAS a cardiac event, untreated = permanent damage or death. The €2,000 ER bill is recoverable; the cardiac damage isn\'t. Money beats brain damage every time.', bg: 'Най-лош изход. Ако Е било сърдечно, без лечение = постоянна щета или смърт. €2,000 е възстановимо; щетата не е.' }, cashFlowChange: -50000, isGood: false },
+                            { label: { en: 'Go to ER, negotiate the bill afterward', bg: 'Иди в спешен, договори сметката после' }, emoji: '🏥', consequence: { en: 'Right move. Hospitals routinely reduce uninsured bills 30–60% if you ask. Many offer 0% payment plans. Triage first, finance second. Don\'t let cost paralyze a real medical event.', bg: 'Правилен ход. Болниците редовно свалят сметки за неосигурени с 30–60% при питане. 0% планове за плащане. Първо здраве, после финанси.' }, cashFlowChange: -1000, isGood: true },
+                            { label: { en: 'Call a tele-health doctor first (~€30)', bg: 'Първо тел-докторски разговор (~€30)' }, emoji: '📞', consequence: { en: 'Smart hedge for ambiguous symptoms. They\'ll triage — if it sounds cardiac, they tell you ER NOW. If muscular, you save €1,970. Use this layer FIRST for non-obvious symptoms.', bg: 'Умен ход за двусмислени симптоми. Триаж — ако звучи сърдечно, "веднага в спешен". Ако мускулно, спестяваш €1,970.' }, cashFlowChange: -30, isGood: true },
+                        ],
+                    },
+                    {
+                        id: 'rm2-tf-1', type: 'true_false', xp: 15,
+                        statement: { en: 'Emergencies are essentially random — there\'s no point in planning for them.', bg: 'Авариите са случайни — няма смисъл да се планира за тях.' },
+                        isTrue: false,
+                        explanation: { en: 'FALSE. Most "emergencies" are statistically predictable: job loss hits ~30% of workers in any decade, major car repairs hit ~70% of car owners every 5 years, major medical bills hit ~40% of households in a lifetime. They feel random because individuals don\'t plan — but at population level they\'re very regular.', bg: 'НЕВЯРНО. Повечето "аварии" са статистически предвидими: загуба на работа удря ~30% от работещите на десетилетие, голям ремонт на кола ~70% на 5 г. Усещат се случайни, защото никой не планира — но на популация ниво са редовни.' },
+                    },
+                ],
+            },
+            // ── Lesson 3: Black Swan Preparedness ──
+            {
+                id: 'risk-black-swan',
+                moduleId: 'risk-management',
+                title: { en: 'Black Swan Preparedness', bg: 'Подготовка за черни лебеди' },
+                description: { en: 'Hedge against rare-but-devastating events without becoming paranoid.', bg: 'Хеджирай срещу редки разрушителни събития, без да станеш параноик.' },
+                icon: '🦢', xpReward: 170, order: 3,
+                exercises: [
+                    {
+                        id: 'rm3-theory-1', type: 'theory', xp: 0,
+                        slides: [
+                            {
+                                emoji: '🦢',
+                                title: { en: 'What is a Black Swan?', bg: 'Какво е черен лебед?' },
+                                body: { en: 'Term from Nassim Taleb: an event that is:\n\n1. Highly improbable (felt impossible BEFORE it happened)\n2. Has massive impact when it does happen\n3. Gets rationalized as "obvious in hindsight"\n\nExamples: 2008 financial crisis, COVID, internet, smartphones.\n\nBlack swans break models. The defense isn\'t prediction — it\'s building systems that SURVIVE shocks instead of trying to forecast them.', bg: 'От Насим Талеб: събитие което е:\n\n1. Много невероятно (изглежда невъзможно ПРЕДИ)\n2. Огромна щета, когато се случи\n3. Рационализирано като "очевидно в ретроспекция"\n\nПримери: 2008, COVID, интернет, смартфони.\n\nЧерните лебеди чупят модели. Защитата не е прогноза — а системи, които ОЦЕЛЯВАТ шокове.' },
+                                highlight: { en: '🛡️ Antifragile > resilient > robust > fragile. Build systems that gain from disorder, not just survive it.', bg: '🛡️ Антикрехко > устойчиво > здраво > крехко. Изграждай системи, които печелят от хаос, не само оцеляват.' },
+                            },
+                            {
+                                emoji: '🎯',
+                                title: { en: 'The Hedging Principles', bg: 'Принципи на хеджиране' },
+                                body: { en: '1️⃣ DIVERSIFY: never have 100% in one job / asset / country / currency\n2️⃣ KEEP OPTIONALITY: cash reserves let you BUY when others must sell\n3️⃣ AVOID RUIN: never bet the survival of your life on a single trade\n4️⃣ BUILD SKILLS, NOT JUST WEALTH: skills are inflation-proof and crisis-proof\n5️⃣ DON\'T OVER-INSURE: paying €20k/yr in insurance to "feel safe" can itself bankrupt you over 30 years', bg: '1️⃣ ДИВЕРСИФИЦИРАЙ: никога 100% в една работа / актив / държава / валута\n2️⃣ ДРЪЖ ОПЦИИ: кеш резерви ти позволяват да КУПУВАШ когато други продават\n3️⃣ ИЗБЯГВАЙ КРАХ: никога не залагай оцеляването си на една сделка\n4️⃣ ИЗГРАЖДАЙ УМЕНИЯ, НЕ САМО БОГАТСТВО\n5️⃣ НЕ ЗАСТРАХОВАЙ ПРЕКОМЕРНО' },
+                                highlight: { en: '💡 "I don\'t try to predict the future. I prepare a portfolio that survives whatever future shows up." — Howard Marks', bg: '💡 "Не се опитвам да предвиждам бъдещето. Подготвям портфейл, който оцелява каквото и да дойде." — Хауърд Маркс' },
+                            },
+                        ],
+                    },
+                    {
+                        id: 'rm3-matrix-1', type: 'risk_matrix', xp: 35,
+                        riskMatrix: {
+                            scenario: { en: 'Rare-but-real "black swan" risks for an average household. Sort each into the right strategy quadrant.', bg: 'Редки, но реални рискове за домакинство. Сложи всеки в правилен квадрант.' },
+                            question: { en: 'Where does each rare risk belong?', bg: 'Къде принадлежи всеки риск?' },
+                            risks: [
+                                { label: { en: 'Wallet pickpocketed in a year', bg: 'Откраднат портфейл годишно' }, emoji: '👛', correctQuadrant: 0 },
+                                { label: { en: 'Daily train delays', bg: 'Ежедневни закъснения на влак' }, emoji: '🚆', correctQuadrant: 1 },
+                                { label: { en: 'Surprise medical bill from pandemic', bg: 'Неочаквана сметка от пандемия' }, emoji: '🦠', correctQuadrant: 2 },
+                                { label: { en: 'House flood (low-flood-risk area)', bg: 'Наводнение (зона с малък риск)' }, emoji: '🌊', correctQuadrant: 2 },
+                                { label: { en: 'All career in one shrinking industry', bg: 'Цяла кариера в смаляваща индустрия' }, emoji: '📉', correctQuadrant: 3 },
+                                { label: { en: 'Forgetting weekly shopping list item', bg: 'Забравен артикул в седмичен списък' }, emoji: '🛒', correctQuadrant: 1 },
+                            ],
+                        },
+                        explanation: { en: 'Pickpocket = accept (€100 once a decade). Train delays + grocery items = mitigate (alarms, autopay, lists). Pandemic medical + flood = transfer (insurance + emergency fund). All-in-one-industry = avoid (diversify your career, develop transferable skills).', bg: 'Кражба на портфейл = приеми. Закъснения + забравени артикули = намали (аларми, автоплащане, списъци). Пандемия + наводнение = прехвърли (застраховка + фонд). Цяла кариера в една индустрия = избягвай (диверсифицирай).' },
+                    },
+                    {
+                        id: 'rm3-decision-1', type: 'scenario_decision', xp: 30,
+                        decisionAvatar: '🎁',
+                        decisionScenario: { en: 'You inherit €100,000. Markets are choppy, war headlines are everywhere, friends recommend everything from gold to crypto to Italian property. What\'s the SAFEST first move?', bg: 'Наследяваш €100,000. Пазарите се клатят, заглавия за война, приятели препоръчват всичко — от злато до крипто до италиански имот. НАЙ-сигурният първи ход?' },
+                        decisionChoices: [
+                            { label: { en: 'All-in on gold — "hedge against chaos"', bg: 'Всичко в злато — "хедж срещу хаос"' }, emoji: '🪙', outcome: { en: 'Concentration in one "safe" asset is its own black swan. Gold can drop 30% in a year (it has, multiple times). And it generates no income. You\'re trading one risk for another.', bg: 'Концентрацията в един "сигурен" актив е свой собствен черен лебед. Златото може да падне 30% за година. И не генерира доход.' }, isBest: false },
+                            { label: { en: 'Park €100k in a high-yield savings account, plan over 90 days', bg: 'Сложи €100к в спестовна с висока лихва, планирай 90 дни' }, emoji: '🏦', outcome: { en: 'Best move. €100k earns ~3–4% in HYSA risk-free WHILE you think. Big decisions made in 1 day are usually wrong. 90 days lets you research, talk to a fee-only advisor, and split intelligently across goals.', bg: 'Най-добър ход. €100к печели ~3–4% в HYSA без риск ДОКАТО мислиш. Големи решения за ден обикновено са грешни. 90 дни ти дават изследване, съветник, умно разделяне.' }, isBest: true },
+                            { label: { en: 'Invest it all in stocks today — "time in market wins"', bg: 'Инвестирай всичко в акции днес — "времето на пазара печели"' }, emoji: '📈', outcome: { en: 'Right principle, wrong execution for a lump sum. DCA over 6–12 months reduces sequence-of-returns risk. A market drop right after a 100% deployment can take 5+ years to recover.', bg: 'Правилен принцип, грешно изпълнение за lump sum. DCA за 6–12 м. намалява риска. Спад веднага след 100% депозит може да отнеме 5+ г. за възстановяване.' }, isBest: false },
+                            { label: { en: 'Buy a rental property in a "hot" foreign market', bg: 'Купи имот в "горещ" чужд пазар' }, emoji: '🏠', outcome: { en: 'Triple risk: illiquidity + currency + political. Property is the OPPOSITE of optionality. Locking up €100k in foreign real estate when you have no other diversification = black swan magnet.', bg: 'Троен риск: ликвидност + валута + политика. Имотите са ПРОТИВОПОЛОЖНОТО на опционалност.' }, isBest: false },
+                        ],
+                        explanation: { en: 'Big windfalls are emotional. The right move is to BUY TIME first: park safely, plan deliberately, decide slowly. The 90-day cooling-off rule has saved more inheritances than any "hot tip."', bg: 'Големите печалби са емоционални. Правилно: купи си ВРЕМЕ първо: паркирай сигурно, планирай, решавай бавно.' },
+                    },
+                    {
+                        id: 'rm3-match-1', type: 'match_terms', xp: 25,
+                        matchPairs: [
+                            { term: { en: 'Black swan', bg: 'Черен лебед' }, definition: { en: 'Rare, high-impact event impossible to predict in advance', bg: 'Рядко събитие с голяма щета, непредвидимо' } },
+                            { term: { en: 'Antifragile', bg: 'Антикрехко' }, definition: { en: 'Gains from disorder — gets stronger under stress', bg: 'Печели от хаоса — става по-силно под стрес' } },
+                            { term: { en: 'Tail risk', bg: 'Tail risk' }, definition: { en: 'The probability of extreme outcomes in the "tails" of a distribution', bg: 'Вероятността от крайни изходи в краищата на разпределение' } },
+                            { term: { en: 'Hedge', bg: 'Хедж' }, definition: { en: 'A position that profits when your main position suffers', bg: 'Позиция, която печели, когато основната губи' } },
+                            { term: { en: 'Optionality', bg: 'Опционалност' }, definition: { en: 'Having choices available without obligation to use them', bg: 'Имаш избори без задължение да ги използваш' } },
+                        ],
+                    },
+                    {
+                        id: 'rm3-order-1', type: 'order_items', xp: 25,
+                        orderInstruction: { en: 'Rank these long-term safety actions from MOST to LEAST impact on black-swan resilience:', bg: 'Подреди тези дългосрочни действия от НАЙ-голямо към НАЙ-малко влияние върху устойчивост:' },
+                        orderItems: [
+                            { label: { en: 'Diversify income across 2+ sources', bg: 'Диверсифицирай дохода в 2+ източника' }, emoji: '💼' },
+                            { label: { en: 'Build a 6-month emergency fund', bg: 'Изгради 6-месечен авариен фонд' }, emoji: '🛡️' },
+                            { label: { en: 'Diversify investments globally', bg: 'Диверсифицирай инвестициите глобално' }, emoji: '🌍' },
+                            { label: { en: 'Maintain transferable skills', bg: 'Поддържай преносими умения' }, emoji: '🧠' },
+                            { label: { en: 'Keep a passport up to date', bg: 'Дръж си валиден паспорт' }, emoji: '📘' },
+                        ],
+                        correctOrder: [0, 1, 2, 3, 4],
+                        explanation: { en: 'Income diversification is the strongest hedge — your earning power is your largest asset. Cash buffer comes next — it converts shock into a manageable problem. Global investing reduces single-country risk. Skills are permanent. A passport gives optionality at zero cost.', bg: 'Диверсификация на дохода е най-силният хедж — печалбата ти е най-големият актив. Кеш буфер превръща шока в управляем проблем. Глобални инвестиции намаляват риска от една страна. Уменията са постоянни. Паспорт = опционалност.' },
+                    },
+                    {
+                        id: 'rm3-tf-1', type: 'true_false', xp: 15,
+                        statement: { en: 'You can reliably predict the next major financial crisis if you follow the right experts.', bg: 'Можеш надеждно да предвидиш следващата голяма криза, ако следваш правилните експерти.' },
+                        isTrue: false,
+                        explanation: { en: 'FALSE. Decades of data show even top economists collectively predict ~50% of recessions — basically a coin flip. Permanent "crash callers" eventually look right when a crash hits — but they\'ve been wrong for years before. Build a system that SURVIVES the unknown, not a model that predicts it.', bg: 'НЕВЯРНО. Десетилетия данни показват, че дори топ икономисти колективно предвиждат ~50% от рецесиите — на практика монета. Постоянните "пророци на крах" изглеждат прави, когато удари — но са били грешни години преди.' },
+                    },
+                    {
+                        id: 'rm3-fill-num-1', type: 'fill_number', xp: 25,
+                        fillNumberScenario: { en: 'You earn €3,000/mo and spend €2,200/mo. You want a 12-month runway (the "elite" emergency buffer for black-swan resilience).', bg: 'Печелиш €3,000/мес и харчиш €2,200/мес. Искаш 12-месечен runway (елитен буфер за устойчивост).' },
+                        question: { en: 'How much do you need saved (in €)?', bg: 'Колко трябва да имаш спестено (в €)?' },
+                        fillNumberAnswer: 26400, fillNumberTolerance: 200, fillNumberUnit: '€',
+                        fillNumberHint: { en: '12 months × monthly spend = ?', bg: '12 м. × месечно харчене = ?' },
+                        explanation: { en: '€2,200 × 12 = €26,400. A 12-month runway is the "FU money" threshold — enough that you can turn down a bad job, walk away from a bad boss, or weather a 1-year crisis without panic. Most financial freedom planning starts here.', bg: '€2,200 × 12 = €26,400. 12-месечен runway е прагът на "пари за независимост" — достатъчно да откажеш лоша работа или да преживееш едногодишна криза.' },
+                    },
+                ],
+            },
+        ],
+    },
+    // ─────────────────────────────────────────────
     // PRO MODULE 1 — ADVANCED INVESTING
     // Signature interactives: portfolio_pie + stock_chart for advanced concepts
     // ─────────────────────────────────────────────

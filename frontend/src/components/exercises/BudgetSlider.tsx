@@ -21,7 +21,22 @@ export function BudgetSlider({ exercise, onAnswer }: Props) {
   const income = exercise.income ?? 3000;
   const cats = exercise.categories ?? [];
 
-  const [values, setValues] = useState<number[]>(cats.map(c => c.ideal));
+  // Start each slider away from the ideal so the user actually has to think.
+  // Strategy: anchor at min, but never closer than ~30% of the way to ideal
+  // (otherwise the initial state would accidentally score). This is deterministic
+  // and works for any category config.
+  const [values, setValues] = useState<number[]>(() =>
+    cats.map(c => {
+      const span = c.max - c.min;
+      // Place at min; if min is already within tolerance of ideal, drop to a
+      // value far from ideal but still inside [min, max].
+      const minAbsDiff = Math.abs(c.min - c.ideal) / Math.max(1, c.ideal);
+      if (minAbsDiff >= 0.25) return c.min;
+      // Otherwise jump to a clearly "wrong" value: 80% of max.
+      const fallback = Math.round((c.min + span * 0.8) / 50) * 50;
+      return Math.min(c.max, fallback);
+    }),
+  );
   const [submitted, setSubmitted] = useState(false);
   const [shake, setShake] = useState(false);
 
