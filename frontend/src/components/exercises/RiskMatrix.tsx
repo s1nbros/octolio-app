@@ -49,9 +49,6 @@ export function RiskMatrix({ exercise, onAnswer }: Props) {
   const handleSubmit = () => {
     if (!allPlaced) return;
     setSubmitted(true);
-    if (isCorrect) {
-      setTimeout(() => onAnswer(true, exercise.xp), 2000);
-    }
   };
 
   // Pile of risks to place (those not yet placed)
@@ -202,8 +199,8 @@ export function RiskMatrix({ exercise, onAnswer }: Props) {
             : (lang === 'en' ? `Place all risks (${unplaced.length} left)` : `Подреди всички (${unplaced.length} остават)`)}
         </button>
       )}
-      {submitted && !isCorrect && (
-        <button className="btn-primary w-full" onClick={() => onAnswer(false, 0)}>
+      {submitted && (
+        <button className="btn-primary w-full" onClick={() => onAnswer(isCorrect, isCorrect ? exercise.xp : 0)}>
           {lang === 'en' ? 'Continue →' : 'Продължи →'}
         </button>
       )}

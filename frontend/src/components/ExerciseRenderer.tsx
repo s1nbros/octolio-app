@@ -231,9 +231,6 @@ export function ExerciseRenderer({ exercise, onAnswer, questionNumber, totalQues
       if (selectedIndex === null) return;
       const correct = selectedIndex === exercise.correctIndex;
       setAnswerState(correct ? 'correct' : 'wrong');
-      if (correct) {
-        setTimeout(() => onAnswer(true, exercise.xp), 1400);
-      }
     };
 
     return (
@@ -281,8 +278,8 @@ export function ExerciseRenderer({ exercise, onAnswer, questionNumber, totalQues
             {ui.check}
           </button>
         )}
-        {isChecked && answerState === 'wrong' && (
-          <button className="btn-primary w-full" onClick={() => onAnswer(false, 0)}>
+        {isChecked && (
+          <button className="btn-primary w-full" onClick={() => onAnswer(answerState === 'correct', answerState === 'correct' ? exercise.xp : 0)}>
             {lang === 'en' ? 'Continue →' : 'Продължи →'}
           </button>
         )}
@@ -299,9 +296,6 @@ export function ExerciseRenderer({ exercise, onAnswer, questionNumber, totalQues
       const max = exercise.answerMax ?? exercise.correctAnswer! + 0.01;
       const correct = val >= min && val <= max;
       setAnswerState(correct ? 'correct' : 'wrong');
-      if (correct) {
-        setTimeout(() => onAnswer(true, exercise.xp), 1400);
-      }
     };
 
     return (
@@ -351,8 +345,8 @@ export function ExerciseRenderer({ exercise, onAnswer, questionNumber, totalQues
             {ui.check}
           </button>
         )}
-        {isChecked && answerState === 'wrong' && (
-          <button className="btn-primary w-full" onClick={() => onAnswer(false, 0)}>
+        {isChecked && (
+          <button className="btn-primary w-full" onClick={() => onAnswer(answerState === 'correct', answerState === 'correct' ? exercise.xp : 0)}>
             {lang === 'en' ? 'Continue →' : 'Продължи →'}
           </button>
         )}

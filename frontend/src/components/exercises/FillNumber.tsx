@@ -26,9 +26,6 @@ export function FillNumber({ exercise, onAnswer }: Props) {
   const handleSubmit = () => {
     if (isNaN(parsedValue)) return;
     setSubmitted(true);
-    if (isCorrect) {
-      setTimeout(() => onAnswer(true, exercise.xp), 1800);
-    }
   };
 
   return (
@@ -116,8 +113,8 @@ export function FillNumber({ exercise, onAnswer }: Props) {
           {lang === 'en' ? 'Check Answer →' : 'Провери отговора →'}
         </button>
       )}
-      {submitted && !isCorrect && (
-        <button className="btn-primary w-full" onClick={() => onAnswer(false, 0)}>
+      {submitted && (
+        <button className="btn-primary w-full" onClick={() => onAnswer(isCorrect, isCorrect ? exercise.xp : 0)}>
           {lang === 'en' ? 'Continue →' : 'Продължи →'}
         </button>
       )}

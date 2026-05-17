@@ -13,10 +13,6 @@ export function RPGScenario({ exercise, onAnswer }: Props) {
   const handlePick = (i: number) => {
     if (chosen !== null) return;
     setChosen(i);
-    const c = choices[i];
-    if (c.isGood) {
-      setTimeout(() => onAnswer(true, exercise.xp), 2200);
-    }
   };
 
   return (
@@ -98,8 +94,8 @@ export function RPGScenario({ exercise, onAnswer }: Props) {
         </div>
       )}
 
-      {selected && !selected.isGood && (
-        <button className="btn-primary w-full mt-4" onClick={() => onAnswer(false, 0)}>
+      {selected && (
+        <button className="btn-primary w-full mt-4" onClick={() => onAnswer(selected.isGood, selected.isGood ? exercise.xp : 0)}>
           {lang === 'en' ? 'Continue →' : 'Продължи →'}
         </button>
       )}

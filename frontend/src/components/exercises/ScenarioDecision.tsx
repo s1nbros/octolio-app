@@ -15,9 +15,6 @@ export function ScenarioDecision({ exercise, onAnswer }: Props) {
     if (chosen !== null) return;
     setChosen(i);
     setTimeout(() => setShowOutcomes(true), 600);
-    if (choices[i].isBest) {
-      setTimeout(() => onAnswer(true, exercise.xp), 3000);
-    }
   };
 
   return (
@@ -131,11 +128,9 @@ export function ScenarioDecision({ exercise, onAnswer }: Props) {
             </div>
           )}
 
-          {!selected.isBest && (
-            <button className="btn-primary w-full" onClick={() => onAnswer(false, 0)}>
-              {lang === 'en' ? 'Continue →' : 'Продължи →'}
-            </button>
-          )}
+          <button className="btn-primary w-full" onClick={() => onAnswer(selected.isBest, selected.isBest ? exercise.xp : 0)}>
+            {lang === 'en' ? 'Continue →' : 'Продължи →'}
+          </button>
         </div>
       )}
     </div>

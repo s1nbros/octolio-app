@@ -42,9 +42,6 @@ export function OrderItems({ exercise, onAnswer }: Props) {
 
   const handleSubmit = () => {
     setSubmitted(true);
-    if (isPassing) {
-      setTimeout(() => onAnswer(true, exercise.xp), 1800);
-    }
   };
 
   const isItemCorrect = (posIdx: number) => order[posIdx] === correctOrder[posIdx];
@@ -134,8 +131,8 @@ export function OrderItems({ exercise, onAnswer }: Props) {
           {lang === 'en' ? 'Check Order →' : 'Провери реда →'}
         </button>
       )}
-      {submitted && !isPassing && (
-        <button className="btn-primary w-full" onClick={() => onAnswer(false, 0)}>
+      {submitted && (
+        <button className="btn-primary w-full" onClick={() => onAnswer(isPassing, isPassing ? exercise.xp : 0)}>
           {lang === 'en' ? 'Continue →' : 'Продължи →'}
         </button>
       )}

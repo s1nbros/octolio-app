@@ -128,16 +128,21 @@ export function CompoundSim({ exercise, onAnswer }: Props) {
       )}
 
       {!revealed ? (
-        <button className="btn-primary w-full" onClick={() => { setRevealed(true); setTimeout(() => onAnswer(true, exercise.xp), 600); }}>
+        <button className="btn-primary w-full" onClick={() => setRevealed(true)}>
           {lang === 'en' ? '✓ I understand compound interest!' : '✓ Разбирам сложната лихва!'}
         </button>
       ) : (
-        <div className="rounded-xl p-3 text-center"
-          style={{ background: 'hsl(var(--c-green)/0.1)', border: '1px solid hsl(var(--c-green)/0.3)' }}>
-          <p className="font-semibold text-sm" style={{ color: 'hsl(var(--c-green))' }}>
-            ✓ {lang === 'en' ? 'Great! Moving on...' : 'Страхотно! Продължаваме...'}
-          </p>
-        </div>
+        <>
+          <div className="rounded-xl p-3 text-center mb-3"
+            style={{ background: 'hsl(var(--c-green)/0.1)', border: '1px solid hsl(var(--c-green)/0.3)' }}>
+            <p className="font-semibold text-sm" style={{ color: 'hsl(var(--c-green))' }}>
+              ✓ {lang === 'en' ? 'Great job exploring!' : 'Страхотно!'}
+            </p>
+          </div>
+          <button className="btn-primary w-full" onClick={() => onAnswer(true, exercise.xp)}>
+            {lang === 'en' ? 'Continue →' : 'Продължи →'}
+          </button>
+        </>
       )}
     </div>
   );

@@ -45,9 +45,6 @@ export function CoverageCalc({ exercise, onAnswer }: Props) {
 
   const handleSubmit = () => {
     setSubmitted(true);
-    if (isCorrect) {
-      setTimeout(() => onAnswer(true, exercise.xp), 2000);
-    }
   };
 
   return (
@@ -204,8 +201,8 @@ export function CoverageCalc({ exercise, onAnswer }: Props) {
           {lang === 'en' ? 'Lock in policy →' : 'Финализирай полицата →'}
         </button>
       )}
-      {submitted && !isCorrect && (
-        <button className="btn-primary w-full" onClick={() => onAnswer(false, 0)}>
+      {submitted && (
+        <button className="btn-primary w-full" onClick={() => onAnswer(isCorrect, isCorrect ? exercise.xp : 0)}>
           {lang === 'en' ? 'Continue →' : 'Продължи →'}
         </button>
       )}

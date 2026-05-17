@@ -45,12 +45,6 @@ export function StockChart({ exercise, onAnswer }: Props) {
     if (mode === 'identify_point' && pointIdx === null) return;
     if (mode === 'identify_pattern' && optionIdx === null) return;
     setSubmitted(true);
-    const correct = mode === 'identify_point'
-      ? Math.abs((pointIdx ?? 0) - (cfg.correctPointIndex ?? 0)) <= (cfg.pointTolerance ?? 1)
-      : optionIdx === cfg.correctPatternIndex;
-    if (correct) {
-      setTimeout(() => onAnswer(true, exercise.xp), 1800);
-    }
   };
 
   const handleChartClick = (e: React.MouseEvent<SVGSVGElement>) => {
@@ -208,8 +202,8 @@ export function StockChart({ exercise, onAnswer }: Props) {
           {lang === 'en' ? 'Check →' : 'Провери →'}
         </button>
       )}
-      {submitted && !isCorrect && (
-        <button className="btn-primary w-full" onClick={() => onAnswer(false, 0)}>
+      {submitted && (
+        <button className="btn-primary w-full" onClick={() => onAnswer(isCorrect, isCorrect ? exercise.xp : 0)}>
           {lang === 'en' ? 'Continue →' : 'Продължи →'}
         </button>
       )}
