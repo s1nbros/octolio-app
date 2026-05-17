@@ -40,6 +40,9 @@ export function IncomeStreams({ exercise, onAnswer }: Props) {
   const handleSubmit = () => {
     if (selected.length === 0) return;
     setSubmitted(true);
+    if (isCorrect) {
+      setTimeout(() => onAnswer(true, exercise.xp), 2000);
+    }
   };
 
   return (
@@ -168,8 +171,8 @@ export function IncomeStreams({ exercise, onAnswer }: Props) {
           {lang === 'en' ? 'Lock in mix →' : 'Финализирай микса →'}
         </button>
       )}
-      {submitted && (
-        <button className="btn-primary w-full" onClick={() => onAnswer(isCorrect, isCorrect ? exercise.xp : 0)}>
+      {submitted && !isCorrect && (
+        <button className="btn-primary w-full" onClick={() => onAnswer(false, 0)}>
           {lang === 'en' ? 'Continue →' : 'Продължи →'}
         </button>
       )}

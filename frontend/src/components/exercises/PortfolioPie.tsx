@@ -54,6 +54,9 @@ export function PortfolioPie({ exercise, onAnswer }: Props) {
   const handleSubmit = () => {
     if (total !== 100) return;
     setSubmitted(true);
+    if (isCorrect) {
+      setTimeout(() => onAnswer(true, exercise.xp), 1800);
+    }
   };
 
   // Pie chart geometry
@@ -177,8 +180,8 @@ export function PortfolioPie({ exercise, onAnswer }: Props) {
           {lang === 'en' ? 'Submit Allocation →' : 'Подай разпределение →'}
         </button>
       )}
-      {submitted && (
-        <button className="btn-primary w-full" onClick={() => onAnswer(isCorrect, isCorrect ? exercise.xp : 0)}>
+      {submitted && !isCorrect && (
+        <button className="btn-primary w-full" onClick={() => onAnswer(false, 0)}>
           {lang === 'en' ? 'Continue →' : 'Продължи →'}
         </button>
       )}

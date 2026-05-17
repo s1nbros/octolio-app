@@ -44,6 +44,9 @@ export function MatchTerms({ exercise, onAnswer }: Props) {
 
   const handleSubmit = () => {
     setSubmitted(true);
+    if (isPassing) {
+      setTimeout(() => onAnswer(true, exercise.xp), 1800);
+    }
   };
 
   const getMatchColor = (termIdx: number) => {
@@ -155,8 +158,8 @@ export function MatchTerms({ exercise, onAnswer }: Props) {
           {lang === 'en' ? 'Check Matches →' : 'Провери съвпаденията →'}
         </button>
       )}
-      {submitted && (
-        <button className="btn-primary w-full" onClick={() => onAnswer(isPassing, isPassing ? exercise.xp : 0)}>
+      {submitted && !isPassing && (
+        <button className="btn-primary w-full" onClick={() => onAnswer(false, 0)}>
           {lang === 'en' ? 'Continue →' : 'Продължи →'}
         </button>
       )}

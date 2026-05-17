@@ -29,6 +29,9 @@ export function UnitPrice({ exercise, onAnswer }: Props) {
   const handleSubmit = () => {
     if (picked === null) return;
     setSubmitted(true);
+    if (isCorrect) {
+      setTimeout(() => onAnswer(true, exercise.xp), 1800);
+    }
   };
 
   const fmtPerUnit = (v: number) => {
@@ -138,8 +141,8 @@ export function UnitPrice({ exercise, onAnswer }: Props) {
           {lang === 'en' ? 'Pick the best deal →' : 'Избери най-добрата →'}
         </button>
       )}
-      {submitted && (
-        <button className="btn-primary w-full" onClick={() => onAnswer(isCorrect, isCorrect ? exercise.xp : 0)}>
+      {submitted && !isCorrect && (
+        <button className="btn-primary w-full" onClick={() => onAnswer(false, 0)}>
           {lang === 'en' ? 'Continue →' : 'Продължи →'}
         </button>
       )}
