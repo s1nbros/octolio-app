@@ -452,7 +452,9 @@ function GoalCalculator() {
 }
 
 // ─── Net Worth Tracker (localStorage) ───────────────────────────────────
-type Entry = { id: number; label: string; value: number };
+// value is stored as a STRING so the input can hold partial typing
+// (decimals, empty, leading zero). Totals coerce via Number().
+type Entry = { id: number; label: string; value: string };
 type NetWorthData = { assets: Entry[]; liabilities: Entry[] };
 
 function NetWorthTracker() {
@@ -460,11 +462,17 @@ function NetWorthTracker() {
   const [data, setData] = useState<NetWorthData>(() => {
     try {
       const raw = localStorage.getItem(NET_WORTH_KEY);
-      if (raw) return JSON.parse(raw) as NetWorthData;
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        // Migrate any legacy numeric `value` to string
+        const coerce = (arr: { id: number; label: string; value: number | string }[]): Entry[] =>
+          (arr ?? []).map(e => ({ id: e.id, label: e.label, value: String(e.value ?? '') }));
+        return { assets: coerce(parsed.assets), liabilities: coerce(parsed.liabilities) };
+      }
     } catch {}
     return {
-      assets:      [{ id: 1, label: lang === 'en' ? 'Cash / savings' : 'Кеш / спестявания', value: 5000 }, { id: 2, label: lang === 'en' ? 'Investments' : 'Инвестиции', value: 15000 }],
-      liabilities: [{ id: 1, label: lang === 'en' ? 'Credit card debt' : 'Дълг по карта', value: 2000 }],
+      assets:      [{ id: 1, label: lang === 'en' ? 'Cash / savings' : 'Кеш / спестявания', value: '5000' }, { id: 2, label: lang === 'en' ? 'Investments' : 'Инвестиции', value: '15000' }],
+      liabilities: [{ id: 1, label: lang === 'en' ? 'Credit card debt' : 'Дълг по карта', value: '2000' }],
     };
   });
 
@@ -472,7 +480,7 @@ function NetWorthTracker() {
     try { localStorage.setItem(NET_WORTH_KEY, JSON.stringify(data)); } catch {}
   }, [data]);
 
-  const updateEntry = (kind: 'assets' | 'liabilities', id: number, key: 'label' | 'value', val: string | number) => {
+  const updateEntry = (kind: 'assets' | 'liabilities', id: number, key: 'label' | 'value', val: string) => {
     setData(prev => ({
       ...prev,
       [kind]: prev[kind].map(e => e.id === id ? { ...e, [key]: val } : e),
@@ -481,47 +489,105 @@ function NetWorthTracker() {
   const addEntry = (kind: 'assets' | 'liabilities') => {
     setData(prev => ({
       ...prev,
-      [kind]: [...prev[kind], { id: Date.now(), label: lang === 'en' ? 'New entry' : 'Нов запис', value: 0 }],
+      [kind]: [...prev[kind], { id: Date.now(), label: lang === 'en' ? 'New entry' : 'Нов запис', value: '' }],
     }));
   };
   const removeEntry = (kind: 'assets' | 'liabilities', id: number) => {
     setData(prev => ({ ...prev, [kind]: prev[kind].filter(e => e.id !== id) }));
   };
 
-  const totalAssets = data.assets.reduce((s, e) => s + (Number(e.value) || 0), 0);
-  const totalLiab   = data.liabilities.reduce((s, e) => s + (Number(e.value) || 0), 0);
+  const parseAmt = (s: string): number => {
+    const cleaned = s.replace(',', '.').replace(/[^0-9.\-]/g, '');
+    const n = Number(cleaned);
+    return Number.isFinite(n) ? n : 0;
+  };
+  const totalAssets = data.assets.reduce((s, e) => s + parseAmt(e.value), 0);
+  const totalLiab   = data.liabilities.reduce((s, e) => s + parseAmt(e.value), 0);
   const netWorth = totalAssets - totalLiab;
 
-  const Section = ({ title, kind, color }: { title: string; kind: 'assets' | 'liabilities'; color: string }) => (
+  // Section is intentionally inlined (not a nested component) so its inputs
+  // don't unmount/remount on every keystroke and lose focus.
+  const renderSection = (title: string, kind: 'assets' | 'liabilities', color: string) => (
     <div className="rounded-2xl p-3 mb-3" style={{ background: 'var(--c-glass)', border: '1px solid var(--c-border)' }}>
-      <p className="text-xs font-bold uppercase tracking-wide mb-2" style={{ color }}>{title}</p>
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-xs font-bold uppercase tracking-wide" style={{ color }}>{title}</p>
+        <p className="text-[10px] uppercase tracking-wide" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+          {lang === 'en' ? 'Tap to edit' : 'Натисни за редакция'}
+        </p>
+      </div>
+
+      {/* Column headers */}
+      <div className="grid grid-cols-12 gap-2 mb-1 px-1 text-[10px] uppercase tracking-wide" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+        <span className="col-span-7">{lang === 'en' ? 'Label' : 'Етикет'}</span>
+        <span className="col-span-4 text-right">{lang === 'en' ? 'Amount €' : 'Сума €'}</span>
+        <span className="col-span-1" />
+      </div>
+
       {data[kind].map(e => (
         <div key={e.id} className="grid grid-cols-12 gap-2 items-center py-1">
-          <input type="text" value={e.label}
+          <input
+            type="text"
+            value={e.label}
+            placeholder={lang === 'en' ? 'e.g. Savings' : 'напр. Спестявания'}
             onChange={ev => updateEntry(kind, e.id, 'label', ev.target.value)}
-            className="col-span-7 text-sm bg-transparent outline-none" style={{ color: 'hsl(var(--c-fg))' }} />
-          <input type="number" value={e.value}
-            onChange={ev => updateEntry(kind, e.id, 'value', Number(ev.target.value))}
-            className="col-span-4 text-sm mono bg-transparent outline-none text-right" style={{ color }} />
-          <button onClick={() => removeEntry(kind, e.id)}
-            className="col-span-1 text-xs" style={{ color: 'hsl(var(--c-red))' }}>✕</button>
+            className="col-span-7 text-sm rounded-lg px-2.5 py-1.5 outline-none focus:ring-2 focus:ring-offset-0"
+            style={{
+              color: 'hsl(var(--c-fg))',
+              background: 'hsl(228, 14%, 14%)',
+              border: '1px solid var(--c-border)',
+              boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.2)',
+            }}
+          />
+          <input
+            type="text"
+            inputMode="decimal"
+            value={e.value}
+            placeholder="0"
+            onChange={ev => {
+              // Keep digits, single dot/comma, and an optional leading minus.
+              const cleaned = ev.target.value.replace(/[^0-9.,\-]/g, '');
+              updateEntry(kind, e.id, 'value', cleaned);
+            }}
+            className="col-span-4 text-sm mono rounded-lg px-2.5 py-1.5 outline-none text-right focus:ring-2"
+            style={{
+              color,
+              background: 'hsl(228, 14%, 14%)',
+              border: '1px solid var(--c-border)',
+              boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.2)',
+            }}
+          />
+          <button
+            onClick={() => removeEntry(kind, e.id)}
+            className="col-span-1 w-7 h-7 rounded-full text-xs flex items-center justify-center transition-colors hover:bg-red-500/15"
+            style={{ color: 'hsl(var(--c-red))', background: 'hsl(var(--c-red)/0.08)' }}
+            aria-label="Remove">
+            ✕
+          </button>
         </div>
       ))}
-      <button onClick={() => addEntry(kind)} className="text-xs mt-2 underline" style={{ color }}>
-        + {lang === 'en' ? 'Add' : 'Добави'}
+      <button
+        onClick={() => addEntry(kind)}
+        className="text-xs font-semibold mt-2 px-3 py-1.5 rounded-full transition-colors"
+        style={{ color, background: `color-mix(in srgb, ${color} 12%, transparent)`, border: `1px solid color-mix(in srgb, ${color} 35%, transparent)` }}>
+        + {lang === 'en' ? 'Add row' : 'Добави ред'}
       </button>
     </div>
   );
 
   return (
     <div>
-      <p className="text-sm mb-3" style={{ color: 'hsl(var(--c-fg-muted))' }}>
+      <p className="text-sm mb-2" style={{ color: 'hsl(var(--c-fg-muted))' }}>
         {lang === 'en'
           ? 'Track your net worth. Stored on this device only — nothing leaves your phone.'
           : 'Следи нетното си богатство. Запазено само на това устройство.'}
       </p>
-      <Section title={lang === 'en' ? '🟢 Assets' : '🟢 Активи'} kind="assets" color="hsl(var(--c-green))" />
-      <Section title={lang === 'en' ? '🔴 Liabilities' : '🔴 Задължения'} kind="liabilities" color="hsl(var(--c-red))" />
+      <div className="rounded-xl p-3 mb-3 text-xs" style={{ background: 'hsl(var(--c-primary)/0.08)', border: '1px solid hsl(var(--c-primary)/0.2)', color: 'hsl(var(--c-fg-muted))' }}>
+        ✏️ {lang === 'en'
+          ? 'Tap any label or amount to type your own values. Use "+ Add row" to add more.'
+          : 'Натисни всеки етикет или сума, за да въведеш собствени стойности. "+ Добави ред" за нов запис.'}
+      </div>
+      {renderSection(lang === 'en' ? '🟢 Assets' : '🟢 Активи', 'assets', 'hsl(var(--c-green))')}
+      {renderSection(lang === 'en' ? '🔴 Liabilities' : '🔴 Задължения', 'liabilities', 'hsl(var(--c-red))')}
       <div className="rounded-2xl p-4 text-center"
         style={{
           background: netWorth >= 0 ? 'hsl(var(--c-green)/0.1)' : 'hsl(var(--c-red)/0.1)',
