@@ -409,6 +409,7 @@ body::after {
 @keyframes wave-drift { 0%{transform:translateX(0)} 100%{transform:translateX(-100px)} }
 @keyframes island-float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
 @keyframes shake        { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-6px)} 40%,80%{transform:translateX(6px)} }
+@keyframes pulse-soft   { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.08);opacity:0.85} }
 
 .animate-orb-1      { animation: orb-float-1 18s ease-in-out infinite; }
 .animate-orb-2      { animation: orb-float-2 22s ease-in-out infinite; }
@@ -426,6 +427,7 @@ body::after {
 .animate-wave-drift { animation: wave-drift   12s linear infinite; }
 .animate-island-float { animation: island-float 5s ease-in-out infinite; }
 .animate-shake      { animation: shake        0.45s ease-in-out both; }
+.animate-pulse-soft { animation: pulse-soft   1.8s ease-in-out infinite; }
 
 .delay-50  { animation-delay:  50ms; }
 .delay-100 { animation-delay: 100ms; }

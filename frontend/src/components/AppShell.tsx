@@ -7,6 +7,10 @@ import { FloatingOrbs } from './FloatingOrbs';
 import { ProWidget, LeagueWidget, MoneyFactWidget, StreakWidget, DailyQuestsTeaser } from './SidebarWidgets';
 import { getLevel } from '../types';
 
+const SEEN_REVIEW_KEY = 'octolio_seen_review_v1';
+const SEEN_TOOLS_KEY  = 'octolio_seen_tools_v1';
+export { SEEN_REVIEW_KEY, SEEN_TOOLS_KEY };
+
 /* SVG icons reused by the sidebar */
 function IconQuests() {
   return (
@@ -194,8 +198,23 @@ function StatsBar() {
   );
 }
 
+/* ─── "NEW" pill for freshly-shipped features ─── */
+function NewPill() {
+  return (
+    <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full tracking-wider flex-shrink-0 animate-pulse-soft"
+      style={{
+        background: 'linear-gradient(135deg, hsl(var(--c-green)) 0%, hsl(160, 70%, 45%) 100%)',
+        color: '#fff',
+        letterSpacing: '0.05em',
+        boxShadow: '0 0 12px hsl(var(--c-green) / 0.55)',
+      }}>
+      NEW
+    </span>
+  );
+}
+
 /* ─── Sidebar nav item ─── */
-function SidebarLink({ to, active, label, icon, disabled, badge }: { to: string; active: boolean; label: string; icon: React.ReactNode; disabled?: boolean; badge?: number }) {
+function SidebarLink({ to, active, label, icon, disabled, badge, isNew }: { to: string; active: boolean; label: string; icon: React.ReactNode; disabled?: boolean; badge?: number; isNew?: boolean }) {
   return (
     <Link to={to} className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all font-bold uppercase tracking-wider text-sm"
       style={{
@@ -206,6 +225,7 @@ function SidebarLink({ to, active, label, icon, disabled, badge }: { to: string;
       }}>
       <span className="flex-shrink-0">{icon}</span>
       <span className="flex-1">{label}</span>
+      {isNew && <NewPill />}
       {badge !== undefined && badge > 0 && (
         <span className="text-[10px] mono font-black px-1.5 py-0.5 rounded-full"
           style={{ background: 'hsl(var(--c-red))', color: '#fff', minWidth: '18px', textAlign: 'center' }}>
@@ -225,6 +245,8 @@ function LeftSidebar() {
   const navigate = useNavigate();
   const isActive = (p: string) => location.pathname.startsWith(p);
   const [reviewDue, setReviewDue] = useState(0);
+  const [seenReview, setSeenReview] = useState(() => localStorage.getItem(SEEN_REVIEW_KEY) === '1');
+  const [seenTools, setSeenTools] = useState(() => localStorage.getItem(SEEN_TOOLS_KEY) === '1');
 
   useEffect(() => {
     if (!token) return;
@@ -234,6 +256,18 @@ function LeftSidebar() {
       .catch(() => {});
     // Refresh when navigating between pages (so the badge updates after a lesson)
   }, [token, location.pathname]);
+
+  // Mark NEW pills as seen the moment the user visits each page.
+  useEffect(() => {
+    if (location.pathname.startsWith('/review') && !seenReview) {
+      localStorage.setItem(SEEN_REVIEW_KEY, '1');
+      setSeenReview(true);
+    }
+    if (location.pathname.startsWith('/tools') && !seenTools) {
+      localStorage.setItem(SEEN_TOOLS_KEY, '1');
+      setSeenTools(true);
+    }
+  }, [location.pathname, seenReview, seenTools]);
 
   if (!user) return null;
 
@@ -262,8 +296,8 @@ function LeftSidebar() {
       <nav className="flex-1 px-3 space-y-1.5 overflow-y-auto">
         <SidebarLink to="/modules" active={isActive('/modules') || isActive('/lesson')} label={labels.learn} icon={<IconLearn />} />
         <SidebarLink to="/quests" active={isActive('/quests')} label={lang === 'en' ? 'Quests' : 'Куестове'} icon={<IconQuests />} />
-        <SidebarLink to="/review" active={isActive('/review')} label={lang === 'en' ? 'Review' : 'Преглед'} icon={<IconReview />} badge={reviewDue} />
-        <SidebarLink to="/tools" active={isActive('/tools')} label={lang === 'en' ? 'Tools' : 'Инструменти'} icon={<IconTools />} />
+        <SidebarLink to="/review" active={isActive('/review')} label={lang === 'en' ? 'Review' : 'Преглед'} icon={<IconReview />} badge={reviewDue} isNew={!seenReview} />
+        <SidebarLink to="/tools" active={isActive('/tools')} label={lang === 'en' ? 'Tools' : 'Инструменти'} icon={<IconTools />} isNew={!seenTools} />
         <SidebarLink to="/league" active={isActive('/league')} label={labels.league} icon={<IconLeague />} />
         {user.is_pro && (
           <SidebarLink to="/advisor" active={isActive('/advisor')} label={`✦ ${labels.advisor}`} icon={<IconAdvisor />} disabled />

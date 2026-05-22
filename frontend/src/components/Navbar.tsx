@@ -168,15 +168,18 @@ function MobileDrawer({
     return () => window.removeEventListener('keydown', onKey);
   }, [open, onClose]);
 
+  const seenReview = typeof window !== 'undefined' && localStorage.getItem('octolio_seen_review_v1') === '1';
+  const seenTools  = typeof window !== 'undefined' && localStorage.getItem('octolio_seen_tools_v1')  === '1';
+
   const items = [
     { to: '/modules', label: { en: 'Learn', bg: 'Учи' }, icon: <IconLearn />, active: isActive('/modules') || isActive('/lesson') },
     { to: '/quests',  label: { en: 'Quests', bg: 'Куестове' }, icon: <IconHome />, active: isActive('/quests') },
-    { to: '/review',  label: { en: 'Review', bg: 'Преглед' }, icon: <IconReview />, active: isActive('/review') },
-    { to: '/tools',   label: { en: 'Tools', bg: 'Инструменти' }, icon: <IconTools />, active: isActive('/tools') },
+    { to: '/review',  label: { en: 'Review', bg: 'Преглед' }, icon: <IconReview />, active: isActive('/review'), isNew: !seenReview },
+    { to: '/tools',   label: { en: 'Tools', bg: 'Инструменти' }, icon: <IconTools />, active: isActive('/tools'), isNew: !seenTools },
     { to: '/league',  label: { en: 'League', bg: 'Лига' }, icon: <IconLeague />, active: isActive('/league') },
     ...(isPro ? [{ to: '/advisor', label: { en: 'AI Advisor', bg: 'AI Съветник' }, icon: <IconAdvisor />, active: isActive('/advisor') }] : []),
     { to: '/profile', label: { en: 'Profile', bg: 'Профил' }, icon: <IconProfile />, active: isActive('/profile') },
-  ];
+  ] as { to: string; label: { en: string; bg: string }; icon: React.ReactElement; active: boolean; isNew?: boolean }[];
 
   return (
     <>
@@ -228,7 +231,11 @@ function MobileDrawer({
             <Link
               key={it.to}
               to={it.to}
-              onClick={onClose}
+              onClick={() => {
+                if (it.to === '/review') localStorage.setItem('octolio_seen_review_v1', '1');
+                if (it.to === '/tools')  localStorage.setItem('octolio_seen_tools_v1', '1');
+                onClose();
+              }}
               className="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors active:scale-[0.98]"
               style={{
                 background: it.active ? 'hsl(var(--c-primary)/0.15)' : 'transparent',
@@ -237,7 +244,18 @@ function MobileDrawer({
               }}
             >
               <span className="flex-shrink-0">{it.icon}</span>
-              <span className="font-bold text-[15px]">{it.label[lang]}</span>
+              <span className="font-bold text-[15px] flex-1">{it.label[lang]}</span>
+              {it.isNew && (
+                <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full tracking-wider flex-shrink-0 animate-pulse-soft"
+                  style={{
+                    background: 'linear-gradient(135deg, hsl(var(--c-green)) 0%, hsl(160, 70%, 45%) 100%)',
+                    color: '#fff',
+                    letterSpacing: '0.05em',
+                    boxShadow: '0 0 12px hsl(var(--c-green) / 0.55)',
+                  }}>
+                  NEW
+                </span>
+              )}
             </Link>
           ))}
         </nav>
