@@ -40,6 +40,22 @@ function IconAdvisor() {
     </svg>
   );
 }
+function IconTools() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+    </svg>
+  );
+}
+function IconReview() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="23 4 23 10 17 10" />
+      <polyline points="1 20 1 14 7 14" />
+      <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+    </svg>
+  );
+}
 function IconLogout() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -179,7 +195,7 @@ function StatsBar() {
 }
 
 /* ─── Sidebar nav item ─── */
-function SidebarLink({ to, active, label, icon, disabled }: { to: string; active: boolean; label: string; icon: React.ReactNode; disabled?: boolean }) {
+function SidebarLink({ to, active, label, icon, disabled, badge }: { to: string; active: boolean; label: string; icon: React.ReactNode; disabled?: boolean; badge?: number }) {
   return (
     <Link to={to} className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all font-bold uppercase tracking-wider text-sm"
       style={{
@@ -189,19 +205,36 @@ function SidebarLink({ to, active, label, icon, disabled }: { to: string; active
         opacity: disabled ? 0.5 : 1,
       }}>
       <span className="flex-shrink-0">{icon}</span>
-      <span>{label}</span>
+      <span className="flex-1">{label}</span>
+      {badge !== undefined && badge > 0 && (
+        <span className="text-[10px] mono font-black px-1.5 py-0.5 rounded-full"
+          style={{ background: 'hsl(var(--c-red))', color: '#fff', minWidth: '18px', textAlign: 'center' }}>
+          {badge > 99 ? '99+' : badge}
+        </span>
+      )}
     </Link>
   );
 }
 
 /* ─── Left sidebar (md+) ─── */
 function LeftSidebar() {
-  const { user, logout } = useAuth();
+  const { user, logout, token } = useAuth();
   const { lang } = useLang();
   const { isDark, toggleTheme } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
   const isActive = (p: string) => location.pathname.startsWith(p);
+  const [reviewDue, setReviewDue] = useState(0);
+
+  useEffect(() => {
+    if (!token) return;
+    fetch('/api/review/stats', { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.json())
+      .then(d => setReviewDue(d.due ?? 0))
+      .catch(() => {});
+    // Refresh when navigating between pages (so the badge updates after a lesson)
+  }, [token, location.pathname]);
+
   if (!user) return null;
 
   const labels = {
@@ -229,6 +262,8 @@ function LeftSidebar() {
       <nav className="flex-1 px-3 space-y-1.5 overflow-y-auto">
         <SidebarLink to="/modules" active={isActive('/modules') || isActive('/lesson')} label={labels.learn} icon={<IconLearn />} />
         <SidebarLink to="/quests" active={isActive('/quests')} label={lang === 'en' ? 'Quests' : 'Куестове'} icon={<IconQuests />} />
+        <SidebarLink to="/review" active={isActive('/review')} label={lang === 'en' ? 'Review' : 'Преглед'} icon={<IconReview />} badge={reviewDue} />
+        <SidebarLink to="/tools" active={isActive('/tools')} label={lang === 'en' ? 'Tools' : 'Инструменти'} icon={<IconTools />} />
         <SidebarLink to="/league" active={isActive('/league')} label={labels.league} icon={<IconLeague />} />
         {user.is_pro && (
           <SidebarLink to="/advisor" active={isActive('/advisor')} label={`✦ ${labels.advisor}`} icon={<IconAdvisor />} disabled />

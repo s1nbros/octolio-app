@@ -48,6 +48,7 @@ async function initDb() {
     await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS email_verification_expires_at TIMESTAMP`);
     await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS password_reset_token TEXT`);
     await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS password_reset_expires_at TIMESTAMP`);
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS streak_freezes INTEGER DEFAULT 0`);
     // Existing accounts predate the verification flow — grandfather them in so the
     // upgrade doesn't lock active users out.
     await pool.query(`
@@ -85,5 +86,26 @@ async function initDb() {
       UNIQUE(user_id, lesson_id)
     )
   `);
+    // Spaced-repetition table: tracks exercises the user got wrong + their
+    // Leitner-box level. Exercise content is looked up from lessons.ts at
+    // review time via (module_id, lesson_id, exercise_id).
+    await pool.query(`
+    CREATE TABLE IF NOT EXISTS exercise_reviews (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER NOT NULL REFERENCES users(id),
+      module_id TEXT NOT NULL,
+      lesson_id TEXT NOT NULL,
+      exercise_id TEXT NOT NULL,
+      box_level INTEGER NOT NULL DEFAULT 1,
+      first_missed_at TIMESTAMP DEFAULT NOW(),
+      last_reviewed_at TIMESTAMP,
+      next_review_at TIMESTAMP NOT NULL DEFAULT NOW(),
+      times_reviewed INTEGER NOT NULL DEFAULT 0,
+      times_correct INTEGER NOT NULL DEFAULT 0,
+      mastered BOOLEAN NOT NULL DEFAULT FALSE,
+      UNIQUE(user_id, module_id, lesson_id, exercise_id)
+    )
+  `);
+    await pool.query(`CREATE INDEX IF NOT EXISTS exercise_reviews_due_idx ON exercise_reviews (user_id, next_review_at) WHERE mastered = FALSE`);
     console.log('Database initialized');
 }

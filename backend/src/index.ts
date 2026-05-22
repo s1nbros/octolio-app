@@ -14,6 +14,8 @@ import { progressRouter } from './routes/progress';
 import { stripeRouter, stripeWebhookHandler } from './routes/stripe';
 import { generateRouter } from './routes/generate';
 import { aiRouter } from './routes/ai';
+import { freezeRouter } from './routes/freeze';
+import { reviewRouter } from './routes/review';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -38,6 +40,8 @@ app.use('/api/progress', progressRouter);
 app.use('/api/stripe', stripeRouter);
 app.use('/api/generate', generateRouter);
 app.use('/api/ai', aiRouter);
+app.use('/api/freeze', freezeRouter);
+app.use('/api/review', reviewRouter);
 
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });

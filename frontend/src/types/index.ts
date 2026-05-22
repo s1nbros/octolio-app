@@ -218,6 +218,7 @@ export interface User {
   energy: number;
   energy_refill_at?: string | null;
   onboarding_done: boolean;
+  streak_freezes: number;
 }
 
 export const LEVELS = [

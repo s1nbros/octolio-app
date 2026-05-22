@@ -427,7 +427,7 @@ authRouter.get('/me', authenticate, async (req: AuthRequest, res: Response): Pro
     }
 
     const result = await pool.query(
-      'SELECT id, name, email, xp, streak, last_active, created_at, avatar, is_pro, energy, energy_refill_at, onboarding_done FROM users WHERE id = $1',
+      'SELECT id, name, email, xp, streak, last_active, created_at, avatar, is_pro, energy, energy_refill_at, onboarding_done, streak_freezes FROM users WHERE id = $1',
       [req.userId]
     );
     const user = result.rows[0];

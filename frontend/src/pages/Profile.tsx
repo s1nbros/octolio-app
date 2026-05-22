@@ -127,6 +127,108 @@ function StatCard({ icon, badge, value, label, color }: StatCardProps) {
   );
 }
 
+function StreakFreezeCard() {
+  const { user, token, refreshUser } = useAuth();
+  const { lang } = useLang();
+  const [buying, setBuying] = useState(false);
+  const [info, setInfo] = useState<{ cost: number; max: number; stock: number; xp: number; can_afford: boolean } | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!token) return;
+    fetch('/api/freeze/info', { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.json())
+      .then(setInfo)
+      .catch(() => {});
+  }, [token, user?.streak_freezes, user?.xp]);
+
+  const cost = info?.cost ?? 100;
+  const max = info?.max ?? 3;
+  const stock = user?.streak_freezes ?? info?.stock ?? 0;
+  const xp = user?.xp ?? info?.xp ?? 0;
+  const atMax = stock >= max;
+  const canAfford = !atMax && xp >= cost;
+
+  const buy = async () => {
+    if (!token || buying) return;
+    setBuying(true); setErr(null);
+    try {
+      const res = await fetch('/api/freeze/buy', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setErr(data.error === 'insufficient_xp'
+          ? (lang === 'en' ? `Need ${data.required} XP — you have ${data.have}` : `Нужни ${data.required} XP — имаш ${data.have}`)
+          : data.error === 'max_freezes'
+            ? (lang === 'en' ? `Max ${max} freezes` : `Максимум ${max} замразявания`)
+            : data.error ?? 'Error');
+      } else {
+        await refreshUser().catch(() => {});
+        setInfo(prev => prev ? { ...prev, stock: data.streak_freezes, xp: data.xp, can_afford: data.xp >= cost && data.streak_freezes < max } : prev);
+      }
+    } catch {
+      setErr('Network error');
+    } finally {
+      setBuying(false);
+    }
+  };
+
+  return (
+    <div className="glass-card rounded-2xl p-5">
+      <div className="flex items-center gap-3 mb-3">
+        <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0"
+          style={{ background: 'hsl(200, 95%, 50%, 0.15)', border: '1px solid hsl(200, 95%, 50%, 0.35)' }}>
+          ❄️
+        </div>
+        <div className="flex-1">
+          <h3 className="font-extrabold text-base" style={{ color: 'hsl(var(--c-fg))' }}>
+            {lang === 'en' ? 'Streak Freezes' : 'Замразявания на стрийк'}
+          </h3>
+          <p className="text-xs" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+            {lang === 'en'
+              ? 'Auto-saves your streak if you miss a day.'
+              : 'Автоматично пази стрийка ти при пропуснат ден.'}
+          </p>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-1.5 mb-4">
+        {Array.from({ length: max }).map((_, i) => (
+          <div key={i} className="flex-1 h-10 rounded-xl flex items-center justify-center text-xl"
+            style={{
+              background: i < stock ? 'hsl(200, 95%, 50%, 0.18)' : 'rgba(255,255,255,0.04)',
+              border: `1.5px solid ${i < stock ? 'hsl(200, 95%, 50%)' : 'var(--c-border)'}`,
+            }}>
+            {i < stock ? '❄️' : '·'}
+          </div>
+        ))}
+      </div>
+
+      {err && (
+        <p className="text-xs mb-3" style={{ color: 'hsl(var(--c-red))' }}>{err}</p>
+      )}
+
+      <button
+        onClick={buy}
+        disabled={!canAfford || buying}
+        className="btn-primary w-full"
+        style={{ opacity: !canAfford ? 0.55 : 1 }}>
+        {atMax
+          ? (lang === 'en' ? 'Max reached' : 'Максимум достигнат')
+          : buying
+            ? '…'
+            : (lang === 'en' ? `Buy 1 for ${cost} XP` : `Купи 1 за ${cost} XP`)}
+      </button>
+
+      <p className="text-[11px] mt-2 text-center mono" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+        {lang === 'en' ? 'Your XP' : 'Твоят XP'}: {xp.toLocaleString()}
+      </p>
+    </div>
+  );
+}
+
 export function Profile() {
   const { user, token, updateProfile, changePassword, refreshUser } = useAuth();
   const { lang } = useLang();
@@ -424,6 +526,9 @@ export function Profile() {
                   />
                 </div>
               </div>
+
+              {/* Streak Freeze shop */}
+              <StreakFreezeCard />
 
               {/* Achievements */}
               <div>

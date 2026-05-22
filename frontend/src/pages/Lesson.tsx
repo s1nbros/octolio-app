@@ -52,6 +52,15 @@ export function Lesson() {
       }
     } else {
       setHearts((h) => Math.max(0, h - 1));
+      // Record miss for spaced repetition (fire-and-forget — don't block UX).
+      const ex = lesson?.exercises[currentExerciseIndex];
+      if (ex && ex.type !== 'theory' && token && moduleId && lessonId) {
+        fetch('/api/review/missed', {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ moduleId, lessonId, exerciseId: ex.id }),
+        }).catch(() => {});
+      }
     }
 
     const next = currentExerciseIndex + 1;
@@ -90,7 +99,11 @@ export function Lesson() {
       });
       const data = await res.json();
       setTotalXpAfter(data.totalXp);
-      updateUser({ xp: data.totalXp, streak: data.streak });
+      updateUser({
+        xp: data.totalXp,
+        streak: data.streak,
+        ...(typeof data.streak_freezes === 'number' ? { streak_freezes: data.streak_freezes } : {}),
+      });
       // Refresh full user to sync energy from server
       refreshUser().catch(() => {});
     } catch {

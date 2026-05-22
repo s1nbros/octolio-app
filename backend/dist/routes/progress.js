@@ -103,17 +103,52 @@ exports.progressRouter.post('/complete', auth_1.authenticate, async (req, res) =
         }
         const xpEarned = lesson.xpReward;
         const today = new Date().toISOString().split('T')[0];
-        const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
-        const userResult = await pool.query('SELECT xp, streak, last_active FROM users WHERE id = $1', [req.userId]);
+        const userResult = await pool.query('SELECT xp, streak, last_active, streak_freezes FROM users WHERE id = $1', [req.userId]);
         const currentUser = userResult.rows[0];
+        // Calendar-day diff between today and last_active.
+        // 0 = same day (no streak change). 1 = yesterday (+1). >1 = needs freezes or reset.
+        let daysSince = Infinity;
+        if (currentUser.last_active) {
+            const lastDate = new Date(currentUser.last_active + 'T00:00:00');
+            const todayDate = new Date(today + 'T00:00:00');
+            daysSince = Math.round((todayDate.getTime() - lastDate.getTime()) / 86400000);
+        }
         let newStreak = currentUser.streak;
-        if (currentUser.last_active !== today) {
-            newStreak = currentUser.last_active === yesterday ? newStreak + 1 : 1;
+        let newFreezes = currentUser.streak_freezes ?? 0;
+        let freezesUsed = 0;
+        if (daysSince === 0) {
+            // already practiced today — no change
+        }
+        else if (daysSince === 1) {
+            newStreak = newStreak + 1;
+        }
+        else if (daysSince > 1) {
+            // Missed (daysSince - 1) days. Spend that many freezes to keep the streak alive.
+            const missed = daysSince - 1;
+            if (newFreezes >= missed) {
+                newFreezes -= missed;
+                freezesUsed = missed;
+                newStreak = newStreak + 1;
+            }
+            else {
+                newStreak = 1;
+            }
+        }
+        else {
+            // No prior activity — first lesson ever
+            newStreak = 1;
         }
         const newXp = currentUser.xp + xpEarned;
         await pool.query('INSERT INTO progress (user_id, lesson_id, module_id, xp_earned) VALUES ($1, $2, $3, $4)', [req.userId, lessonId, moduleId, xpEarned]);
-        await pool.query('UPDATE users SET xp = $1, streak = $2, last_active = $3 WHERE id = $4', [newXp, newStreak, today, req.userId]);
-        res.json({ alreadyCompleted: false, xpEarned, totalXp: newXp, streak: newStreak });
+        await pool.query('UPDATE users SET xp = $1, streak = $2, last_active = $3, streak_freezes = $4 WHERE id = $5', [newXp, newStreak, today, newFreezes, req.userId]);
+        res.json({
+            alreadyCompleted: false,
+            xpEarned,
+            totalXp: newXp,
+            streak: newStreak,
+            streak_freezes: newFreezes,
+            freezesUsed,
+        });
     }
     catch (err) {
         console.error('Progress complete error:', err);

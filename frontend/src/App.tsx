@@ -15,6 +15,8 @@ import { League } from './pages/League';
 import { Onboarding } from './pages/Onboarding';
 import { GeneratedLesson } from './pages/GeneratedLesson';
 import { AiAdvisor } from './pages/AiAdvisor';
+import { Tools } from './pages/Tools';
+import { Review } from './pages/Review';
 import { VerifyEmail } from './pages/VerifyEmail';
 import { ForgotPassword } from './pages/ForgotPassword';
 import { ResetPassword } from './pages/ResetPassword';
@@ -77,6 +79,8 @@ function AppRoutes() {
           <Route path="/generate" element={<ProtectedRoute bare><GeneratedLesson /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/league" element={<ProtectedRoute><League /></ProtectedRoute>} />
+          <Route path="/tools" element={<ProtectedRoute><Tools /></ProtectedRoute>} />
+          <Route path="/review" element={<ProtectedRoute><Review /></ProtectedRoute>} />
           <Route path="/advisor" element={<ProtectedRoute><AiAdvisor /></ProtectedRoute>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
