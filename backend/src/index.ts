@@ -16,6 +16,8 @@ import { generateRouter } from './routes/generate';
 import { aiRouter } from './routes/ai';
 import { freezeRouter } from './routes/freeze';
 import { reviewRouter } from './routes/review';
+import { friendsRouter } from './routes/friends';
+import { notificationsRouter } from './routes/notifications';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -42,6 +44,8 @@ app.use('/api/generate', generateRouter);
 app.use('/api/ai', aiRouter);
 app.use('/api/freeze', freezeRouter);
 app.use('/api/review', reviewRouter);
+app.use('/api/friends', friendsRouter);
+app.use('/api/notifications', notificationsRouter);
 
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });

@@ -17,6 +17,7 @@ import { GeneratedLesson } from './pages/GeneratedLesson';
 import { AiAdvisor } from './pages/AiAdvisor';
 import { Tools } from './pages/Tools';
 import { Review } from './pages/Review';
+import { Friends } from './pages/Friends';
 import { VerifyEmail } from './pages/VerifyEmail';
 import { ForgotPassword } from './pages/ForgotPassword';
 import { ResetPassword } from './pages/ResetPassword';
@@ -81,6 +82,7 @@ function AppRoutes() {
           <Route path="/league" element={<ProtectedRoute><League /></ProtectedRoute>} />
           <Route path="/tools" element={<ProtectedRoute><Tools /></ProtectedRoute>} />
           <Route path="/review" element={<ProtectedRoute><Review /></ProtectedRoute>} />
+          <Route path="/friends" element={<ProtectedRoute><Friends /></ProtectedRoute>} />
           <Route path="/advisor" element={<ProtectedRoute><AiAdvisor /></ProtectedRoute>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

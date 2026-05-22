@@ -5,6 +5,7 @@ const express_1 = require("express");
 const auth_1 = require("../middleware/auth");
 const db_1 = require("../db");
 const lessons_1 = require("../data/lessons");
+const friends_1 = require("./friends");
 exports.progressRouter = (0, express_1.Router)();
 exports.progressRouter.get('/', auth_1.authenticate, async (req, res) => {
     try {
@@ -103,7 +104,7 @@ exports.progressRouter.post('/complete', auth_1.authenticate, async (req, res) =
         }
         const xpEarned = lesson.xpReward;
         const today = new Date().toISOString().split('T')[0];
-        const userResult = await pool.query('SELECT xp, streak, last_active, streak_freezes FROM users WHERE id = $1', [req.userId]);
+        const userResult = await pool.query('SELECT xp, streak, last_active, streak_freezes, name FROM users WHERE id = $1', [req.userId]);
         const currentUser = userResult.rows[0];
         // Calendar-day diff between today and last_active.
         // 0 = same day (no streak change). 1 = yesterday (+1). >1 = needs freezes or reset.
@@ -141,6 +142,9 @@ exports.progressRouter.post('/complete', auth_1.authenticate, async (req, res) =
         const newXp = currentUser.xp + xpEarned;
         await pool.query('INSERT INTO progress (user_id, lesson_id, module_id, xp_earned) VALUES ($1, $2, $3, $4)', [req.userId, lessonId, moduleId, xpEarned]);
         await pool.query('UPDATE users SET xp = $1, streak = $2, last_active = $3, streak_freezes = $4 WHERE id = $5', [newXp, newStreak, today, newFreezes, req.userId]);
+        // Fire-and-forget: notify friends we just overtook in XP.
+        (0, friends_1.detectCrossesAndNotify)(req.userId, currentUser.name, currentUser.xp, newXp)
+            .catch((e) => console.error('cross-XP notify failed:', e));
         res.json({
             alreadyCompleted: false,
             xpEarned,

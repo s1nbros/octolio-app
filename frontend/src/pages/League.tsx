@@ -34,11 +34,14 @@ function UserAvatar({ avatar, name, isYou, size = 'md' }: { avatar: string | nul
   );
 }
 
+type FStatus = 'none' | 'pending_out' | 'pending_in' | 'friends';
+
 export function League() {
   const { token } = useAuth();
   const { lang } = useLang();
   const [rows, setRows] = useState<LeagueEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [statuses, setStatuses] = useState<Record<number, FStatus>>({});
 
   useEffect(() => {
     if (!token) return;
@@ -48,6 +51,31 @@ export function League() {
       .catch(() => {})
       .finally(() => setLoading(false));
   }, [token]);
+
+  // Load my friend graph so each row knows whether to show "+ Add", "Sent", or "Friend"
+  useEffect(() => {
+    if (!token) return;
+    Promise.all([
+      fetch('/api/friends/list',    { headers: { Authorization: `Bearer ${token}` } }).then(r => r.json()),
+      fetch('/api/friends/pending', { headers: { Authorization: `Bearer ${token}` } }).then(r => r.json()),
+    ]).then(([list, pending]) => {
+      const map: Record<number, FStatus> = {};
+      for (const f of (list.friends ?? [])) map[f.id] = 'friends';
+      for (const p of (pending.outgoing ?? [])) map[p.id] = 'pending_out';
+      for (const p of (pending.incoming ?? [])) map[p.id] = 'pending_in';
+      setStatuses(map);
+    }).catch(() => {});
+  }, [token, rows.length]);
+
+  const sendRequest = async (targetUserId: number) => {
+    if (!token) return;
+    setStatuses(prev => ({ ...prev, [targetUserId]: 'pending_out' }));
+    await fetch('/api/friends/request', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ targetUserId }),
+    }).catch(() => {});
+  };
 
   const topThree = rows.filter(r => r.rank <= 3);
   const rest = rows.filter(r => r.rank > 3);
@@ -174,9 +202,40 @@ export function League() {
                       {u.xp.toLocaleString()} XP
                     </span>
 
-                    {/* Promote badge for top 3 */}
+                    {/* Add-friend button (per-row, hidden for self) */}
+                    {!u.isYou && (() => {
+                      const st = statuses[u.id] ?? 'none';
+                      if (st === 'friends') {
+                        return (
+                          <span className="text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full flex-shrink-0"
+                            style={{ background: 'hsl(var(--c-green)/0.12)', color: 'hsl(var(--c-green))', border: '1px solid hsl(var(--c-green)/0.25)' }}>
+                            ✓ {lang === 'en' ? 'Friend' : 'Приятел'}
+                          </span>
+                        );
+                      }
+                      if (st === 'pending_out') {
+                        return (
+                          <span className="text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full flex-shrink-0"
+                            style={{ background: 'var(--c-glass)', color: 'hsl(var(--c-fg-muted))', border: '1px solid var(--c-border)' }}>
+                            {lang === 'en' ? 'Sent' : 'Изпратено'}
+                          </span>
+                        );
+                      }
+                      // 'none' or 'pending_in' (auto-accept on click)
+                      return (
+                        <button
+                          onClick={() => sendRequest(u.id)}
+                          className="text-[10px] sm:text-xs font-bold px-2 py-1 rounded-full flex-shrink-0 active:scale-95 transition-transform"
+                          style={{ background: 'hsl(var(--c-primary))', color: '#fff' }}
+                          aria-label={lang === 'en' ? 'Add friend' : 'Добави приятел'}>
+                          + {lang === 'en' ? 'Add' : 'Добави'}
+                        </button>
+                      );
+                    })()}
+
+                    {/* Promote badge for top 3 (hidden on small screens to make room for Add button) */}
                     {u.rank <= 3 && (
-                      <span className="text-xs px-2 py-0.5 rounded-full flex-shrink-0 hidden sm:block"
+                      <span className="text-xs px-2 py-0.5 rounded-full flex-shrink-0 hidden md:block"
                         style={{ background: 'hsl(var(--c-green)/0.12)', color: 'hsl(var(--c-green))', border: '1px solid hsl(var(--c-green)/0.2)' }}>
                         ↑ {lang === 'en' ? 'Promotes' : 'Качва се'}
                       </span>

@@ -107,5 +107,37 @@ async function initDb() {
     )
   `);
     await pool.query(`CREATE INDEX IF NOT EXISTS exercise_reviews_due_idx ON exercise_reviews (user_id, next_review_at) WHERE mastered = FALSE`);
+    // Friendships: directed request rows. status moves pending → accepted | declined.
+    // requester_id ALWAYS < recipient_id on the wire? No — we keep direction so we
+    // know who initiated. Uniqueness via (requester, recipient).
+    await pool.query(`
+    CREATE TABLE IF NOT EXISTS friendships (
+      id SERIAL PRIMARY KEY,
+      requester_id INTEGER NOT NULL REFERENCES users(id),
+      recipient_id INTEGER NOT NULL REFERENCES users(id),
+      status TEXT NOT NULL DEFAULT 'pending',
+      created_at TIMESTAMP DEFAULT NOW(),
+      responded_at TIMESTAMP,
+      UNIQUE(requester_id, recipient_id),
+      CHECK(requester_id <> recipient_id)
+    )
+  `);
+    await pool.query(`CREATE INDEX IF NOT EXISTS friendships_recipient_idx ON friendships(recipient_id, status)`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS friendships_requester_idx ON friendships(requester_id, status)`);
+    // Notifications: in-app feed. read flag drives the unread badge.
+    await pool.query(`
+    CREATE TABLE IF NOT EXISTS notifications (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER NOT NULL REFERENCES users(id),
+      type TEXT NOT NULL,
+      title TEXT NOT NULL,
+      body TEXT,
+      link TEXT,
+      metadata JSONB,
+      read BOOLEAN NOT NULL DEFAULT FALSE,
+      created_at TIMESTAMP DEFAULT NOW()
+    )
+  `);
+    await pool.query(`CREATE INDEX IF NOT EXISTS notifications_user_unread_idx ON notifications(user_id, read, created_at DESC)`);
     console.log('Database initialized');
 }

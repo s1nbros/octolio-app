@@ -2,6 +2,7 @@ import { Router, Response } from 'express';
 import { authenticate, AuthRequest } from '../middleware/auth';
 import { getPool } from '../db';
 import { modules } from '../data/lessons';
+import { detectCrossesAndNotify } from './friends';
 
 export const progressRouter = Router();
 
@@ -139,10 +140,10 @@ progressRouter.post('/complete', authenticate, async (req: AuthRequest, res: Res
     const today = new Date().toISOString().split('T')[0];
 
     const userResult = await pool.query(
-      'SELECT xp, streak, last_active, streak_freezes FROM users WHERE id = $1',
+      'SELECT xp, streak, last_active, streak_freezes, name FROM users WHERE id = $1',
       [req.userId]
     );
-    const currentUser = userResult.rows[0] as { xp: number; streak: number; last_active: string | null; streak_freezes: number };
+    const currentUser = userResult.rows[0] as { xp: number; streak: number; last_active: string | null; streak_freezes: number; name: string };
 
     // Calendar-day diff between today and last_active.
     // 0 = same day (no streak change). 1 = yesterday (+1). >1 = needs freezes or reset.
@@ -187,6 +188,10 @@ progressRouter.post('/complete', authenticate, async (req: AuthRequest, res: Res
       'UPDATE users SET xp = $1, streak = $2, last_active = $3, streak_freezes = $4 WHERE id = $5',
       [newXp, newStreak, today, newFreezes, req.userId]
     );
+
+    // Fire-and-forget: notify friends we just overtook in XP.
+    detectCrossesAndNotify(req.userId!, currentUser.name, currentUser.xp, newXp)
+      .catch((e) => console.error('cross-XP notify failed:', e));
 
     res.json({
       alreadyCompleted: false,

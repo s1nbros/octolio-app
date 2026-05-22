@@ -5,11 +5,13 @@ import { useLang } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { FloatingOrbs } from './FloatingOrbs';
 import { ProWidget, LeagueWidget, MoneyFactWidget, StreakWidget, DailyQuestsTeaser } from './SidebarWidgets';
+import { NotificationBell } from './NotificationBell';
 import { getLevel } from '../types';
 
-const SEEN_REVIEW_KEY = 'octolio_seen_review_v1';
-const SEEN_TOOLS_KEY  = 'octolio_seen_tools_v1';
-export { SEEN_REVIEW_KEY, SEEN_TOOLS_KEY };
+const SEEN_REVIEW_KEY  = 'octolio_seen_review_v1';
+const SEEN_TOOLS_KEY   = 'octolio_seen_tools_v1';
+const SEEN_FRIENDS_KEY = 'octolio_seen_friends_v1';
+export { SEEN_REVIEW_KEY, SEEN_TOOLS_KEY, SEEN_FRIENDS_KEY };
 
 /* SVG icons reused by the sidebar */
 function IconQuests() {
@@ -57,6 +59,16 @@ function IconReview() {
       <polyline points="23 4 23 10 17 10" />
       <polyline points="1 20 1 14 7 14" />
       <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+    </svg>
+  );
+}
+function IconFriends() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
     </svg>
   );
 }
@@ -245,8 +257,10 @@ function LeftSidebar() {
   const navigate = useNavigate();
   const isActive = (p: string) => location.pathname.startsWith(p);
   const [reviewDue, setReviewDue] = useState(0);
-  const [seenReview, setSeenReview] = useState(() => localStorage.getItem(SEEN_REVIEW_KEY) === '1');
-  const [seenTools, setSeenTools] = useState(() => localStorage.getItem(SEEN_TOOLS_KEY) === '1');
+  const [friendRequestsCount, setFriendRequestsCount] = useState(0);
+  const [seenReview, setSeenReview]   = useState(() => localStorage.getItem(SEEN_REVIEW_KEY) === '1');
+  const [seenTools, setSeenTools]     = useState(() => localStorage.getItem(SEEN_TOOLS_KEY) === '1');
+  const [seenFriends, setSeenFriends] = useState(() => localStorage.getItem(SEEN_FRIENDS_KEY) === '1');
 
   useEffect(() => {
     if (!token) return;
@@ -254,7 +268,10 @@ function LeftSidebar() {
       .then(r => r.json())
       .then(d => setReviewDue(d.due ?? 0))
       .catch(() => {});
-    // Refresh when navigating between pages (so the badge updates after a lesson)
+    fetch('/api/friends/pending', { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.json())
+      .then(d => setFriendRequestsCount((d.incoming ?? []).length))
+      .catch(() => {});
   }, [token, location.pathname]);
 
   // Mark NEW pills as seen the moment the user visits each page.
@@ -267,7 +284,11 @@ function LeftSidebar() {
       localStorage.setItem(SEEN_TOOLS_KEY, '1');
       setSeenTools(true);
     }
-  }, [location.pathname, seenReview, seenTools]);
+    if (location.pathname.startsWith('/friends') && !seenFriends) {
+      localStorage.setItem(SEEN_FRIENDS_KEY, '1');
+      setSeenFriends(true);
+    }
+  }, [location.pathname, seenReview, seenTools, seenFriends]);
 
   if (!user) return null;
 
@@ -283,14 +304,17 @@ function LeftSidebar() {
         background: 'hsl(var(--c-bg))',
         borderColor: 'var(--c-border)',
       }}>
-      {/* Logo */}
-      <Link to="/modules" className="flex items-center gap-2 px-5 py-5 flex-shrink-0">
-        <img src="/logo.png" alt="Octolio" className="w-9 h-9 object-contain"
-          style={{ filter: 'drop-shadow(0 0 6px hsl(var(--c-green)/0.4))' }} />
-        <span className="font-extrabold text-lg tracking-tight" style={{ color: 'hsl(var(--c-fg))' }}>
-          Octolio
-        </span>
-      </Link>
+      {/* Logo + notification bell */}
+      <div className="flex items-center gap-2 px-5 py-5 flex-shrink-0">
+        <Link to="/modules" className="flex items-center gap-2 flex-1">
+          <img src="/logo.png" alt="Octolio" className="w-9 h-9 object-contain"
+            style={{ filter: 'drop-shadow(0 0 6px hsl(var(--c-green)/0.4))' }} />
+          <span className="font-extrabold text-lg tracking-tight" style={{ color: 'hsl(var(--c-fg))' }}>
+            Octolio
+          </span>
+        </Link>
+        <NotificationBell variant="sidebar" />
+      </div>
 
       {/* Nav */}
       <nav className="flex-1 px-3 space-y-1.5 overflow-y-auto">
@@ -299,6 +323,7 @@ function LeftSidebar() {
         <SidebarLink to="/review" active={isActive('/review')} label={lang === 'en' ? 'Review' : 'Преглед'} icon={<IconReview />} badge={reviewDue} isNew={!seenReview} />
         <SidebarLink to="/tools" active={isActive('/tools')} label={lang === 'en' ? 'Tools' : 'Инструменти'} icon={<IconTools />} isNew={!seenTools} />
         <SidebarLink to="/league" active={isActive('/league')} label={labels.league} icon={<IconLeague />} />
+        <SidebarLink to="/friends" active={isActive('/friends')} label={lang === 'en' ? 'Friends' : 'Приятели'} icon={<IconFriends />} isNew={!seenFriends} badge={friendRequestsCount} />
         {user.is_pro && (
           <SidebarLink to="/advisor" active={isActive('/advisor')} label={`✦ ${labels.advisor}`} icon={<IconAdvisor />} disabled />
         )}

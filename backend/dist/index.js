@@ -21,6 +21,8 @@ const generate_1 = require("./routes/generate");
 const ai_1 = require("./routes/ai");
 const freeze_1 = require("./routes/freeze");
 const review_1 = require("./routes/review");
+const friends_1 = require("./routes/friends");
+const notifications_1 = require("./routes/notifications");
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 3001;
 const allowedOrigins = process.env.ALLOWED_ORIGINS
@@ -41,6 +43,8 @@ app.use('/api/generate', generate_1.generateRouter);
 app.use('/api/ai', ai_1.aiRouter);
 app.use('/api/freeze', freeze_1.freezeRouter);
 app.use('/api/review', review_1.reviewRouter);
+app.use('/api/friends', friends_1.friendsRouter);
+app.use('/api/notifications', notifications_1.notificationsRouter);
 app.get('/api/health', (_req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
