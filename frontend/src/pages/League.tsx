@@ -137,12 +137,12 @@ export function League() {
 
             {/* Full leaderboard */}
             <div className="glass-card rounded-2xl overflow-hidden animate-fade-up delay-100">
-              <div className="px-4 py-3 border-b" style={{ borderColor: 'var(--c-border)' }}>
+              <div className="px-4 py-3">
                 <h2 className="font-bold text-sm" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
                   {lang === 'en' ? 'All participants' : 'Всички участници'}
                 </h2>
               </div>
-              <div className="divide-y" style={{ borderColor: 'var(--c-border)' }}>
+              <div>
                 {rows.map(u => (
                   <div key={u.id} className="flex items-center gap-3 px-4 py-3"
                     style={{
