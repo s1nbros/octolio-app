@@ -28,9 +28,11 @@ octolio-app/
         lessonGenerator.ts      — AI lesson generation
       routes/
         auth.ts                 — register/verify/resend/login/forgot/reset/me, etc.
-        progress.ts             — lesson completion, energy deduction
+        progress.ts             — lesson completion, energy deduction, streak freeze auto-consume
         ai.ts                   — AI advisor SSE endpoint (Pro-only)
         stripe.ts               — Stripe checkout + webhook
+        review.ts               — spaced-repetition: missed/due/done/stats endpoints
+        freeze.ts               — streak-freeze shop: buy/info endpoints
       middleware/auth.ts        — JWT authenticate middleware
       db.ts                     — exports getPool()
     dist/                   — compiled output, committed to git for Render
@@ -38,34 +40,51 @@ octolio-app/
   frontend/
     src/
       pages/
-        Dashboard.tsx       — module overview with pro/free distinction
-        Lesson.tsx          — exercise flow with hearts + energy
+        Modules.tsx         — module list (formerly Dashboard role)
+        Lesson.tsx          — exercise flow with hearts + energy; records misses for SR
+        Review.tsx          — spaced-repetition session (reuses ExerciseRenderer)
+        Tools.tsx           — calculator hub (compound/mortgage/debt/FIRE/goal/net-worth)
+        Quests.tsx          — daily quests + streak overview
+        Profile.tsx         — stats, achievements, streak-freeze shop, sub mgmt
+        League.tsx          — XP leaderboard
         AiAdvisor.tsx       — AI chat (Pro-only, SSE streaming)
-        Modules.tsx         — module list
-        Profile.tsx
-        League.tsx
+        Onboarding.tsx      — pro-vs-free plan picker (gated route)
+        GeneratedLesson.tsx — AI-generated lesson runner
         Register.tsx        — debounced live availability hints (banned/taken)
         Login.tsx           — links to /forgot-password, surfaces "resend verification" inline
         VerifyEmail.tsx     — "Check your inbox" page; auto-verify via ?token=…, manual code form
         ForgotPassword.tsx  — request reset email
         ResetPassword.tsx   — set new password from emailed token
+        Landing.tsx         — marketing landing for unauth users
       components/
-        Navbar.tsx          — energy pill (clickable popover), pro badge, nav tabs
-        ExerciseRenderer.tsx — routes exercise.type to specialized components
+        Navbar.tsx          — mobile-only header: energy pill + logo-button drawer trigger
+        AppShell.tsx        — desktop sidebar (md+) with Learn/Quests/Review/Tools/League/Advisor + due-count badge
+        ExerciseRenderer.tsx — routes exercise.type to specialized components (handles wrong-answer Continue too)
+        DailyQuests.tsx     — quest cards on Quests page
+        SidebarWidgets.tsx  — Pro upsell, league preview, streak, money-fact widgets
+        ProfileSheet.tsx
         ModuleCard.tsx
         FloatingOrbs.tsx
         exercises/
           TheoryCard.tsx        — theory slides (swipeable pages)
-          RPGScenario.tsx       — interactive RPG-style financial scenarios
+          RPGScenario.tsx       — branching-story financial scenarios
           BudgetSlider.tsx      — budget allocation with sliders
           RatRaceGame.tsx       — rat race board game simulation
-          CompoundSim.tsx       — compound interest simulator
+          CompoundSim.tsx       — compound interest visual simulator
           SortItems.tsx         — drag-to-sort into categories
           MatchTerms.tsx        — match terms to definitions
           OrderItems.tsx        — arrange items in correct order
           TrueFalse.tsx         — true/false statement evaluation
           ScenarioDecision.tsx  — multi-choice scenario with outcomes
           FillNumber.tsx        — numeric answer with tolerance range
+          StockChart.tsx        — interactive price chart (identify_point / identify_pattern)
+          PortfolioPie.tsx      — allocate % across assets with live pie viz
+          DebtPayoff.tsx        — snowball/avalanche/even simulator with month + interest output
+          TaxBrackets.tsx       — progressive brackets viz, effective vs marginal rate
+          IncomeStreams.tsx     — pick a mix of side hustles to hit €/mo target within hour budget
+          CoverageCalc.tsx      — tune insurance premium / deductible / coverage limit
+          RiskMatrix.tsx        — sort risks into a 2×2 impact-vs-likelihood grid
+          UnitPrice.tsx         — pick best price-per-unit across packaging options
       contexts/
         AuthContext.tsx      — user state, updateUser, refreshUser
         LanguageContext.tsx  — EN/BG
@@ -150,10 +169,37 @@ octolio-app/
 - All users (free AND pro) use the same 3-heart system during lessons
 - Losing all hearts restarts from exercise 1 (same lesson, no energy refund)
 
+### Streak System & Freezes
+- Streak bumps +1 the first time a user completes a lesson on a NEW calendar day
+- Day calculation in `/api/progress/complete` is calendar-day diff between today and `last_active`
+  - `daysSince === 0` → no change (already practiced today)
+  - `daysSince === 1` → streak += 1
+  - `daysSince > 1` → spend `daysSince - 1` freezes; if user has enough, streak += 1; otherwise streak resets to 1
+- **Streak Freezes** (`users.streak_freezes` column, max 3, cost 100 XP each):
+  - Bought via `POST /api/freeze/buy` (Profile page has the shop UI)
+  - Auto-consumed lazily on the next lesson complete after a missed day
+  - Inventory queried via `GET /api/freeze/info`
+- The `/complete` response includes `streak_freezes` (new total) and `freezesUsed` (this run)
+
+### Spaced Repetition Review
+- Every wrong answer in a lesson POSTs to `/api/review/missed` (fire-and-forget from `Lesson.tsx`)
+- Tracked in the `exercise_reviews` table with a Leitner-box level (1–5)
+- Box → next-review delay: **1 → 1d, 2 → 3d, 3 → 7d, 4 → 21d, 5 → 60d (mastered)**
+- Theory exercises are skipped (no "wrong answer" possible)
+- `/review` page pulls up to 20 due cards from `GET /api/review/due`, hydrates them by looking up exercise data from `lessons.ts` (so the table stays small and exercise content stays editable)
+- On answer: correct → promote one box; wrong → reset to box 1
+- Sidebar badge shows due-count via `GET /api/review/stats` (refreshes on route change)
+
+### Tools Tab (`/tools`)
+- Pure client-side calculator hub — no backend state except Net Worth (localStorage `octolio_net_worth_v1`)
+- Six tabs: Compound, Mortgage, Debt payoff, FIRE, Savings goal, Net worth
+- Debt payoff reuses the same snowball/avalanche/even math as the `debt_payoff` exercise
+- All calculators are bilingual via `useLang()`
+
 ### Modules
-- Free modules: orders 1–9 (mix of static and generated)
-- Pro-only modules: orders 10–12 (`advanced-investing`, `real-estate`, `tax-strategy`)
-- Generated modules loaded from `generated-modules.json`, static modules override via merge
+- Free modules: orders 1–9 (static curated + generated fallback)
+- Pro-only modules: orders 10+ (`advanced-investing`, `real-estate`, `tax-strategy`, etc.)
+- Generated modules loaded from `generated-modules.json`; static `staticModules` array in `lessons.ts` overrides by ID via the merge step
 - Dashboard: pro users see ALL modules unlocked; free users see sequential lock
 - Pro-only modules show `✦ PRO` badge
 
@@ -204,9 +250,13 @@ Key tables:
 - `users` — verified accounts. `email_verified` defaults TRUE for accounts created
   via `/verify-email`. Existing rows (xp > 0 or last_active set) were grandfathered
   to `email_verified = TRUE` during the migration so the upgrade didn't lock anyone out.
+  Recent addition: `streak_freezes INTEGER DEFAULT 0`.
 - `pending_registrations` — unverified signups (PK `email`). Cleaned out on successful
   verification. Index on `LOWER(name)` for nickname collision checks.
 - `progress` — lesson completions, `UNIQUE(user_id, lesson_id)`.
+- `exercise_reviews` — spaced-repetition cards. `UNIQUE(user_id, module_id, lesson_id, exercise_id)`.
+  Columns: `box_level` (1–5), `next_review_at`, `first_missed_at`, `last_reviewed_at`,
+  `times_reviewed`, `times_correct`, `mastered`. Partial index on `(user_id, next_review_at) WHERE mastered = FALSE`.
 
 ### Email never blocks an API response
 All `sendVerificationEmail` / `sendPasswordResetEmail` calls go through the
@@ -215,7 +265,9 @@ handler — Render-blocked SMTP can stall for 60+ seconds and freeze the user.
 
 ## Exercise System
 
-### Exercise Types (12 total)
+### Exercise Types (21 total)
+
+**Core types (work in any module):**
 | Type | Component | Description |
 |------|-----------|-------------|
 | `theory` | TheoryCard | Multi-page theory slides, auto-completes with 0 XP |
@@ -223,7 +275,7 @@ handler — Render-blocked SMTP can stall for 60+ seconds and freeze the user.
 | `fill_blank` | (inline in ExerciseRenderer) | Numeric input with min/max range |
 | `fill_number` | FillNumber | Numeric answer with tolerance, scenario + hint |
 | `budget_slider` | BudgetSlider | Allocate budget across categories with sliders |
-| `rpg_scenario` | RPGScenario | Interactive RPG financial scenario |
+| `rpg_scenario` | RPGScenario | Branching-story financial scenario |
 | `rat_race` | RatRaceGame | Rat race board game simulation |
 | `compound_sim` | CompoundSim | Compound interest visual simulator |
 | `sort_items` | SortItems | Sort items into correct categories |
@@ -232,19 +284,67 @@ handler — Render-blocked SMTP can stall for 60+ seconds and freeze the user.
 | `true_false` | TrueFalse | Evaluate statements as true or false |
 | `scenario_decision` | ScenarioDecision | Choose between scenario options, see outcomes |
 
+**Module-signature types (designed for specific modules):**
+| Type | Component | Used by | Description |
+|------|-----------|---------|-------------|
+| `stock_chart` | StockChart | Investing, Advanced Investing | Interactive price chart; click best entry point OR pick pattern label |
+| `portfolio_pie` | PortfolioPie | Investing, Advanced Investing | Live pie viz; sliders allocate % across asset classes; tolerance-matched to ideal |
+| `debt_payoff` | DebtPayoff | Credit & Debt | Pick snowball/avalanche/even strategy; sim outputs months + total interest |
+| `tax_brackets` | TaxBrackets | Tax Strategy | Progressive bracket viz with income slider; computes effective vs marginal rate |
+| `income_streams` | IncomeStreams | Side Hustles | Pick mix of streams to hit €/mo target without exceeding weekly hour budget |
+| `coverage_calc` | CoverageCalc | Insurance | Tune premium / deductible / coverage limit; shows expected-value math |
+| `risk_matrix` | RiskMatrix | Risk Management / Emergency Planning | Sort risks into 2×2 impact-vs-likelihood grid (Accept/Mitigate/Transfer/Avoid) |
+| `unit_price` | UnitPrice | Smart Shopping | Pick best price-per-unit across packaging options |
+
 ### Lesson Structure Rules
-- Each lesson has 6–7 exercises
+- Each lesson has 6–7 exercises (target: 7)
 - **Theory always goes first** (1–2 slides max per theory block)
 - Remaining exercises follow Bloom's taxonomy progression: remember → understand → apply → analyze → evaluate → consolidate
-- **Exercise order must vary between lessons** — no two lessons in the same module should have the same exercise type at the same position
+- **Exercise order must vary between lessons** — no two lessons in the SAME module should share the same exercise type at the same position (theory at position 1 is the exception)
 - Use diverse exercise types within each lesson (avoid repeating the same type)
+- After authoring a module, verify with a position-clash script: for each `(module, position)`, the set of types across lessons should be all-distinct
 
 ### Adding New Exercises
 1. Define exercise data in `backend/src/data/lessons.ts` with all required fields for that type
 2. All user-facing strings must be `LocalizedText { en: string; bg: string }`
 3. Run `npm run build` in `backend/` to compile to `dist/`
 4. Exercise components live in `frontend/src/components/exercises/`
-5. New types must be registered in `ExerciseRenderer.tsx` and `types/index.ts`
+5. New types must be registered in:
+   - `frontend/src/types/index.ts` (union type + new fields)
+   - `frontend/src/components/ExerciseRenderer.tsx` (routing case)
+   - `backend/src/data/lessons.ts` (union type + new fields, mirrored)
+6. Wrong answers automatically get recorded in spaced-repetition unless the type is `theory`
+
+### Wrong-answer flow
+- Every non-theory exercise component calls `onAnswer(false, 0)` when the user answers wrong
+- `Lesson.tsx`'s `handleAnswer` decrements hearts + POSTs to `/api/review/missed` (fire-and-forget)
+- After all hearts are lost, the lesson restarts from exercise 1 (XP for that run is zeroed)
+- Some components (e.g. `PortfolioPie`, `DebtPayoff`, `CoverageCalc`, `TaxBrackets`, `StockChart`) explicitly render a "Continue →" button after a wrong submit so the user can read the explanation before progressing
+
+## API Surface
+
+Auth + user (`/api/auth/*`):
+`/register`, `/verify-email`, `/resend-verification`, `/login`, `/forgot-password`, `/reset-password`,
+`/me`, `/onboarding`, `/check-name`, `/check-availability`, `/league`, `/email-diag`
+
+Lessons + progress:
+- `GET /api/modules` — list modules with completion + lock state
+- `GET /api/modules/:moduleId/lessons/:lessonId` — single lesson
+- `GET /api/progress` — completion history + XP + streak
+- `POST /api/progress/energy/use` — deduct 3 energy (no-op for Pro)
+- `POST /api/progress/complete` — mark lesson done, bump XP + streak, auto-consume freezes
+
+Spaced repetition (`/api/review/*`):
+- `POST /missed` `{moduleId, lessonId, exerciseId}` — upsert into box 1
+- `GET /due` — hydrated due cards (up to 20)
+- `POST /done` `{cardId, correct}` — promote (correct) or reset (wrong)
+- `GET /stats` — `{total, due, mastered}`
+
+Streak freezes (`/api/freeze/*`):
+- `GET /info` — `{cost, max, stock, xp, can_afford}`
+- `POST /buy` — −100 XP, +1 freeze (capped at 3)
+
+Other: `/api/ai/chat` (Pro SSE), `/api/stripe/*` (checkout + webhook), `/api/generate/*` (AI lesson generation)
 
 ## Languages
 - App supports English (`en`) and Bulgarian (`bg`)
