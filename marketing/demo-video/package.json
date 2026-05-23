@@ -1,0 +1,23 @@
+{
+  "name": "octolio-demo-video",
+  "version": "1.0.0",
+  "description": "Remotion-rendered launch trailer for Octolio's Review/Tools/Friends update",
+  "private": true,
+  "scripts": {
+    "studio": "remotion studio",
+    "render": "remotion render OctolioUpdate out/octolio-update.mp4 --codec=h264",
+    "render-portrait": "remotion render OctolioUpdate out/octolio-update.mp4 --codec=h264",
+    "still": "remotion still OctolioUpdate out/poster.png"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "remotion": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.1",
+    "@types/react-dom": "^18.3.1",
+    "typescript": "^5.4.0"
+  }
+}
