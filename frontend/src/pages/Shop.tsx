@@ -183,7 +183,7 @@ export function Shop() {
                   XP
                 </p>
                 <p className="font-extrabold text-2xl" style={{ color: 'hsl(var(--c-primary))' }}>
-                  ⚡ {(user?.xp ?? 0).toLocaleString()}
+                  ✨ {(user?.xp ?? 0).toLocaleString()}
                 </p>
               </div>
             </div>

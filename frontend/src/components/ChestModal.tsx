@@ -79,7 +79,7 @@ function rewardToTile(
   lang: 'en' | 'bg',
 ): ReelTile {
   if (reward.type === 'coins') return { id: `coins-${reward.amount}`, emoji: '🪙', label: `${reward.amount}`, rarity: reward.amount! >= 200 ? 'epic' : 'rare' };
-  if (reward.type === 'xp')    return { id: `xp-${reward.amount}`, emoji: '⚡', label: `${reward.amount} XP`, rarity: reward.amount! >= 100 ? 'epic' : 'rare' };
+  if (reward.type === 'xp')    return { id: `xp-${reward.amount}`, emoji: '✨', label: `${reward.amount} XP`, rarity: reward.amount! >= 100 ? 'epic' : 'rare' };
   if (reward.type === 'freeze')return { id: `freeze`, emoji: '🧊', label: lang === 'en' ? 'Streak freeze' : 'Замразяване', rarity: 'epic' };
   if (reward.type === 'energy')return { id: `energy`, emoji: '⚡', label: lang === 'en' ? 'Energy +3' : 'Енергия +3', rarity: 'rare' };
   if (item) return { id: item.id, emoji: item.emoji, label: item.name[lang], rarity: item.rarity };

@@ -67,9 +67,9 @@ export function ALL_REWARD_TILES(lang: 'en' | 'bg'): TileLike[] {
     { id: 'coins-75',  emoji: '🪙', label: '75',  rarity: 'common' },
     { id: 'coins-200', emoji: '🪙', label: '200', rarity: 'rare' },
     { id: 'coins-1000',emoji: '🪙', label: '1000',rarity: 'legendary' },
-    { id: 'xp-20',  emoji: '⚡', label: '20 XP',  rarity: 'common' },
-    { id: 'xp-50',  emoji: '⚡', label: '50 XP',  rarity: 'rare' },
-    { id: 'xp-150', emoji: '⚡', label: '150 XP', rarity: 'epic' },
+    { id: 'xp-20',  emoji: '✨', label: '20 XP',  rarity: 'common' },
+    { id: 'xp-50',  emoji: '✨', label: '50 XP',  rarity: 'rare' },
+    { id: 'xp-150', emoji: '✨', label: '150 XP', rarity: 'epic' },
     { id: 'freeze', emoji: '🧊', label: lang === 'en' ? 'Freeze' : 'Замразяване', rarity: 'rare' },
     { id: 'energy', emoji: '⚡', label: lang === 'en' ? 'Energy +3' : 'Енергия +3', rarity: 'common' },
   ];

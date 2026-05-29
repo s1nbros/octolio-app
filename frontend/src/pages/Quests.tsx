@@ -127,7 +127,7 @@ export function Quests() {
         {/* Stats row */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5 md:mb-6 animate-fade-up delay-100">
           {[
-            { icon: '⚡', label: lang === 'en' ? 'Total XP' : 'Общо XP', value: xp.toLocaleString(), accent: 'var(--c-primary)' },
+            { icon: '✨', label: lang === 'en' ? 'Total XP' : 'Общо XP', value: xp.toLocaleString(), accent: 'var(--c-primary)' },
             { icon: '🔥', label: lang === 'en' ? 'Day streak' : 'Поред', value: streak.toString(), accent: 'var(--c-orange)' },
             { icon: '🏆', label: lang === 'en' ? 'Level' : 'Ниво', value: `${level.level}`, accent: 'var(--c-green)' },
             { icon: '✅', label: lang === 'en' ? 'Lessons' : 'Уроци', value: `${completedLessons}/${totalLessons}`, accent: 'var(--c-gold)' },

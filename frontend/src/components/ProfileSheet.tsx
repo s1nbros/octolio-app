@@ -175,11 +175,14 @@ export function ProfileSheet({ open, onClose }: Props) {
             </button>
 
             {/* Quick stats */}
-            <div className="grid grid-cols-3 gap-2 mb-5">
+            <div className="grid grid-cols-4 gap-2 mb-5">
               <SheetStat icon="🔥" label={lang === 'en' ? 'Streak' : 'Стрийк'} value={String(user.streak)} accent="var(--c-orange)" />
-              <SheetStat icon="⚡" label="Energy" value={user.is_pro ? '∞' : `${user.energy}/12`}
+              <SheetStat icon="⚡" label={lang === 'en' ? 'Energy' : 'Енергия'} value={user.is_pro ? '∞' : `${user.energy}/12`}
                 accent={user.is_pro ? 'var(--c-primary)' : user.energy > 3 ? 'var(--c-green)' : 'var(--c-red, 0,70%,55%)'} />
-              <SheetStat icon="🪙" label="XP" value={user.xp >= 1000 ? `${(user.xp / 1000).toFixed(1)}k` : String(user.xp)} accent="var(--c-primary)" />
+              <SheetStat icon="✨" label="XP" value={user.xp >= 1000 ? `${(user.xp / 1000).toFixed(1)}k` : String(user.xp)} accent="var(--c-primary)" />
+              <SheetStat icon="🪙" label={lang === 'en' ? 'Coins' : 'Монети'}
+                value={(user.coins ?? 0) >= 1000 ? `${((user.coins ?? 0) / 1000).toFixed(1)}k` : String(user.coins ?? 0)}
+                accent="var(--c-orange)" />
             </div>
 
             {/* Settings */}

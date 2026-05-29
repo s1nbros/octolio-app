@@ -437,7 +437,8 @@ body::after {
 .animate-shake      { animation: shake        0.45s ease-in-out both; }
 .animate-pulse-soft { animation: pulse-soft   1.8s ease-in-out infinite; }
 .octopus-bob        { animation: octobob 3.5s ease-in-out infinite; transform-origin: center 80%; }
-.octopus-hat        { animation: octobob 3.5s ease-in-out infinite reverse; }
+@keyframes octohat-tilt { 0%,100%{transform:rotate(-2deg)} 50%{transform:rotate(3deg)} }
+.octopus-hat        { animation: octohat-tilt 3.5s ease-in-out infinite; transform-origin: 50% 100%; }
 .octopus-tentacle.t1 { animation: tentacle1 2.6s ease-in-out infinite; transform-origin: 50px 130px; }
 .octopus-tentacle.t2 { animation: tentacle2 3.0s ease-in-out infinite; transform-origin: 80px 140px; }
 .octopus-tentacle.t3 { animation: tentacle3 2.8s ease-in-out infinite; transform-origin: 115px 142px; }

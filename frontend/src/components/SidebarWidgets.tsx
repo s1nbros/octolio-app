@@ -195,7 +195,7 @@ export function DailyQuestsTeaser({ completedLessonsToday, streak, xp }: { compl
   const quests = useMemo(() => [
     { id: 'lesson', icon: '📚', current: completedLessonsToday > 0 ? 1 : 0, total: 1, color: 'hsl(var(--c-primary))' },
     { id: 'streak', icon: '🔥', current: streak > 0 ? 1 : 0, total: 1, color: 'hsl(var(--c-green))' },
-    { id: 'xp', icon: '⚡', current: Math.min(xp % 100, 50), total: 50, color: 'hsl(var(--c-orange))' },
+    { id: 'xp', icon: '✨', current: Math.min(xp % 100, 50), total: 50, color: 'hsl(var(--c-orange))' },
   ], [completedLessonsToday, streak, xp]);
   const done = quests.filter(q => q.current >= q.total).length;
 

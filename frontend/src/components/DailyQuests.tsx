@@ -107,7 +107,7 @@ export function DailyQuests({ completedLessons, streak, xp }: Props) {
         </div>
         <span className="flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full flex-shrink-0"
           style={{ background: 'hsl(var(--c-primary)/0.12)', color: 'hsl(var(--c-primary))', border: '1px solid hsl(var(--c-primary)/0.2)' }}>
-          ⚡ {xpLeft} XP left
+          ✨ {xpLeft} XP left
         </span>
       </div>
 
@@ -165,7 +165,7 @@ export function DailyQuests({ completedLessons, streak, xp }: Props) {
                     background: done ? 'hsl(var(--c-green)/0.15)' : 'hsl(var(--c-primary)/0.14)',
                     color: done ? 'hsl(var(--c-green))' : 'hsl(var(--c-primary))',
                   }}>
-                  ⚡ +{q.xp} XP
+                  ✨ +{q.xp} XP
                 </span>
               </div>
 

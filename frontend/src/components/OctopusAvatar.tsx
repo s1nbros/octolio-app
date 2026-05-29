@@ -69,55 +69,91 @@ export function OctopusAvatar({ size = 120, equipped, itemEmoji, itemSlot }: Pro
         <path d="M 90 100 Q 100 110 110 100" stroke="hsl(228, 30%, 12%)" strokeWidth="2.5" fill="none" strokeLinecap="round" />
       </svg>
 
-      {/* Equipped cosmetic (emoji overlay) — positioned per slot */}
-      {itemEmoji && itemSlot === 'hat' && (
-        <span
-          className="absolute select-none octopus-hat"
-          style={{
-            top: `${s * -0.12}px`,
-            left: '50%',
-            transform: 'translateX(-50%) rotate(-5deg)',
-            fontSize: `${s * 0.42}px`,
-            filter: 'drop-shadow(0 3px 6px rgba(0,0,0,0.4))',
-            zIndex: 3,
-          }}
-          aria-hidden="true"
-        >
-          {itemEmoji}
-        </span>
-      )}
-      {itemEmoji && itemSlot === 'face' && (
-        <span
-          className="absolute select-none"
-          style={{
-            top: `${s * 0.34}px`,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            fontSize: `${s * 0.22}px`,
-            filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.4))',
-            zIndex: 3,
-          }}
-          aria-hidden="true"
-        >
-          {itemEmoji}
-        </span>
-      )}
-      {itemEmoji && itemSlot === 'body' && (
-        <span
-          className="absolute select-none"
-          style={{
-            bottom: `${s * 0.05}px`,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            fontSize: `${s * 0.28}px`,
-            filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))',
-            zIndex: 3,
-          }}
-          aria-hidden="true"
-        >
-          {itemEmoji}
-        </span>
-      )}
+      {/*
+        Equipped cosmetic (emoji overlay) — positioned per slot.
+        We use a wrapper that handles centering (`left: 50%; margin-left: -W/2`)
+        instead of `translateX(-50%)` because the CSS animation on the inner
+        span overwrites `transform` and would otherwise offset the hat to the right.
+      */}
+      {itemEmoji && itemSlot === 'hat' && (() => {
+        const w = s * 0.5;        // 50% of avatar width — emoji box
+        const h = s * 0.5;
+        return (
+          <div
+            className="absolute pointer-events-none"
+            style={{
+              top: `${s * -0.10}px`,           // sit just on top of the head
+              left: '50%',
+              marginLeft: `${-w / 2}px`,        // hard-centered, no transform
+              width: w, height: h, zIndex: 3,
+            }}
+            aria-hidden="true"
+          >
+            <span
+              className="absolute inset-0 flex items-end justify-center select-none octopus-hat"
+              style={{
+                fontSize: `${s * 0.42}px`,
+                lineHeight: 1,
+                filter: 'drop-shadow(0 3px 6px rgba(0,0,0,0.4))',
+              }}
+            >
+              {itemEmoji}
+            </span>
+          </div>
+        );
+      })()}
+      {itemEmoji && itemSlot === 'face' && (() => {
+        const w = s * 0.4;
+        return (
+          <div
+            className="absolute pointer-events-none"
+            style={{
+              top: `${s * 0.30}px`,
+              left: '50%',
+              marginLeft: `${-w / 2}px`,
+              width: w, height: w, zIndex: 3,
+            }}
+            aria-hidden="true"
+          >
+            <span
+              className="absolute inset-0 flex items-center justify-center select-none"
+              style={{
+                fontSize: `${s * 0.22}px`,
+                lineHeight: 1,
+                filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.4))',
+              }}
+            >
+              {itemEmoji}
+            </span>
+          </div>
+        );
+      })()}
+      {itemEmoji && itemSlot === 'body' && (() => {
+        const w = s * 0.4;
+        return (
+          <div
+            className="absolute pointer-events-none"
+            style={{
+              bottom: `${s * 0.02}px`,
+              left: '50%',
+              marginLeft: `${-w / 2}px`,
+              width: w, height: w, zIndex: 3,
+            }}
+            aria-hidden="true"
+          >
+            <span
+              className="absolute inset-0 flex items-center justify-center select-none"
+              style={{
+                fontSize: `${s * 0.30}px`,
+                lineHeight: 1,
+                filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))',
+              }}
+            >
+              {itemEmoji}
+            </span>
+          </div>
+        );
+      })()}
 
       {/* When equipped string is provided but emoji isn't passed in (e.g. when
           we only know the ID), the parent can pass the emoji via itemEmoji. */}
