@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useLang } from '../contexts/LanguageContext';
 import { FloatingOrbs } from '../components/FloatingOrbs';
 import { OctopusAvatar } from '../components/OctopusAvatar';
+import { CoinIcon } from '../components/CoinIcon';
 import { getCatalogItem } from '../shared/catalogClient';
 import { getLevel, getLevelProgress, LEVELS } from '../types';
 
@@ -476,9 +477,9 @@ export function Profile() {
                     : (lang === 'en' ? 'Naked octopus 🫧' : 'Гол октопод 🫧')}
                 </p>
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="px-2.5 py-1 rounded-full text-xs font-bold mono"
+                  <span className="px-2.5 py-1 rounded-full text-xs font-bold mono flex items-center gap-1"
                     style={{ background: 'hsl(var(--c-orange)/0.15)', color: 'hsl(var(--c-orange))', border: '1px solid hsl(var(--c-orange)/0.3)' }}>
-                    🪙 {(user?.coins ?? 0).toLocaleString()}
+                    <CoinIcon size={14} /> {(user?.coins ?? 0).toLocaleString()}
                   </span>
                   <Link to="/shop"
                     className="px-3 py-1 rounded-full text-xs font-bold"

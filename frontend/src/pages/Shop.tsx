@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useLang } from '../contexts/LanguageContext';
 import { FloatingOrbs } from '../components/FloatingOrbs';
 import { OctopusAvatar } from '../components/OctopusAvatar';
+import { CoinIcon } from '../components/CoinIcon';
 import type { Rarity, Slot } from '../shared/catalogClient';
 import { getCatalogItem } from '../shared/catalogClient';
 
@@ -174,8 +175,8 @@ export function Shop() {
                 <p className="text-xs uppercase tracking-wider" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
                   {lang === 'en' ? 'Wallet' : 'Портфейл'}
                 </p>
-                <p className="font-extrabold text-2xl" style={{ color: 'hsl(var(--c-orange))' }}>
-                  🪙 {coins.toLocaleString()}
+                <p className="font-extrabold text-2xl flex items-center gap-1.5" style={{ color: 'hsl(var(--c-orange))' }}>
+                  <CoinIcon size={22} /> {coins.toLocaleString()}
                 </p>
               </div>
               <div className="text-right">
@@ -191,8 +192,10 @@ export function Shop() {
             {/* XP → coins exchanger */}
             <div className="rounded-xl px-4 py-3"
               style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid hsla(0,0%,100%,0.06)' }}>
-              <p className="text-xs font-bold mb-2" style={{ color: 'hsl(var(--c-fg-muted))' }}>
-                {lang === 'en' ? 'Trade XP for coins (2 XP = 1 🪙, min 100 XP)' : 'Обмени XP за монети (2 XP = 1 🪙, мин 100)'}
+              <p className="text-xs font-bold mb-2 flex items-center gap-1 flex-wrap" style={{ color: 'hsl(var(--c-fg-muted))' }}>
+                {lang === 'en'
+                  ? <>Trade XP for coins (2 XP = 1 <CoinIcon size={12} />, min 100 XP)</>
+                  : <>Обмени XP за монети (2 XP = 1 <CoinIcon size={12} />, мин 100)</>}
               </p>
               <div className="flex gap-2">
                 <input
@@ -206,13 +209,13 @@ export function Shop() {
                     color: 'hsl(var(--c-fg))',
                   }} />
                 <button onClick={exchange} disabled={exchangeBusy}
-                  className="rounded-lg font-bold text-sm px-4 py-2"
+                  className="rounded-lg font-bold text-sm px-4 py-2 flex items-center gap-1.5"
                   style={{
                     background: 'linear-gradient(135deg, hsl(45, 95%, 55%), hsl(35, 90%, 55%))',
                     color: '#1a1f2e',
                     opacity: exchangeBusy ? 0.6 : 1,
                   }}>
-                  → 🪙 {Math.floor(Math.max(100, Number(exchangeXp) || 0) / 2)}
+                  → <CoinIcon size={14} /> {Math.floor(Math.max(100, Number(exchangeXp) || 0) / 2)}
                 </button>
               </div>
             </div>
@@ -286,14 +289,14 @@ export function Shop() {
               ) : (
                 <button onClick={() => buy(item.id)}
                   disabled={coins < item.price}
-                  className="w-full rounded-lg font-bold text-xs py-1.5"
+                  className="w-full rounded-lg font-bold text-xs py-1.5 flex items-center justify-center gap-1"
                   style={{
                     background: coins >= item.price
                       ? 'linear-gradient(135deg, hsl(45, 95%, 55%), hsl(35, 90%, 55%))'
                       : 'rgba(255,255,255,0.06)',
                     color: coins >= item.price ? '#1a1f2e' : 'hsl(var(--c-fg-subtle))',
                   }}>
-                  🪙 {item.price}
+                  <CoinIcon size={12} /> {item.price}
                 </button>
               )}
             </div>

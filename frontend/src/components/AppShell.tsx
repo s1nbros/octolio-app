@@ -6,6 +6,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { FloatingOrbs } from './FloatingOrbs';
 import { ProWidget, LeagueWidget, MoneyFactWidget, StreakWidget, DailyQuestsTeaser } from './SidebarWidgets';
 import { NotificationBell } from './NotificationBell';
+import { CoinIcon } from './CoinIcon';
 import { getLevel } from '../types';
 
 const SEEN_REVIEW_KEY  = 'octolio_seen_review_v1';
@@ -204,9 +205,18 @@ function StatsBar() {
       {/* XP */}
       <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
         style={{ background: 'hsl(var(--c-primary)/0.1)', border: '1px solid hsl(var(--c-primary)/0.2)' }}>
-        <span className="text-sm" style={{ color: 'hsl(var(--c-primary))' }}>🪙</span>
+        <span className="text-sm" style={{ color: 'hsl(var(--c-primary))' }}>✨</span>
         <span className="mono text-sm font-semibold" style={{ color: 'hsl(var(--c-primary))' }}>
           {user.xp.toLocaleString()}
+        </span>
+      </div>
+
+      {/* Coins */}
+      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
+        style={{ background: 'hsl(var(--c-orange)/0.1)', border: '1px solid hsl(var(--c-orange)/0.3)' }}>
+        <CoinIcon size={14} />
+        <span className="mono text-sm font-semibold" style={{ color: 'hsl(var(--c-orange))' }}>
+          {(user.coins ?? 0).toLocaleString()}
         </span>
       </div>
 

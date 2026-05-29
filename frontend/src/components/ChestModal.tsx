@@ -13,6 +13,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLang } from '../contexts/LanguageContext';
 import { ALL_REWARD_TILES } from '../shared/catalogClient';
+import { CoinIcon } from './CoinIcon';
 
 type RewardType = 'xp' | 'coins' | 'freeze' | 'energy' | 'item';
 interface OpenResponse {
@@ -272,7 +273,9 @@ export function ChestModal({ open, onClose, onOpened }: Props) {
                       boxShadow: t.rarity === 'legendary' ? `0 0 14px ${rarityColor(t.rarity)}` : 'none',
                     }}
                   >
-                    <div className="text-3xl mb-0.5">{t.emoji}</div>
+                    <div className="text-3xl mb-0.5 flex items-center justify-center" style={{ minHeight: 30 }}>
+                      {t.id.startsWith('coins-') ? <CoinIcon size={28} /> : t.emoji}
+                    </div>
                     <div className="text-[10px] text-center px-1 leading-tight font-bold" style={{ color: '#fff' }}>
                       {t.label.length > 14 ? t.label.slice(0, 14) + '…' : t.label}
                     </div>
@@ -287,13 +290,15 @@ export function ChestModal({ open, onClose, onOpened }: Props) {
                 <p className="text-xs uppercase tracking-wider mb-2" style={{ color: rarityColor(winningTile.rarity) }}>
                   {rarityLabel(winningTile.rarity, lang)}
                 </p>
-                <p className="text-5xl mb-1">{winningTile.emoji}</p>
+                <div className="mb-1 flex justify-center" style={{ fontSize: 48, lineHeight: 1 }}>
+                  {resp.reward.type === 'coins' ? <CoinIcon size={48} /> : winningTile.emoji}
+                </div>
                 <p className="text-lg font-extrabold mb-3" style={{ color: 'hsl(var(--c-fg))' }}>
                   {winningTile.label}
                 </p>
                 {resp.coinsDelta > 0 && (
-                  <p className="text-sm" style={{ color: 'hsl(var(--c-orange))' }}>
-                    +{resp.coinsDelta} 🪙 {lang === 'en' ? 'added to your wallet' : 'добавени в портфейла'}
+                  <p className="text-sm flex items-center justify-center gap-1.5" style={{ color: 'hsl(var(--c-orange))' }}>
+                    +{resp.coinsDelta} <CoinIcon size={14} /> {lang === 'en' ? 'added to your wallet' : 'добавени в портфейла'}
                   </p>
                 )}
                 {resp.xpDelta > 0 && (

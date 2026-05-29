@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLang } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { CoinIcon } from './CoinIcon';
 import { getLevel } from '../types';
 
 interface Props {
@@ -180,7 +181,7 @@ export function ProfileSheet({ open, onClose }: Props) {
               <SheetStat icon="⚡" label={lang === 'en' ? 'Energy' : 'Енергия'} value={user.is_pro ? '∞' : `${user.energy}/12`}
                 accent={user.is_pro ? 'var(--c-primary)' : user.energy > 3 ? 'var(--c-green)' : 'var(--c-red, 0,70%,55%)'} />
               <SheetStat icon="✨" label="XP" value={user.xp >= 1000 ? `${(user.xp / 1000).toFixed(1)}k` : String(user.xp)} accent="var(--c-primary)" />
-              <SheetStat icon="🪙" label={lang === 'en' ? 'Coins' : 'Монети'}
+              <SheetStat icon={<CoinIcon size={18} />} label={lang === 'en' ? 'Coins' : 'Монети'}
                 value={(user.coins ?? 0) >= 1000 ? `${((user.coins ?? 0) / 1000).toFixed(1)}k` : String(user.coins ?? 0)}
                 accent="var(--c-orange)" />
             </div>
@@ -255,14 +256,14 @@ export function ProfileSheet({ open, onClose }: Props) {
 }
 
 /* ─── Helpers ─── */
-function SheetStat({ icon, label, value, accent }: { icon: string; label: string; value: string; accent: string }) {
+function SheetStat({ icon, label, value, accent }: { icon: React.ReactNode; label: string; value: string; accent: string }) {
   return (
     <div className="rounded-2xl p-3 text-center"
       style={{
         background: `linear-gradient(135deg, hsl(${accent}/0.15), transparent)`,
         border: `1px solid hsl(${accent}/0.25)`,
       }}>
-      <div className="text-base mb-1">{icon}</div>
+      <div className="text-base mb-1 flex items-center justify-center" style={{ minHeight: '1.25rem' }}>{icon}</div>
       <p className="mono font-extrabold text-base leading-none" style={{ color: `hsl(${accent})` }}>
         {value}
       </p>
