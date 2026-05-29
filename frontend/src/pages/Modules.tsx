@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLang } from '../contexts/LanguageContext';
 import { FloatingOrbs } from '../components/FloatingOrbs';
+import { ChestModal } from '../components/ChestModal';
 import type { ModuleMeta, LessonMeta } from '../types';
 
 /* Color palette per module color key */
@@ -24,6 +25,8 @@ export function Modules() {
   const navigate = useNavigate();
   const [modules, setModules] = useState<ModuleMeta[]>([]);
   const [loading, setLoading] = useState(true);
+  const [chestInfo, setChestInfo] = useState<{ available: number; nextChestInLessons: number } | null>(null);
+  const [chestOpen, setChestOpen] = useState(false);
 
   useEffect(() => {
     if (!token) return;
@@ -32,6 +35,17 @@ export function Modules() {
       .then((data) => setModules(data.modules ?? []))
       .finally(() => setLoading(false));
   }, [token]);
+
+  const loadChestInfo = useCallback(async () => {
+    if (!token) return;
+    try {
+      const r = await fetch('/api/chests/info', { headers: { Authorization: `Bearer ${token}` } });
+      const d = await r.json();
+      setChestInfo({ available: d.available ?? 0, nextChestInLessons: d.nextChestInLessons ?? 3 });
+    } catch {}
+  }, [token]);
+
+  useEffect(() => { loadChestInfo(); }, [loadChestInfo]);
 
   const isPro = user?.is_pro ?? false;
 
@@ -73,7 +87,7 @@ export function Modules() {
 
       <div className="relative max-w-md md:max-w-2xl mx-auto px-4 sm:px-6 md:px-0 py-2 sm:py-4 md:py-2" style={{ zIndex: 1 }}>
         {/* Page header */}
-        <div className="mb-6 md:mb-8 text-center md:text-left animate-fade-up">
+        <div className="mb-4 md:mb-6 text-center md:text-left animate-fade-up">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-1" style={{ color: 'hsl(var(--c-fg))' }}>
             {ui.modules_title}
           </h1>
@@ -81,6 +95,53 @@ export function Modules() {
             {ui.modules_sub}
           </p>
         </div>
+
+        {/* Chest banner */}
+        {chestInfo && (
+          <button
+            onClick={() => chestInfo.available > 0 && setChestOpen(true)}
+            disabled={chestInfo.available === 0}
+            className="w-full mb-6 md:mb-8 rounded-2xl px-4 py-3 flex items-center gap-3 transition-all active:scale-[0.98] animate-fade-up"
+            style={{
+              background: chestInfo.available > 0
+                ? 'linear-gradient(135deg, hsl(45, 95%, 25%), hsl(35, 90%, 18%))'
+                : 'var(--c-glass)',
+              border: `1.5px solid ${chestInfo.available > 0 ? 'hsl(45, 95%, 55%)' : 'var(--c-border)'}`,
+              boxShadow: chestInfo.available > 0 ? '0 0 24px hsl(45, 95%, 50% / 0.35)' : 'none',
+              cursor: chestInfo.available > 0 ? 'pointer' : 'default',
+            }}>
+            <span className="text-3xl flex-shrink-0">
+              {chestInfo.available > 0 ? '🎁' : '🔒'}
+            </span>
+            <div className="flex-1 text-left">
+              {chestInfo.available > 0 ? (
+                <>
+                  <p className="font-extrabold text-sm" style={{ color: 'hsl(45, 95%, 70%)' }}>
+                    {chestInfo.available} {lang === 'en' ? 'chest ready!' : 'сандък готов!'}
+                  </p>
+                  <p className="text-xs" style={{ color: 'hsl(45, 70%, 80%)' }}>
+                    {lang === 'en' ? 'Spin to win coins, XP, freezes, or octopus cosmetics.' : 'Завърти за монети, XP, замразявания или костюми.'}
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="font-bold text-sm" style={{ color: 'hsl(var(--c-fg))' }}>
+                    {lang === 'en' ? 'Next chest in' : 'Следващ сандък след'} {chestInfo.nextChestInLessons} {lang === 'en' ? 'lessons' : 'урока'}
+                  </p>
+                  <p className="text-xs" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+                    {lang === 'en' ? 'Complete lessons to unlock loot.' : 'Завърши уроци, за да отключиш награди.'}
+                  </p>
+                </>
+              )}
+            </div>
+            {chestInfo.available > 0 && (
+              <span className="text-xs font-extrabold mono px-2.5 py-1 rounded-full"
+                style={{ background: 'hsl(45, 95%, 55%)', color: '#1a1f2e' }}>
+                {lang === 'en' ? 'OPEN' : 'ОТВОРИ'} →
+              </span>
+            )}
+          </button>
+        )}
 
         {/* Sections */}
         <div className="space-y-10 md:space-y-14">
@@ -141,6 +202,12 @@ export function Modules() {
           })}
         </div>
       </div>
+
+      <ChestModal
+        open={chestOpen}
+        onClose={() => setChestOpen(false)}
+        onOpened={() => loadChestInfo()}
+      />
     </div>
   );
 }

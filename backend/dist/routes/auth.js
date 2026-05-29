@@ -372,7 +372,10 @@ exports.authRouter.get('/me', auth_1.authenticate, async (req, res) => {
                 await pool.query('UPDATE users SET energy = $1, energy_refill_at = $2 WHERE id = $3', [newEnergy, newRefillAt, req.userId]);
             }
         }
-        const result = await pool.query('SELECT id, name, email, xp, streak, last_active, created_at, avatar, is_pro, energy, energy_refill_at, onboarding_done, streak_freezes FROM users WHERE id = $1', [req.userId]);
+        const result = await pool.query(`SELECT id, name, email, xp, streak, last_active, created_at, avatar, is_pro,
+              energy, energy_refill_at, onboarding_done, streak_freezes,
+              coins, equipped_costume, chests_opened
+       FROM users WHERE id = $1`, [req.userId]);
         const user = result.rows[0];
         if (!user) {
             res.status(404).json({ error: 'User not found' });

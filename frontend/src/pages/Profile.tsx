@@ -1,7 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLang } from '../contexts/LanguageContext';
 import { FloatingOrbs } from '../components/FloatingOrbs';
+import { OctopusAvatar } from '../components/OctopusAvatar';
+import { getCatalogItem } from '../shared/catalogClient';
 import { getLevel, getLevelProgress, LEVELS } from '../types';
 
 function resizeImage(file: File, size = 240): Promise<string> {
@@ -450,6 +453,43 @@ export function Profile() {
             </div>
           </div>
         </div>
+
+        {/* ── OCTOPUS MASCOT + WALLET ── */}
+        {(() => {
+          const equipped = user?.equipped_costume ?? null;
+          const equippedItem = getCatalogItem(equipped);
+          return (
+            <div className="glass-card rounded-2xl p-5 mb-5 md:mb-6 flex items-center gap-4 animate-fade-up">
+              <div className="flex-shrink-0">
+                <OctopusAvatar size={92}
+                  equipped={equipped}
+                  itemEmoji={equippedItem?.emoji ?? null}
+                  itemSlot={equippedItem?.slot ?? null} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-bold uppercase tracking-wider mb-1" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+                  {lang === 'en' ? 'Your mascot' : 'Твоят талисман'}
+                </p>
+                <p className="text-base font-extrabold mb-2" style={{ color: 'hsl(var(--c-fg))' }}>
+                  {equippedItem
+                    ? (lang === 'en' ? `Wearing ${equippedItem.name.en}` : `Носи ${equippedItem.name.bg}`)
+                    : (lang === 'en' ? 'Naked octopus 🫧' : 'Гол октопод 🫧')}
+                </p>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="px-2.5 py-1 rounded-full text-xs font-bold mono"
+                    style={{ background: 'hsl(var(--c-orange)/0.15)', color: 'hsl(var(--c-orange))', border: '1px solid hsl(var(--c-orange)/0.3)' }}>
+                    🪙 {(user?.coins ?? 0).toLocaleString()}
+                  </span>
+                  <Link to="/shop"
+                    className="px-3 py-1 rounded-full text-xs font-bold"
+                    style={{ background: 'linear-gradient(135deg, hsl(45, 95%, 55%), hsl(35, 90%, 55%))', color: '#1a1f2e' }}>
+                    🛍️ {lang === 'en' ? 'Visit shop' : 'Към магазина'}
+                  </Link>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
 
         {/* ── TABS ── */}
         <div className="flex gap-1 mb-6 p-1 rounded-xl animate-fade-up"

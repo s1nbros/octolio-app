@@ -219,6 +219,9 @@ export interface User {
   energy_refill_at?: string | null;
   onboarding_done: boolean;
   streak_freezes: number;
+  coins?: number;
+  equipped_costume?: string | null;
+  chests_opened?: number;
 }
 
 export const LEVELS = [

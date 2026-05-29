@@ -410,6 +410,14 @@ body::after {
 @keyframes island-float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
 @keyframes shake        { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-6px)} 40%,80%{transform:translateX(6px)} }
 @keyframes pulse-soft   { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.08);opacity:0.85} }
+@keyframes octobob      { 0%,100%{transform:translateY(0) rotate(-1deg)} 50%{transform:translateY(-6px) rotate(2deg)} }
+@keyframes blink        { 0%, 92%, 100%{transform:scaleY(1)} 95%{transform:scaleY(0.1)} }
+@keyframes tentacle1    { 0%,100%{transform:rotate(0)} 50%{transform:rotate(8deg)} }
+@keyframes tentacle2    { 0%,100%{transform:rotate(2deg)} 50%{transform:rotate(-6deg)} }
+@keyframes tentacle3    { 0%,100%{transform:rotate(-3deg)} 50%{transform:rotate(7deg)} }
+@keyframes tentacle4    { 0%,100%{transform:rotate(1deg)} 50%{transform:rotate(-9deg)} }
+@keyframes reel-scroll  { from{transform:translateX(0)} to{transform:translateX(var(--reel-end, -2200px))} }
+@keyframes prize-reveal { from{transform:scale(0.4);opacity:0} to{transform:scale(1);opacity:1} }
 
 .animate-orb-1      { animation: orb-float-1 18s ease-in-out infinite; }
 .animate-orb-2      { animation: orb-float-2 22s ease-in-out infinite; }
@@ -428,6 +436,14 @@ body::after {
 .animate-island-float { animation: island-float 5s ease-in-out infinite; }
 .animate-shake      { animation: shake        0.45s ease-in-out both; }
 .animate-pulse-soft { animation: pulse-soft   1.8s ease-in-out infinite; }
+.octopus-bob        { animation: octobob 3.5s ease-in-out infinite; transform-origin: center 80%; }
+.octopus-hat        { animation: octobob 3.5s ease-in-out infinite reverse; }
+.octopus-tentacle.t1 { animation: tentacle1 2.6s ease-in-out infinite; transform-origin: 50px 130px; }
+.octopus-tentacle.t2 { animation: tentacle2 3.0s ease-in-out infinite; transform-origin: 80px 140px; }
+.octopus-tentacle.t3 { animation: tentacle3 2.8s ease-in-out infinite; transform-origin: 115px 142px; }
+.octopus-tentacle.t4 { animation: tentacle4 2.4s ease-in-out infinite; transform-origin: 145px 138px; }
+.octopus-pupil       { animation: blink 4.5s ease-in-out infinite; transform-origin: center; }
+.animate-prize-reveal { animation: prize-reveal 0.6s cubic-bezier(0.34,1.56,0.64,1) both; }
 
 .delay-50  { animation-delay:  50ms; }
 .delay-100 { animation-delay: 100ms; }

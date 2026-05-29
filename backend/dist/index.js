@@ -23,6 +23,8 @@ const freeze_1 = require("./routes/freeze");
 const review_1 = require("./routes/review");
 const friends_1 = require("./routes/friends");
 const notifications_1 = require("./routes/notifications");
+const chests_1 = require("./routes/chests");
+const shop_1 = require("./routes/shop");
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 3001;
 const allowedOrigins = process.env.ALLOWED_ORIGINS
@@ -45,6 +47,8 @@ app.use('/api/freeze', freeze_1.freezeRouter);
 app.use('/api/review', review_1.reviewRouter);
 app.use('/api/friends', friends_1.friendsRouter);
 app.use('/api/notifications', notifications_1.notificationsRouter);
+app.use('/api/chests', chests_1.chestsRouter);
+app.use('/api/shop', shop_1.shopRouter);
 app.get('/api/health', (_req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });

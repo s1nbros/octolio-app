@@ -50,6 +50,9 @@ export async function initDb(): Promise<void> {
   await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS password_reset_token TEXT`);
   await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS password_reset_expires_at TIMESTAMP`);
   await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS streak_freezes INTEGER DEFAULT 0`);
+  await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS coins INTEGER DEFAULT 0`);
+  await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS equipped_costume TEXT`);
+  await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS chests_opened INTEGER DEFAULT 0`);
 
   // Existing accounts predate the verification flow — grandfather them in so the
   // upgrade doesn't lock active users out.
@@ -147,6 +150,34 @@ export async function initDb(): Promise<void> {
     )
   `);
   await pool.query(`CREATE INDEX IF NOT EXISTS notifications_user_unread_idx ON notifications(user_id, read, created_at DESC)`);
+
+  // Inventory: cosmetic items the user owns. Items are identified by string ID
+  // (defined in src/data/catalog.ts). Equipped is a duplicated flag for fast
+  // lookup; the single equipped item also lives on users.equipped_costume.
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS user_inventory (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER NOT NULL REFERENCES users(id),
+      item_id TEXT NOT NULL,
+      acquired_at TIMESTAMP DEFAULT NOW(),
+      UNIQUE(user_id, item_id)
+    )
+  `);
+  await pool.query(`CREATE INDEX IF NOT EXISTS user_inventory_user_idx ON user_inventory(user_id)`);
+
+  // Chest opens (audit log + rng record).
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS chest_opens (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER NOT NULL REFERENCES users(id),
+      reward_type TEXT NOT NULL,
+      reward_value TEXT NOT NULL,
+      coins_delta INTEGER NOT NULL DEFAULT 0,
+      xp_delta INTEGER NOT NULL DEFAULT 0,
+      opened_at TIMESTAMP DEFAULT NOW()
+    )
+  `);
+  await pool.query(`CREATE INDEX IF NOT EXISTS chest_opens_user_idx ON chest_opens(user_id, opened_at DESC)`);
 
   console.log('Database initialized');
 }

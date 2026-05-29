@@ -65,6 +65,16 @@ function IconFriends() {
     </svg>
   );
 }
+function IconShop() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 9l1.5-5h15L21 9" />
+      <path d="M3 9v11a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V9" />
+      <path d="M3 9h18" />
+      <path d="M9 13a3 3 0 0 0 6 0" />
+    </svg>
+  );
+}
 function IconProfile() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -182,12 +192,14 @@ function MobileDrawer({
   const seenReview  = typeof window !== 'undefined' && localStorage.getItem('octolio_seen_review_v1')  === '1';
   const seenTools   = typeof window !== 'undefined' && localStorage.getItem('octolio_seen_tools_v1')   === '1';
   const seenFriends = typeof window !== 'undefined' && localStorage.getItem('octolio_seen_friends_v1') === '1';
+  const seenShop    = typeof window !== 'undefined' && localStorage.getItem('octolio_seen_shop_v1')    === '1';
 
   const items = [
     { to: '/modules', label: { en: 'Learn', bg: 'Учи' }, icon: <IconLearn />, active: isActive('/modules') || isActive('/lesson') },
     { to: '/quests',  label: { en: 'Quests', bg: 'Куестове' }, icon: <IconHome />, active: isActive('/quests') },
     { to: '/review',  label: { en: 'Review', bg: 'Преглед' }, icon: <IconReview />, active: isActive('/review'), isNew: !seenReview },
     { to: '/tools',   label: { en: 'Tools', bg: 'Инструменти' }, icon: <IconTools />, active: isActive('/tools'), isNew: !seenTools },
+    { to: '/shop',    label: { en: 'Shop', bg: 'Магазин' }, icon: <IconShop />, active: isActive('/shop'), isNew: !seenShop },
     { to: '/league',  label: { en: 'League', bg: 'Лига' }, icon: <IconLeague />, active: isActive('/league') },
     { to: '/friends', label: { en: 'Friends', bg: 'Приятели' }, icon: <IconFriends />, active: isActive('/friends'), isNew: !seenFriends },
     ...(isPro ? [{ to: '/advisor', label: { en: 'AI Advisor', bg: 'AI Съветник' }, icon: <IconAdvisor />, active: isActive('/advisor') }] : []),
@@ -248,6 +260,7 @@ function MobileDrawer({
                 if (it.to === '/review')  localStorage.setItem('octolio_seen_review_v1',  '1');
                 if (it.to === '/tools')   localStorage.setItem('octolio_seen_tools_v1',   '1');
                 if (it.to === '/friends') localStorage.setItem('octolio_seen_friends_v1', '1');
+                if (it.to === '/shop')    localStorage.setItem('octolio_seen_shop_v1',    '1');
                 onClose();
               }}
               className="flex items-center gap-3 px-3 py-3 rounded-xl transition-colors active:scale-[0.98]"

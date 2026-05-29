@@ -28,11 +28,19 @@ octolio-app/
         lessonGenerator.ts      — AI lesson generation
       routes/
         auth.ts                 — register/verify/resend/login/forgot/reset/me, etc.
-        progress.ts             — lesson completion, energy deduction, streak freeze auto-consume
+        progress.ts             — lesson completion, energy deduction, streak freeze auto-consume, cross-XP notify
         ai.ts                   — AI advisor SSE endpoint (Pro-only)
         stripe.ts               — Stripe checkout + webhook
         review.ts               — spaced-repetition: missed/due/done/stats endpoints
         freeze.ts               — streak-freeze shop: buy/info endpoints
+        friends.ts              — friend requests, search, accept/decline, cross-XP detection helper
+        notifications.ts        — in-app notification feed (list/unread/read)
+        chests.ts               — chest-info + transactional open
+        shop.ts                 — cosmetics catalog / buy / equip / XP exchange / inventory
+      data/
+        lessons.ts              — all modules + lessons + exercises (one big array)
+        generated-modules.json  — generated free-tier modules
+        catalog.ts              — cosmetics catalog + reward pool weights + XP exchange consts
       middleware/auth.ts        — JWT authenticate middleware
       db.ts                     — exports getPool()
     dist/                   — compiled output, committed to git for Render
@@ -44,8 +52,10 @@ octolio-app/
         Lesson.tsx          — exercise flow with hearts + energy; records misses for SR
         Review.tsx          — spaced-repetition session (reuses ExerciseRenderer)
         Tools.tsx           — calculator hub (compound/mortgage/debt/FIRE/goal/net-worth)
+        Shop.tsx            — cosmetics shop (browse / buy / equip / XP→coin exchange)
+        Friends.tsx         — friend list, incoming/outgoing requests, search-by-name
         Quests.tsx          — daily quests + streak overview
-        Profile.tsx         — stats, achievements, streak-freeze shop, sub mgmt
+        Profile.tsx         — stats, achievements, octopus mascot + wallet, streak-freeze shop, sub mgmt
         League.tsx          — XP leaderboard
         AiAdvisor.tsx       — AI chat (Pro-only, SSE streaming)
         Onboarding.tsx      — pro-vs-free plan picker (gated route)
@@ -65,6 +75,9 @@ octolio-app/
         ProfileSheet.tsx
         ModuleCard.tsx
         FloatingOrbs.tsx
+        NotificationBell.tsx — bell + dropdown, polls /api/notifications/unread-count every 30s
+        OctopusAvatar.tsx    — animated SVG mascot, renders equipped cosmetic emoji per slot
+        ChestModal.tsx       — CS:GO-style chest opening with horizontal reel
         exercises/
           TheoryCard.tsx        — theory slides (swipeable pages)
           RPGScenario.tsx       — branching-story financial scenarios
@@ -89,6 +102,8 @@ octolio-app/
         AuthContext.tsx      — user state, updateUser, refreshUser
         LanguageContext.tsx  — EN/BG
         ThemeContext.tsx
+      shared/
+        catalogClient.ts     — mirror of backend cosmetics catalog (kept in sync manually)
       types/index.ts         — User, Module, Lesson, Exercise types
 ```
 
@@ -196,6 +211,45 @@ octolio-app/
 - Debt payoff reuses the same snowball/avalanche/even math as the `debt_payoff` exercise
 - All calculators are bilingual via `useLang()`
 
+### Cosmetics Economy (Octopus mascot, coins, chests, shop)
+A second-currency layer that runs alongside XP — purely cosmetic / fun, no
+gameplay-power gating. Three coupled systems:
+
+**Octopus mascot** (`OctopusAvatar.tsx`)
+- Pure CSS/SVG octopus with idle bob + tentacle sway + occasional eye blink
+- Renders an equipped cosmetic emoji on top, positioned per slot (`hat` / `face` / `body`)
+- Single slot is equipped at a time via `users.equipped_costume` (item ID)
+- Shown on the Profile page header card; the Shop page uses it as a live preview
+
+**Octolio Coins** (`users.coins INTEGER DEFAULT 0`)
+- Earned from chest opens (random) and from selling XP via the shop exchanger
+- Spent on shop items
+- XP→coins rate: `XP_PER_COIN_EXCHANGE_RATE = 2` (2 XP = 1 coin), `MIN_XP_EXCHANGE = 100`
+
+**Chests** (`backend/src/routes/chests.ts` + `chest_opens` table)
+- 1 chest per `LESSONS_PER_CHEST = 3` completed lessons
+- Tracked via `users.chests_opened` counter; `available = floor(completed/3) - opened`
+- Reward pool defined in `backend/src/data/catalog.ts`:
+  - 40% coins (25 / 75 / 200 / 1000 weighted)
+  - 25% XP (20 / 50 / 150)
+  - 10% streak freeze (+1, capped at 3)
+  - 10% energy (+3, capped at 12)
+  - 15% cosmetic item (rarity-weighted, never gives duplicates)
+- Open is a single transactional `POST /api/chests/open` that re-checks availability
+  with `FOR UPDATE` to prevent double-spend
+- Frontend: `ChestModal.tsx` shows a CS:GO-style horizontal reel — 60 decoy tiles
+  with the real winning tile at index 52, animates with cubic-bezier(0.05,0.7,0.15,1)
+  over 5s using `animation-fill-mode: forwards`. The `--reel-end` CSS variable controls
+  the final translateX with a small jitter so it doesn't land dead-center.
+
+**Shop** (`backend/src/routes/shop.ts` + `user_inventory` table + `/shop` page)
+- Catalog lives in `backend/src/data/catalog.ts` AND mirrored in
+  `frontend/src/shared/catalogClient.ts` (kept in sync manually)
+- 16 cosmetics across 3 slots (hat / face / body) and 4 rarities
+- Rarity → max price ladder: common 100–200 / rare 250–400 / epic 500–800 / legendary 1500–2500
+- Endpoints: `GET /catalog`, `GET /inventory`, `POST /buy`, `POST /equip`, `POST /exchange`
+- All cosmetics are visible only — no gameplay effect
+
 ### Modules
 - Free modules: orders 1–9 (static curated + generated fallback)
 - Pro-only modules: orders 10+ (`advanced-investing`, `real-estate`, `tax-strategy`, etc.)
@@ -250,13 +304,16 @@ Key tables:
 - `users` — verified accounts. `email_verified` defaults TRUE for accounts created
   via `/verify-email`. Existing rows (xp > 0 or last_active set) were grandfathered
   to `email_verified = TRUE` during the migration so the upgrade didn't lock anyone out.
-  Recent addition: `streak_freezes INTEGER DEFAULT 0`.
+  Recent additions: `streak_freezes INTEGER DEFAULT 0`, `coins INTEGER DEFAULT 0`,
+  `equipped_costume TEXT`, `chests_opened INTEGER DEFAULT 0`.
 - `pending_registrations` — unverified signups (PK `email`). Cleaned out on successful
   verification. Index on `LOWER(name)` for nickname collision checks.
 - `progress` — lesson completions, `UNIQUE(user_id, lesson_id)`.
 - `exercise_reviews` — spaced-repetition cards. `UNIQUE(user_id, module_id, lesson_id, exercise_id)`.
   Columns: `box_level` (1–5), `next_review_at`, `first_missed_at`, `last_reviewed_at`,
   `times_reviewed`, `times_correct`, `mastered`. Partial index on `(user_id, next_review_at) WHERE mastered = FALSE`.
+- `user_inventory` — owned cosmetics. `UNIQUE(user_id, item_id)`. Item IDs are stable strings from `catalog.ts`.
+- `chest_opens` — audit log of every chest pull. Columns: `reward_type`, `reward_value`, `coins_delta`, `xp_delta`, `opened_at`.
 
 ### Email never blocks an API response
 All `sendVerificationEmail` / `sendPasswordResetEmail` calls go through the
@@ -343,6 +400,20 @@ Spaced repetition (`/api/review/*`):
 Streak freezes (`/api/freeze/*`):
 - `GET /info` — `{cost, max, stock, xp, can_afford}`
 - `POST /buy` — −100 XP, +1 freeze (capped at 3)
+
+Chests (`/api/chests/*`):
+- `GET /info` — `{available, opened, earned, completedLessons, nextChestInLessons, recentOpens[]}`
+- `POST /open` — atomically draws + applies a reward, returns `{reward, item, coinsDelta, xpDelta, availableChestsRemaining}`
+
+Shop (`/api/shop/*`):
+- `GET /catalog` — all items with `{owned, equipped}` joined for the caller
+- `GET /inventory` — items the user owns
+- `POST /buy` `{itemId}` — −price coins, +inventory row
+- `POST /equip` `{itemId | null}` — set/clear `users.equipped_costume`
+- `POST /exchange` `{xpAmount}` — −XP / +coins at rate `XP_PER_COIN_EXCHANGE_RATE`
+
+Friends + notifications (`/api/friends/*`, `/api/notifications/*`):
+- request / accept / decline / cancel / remove / search; notifications list / unread-count / mark-read
 
 Other: `/api/ai/chat` (Pro SSE), `/api/stripe/*` (checkout + webhook), `/api/generate/*` (AI lesson generation)
 

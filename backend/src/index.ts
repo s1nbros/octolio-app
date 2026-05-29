@@ -18,6 +18,8 @@ import { freezeRouter } from './routes/freeze';
 import { reviewRouter } from './routes/review';
 import { friendsRouter } from './routes/friends';
 import { notificationsRouter } from './routes/notifications';
+import { chestsRouter } from './routes/chests';
+import { shopRouter } from './routes/shop';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -46,6 +48,8 @@ app.use('/api/freeze', freezeRouter);
 app.use('/api/review', reviewRouter);
 app.use('/api/friends', friendsRouter);
 app.use('/api/notifications', notificationsRouter);
+app.use('/api/chests', chestsRouter);
+app.use('/api/shop', shopRouter);
 
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });

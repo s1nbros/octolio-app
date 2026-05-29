@@ -11,7 +11,8 @@ import { getLevel } from '../types';
 const SEEN_REVIEW_KEY  = 'octolio_seen_review_v1';
 const SEEN_TOOLS_KEY   = 'octolio_seen_tools_v1';
 const SEEN_FRIENDS_KEY = 'octolio_seen_friends_v1';
-export { SEEN_REVIEW_KEY, SEEN_TOOLS_KEY, SEEN_FRIENDS_KEY };
+const SEEN_SHOP_KEY    = 'octolio_seen_shop_v1';
+export { SEEN_REVIEW_KEY, SEEN_TOOLS_KEY, SEEN_FRIENDS_KEY, SEEN_SHOP_KEY };
 
 /* SVG icons reused by the sidebar */
 function IconQuests() {
@@ -69,6 +70,16 @@ function IconFriends() {
       <circle cx="9" cy="7" r="4" />
       <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
       <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+    </svg>
+  );
+}
+function IconShop() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 9l1.5-5h15L21 9" />
+      <path d="M3 9v11a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V9" />
+      <path d="M3 9h18" />
+      <path d="M9 13a3 3 0 0 0 6 0" />
     </svg>
   );
 }
@@ -261,6 +272,7 @@ function LeftSidebar() {
   const [seenReview, setSeenReview]   = useState(() => localStorage.getItem(SEEN_REVIEW_KEY) === '1');
   const [seenTools, setSeenTools]     = useState(() => localStorage.getItem(SEEN_TOOLS_KEY) === '1');
   const [seenFriends, setSeenFriends] = useState(() => localStorage.getItem(SEEN_FRIENDS_KEY) === '1');
+  const [seenShop, setSeenShop]       = useState(() => localStorage.getItem(SEEN_SHOP_KEY) === '1');
 
   useEffect(() => {
     if (!token) return;
@@ -288,7 +300,11 @@ function LeftSidebar() {
       localStorage.setItem(SEEN_FRIENDS_KEY, '1');
       setSeenFriends(true);
     }
-  }, [location.pathname, seenReview, seenTools, seenFriends]);
+    if (location.pathname.startsWith('/shop') && !seenShop) {
+      localStorage.setItem(SEEN_SHOP_KEY, '1');
+      setSeenShop(true);
+    }
+  }, [location.pathname, seenReview, seenTools, seenFriends, seenShop]);
 
   if (!user) return null;
 
@@ -324,6 +340,7 @@ function LeftSidebar() {
         <SidebarLink to="/tools" active={isActive('/tools')} label={lang === 'en' ? 'Tools' : 'Инструменти'} icon={<IconTools />} isNew={!seenTools} />
         <SidebarLink to="/league" active={isActive('/league')} label={labels.league} icon={<IconLeague />} />
         <SidebarLink to="/friends" active={isActive('/friends')} label={lang === 'en' ? 'Friends' : 'Приятели'} icon={<IconFriends />} isNew={!seenFriends} badge={friendRequestsCount} />
+        <SidebarLink to="/shop" active={isActive('/shop')} label={lang === 'en' ? 'Shop' : 'Магазин'} icon={<IconShop />} isNew={!seenShop} />
         {user.is_pro && (
           <SidebarLink to="/advisor" active={isActive('/advisor')} label={`✦ ${labels.advisor}`} icon={<IconAdvisor />} disabled />
         )}
