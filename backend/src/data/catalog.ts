@@ -64,68 +64,45 @@ export function getCatalogItem(id: string): CatalogItem | undefined {
 }
 
 /* ─── Chest reward pool ────────────────────────────────────────
- * A draw returns a weighted reward. Weights are not %; the picker
- * does sum-of-weights logic.
+ * Chests give pure XP rewards in varying amounts. Cosmetics are
+ * earned by spending coins (earned via XP exchange) in the shop —
+ * chests never drop clothes directly.
+ *
+ * Weighted picker: sum-of-weights, NOT percentages.
  */
 export type ChestReward =
   | { type: 'xp';     amount: number }
-  | { type: 'coins';  amount: number }
+  | { type: 'coins';  amount: number }   // kept in the union for backward-compat with old chest_opens rows
   | { type: 'freeze'; amount: number }
   | { type: 'energy'; amount: number }
   | { type: 'item';   itemId: string };
 
 interface WeightedReward {
   weight: number;
-  reward: () => ChestReward;
+  amount: number;
 }
 
-/** Pick one of the cosmetic IDs the user doesn't yet own, weighted by rarity. */
-function randomCosmeticFor(ownedIds: Set<string>): ChestReward | null {
-  const available = CATALOG.filter((c) => !ownedIds.has(c.id));
-  if (available.length === 0) return null;
-  // Higher rarity → lower weight
-  const rarityWeights: Record<Rarity, number> = { common: 60, rare: 25, epic: 10, legendary: 5 };
-  const total = available.reduce((s, c) => s + rarityWeights[c.rarity], 0);
-  let r = Math.random() * total;
-  for (const c of available) {
-    r -= rarityWeights[c.rarity];
-    if (r <= 0) return { type: 'item', itemId: c.id };
-  }
-  return { type: 'item', itemId: available[0].id };
-}
-
+/** XP-only reward table. Higher amounts are rarer. */
 const POOL: WeightedReward[] = [
-  // Coins (40% total)
-  { weight: 18, reward: () => ({ type: 'coins',  amount: 25  }) },
-  { weight: 12, reward: () => ({ type: 'coins',  amount: 75  }) },
-  { weight: 8,  reward: () => ({ type: 'coins',  amount: 200 }) },
-  { weight: 2,  reward: () => ({ type: 'coins',  amount: 1000 }) }, // jackpot
-  // XP (25%)
-  { weight: 12, reward: () => ({ type: 'xp',     amount: 20  }) },
-  { weight: 8,  reward: () => ({ type: 'xp',     amount: 50  }) },
-  { weight: 5,  reward: () => ({ type: 'xp',     amount: 150 }) },
-  // Streak freezes (10%)
-  { weight: 10, reward: () => ({ type: 'freeze', amount: 1   }) },
-  // Energy (10%)
-  { weight: 10, reward: () => ({ type: 'energy', amount: 3   }) },
-  // Cosmetic (15% — filled at draw-time, depends on ownership)
+  { weight: 30, amount: 25   }, // small
+  { weight: 25, amount: 50   },
+  { weight: 20, amount: 100  },
+  { weight: 13, amount: 200  },
+  { weight: 8,  amount: 500  }, // epic
+  { weight: 3,  amount: 1000 }, // legendary jackpot
+  { weight: 1,  amount: 2500 }, // mythic (very rare big bag)
 ];
 
-const COSMETIC_WEIGHT = 15;
-
-export function drawReward(ownedItemIds: Set<string>): ChestReward {
-  // Try cosmetic with weight; fall back to other pool if user owns everything.
-  const cosmetic = randomCosmeticFor(ownedItemIds);
-  const expanded = cosmetic
-    ? [...POOL, { weight: COSMETIC_WEIGHT, reward: () => cosmetic }]
-    : POOL;
-  const total = expanded.reduce((s, e) => s + e.weight, 0);
+// Kept for signature compatibility — `_ownedItemIds` is ignored since the
+// pool no longer contains cosmetics.
+export function drawReward(_ownedItemIds: Set<string>): ChestReward {
+  const total = POOL.reduce((s, e) => s + e.weight, 0);
   let r = Math.random() * total;
-  for (const e of expanded) {
+  for (const e of POOL) {
     r -= e.weight;
-    if (r <= 0) return e.reward();
+    if (r <= 0) return { type: 'xp', amount: e.amount };
   }
-  return expanded[0].reward();
+  return { type: 'xp', amount: POOL[0].amount };
 }
 
 /** XP exchange rate: 1 XP → 0.5 coins, min exchange 100 XP. */

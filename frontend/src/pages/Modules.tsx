@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useLang } from '../contexts/LanguageContext';
 import { FloatingOrbs } from '../components/FloatingOrbs';
 import { ChestModal } from '../components/ChestModal';
+import { ChestIcon } from '../components/ChestIcon';
 import type { ModuleMeta, LessonMeta } from '../types';
 
 /* Color palette per module color key */
@@ -252,16 +253,16 @@ function ChestNode({
             cursor: isAvailable ? 'pointer' : 'not-allowed',
           }}
         >
-          <span
-            className="text-3xl md:text-4xl select-none"
-            style={{
-              filter: isAvailable
-                ? 'drop-shadow(0 2px 4px hsla(0,0%,0%,0.45))'
-                : 'grayscale(0.4) opacity(0.85)',
-            }}
-          >
-            {isOpened ? '✓' : '🎁'}
-          </span>
+          {isOpened ? (
+            <span className="text-3xl md:text-4xl select-none font-black"
+              style={{ color: '#fff', filter: 'drop-shadow(0 2px 4px hsla(0,0%,0%,0.45))' }}>
+              ✓
+            </span>
+          ) : (
+            <span style={{ filter: isAvailable ? 'drop-shadow(0 3px 5px hsla(0,0%,0%,0.5))' : 'opacity(0.85)' }}>
+              <ChestIcon size={42} status={isAvailable ? 'available' : 'locked'} />
+            </span>
+          )}
         </button>
       </div>
 

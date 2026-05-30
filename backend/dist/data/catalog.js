@@ -50,53 +50,27 @@ exports.CATALOG = [
 function getCatalogItem(id) {
     return exports.CATALOG.find((c) => c.id === id);
 }
-/** Pick one of the cosmetic IDs the user doesn't yet own, weighted by rarity. */
-function randomCosmeticFor(ownedIds) {
-    const available = exports.CATALOG.filter((c) => !ownedIds.has(c.id));
-    if (available.length === 0)
-        return null;
-    // Higher rarity → lower weight
-    const rarityWeights = { common: 60, rare: 25, epic: 10, legendary: 5 };
-    const total = available.reduce((s, c) => s + rarityWeights[c.rarity], 0);
-    let r = Math.random() * total;
-    for (const c of available) {
-        r -= rarityWeights[c.rarity];
-        if (r <= 0)
-            return { type: 'item', itemId: c.id };
-    }
-    return { type: 'item', itemId: available[0].id };
-}
+/** XP-only reward table. Higher amounts are rarer. */
 const POOL = [
-    // Coins (40% total)
-    { weight: 18, reward: () => ({ type: 'coins', amount: 25 }) },
-    { weight: 12, reward: () => ({ type: 'coins', amount: 75 }) },
-    { weight: 8, reward: () => ({ type: 'coins', amount: 200 }) },
-    { weight: 2, reward: () => ({ type: 'coins', amount: 1000 }) }, // jackpot
-    // XP (25%)
-    { weight: 12, reward: () => ({ type: 'xp', amount: 20 }) },
-    { weight: 8, reward: () => ({ type: 'xp', amount: 50 }) },
-    { weight: 5, reward: () => ({ type: 'xp', amount: 150 }) },
-    // Streak freezes (10%)
-    { weight: 10, reward: () => ({ type: 'freeze', amount: 1 }) },
-    // Energy (10%)
-    { weight: 10, reward: () => ({ type: 'energy', amount: 3 }) },
-    // Cosmetic (15% — filled at draw-time, depends on ownership)
+    { weight: 30, amount: 25 }, // small
+    { weight: 25, amount: 50 },
+    { weight: 20, amount: 100 },
+    { weight: 13, amount: 200 },
+    { weight: 8, amount: 500 }, // epic
+    { weight: 3, amount: 1000 }, // legendary jackpot
+    { weight: 1, amount: 2500 }, // mythic (very rare big bag)
 ];
-const COSMETIC_WEIGHT = 15;
-function drawReward(ownedItemIds) {
-    // Try cosmetic with weight; fall back to other pool if user owns everything.
-    const cosmetic = randomCosmeticFor(ownedItemIds);
-    const expanded = cosmetic
-        ? [...POOL, { weight: COSMETIC_WEIGHT, reward: () => cosmetic }]
-        : POOL;
-    const total = expanded.reduce((s, e) => s + e.weight, 0);
+// Kept for signature compatibility — `_ownedItemIds` is ignored since the
+// pool no longer contains cosmetics.
+function drawReward(_ownedItemIds) {
+    const total = POOL.reduce((s, e) => s + e.weight, 0);
     let r = Math.random() * total;
-    for (const e of expanded) {
+    for (const e of POOL) {
         r -= e.weight;
         if (r <= 0)
-            return e.reward();
+            return { type: 'xp', amount: e.amount };
     }
-    return expanded[0].reward();
+    return { type: 'xp', amount: POOL[0].amount };
 }
 /** XP exchange rate: 1 XP → 0.5 coins, min exchange 100 XP. */
 exports.XP_PER_COIN_EXCHANGE_RATE = 2; // 2 XP = 1 coin

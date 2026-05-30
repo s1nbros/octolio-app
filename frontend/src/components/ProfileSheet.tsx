@@ -4,6 +4,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { useLang } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { CoinIcon } from './CoinIcon';
+import { OctopusAvatar } from './OctopusAvatar';
+import { getCatalogItem } from '../shared/catalogClient';
 import { getLevel } from '../types';
 
 interface Props {
@@ -124,37 +126,44 @@ export function ProfileSheet({ open, onClose }: Props) {
           </div>
 
           <div className="px-5 pb-5 overflow-y-auto" style={{ maxHeight: 'calc(85vh - 60px)' }}>
-            {/* User block */}
-            <div className="flex items-center gap-3.5 mb-5 mt-2">
-              <div className="w-14 h-14 rounded-2xl flex items-center justify-center overflow-hidden text-xl font-black flex-shrink-0"
-                style={{
-                  background: 'hsl(var(--c-primary)/0.2)',
-                  border: '2px solid hsl(var(--c-primary)/0.4)',
-                  color: 'hsl(var(--c-fg))',
-                }}>
-                {user.avatar?.startsWith('data:')
-                  ? <img src={user.avatar} alt="avatar" className="w-full h-full object-cover" />
-                  : <span>{user.name?.[0]?.toUpperCase() ?? '?'}</span>}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-extrabold text-lg truncate" style={{ color: 'hsl(var(--c-fg))' }}>
-                  {user.name}
-                </p>
-                <p className="text-xs" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
-                  Lv.{level.level} · {level.label[lang]}
-                </p>
-              </div>
-              {user.is_pro && (
-                <span className="text-xs font-black px-2.5 py-1 rounded-full flex-shrink-0"
+            {/* Mascot + identity block */}
+            {(() => {
+              const hatItem  = getCatalogItem(user.equipped_hat);
+              const faceItem = getCatalogItem(user.equipped_face);
+              const bodyItem = getCatalogItem(user.equipped_body);
+              return (
+                <div className="flex items-center gap-4 mb-5 mt-2 rounded-2xl p-3"
                   style={{
-                    background: 'hsl(var(--c-primary)/0.15)',
-                    color: 'hsl(var(--c-primary))',
-                    border: '1px solid hsl(var(--c-primary)/0.3)',
+                    background: 'linear-gradient(135deg, hsl(var(--c-primary)/0.10), hsl(var(--c-green)/0.06))',
+                    border: '1px solid hsl(var(--c-primary)/0.2)',
                   }}>
-                  ✦ PRO
-                </span>
-              )}
-            </div>
+                  <div className="flex-shrink-0">
+                    <OctopusAvatar size={72}
+                      hatEmoji={hatItem?.emoji ?? null}
+                      faceEmoji={faceItem?.emoji ?? null}
+                      bodyEmoji={bodyItem?.emoji ?? null} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-extrabold text-lg truncate" style={{ color: 'hsl(var(--c-fg))' }}>
+                      {user.name}
+                    </p>
+                    <p className="text-xs mb-1" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+                      Lv.{level.level} · {level.label[lang]}
+                    </p>
+                    {user.is_pro && (
+                      <span className="text-[10px] font-black px-2 py-0.5 rounded-full inline-block"
+                        style={{
+                          background: 'hsl(var(--c-primary)/0.15)',
+                          color: 'hsl(var(--c-primary))',
+                          border: '1px solid hsl(var(--c-primary)/0.3)',
+                        }}>
+                        ✦ PRO
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+            })()}
 
             {/* Edit Profile button */}
             <button

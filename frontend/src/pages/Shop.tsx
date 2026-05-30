@@ -223,47 +223,49 @@ export function Shop() {
                   ? <>Trade XP for coins (2 XP = 1 <CoinIcon size={12} />, min 100 XP)</>
                   : <>Обмени XP за монети (2 XP = 1 <CoinIcon size={12} />, мин 100)</>}
               </p>
-              <div className="flex gap-2 items-stretch">
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  value={exchangeXp}
-                  onChange={e => {
-                    // Strip any non-digits so iOS keypad pastes don't break us.
-                    const cleaned = e.target.value.replace(/[^0-9]/g, '');
-                    setExchangeXp(cleaned);
-                  }}
-                  className="flex-1 min-w-0 px-3 py-2 rounded-lg text-sm font-semibold outline-none"
-                  style={{
-                    background: 'hsl(228, 14%, 14%)',
-                    border: '1px solid hsla(0,0%,100%,0.08)',
-                    color: 'hsl(var(--c-fg))',
-                  }} />
-                <button
-                  type="button"
-                  onClick={() => {
-                    // Round the user's XP down to the largest multiple of 2 we can use
-                    // (since the exchange rate is 2 XP = 1 coin → we always want even amounts).
-                    const maxUsable = Math.max(0, Math.floor((user?.xp ?? 0) / 2) * 2);
-                    setExchangeXp(String(Math.max(100, maxUsable)));
-                  }}
-                  className="rounded-lg font-bold text-xs px-2.5"
-                  style={{
-                    background: 'rgba(255,255,255,0.06)',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    color: 'hsl(var(--c-fg-muted))',
-                  }}>
-                  MAX
-                </button>
+              <div className="flex flex-col sm:flex-row gap-2 items-stretch">
+                <div className="relative flex-1 min-w-0">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    value={exchangeXp}
+                    onChange={e => {
+                      // Strip any non-digits so iOS keypad pastes don't break us.
+                      const cleaned = e.target.value.replace(/[^0-9]/g, '');
+                      setExchangeXp(cleaned);
+                    }}
+                    className="w-full px-3 pr-14 py-2 rounded-lg text-sm font-semibold outline-none"
+                    style={{
+                      background: 'hsl(228, 14%, 14%)',
+                      border: '1px solid hsla(0,0%,100%,0.08)',
+                      color: 'hsl(var(--c-fg))',
+                    }} />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      // Round the user's XP down to the largest multiple of 2 we can use
+                      // (rate is 2 XP = 1 coin → we always want an even amount).
+                      const maxUsable = Math.max(0, Math.floor((user?.xp ?? 0) / 2) * 2);
+                      setExchangeXp(String(Math.max(100, maxUsable)));
+                    }}
+                    className="absolute right-1 top-1/2 -translate-y-1/2 rounded-md font-bold text-[10px] px-2 py-1 tracking-wider"
+                    style={{
+                      background: 'rgba(255,255,255,0.08)',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      color: 'hsl(var(--c-fg-muted))',
+                    }}>
+                    MAX
+                  </button>
+                </div>
                 <button onClick={exchange} disabled={exchangeBusy}
-                  className="rounded-lg font-bold text-sm px-4 py-2 flex items-center gap-1.5 flex-shrink-0"
+                  className="rounded-lg font-bold text-sm px-4 py-2 flex items-center justify-center gap-1.5 flex-shrink-0 whitespace-nowrap"
                   style={{
                     background: 'linear-gradient(135deg, hsl(45, 95%, 55%), hsl(35, 90%, 55%))',
                     color: '#1a1f2e',
                     opacity: exchangeBusy ? 0.6 : 1,
                   }}>
-                  → <CoinIcon size={14} /> {Math.floor(Math.max(100, Number(exchangeXp) || 0) / 2)}
+                  {lang === 'en' ? 'Get' : 'Получи'} <CoinIcon size={14} /> {Math.floor(Math.max(100, Number(exchangeXp) || 0) / 2)}
                 </button>
               </div>
             </div>

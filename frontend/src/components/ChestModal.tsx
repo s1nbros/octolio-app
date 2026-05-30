@@ -14,6 +14,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useLang } from '../contexts/LanguageContext';
 import { ALL_REWARD_TILES } from '../shared/catalogClient';
 import { CoinIcon } from './CoinIcon';
+import { ChestIcon } from './ChestIcon';
 
 type RewardType = 'xp' | 'coins' | 'freeze' | 'energy' | 'item';
 interface OpenResponse {
@@ -75,13 +76,21 @@ function buildReelTiles(winning: ReelTile, lang: 'en' | 'bg'): ReelTile[] {
   return out;
 }
 
+function xpRarity(amount: number): string {
+  if (amount >= 1000) return 'legendary';
+  if (amount >= 500) return 'epic';
+  if (amount >= 200) return 'rare';
+  return 'common';
+}
+
 function rewardToTile(
   reward: OpenResponse['reward'],
   item: OpenResponse['item'],
   lang: 'en' | 'bg',
 ): ReelTile {
-  if (reward.type === 'coins') return { id: `coins-${reward.amount}`, emoji: '🪙', label: `${reward.amount}`, rarity: reward.amount! >= 200 ? 'epic' : 'rare' };
-  if (reward.type === 'xp')    return { id: `xp-${reward.amount}`, emoji: '✨', label: `${reward.amount} XP`, rarity: reward.amount! >= 100 ? 'epic' : 'rare' };
+  if (reward.type === 'xp')    return { id: `xp-${reward.amount}`, emoji: '✨', label: `${reward.amount} XP`, rarity: xpRarity(reward.amount!) };
+  // Legacy reward shapes (kept for backward compat with older chest_opens rows).
+  if (reward.type === 'coins') return { id: `coins-${reward.amount}`, emoji: '🪙', label: `${reward.amount}`, rarity: 'rare' };
   if (reward.type === 'freeze')return { id: `freeze`, emoji: '🧊', label: lang === 'en' ? 'Streak freeze' : 'Замразяване', rarity: 'epic' };
   if (reward.type === 'energy')return { id: `energy`, emoji: '⚡', label: lang === 'en' ? 'Energy +3' : 'Енергия +3', rarity: 'rare' };
   if (item) return { id: item.id, emoji: item.emoji, label: item.name[lang], rarity: item.rarity };
@@ -198,7 +207,9 @@ export function ChestModal({ target, onClose, onOpened }: Props) {
         {/* ─── IDLE: chest art + open button ─── */}
         {phase === 'idle' && (
           <div className="text-center py-12 px-6">
-            <div className="text-8xl mb-2 animate-bounce-soft">🎁</div>
+            <div className="mb-3 flex justify-center animate-bounce-soft">
+              <ChestIcon size={96} status="available" />
+            </div>
             <h2 className="text-2xl font-extrabold mb-2" style={{ color: 'hsl(var(--c-fg))' }}>
               {lang === 'en' ? 'Mystery Chest' : 'Мистериозен сандък'}
             </h2>

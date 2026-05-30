@@ -60,21 +60,15 @@ export function getCatalogItem(id: string | null | undefined): CatalogItem | und
 
 interface TileLike { id: string; emoji: string; label: string; rarity: string }
 
-/** Pool of decoy tiles used in the spin reel (must look realistic). */
-export function ALL_REWARD_TILES(lang: 'en' | 'bg'): TileLike[] {
-  const out: TileLike[] = [
-    { id: 'coins-25',  emoji: '🪙', label: '25',  rarity: 'common' },
-    { id: 'coins-75',  emoji: '🪙', label: '75',  rarity: 'common' },
-    { id: 'coins-200', emoji: '🪙', label: '200', rarity: 'rare' },
-    { id: 'coins-1000',emoji: '🪙', label: '1000',rarity: 'legendary' },
-    { id: 'xp-20',  emoji: '✨', label: '20 XP',  rarity: 'common' },
-    { id: 'xp-50',  emoji: '✨', label: '50 XP',  rarity: 'rare' },
-    { id: 'xp-150', emoji: '✨', label: '150 XP', rarity: 'epic' },
-    { id: 'freeze', emoji: '🧊', label: lang === 'en' ? 'Freeze' : 'Замразяване', rarity: 'rare' },
-    { id: 'energy', emoji: '⚡', label: lang === 'en' ? 'Energy +3' : 'Енергия +3', rarity: 'common' },
+/** Pool of decoy XP tiles used in the spin reel. Chests are XP-only. */
+export function ALL_REWARD_TILES(_lang: 'en' | 'bg'): TileLike[] {
+  return [
+    { id: 'xp-25',   emoji: '✨', label: '25 XP',   rarity: 'common' },
+    { id: 'xp-50',   emoji: '✨', label: '50 XP',   rarity: 'common' },
+    { id: 'xp-100',  emoji: '✨', label: '100 XP',  rarity: 'common' },
+    { id: 'xp-200',  emoji: '✨', label: '200 XP',  rarity: 'rare' },
+    { id: 'xp-500',  emoji: '✨', label: '500 XP',  rarity: 'epic' },
+    { id: 'xp-1000', emoji: '✨', label: '1000 XP', rarity: 'legendary' },
+    { id: 'xp-2500', emoji: '✨', label: '2500 XP', rarity: 'legendary' },
   ];
-  for (const c of CATALOG_ITEMS) {
-    out.push({ id: c.id, emoji: c.emoji, label: c.name[lang], rarity: c.rarity });
-  }
-  return out;
 }
