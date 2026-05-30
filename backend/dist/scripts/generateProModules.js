@@ -81,7 +81,7 @@ const SPECS = [
         proOnly: true,
         lessonTopics: [
             'FIRE movement and financial independence',
-            'Retirement accounts: IRA, 401k, pension pillars',
+            'EU retirement accounts: workplace pension (Pillar 2), voluntary private pension (Pillar 3), national variants (ISA, PEA, etc.)',
             'Safe withdrawal rate and the 4% rule',
         ],
         lessonIcons: ['🔥', '🏦', '📉'],

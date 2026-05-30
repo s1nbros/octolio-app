@@ -451,6 +451,13 @@ function LeftSidebar() {
             <IconLogout />
           </button>
         </div>
+
+        {/* Legal links */}
+        <div className="flex items-center justify-center gap-3 mt-3 text-[11px]" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+          <a href="/faq" className="hover:underline">{lang === 'en' ? 'FAQ' : 'ЧЗВ'}</a>
+          <span>·</span>
+          <a href="/privacy" className="hover:underline">{lang === 'en' ? 'Privacy' : 'Поверителност'}</a>
+        </div>
       </div>
     </aside>
   );

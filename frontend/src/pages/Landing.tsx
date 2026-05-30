@@ -172,6 +172,32 @@ export function Landing() {
             </Link>
           </div>
         </section>
+
+        {/* Footer */}
+        <footer
+          className="max-w-5xl mx-auto px-4 sm:px-6 pb-10 pt-2 text-center text-sm"
+          style={{ color: 'hsl(var(--c-fg-muted))' }}
+        >
+          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 mb-3">
+            <Link to="/faq" className="hover:underline" style={{ color: 'hsl(var(--c-primary))' }}>
+              {lang === 'en' ? 'FAQ' : 'Често задавани въпроси'}
+            </Link>
+            <span style={{ color: 'hsl(var(--c-fg)/0.2)' }}>•</span>
+            <Link to="/privacy" className="hover:underline" style={{ color: 'hsl(var(--c-primary))' }}>
+              {lang === 'en' ? 'Privacy Policy' : 'Политика за поверителност'}
+            </Link>
+            <span style={{ color: 'hsl(var(--c-fg)/0.2)' }}>•</span>
+            <Link to="/login" className="hover:underline" style={{ color: 'hsl(var(--c-fg-muted))' }}>
+              {lang === 'en' ? 'Log in' : 'Вход'}
+            </Link>
+          </div>
+          <p className="text-xs" style={{ color: 'hsl(var(--c-fg)/0.5)' }}>
+            © {new Date().getFullYear()} Octolio.{' '}
+            {lang === 'en'
+              ? 'Educational content only — not regulated financial advice.'
+              : 'Само образователно съдържание — не е регулирана финансова консултация.'}
+          </p>
+        </footer>
       </div>
     </div>
   );

@@ -81,7 +81,7 @@
               { "label": { "en": "Money under your mattress", "bg": "Пари под матрака" }, "emoji": "🛏️", "isAsset": false },
               { "label": { "en": "Automated monthly transfer", "bg": "Автоматичен месечен превод" }, "emoji": "🤖", "isAsset": true },
               { "label": { "en": "Spending bonuses on luxuries", "bg": "Харчене на бонуси за лукс" }, "emoji": "💸", "isAsset": false },
-              { "label": { "en": "Treasury bond ladder", "bg": "Стълба от държавни облигации" }, "emoji": "📜", "isAsset": true },
+              { "label": { "en": "EU government bond ladder", "bg": "Стълба от ЕС държавни облигации" }, "emoji": "📜", "isAsset": true },
               { "label": { "en": "Lottery tickets", "bg": "Билети от лотария" }, "emoji": "🎰", "isAsset": false }
             ]
           },
@@ -207,7 +207,7 @@
             "type": "sort_items",
             "xp": 20,
             "sortItems": [
-              { "label": { "en": "VOO (S&P 500 ETF)", "bg": "VOO (S&P 500 ETF)" }, "emoji": "📊", "isAsset": true },
+              { "label": { "en": "S&P 500 UCITS ETF (e.g., CSPX, VUSA)", "bg": "S&P 500 UCITS ETF (напр. CSPX, VUSA)" }, "emoji": "📊", "isAsset": true },
               { "label": { "en": "Penny stock from Reddit", "bg": "Пени-акция от Reddit" }, "emoji": "🚩", "isAsset": false },
               { "label": { "en": "Government bond fund", "bg": "Фонд от държавни облигации" }, "emoji": "🏛️", "isAsset": true },
               { "label": { "en": "\"Get rich quick\" course", "bg": "Курс „забогатей бързо\"" }, "emoji": "💸", "isAsset": false },
@@ -285,7 +285,7 @@
               {
                 "emoji": "⭐",
                 "title": { "en": "Anatomy of a Credit Score", "bg": "Анатомия на кредитен рейтинг" },
-                "body": { "en": "Your FICO score (300–850) is built from:\n• 35% Payment history (NEVER miss)\n• 30% Credit utilization (use <30% of limit)\n• 15% Length of credit history\n• 10% New credit inquiries\n• 10% Credit mix\n\nA score of 750+ saves you tens of thousands in lifetime interest.", "bg": "FICO рейтингът (300–850) се състои от:\n• 35% История на плащания (НИКОГА не пропускай)\n• 30% Използване (под 30% от лимита)\n• 15% Дължина на историята\n• 10% Нови запитвания\n• 10% Микс\n\nРейтинг 750+ спестява десетки хиляди лихва за живота." },
+                "body": { "en": "Your EU credit-bureau score (range varies by country and bureau — e.g., Schufa in Germany, Experian/Equifax in the UK, CCR in Bulgaria) is generally built from:\n• ~35% Payment history (NEVER miss)\n• ~30% Credit utilization (use <30% of limit)\n• ~15% Length of credit history\n• ~10% New credit inquiries\n• ~10% Credit mix\n\nA high score saves you thousands of euros in lifetime interest on mortgages and consumer loans.", "bg": "Кредитният ти рейтинг при ЕС кредитните бюра (обхватът варира — напр. Schufa в Германия, Experian/Equifax във Великобритания, ЦКР в България) обикновено се състои от:\n• ~35% История на плащания (НИКОГА не пропускай)\n• ~30% Използване (под 30% от лимита)\n• ~15% Дължина на историята\n• ~10% Нови запитвания\n• ~10% Микс\n\nВисокият рейтинг спестява хиляди евро лихва за живота при ипотеки и потребителски кредити." },
                 "highlight": { "en": "💡 One missed payment can drop your score 100 points. Protect it.", "bg": "💡 Едно пропуснато плащане може да свали рейтинга със 100 точки. Пази го." }
               },
               {
@@ -415,7 +415,7 @@
               {
                 "emoji": "💼",
                 "title": { "en": "Why a Side Hustle?", "bg": "Защо странична работа?" },
-                "body": { "en": "A side hustle is income outside your main job. The benefits go beyond cash:\n• Skill diversification (less dependent on one employer)\n• Tax-deductible expenses\n• A path to entrepreneurship without the risk\n\nMedian US side-hustle earnings: $810/month. Some scale into full businesses.", "bg": "Страничната работа е доход извън основната. Ползите са повече от пари:\n• Диверсификация на умения (по-малко зависим от 1 работодател)\n• Данъчно приспадащи се разходи\n• Път към предприемачество без риска\n\nСредна странична работа в САЩ: $810/месец. Някои стават пълноценен бизнес." },
+                "body": { "en": "A side hustle is income outside your main job. The benefits go beyond cash:\n• Skill diversification (less dependent on one employer)\n• Tax-deductible expenses (under your national rules)\n• A path to entrepreneurship without the risk\n\nTypical European side-hustle earnings: ~€400–€700/month. Some scale into full businesses. Remember to register as self-employed once you cross your country's threshold (varies — check your national tax authority).", "bg": "Страничната работа е доход извън основната. Ползите са повече от пари:\n• Диверсификация на умения (по-малко зависим от 1 работодател)\n• Данъчно приспадащи се разходи (по националните правила)\n• Път към предприемачество без риска\n\nТипична странична работа в Европа: ~€400–€700/месец. Някои стават пълноценен бизнес. Не забравяй да се регистрираш като самоосигуряващ се, когато прехвърлиш националния праг (различен във всяка страна — провери при НАП или съответния орган)." },
                 "highlight": { "en": "💡 Best side hustles solve a problem you already understand.", "bg": "💡 Най-добрите странични работи решават проблем, който вече разбираш." }
               },
               {
@@ -1352,7 +1352,7 @@
               {
                 "emoji": "🏦",
                 "title": { "en": "Tax-Advantaged Accounts", "bg": "Данъчно облекчени сметки" },
-                "body": { "en": "Three flavors:\n• PRE-TAX (401k, traditional IRA, pension Pillar 3) — deduct now, taxed on withdrawal\n• POST-TAX (Roth IRA, ISA) — pay tax now, withdraw FREE\n• TAXABLE BROKERAGE — no tax breaks, full flexibility\n\nMost people should max pre-tax + post-tax accounts BEFORE touching taxable.", "bg": "Три типа:\n• ПРЕДИ-ДАНЪК (401k, IRA, Pillar 3) — приспадаш сега, данък при теглене\n• СЛЕД-ДАНЪК (Roth IRA, ISA) — данък сега, тегленето е без данък\n• ОБЛАГАЕМА БРОКЕРСКА — без облекчения, пълна гъвкавост\n\nМаксимизирай първите две преди облагаемата." },
+                "body": { "en": "Three flavors of investment accounts (common across EU pension systems):\n• PRE-TAX (workplace pension / Pillar 2, voluntary private pension / Pillar 3) — deduct contributions now, taxed on withdrawal in retirement\n• POST-TAX (e.g., UK Lifetime ISA, French PEA, Bulgarian voluntary pension top-ups) — pay tax now, withdraw tax-free under the rules\n• TAXABLE BROKERAGE (any EU broker — Trade Republic, Degiro, IBKR, etc.) — no tax breaks, full flexibility, you owe capital-gains tax on profits\n\nMost people should max their pension pillars BEFORE touching a taxable brokerage account.", "bg": "Три типа инвестиционни сметки (общи за пенсионните системи в ЕС):\n• ПРЕДИ-ДАНЪК (работодателска пенсия / Стълб 2, доброволна частна пенсия / Стълб 3) — приспадаш вноските сега, данък при теглене в пенсия\n• СЛЕД-ДАНЪК (напр. ISA във Великобритания, PEA във Франция, доброволни допълнителни пенсионни вноски в България) — данък сега, тегленето е без данък по правилата\n• ОБЛАГАЕМА БРОКЕРСКА (всеки ЕС брокер — Trade Republic, Degiro, IBKR и т.н.) — без облекчения, пълна гъвкавост, дължиш данък върху капиталовите печалби\n\nМаксимизирай пенсионните стълбове преди облагаемата брокерска." },
                 "highlight": { "en": "🎯 €10K pre-tax in a 30% bracket = instant €3K tax saving. Year after year.", "bg": "🎯 €10K преди-данък при 30% = моментални €3K спестен данък. Всяка година." }
               }
             ]
@@ -1405,7 +1405,7 @@
               { "label": { "en": "Hiding income from tax authority", "bg": "Скриване на доход от данъчните" }, "emoji": "🚨", "isAsset": false },
               { "label": { "en": "Tax-loss harvesting in December", "bg": "Реализиране на загуби през декември" }, "emoji": "❄️", "isAsset": true },
               { "label": { "en": "Day trading in a taxable account", "bg": "Дневна търговия в облагаема сметка" }, "emoji": "💸", "isAsset": false },
-              { "label": { "en": "HSA contributions (if eligible)", "bg": "HSA вноски (ако имаш достъп)" }, "emoji": "🏥", "isAsset": true },
+              { "label": { "en": "Voluntary health insurance premiums (if deductible in your country)", "bg": "Вноски за доброволно здравно осигуряване (ако са приспадащи се в твоята страна)" }, "emoji": "🏥", "isAsset": true },
               { "label": { "en": "Cash payments \"under the table\"", "bg": "Кешови плащания „под масата\"" }, "emoji": "💼", "isAsset": false }
             ]
           },
@@ -1561,12 +1561,12 @@
             "question": { "en": "What's a \"stablecoin\"?", "bg": "Какво е „стейбълкойн\"?" },
             "options": [
               { "en": "A coin that always rises", "bg": "Монета, която винаги расте" },
-              { "en": "A token pegged to a stable value (usually $1)", "bg": "Токен, привързан към стабилна стойност (обикновено $1)" },
+              { "en": "A token pegged to a stable value (usually 1 USD; EUR-pegged stablecoins like EURS, EURC also exist)", "bg": "Токен, привързан към стабилна стойност (обикновено 1 USD; съществуват и EUR-стейбълкойни като EURS, EURC)" },
               { "en": "Bitcoin's nickname", "bg": "Прякор на Bitcoin" },
               { "en": "A coin issued by central banks", "bg": "Монета от централни банки" }
             ],
             "correctIndex": 1,
-            "explanation": { "en": "USDC, USDT, DAI try to maintain $1 value via reserves or algorithms. Some have failed catastrophically (Terra/UST). Always check what backs them.", "bg": "USDC, USDT, DAI се опитват да поддържат $1 чрез резерви или алгоритми. Някои са се сринали катастрофално (Terra/UST). Винаги проверявай покритието." }
+            "explanation": { "en": "USDC, USDT, DAI try to maintain 1 USD value via reserves or algorithms. EUR-pegged options (EURS, EURC) exist too, and under MiCA the EU now regulates stablecoin issuers operating in the bloc. Some stablecoins have failed catastrophically (Terra/UST). Always check what backs them.", "bg": "USDC, USDT, DAI се опитват да поддържат 1 USD чрез резерви или алгоритми. Съществуват и EUR-стейбълкойни (EURS, EURC), а по MiCA ЕС вече регулира емитентите. Някои са се сринали катастрофално (Terra/UST). Винаги проверявай покритието." }
           },
           {
             "id": "cr-choice-4",
@@ -1580,7 +1580,7 @@
               { "en": "High gas fees", "bg": "Високи такси" }
             ],
             "correctIndex": 1,
-            "explanation": { "en": "DeFi has lost $3B+ to bugs and exploits. Send to wrong address? Gone. Buggy contract? Drained. No customer service. No reversal.", "bg": "DeFi е загубил $3B+ от бъгове и експлойти. Грешен адрес? Загубено. Бъг в договора? Източен. Без обслужване. Без връщане." }
+            "explanation": { "en": "DeFi has lost billions in value to bugs and exploits. Send to the wrong address? Gone. Buggy contract? Drained. No customer service. No chargeback or SEPA-style reversal.", "bg": "DeFi е загубил милиарди в стойност от бъгове и експлойти. Грешен адрес? Загубено. Бъг в договора? Източен. Без обслужване. Без chargeback или SEPA-стилно връщане." }
           }
         ]
       }
@@ -2037,7 +2037,7 @@
             "id": "es-choice-2",
             "type": "choice",
             "xp": 15,
-            "question": { "en": "Beneficiary forms on a 401k/IRA generally...", "bg": "Бенефициент в 401k/IRA обикновено..." },
+            "question": { "en": "Beneficiary forms on pension accounts and life-insurance contracts generally...", "bg": "Бенефициент по пенсионни сметки и животозастрахователни договори обикновено..." },
             "options": [
               { "en": "Are ignored if you have a will", "bg": "Се игнорират, ако имаш завещание" },
               { "en": "Override the instructions in your will", "bg": "Имат приоритет над завещанието" },

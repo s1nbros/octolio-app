@@ -256,7 +256,7 @@ export function DailyQuestsTeaser({ completedLessonsToday, streak, xp }: { compl
 
 /* ─── Money fact ─── */
 const FACTS = [
-  { fact: 'Saving $5/day from 25 to 65 at 7% grows to about $666,000.', tag: 'Compound interest' },
+  { fact: 'Saving €5/day from 25 to 65 at 7% grows to about €600,000.', tag: 'Compound interest' },
   { fact: 'The average millionaire has 7 income streams.', tag: 'Wealth building' },
   { fact: '50-30-20: spend 50% on needs, 30% on wants, 20% on savings.', tag: 'Budgeting' },
   { fact: 'Index funds beat 90% of active managers over 15 years.', tag: 'Investing' },

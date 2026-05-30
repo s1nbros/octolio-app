@@ -6,6 +6,7 @@ import { useLang } from '../contexts/LanguageContext';
 import { FloatingOrbs } from '../components/FloatingOrbs';
 import { OctopusAvatar } from '../components/OctopusAvatar';
 import { CoinIcon } from '../components/CoinIcon';
+import { FaqList, FAQ_CATEGORIES } from '../components/FaqList';
 import { getCatalogItem } from '../shared/catalogClient';
 import { getLevel, getLevelProgress, LEVELS } from '../types';
 
@@ -31,7 +32,7 @@ function resizeImage(file: File, size = 240): Promise<string> {
 }
 
 type NameStatus = 'idle' | 'checking' | 'available' | 'taken';
-type Tab = 'overview' | 'achievements' | 'friends' | 'settings';
+type Tab = 'overview' | 'achievements' | 'friends' | 'faq' | 'settings';
 
 function Hint({ ok, text }: { ok: boolean; text: string }) {
   return (
@@ -242,7 +243,7 @@ export function Profile() {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialTab = (searchParams.get('tab') as Tab) ?? 'overview';
   const [tab, setTabState] = useState<Tab>(
-    ['overview', 'achievements', 'friends', 'settings'].includes(initialTab) ? initialTab : 'overview'
+    ['overview', 'achievements', 'friends', 'faq', 'settings'].includes(initialTab) ? initialTab : 'overview'
   );
   const setTab = (t: Tab) => {
     setTabState(t);
@@ -382,6 +383,7 @@ export function Profile() {
     overview:     { en: 'Overview',      bg: 'Преглед' },
     achievements: { en: 'Achievements',  bg: 'Постижения' },
     friends:      { en: 'Friends',       bg: 'Приятели' },
+    faq:          { en: 'FAQ',           bg: 'ЧЗВ' },
     settings:     { en: 'Settings',      bg: 'Настройки' },
   };
 
@@ -514,7 +516,7 @@ export function Profile() {
         {/* ── TABS ── */}
         <div className="flex gap-1 mb-6 p-1 rounded-xl animate-fade-up overflow-x-auto"
           style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid var(--c-border)', width: 'fit-content', maxWidth: '100%' }}>
-          {(['overview', 'achievements', 'friends', 'settings'] as const).map(t => (
+          {(['overview', 'achievements', 'friends', 'faq', 'settings'] as const).map(t => (
             <button key={t} onClick={() => setTab(t)}
               className="px-3 sm:px-4 py-2 rounded-lg text-sm font-semibold transition-all whitespace-nowrap"
               style={{
@@ -704,6 +706,33 @@ export function Profile() {
                   <span className="text-xs" style={{ color: 'hsl(var(--c-fg-subtle))' }}>{a.sub}</span>
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── FAQ TAB ── */}
+        {tab === 'faq' && (
+          <div className="animate-fade-up">
+            <div className="mb-5">
+              <h2 className="font-extrabold text-xl mb-0.5" style={{ color: 'hsl(var(--c-fg))' }}>
+                {lang === 'en' ? 'Frequently Asked Questions' : 'Често задавани въпроси'}
+              </h2>
+              <p className="text-sm" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+                {lang === 'en'
+                  ? `${FAQ_CATEGORIES.reduce((acc, c) => acc + c.items.length, 0)} answers across ${FAQ_CATEGORIES.length} topics.`
+                  : `${FAQ_CATEGORIES.reduce((acc, c) => acc + c.items.length, 0)} отговора в ${FAQ_CATEGORIES.length} теми.`}
+              </p>
+            </div>
+            <FaqList />
+            <div className="mt-8 pt-6 text-sm flex flex-wrap gap-x-5 gap-y-2"
+              style={{ borderTop: '1px solid hsl(var(--c-fg)/0.08)', color: 'hsl(var(--c-fg-muted))' }}>
+              {lang === 'en' ? "Didn't find what you needed? " : 'Не намери това, което търсиш? '}
+              <a href="mailto:[CONTACT EMAIL]" style={{ color: 'hsl(var(--c-primary))' }}>
+                {lang === 'en' ? 'Email us' : 'Пиши ни'}
+              </a>
+              <Link to="/privacy" style={{ color: 'hsl(var(--c-primary))' }}>
+                {lang === 'en' ? 'Privacy Policy' : 'Политика за поверителност'}
+              </Link>
             </div>
           </div>
         )}

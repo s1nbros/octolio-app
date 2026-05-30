@@ -1038,7 +1038,7 @@ const staticModules = [
                     },
                     {
                         id: 'cs2-order-1', type: 'order_items', xp: 25,
-                        orderInstruction: { en: 'Order the FICO credit-score factors from MOST to LEAST important:', bg: 'Подреди FICO факторите от НАЙ-ВАЖЕН към НАЙ-МАЛОВАЖЕН:' },
+                        orderInstruction: { en: 'Order the credit-score factors used by EU credit bureaus from MOST to LEAST important:', bg: 'Подреди факторите за кредитен рейтинг (ползвани от ЕС кредитни бюра) от НАЙ-ВАЖЕН към НАЙ-МАЛОВАЖЕН:' },
                         orderItems: [
                             { label: { en: 'Payment history (on-time?)', bg: 'История на плащанията (навреме?)' }, emoji: '✅' },
                             { label: { en: 'Credit utilization (% of limit used)', bg: 'Усвояване (% от лимита)' }, emoji: '📊' },
@@ -2156,7 +2156,7 @@ const staticModules = [
                                 { en: 'A diversified total-market ETF in a bull run', bg: 'Диверсифициран total-market ETF в бичи цикъл' },
                                 { en: 'A leveraged 3× ETF', bg: 'Ливъридж 3× ETF' },
                                 { en: 'A single small-cap stock', bg: 'Единична малка компания' },
-                                { en: 'A short-term Treasury ETF', bg: 'Краткосрочен държавен ETF' },
+                                { en: 'A short-term EU government bond ETF', bg: 'Краткосрочен ETF на ЕС държавни облигации' },
                             ],
                             correctPatternIndex: 0,
                         },

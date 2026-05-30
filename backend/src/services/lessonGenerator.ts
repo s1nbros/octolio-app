@@ -95,6 +95,13 @@ HARD REQUIREMENTS:
 • icon = a single emoji.
 • DO NOT reuse any of these previously-generated prompts/scenarios: ${JSON.stringify(avoid).slice(0, 1500)}
 
+EUROPEAN LOCALIZATION — ALL examples, amounts and rules must fit a European audience:
+• Currency: euros (€). NEVER use $/USD except when referring to actual USD-pegged stablecoins.
+• Tax/retirement: refer to "workplace pension (Pillar 2)", "voluntary private pension (Pillar 3)", "your national tax authority". NEVER use IRS, 401(k), Roth IRA, HSA, FSA, FICO.
+• Banking & payments: SEPA, IBAN, ECB rate, EU consumer-credit / mortgage directives.
+• Investing: UCITS ETFs (CSPX, VUSA, VWCE…), MiCA (crypto), MiFID II (investor protection). S&P 500 is OK to reference as a benchmark; if you mention a US ticker, also mention the EU UCITS equivalent.
+• Credit scores: EU credit bureaus (Schufa, Experian UK, ICCS/CCR…). Do NOT cite FICO ranges as universal.
+
 Return ONLY valid JSON for the Lesson object — no markdown fences, no commentary.`;
 }
 
