@@ -7,6 +7,7 @@ import { FloatingOrbs } from './FloatingOrbs';
 import { ProWidget, LeagueWidget, MoneyFactWidget, StreakWidget, DailyQuestsTeaser } from './SidebarWidgets';
 import { NotificationBell } from './NotificationBell';
 import { CoinIcon } from './CoinIcon';
+import { WhatsNewModal } from './WhatsNewModal';
 import { getLevel } from '../types';
 
 const SEEN_REVIEW_KEY  = 'octolio_seen_review_v1';
@@ -512,6 +513,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <RightRail />
         </div>
       </div>
+
+      {/* First-visit-after-update announcement */}
+      <WhatsNewModal />
     </div>
   );
 }
