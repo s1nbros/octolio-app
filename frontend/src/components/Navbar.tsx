@@ -201,7 +201,6 @@ function MobileDrawer({
     { to: '/tools',   label: { en: 'Tools', bg: 'Инструменти' }, icon: <IconTools />, active: isActive('/tools'), isNew: !seenTools },
     { to: '/shop',    label: { en: 'Shop', bg: 'Магазин' }, icon: <IconShop />, active: isActive('/shop'), isNew: !seenShop },
     { to: '/league',  label: { en: 'League', bg: 'Лига' }, icon: <IconLeague />, active: isActive('/league') },
-    { to: '/friends', label: { en: 'Friends', bg: 'Приятели' }, icon: <IconFriends />, active: isActive('/friends'), isNew: !seenFriends },
     ...(isPro ? [{ to: '/advisor', label: { en: 'AI Advisor', bg: 'AI Съветник' }, icon: <IconAdvisor />, active: isActive('/advisor') }] : []),
     { to: '/profile', label: { en: 'Profile', bg: 'Профил' }, icon: <IconProfile />, active: isActive('/profile') },
   ] as { to: string; label: { en: string; bg: string }; icon: React.ReactElement; active: boolean; isNew?: boolean }[];

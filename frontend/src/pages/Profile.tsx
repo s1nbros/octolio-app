@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
+import { FriendsSection } from '../components/FriendsSection';
 import { useAuth } from '../contexts/AuthContext';
 import { useLang } from '../contexts/LanguageContext';
 import { FloatingOrbs } from '../components/FloatingOrbs';
@@ -30,7 +31,7 @@ function resizeImage(file: File, size = 240): Promise<string> {
 }
 
 type NameStatus = 'idle' | 'checking' | 'available' | 'taken';
-type Tab = 'overview' | 'achievements' | 'settings';
+type Tab = 'overview' | 'achievements' | 'friends' | 'settings';
 
 function Hint({ ok, text }: { ok: boolean; text: string }) {
   return (
@@ -238,7 +239,20 @@ export function Profile() {
   const { lang } = useLang();
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const [tab, setTab] = useState<Tab>('overview');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialTab = (searchParams.get('tab') as Tab) ?? 'overview';
+  const [tab, setTabState] = useState<Tab>(
+    ['overview', 'achievements', 'friends', 'settings'].includes(initialTab) ? initialTab : 'overview'
+  );
+  const setTab = (t: Tab) => {
+    setTabState(t);
+    if (t === 'overview') {
+      searchParams.delete('tab');
+    } else {
+      searchParams.set('tab', t);
+    }
+    setSearchParams(searchParams, { replace: true });
+  };
   const [name, setName] = useState(user?.name ?? '');
   const [pendingAvatar, setPendingAvatar] = useState<string | null>(null);
   const [nameStatus, setNameStatus] = useState<NameStatus>('idle');
@@ -367,6 +381,7 @@ export function Profile() {
   const tabLabels: Record<Tab, { en: string; bg: string }> = {
     overview:     { en: 'Overview',      bg: 'Преглед' },
     achievements: { en: 'Achievements',  bg: 'Постижения' },
+    friends:      { en: 'Friends',       bg: 'Приятели' },
     settings:     { en: 'Settings',      bg: 'Настройки' },
   };
 
@@ -497,11 +512,11 @@ export function Profile() {
         })()}
 
         {/* ── TABS ── */}
-        <div className="flex gap-1 mb-6 p-1 rounded-xl animate-fade-up"
-          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid var(--c-border)', width: 'fit-content' }}>
-          {(['overview', 'achievements', 'settings'] as const).map(t => (
+        <div className="flex gap-1 mb-6 p-1 rounded-xl animate-fade-up overflow-x-auto"
+          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid var(--c-border)', width: 'fit-content', maxWidth: '100%' }}>
+          {(['overview', 'achievements', 'friends', 'settings'] as const).map(t => (
             <button key={t} onClick={() => setTab(t)}
-              className="px-4 py-2 rounded-lg text-sm font-semibold transition-all"
+              className="px-3 sm:px-4 py-2 rounded-lg text-sm font-semibold transition-all whitespace-nowrap"
               style={{
                 background: tab === t ? 'rgba(255,255,255,0.12)' : 'transparent',
                 color: tab === t ? 'hsl(var(--c-fg))' : 'hsl(var(--c-fg-subtle))',
@@ -647,6 +662,13 @@ export function Profile() {
               </div>
 
             </div>
+          </div>
+        )}
+
+        {/* ── FRIENDS TAB ── */}
+        {tab === 'friends' && (
+          <div className="animate-fade-up">
+            <FriendsSection />
           </div>
         )}
 

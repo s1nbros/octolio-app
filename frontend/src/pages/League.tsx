@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLang } from '../contexts/LanguageContext';
 import { FloatingOrbs } from '../components/FloatingOrbs';
+import { UserProfileModal } from '../components/UserProfileModal';
 
 interface LeagueEntry {
   rank: number;
@@ -42,6 +43,7 @@ export function League() {
   const [rows, setRows] = useState<LeagueEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [statuses, setStatuses] = useState<Record<number, FStatus>>({});
+  const [previewUserId, setPreviewUserId] = useState<number | null>(null);
 
   useEffect(() => {
     if (!token) return;
@@ -52,8 +54,8 @@ export function League() {
       .finally(() => setLoading(false));
   }, [token]);
 
-  // Load my friend graph so each row knows whether to show "+ Add", "Sent", or "Friend"
-  useEffect(() => {
+  // Load my friend graph so each row knows whether they are a 🟢 friend
+  const loadStatuses = () => {
     if (!token) return;
     Promise.all([
       fetch('/api/friends/list',    { headers: { Authorization: `Bearer ${token}` } }).then(r => r.json()),
@@ -65,17 +67,8 @@ export function League() {
       for (const p of (pending.incoming ?? [])) map[p.id] = 'pending_in';
       setStatuses(map);
     }).catch(() => {});
-  }, [token, rows.length]);
-
-  const sendRequest = async (targetUserId: number) => {
-    if (!token) return;
-    setStatuses(prev => ({ ...prev, [targetUserId]: 'pending_out' }));
-    await fetch('/api/friends/request', {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ targetUserId }),
-    }).catch(() => {});
   };
+  useEffect(loadStatuses, [token, rows.length]);
 
   const topThree = rows.filter(r => r.rank <= 3);
   const rest = rows.filter(r => r.rank > 3);
@@ -171,77 +164,66 @@ export function League() {
                 </h2>
               </div>
               <div>
-                {rows.map(u => (
-                  <div key={u.id} className="flex items-center gap-3 px-4 py-3"
-                    style={{
-                      background: u.isYou ? 'hsl(var(--c-primary)/0.06)' : 'transparent',
-                    }}>
-                    {/* Rank */}
-                    <span className="mono text-sm w-7 text-center flex-shrink-0 font-bold"
-                      style={{ color: u.rank <= 3 ? 'hsl(var(--c-gold))' : 'hsl(var(--c-fg-subtle))' }}>
-                      {u.rank <= 3 ? ['🥇','🥈','🥉'][u.rank - 1] : u.rank}
-                    </span>
+                {rows.map(u => {
+                  const st = statuses[u.id] ?? 'none';
+                  return (
+                    <button
+                      key={u.id}
+                      onClick={() => setPreviewUserId(u.id)}
+                      className="w-full flex items-center gap-3 px-4 py-3 transition-colors text-left active:bg-white/5 hover:bg-white/[0.03]"
+                      style={{
+                        background: u.isYou ? 'hsl(var(--c-primary)/0.06)' : 'transparent',
+                      }}
+                      aria-label={lang === 'en' ? `View ${u.name}` : `Виж ${u.name}`}
+                    >
+                      {/* Rank */}
+                      <span className="mono text-sm w-7 text-center flex-shrink-0 font-bold"
+                        style={{ color: u.rank <= 3 ? 'hsl(var(--c-gold))' : 'hsl(var(--c-fg-subtle))' }}>
+                        {u.rank <= 3 ? ['🥇','🥈','🥉'][u.rank - 1] : u.rank}
+                      </span>
 
-                    <UserAvatar avatar={u.avatar} name={u.name} isYou={u.isYou} size="md" />
+                      <UserAvatar avatar={u.avatar} name={u.name} isYou={u.isYou} size="md" />
 
-                    {/* Name */}
-                    <span className="flex-1 text-sm font-medium truncate"
-                      style={{ color: u.isYou ? 'hsl(var(--c-fg))' : 'hsl(var(--c-fg-muted))' }}>
-                      {u.name}
-                      {u.isYou && (
-                        <span className="ml-1.5 text-xs px-1.5 py-0.5 rounded-full"
-                          style={{ background: 'hsl(var(--c-primary)/0.15)', color: 'hsl(var(--c-primary))' }}>
-                          {lang === 'en' ? 'you' : 'ти'}
-                        </span>
-                      )}
-                    </span>
-
-                    {/* XP */}
-                    <span className="mono text-sm font-semibold flex-shrink-0"
-                      style={{ color: u.rank <= 3 ? 'hsl(var(--c-gold))' : 'hsl(var(--c-fg-subtle))' }}>
-                      {u.xp.toLocaleString()} XP
-                    </span>
-
-                    {/* Add-friend button (per-row, hidden for self) */}
-                    {!u.isYou && (() => {
-                      const st = statuses[u.id] ?? 'none';
-                      if (st === 'friends') {
-                        return (
-                          <span className="text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full flex-shrink-0"
+                      {/* Name */}
+                      <span className="flex-1 text-sm font-medium truncate"
+                        style={{ color: u.isYou ? 'hsl(var(--c-fg))' : 'hsl(var(--c-fg-muted))' }}>
+                        {u.name}
+                        {u.isYou && (
+                          <span className="ml-1.5 text-xs px-1.5 py-0.5 rounded-full"
+                            style={{ background: 'hsl(var(--c-primary)/0.15)', color: 'hsl(var(--c-primary))' }}>
+                            {lang === 'en' ? 'you' : 'ти'}
+                          </span>
+                        )}
+                        {!u.isYou && st === 'friends' && (
+                          <span className="ml-1.5 text-[10px] px-1.5 py-0.5 rounded-full"
                             style={{ background: 'hsl(var(--c-green)/0.12)', color: 'hsl(var(--c-green))', border: '1px solid hsl(var(--c-green)/0.25)' }}>
                             ✓ {lang === 'en' ? 'Friend' : 'Приятел'}
                           </span>
-                        );
-                      }
-                      if (st === 'pending_out') {
-                        return (
-                          <span className="text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full flex-shrink-0"
-                            style={{ background: 'var(--c-glass)', color: 'hsl(var(--c-fg-muted))', border: '1px solid var(--c-border)' }}>
-                            {lang === 'en' ? 'Sent' : 'Изпратено'}
+                        )}
+                        {!u.isYou && st === 'pending_in' && (
+                          <span className="ml-1.5 text-[10px] px-1.5 py-0.5 rounded-full"
+                            style={{ background: 'hsl(var(--c-orange)/0.15)', color: 'hsl(var(--c-orange))', border: '1px solid hsl(var(--c-orange)/0.3)' }}>
+                            {lang === 'en' ? 'wants to add you' : 'иска да те добави'}
                           </span>
-                        );
-                      }
-                      // 'none' or 'pending_in' (auto-accept on click)
-                      return (
-                        <button
-                          onClick={() => sendRequest(u.id)}
-                          className="text-[10px] sm:text-xs font-bold px-2 py-1 rounded-full flex-shrink-0 active:scale-95 transition-transform"
-                          style={{ background: 'hsl(var(--c-primary))', color: '#fff' }}
-                          aria-label={lang === 'en' ? 'Add friend' : 'Добави приятел'}>
-                          + {lang === 'en' ? 'Add' : 'Добави'}
-                        </button>
-                      );
-                    })()}
-
-                    {/* Promote badge for top 3 (hidden on small screens to make room for Add button) */}
-                    {u.rank <= 3 && (
-                      <span className="text-xs px-2 py-0.5 rounded-full flex-shrink-0 hidden md:block"
-                        style={{ background: 'hsl(var(--c-green)/0.12)', color: 'hsl(var(--c-green))', border: '1px solid hsl(var(--c-green)/0.2)' }}>
-                        ↑ {lang === 'en' ? 'Promotes' : 'Качва се'}
+                        )}
                       </span>
-                    )}
-                  </div>
-                ))}
+
+                      {/* XP */}
+                      <span className="mono text-sm font-semibold flex-shrink-0"
+                        style={{ color: u.rank <= 3 ? 'hsl(var(--c-gold))' : 'hsl(var(--c-fg-subtle))' }}>
+                        {u.xp.toLocaleString()} XP
+                      </span>
+
+                      {/* Promote badge for top 3 */}
+                      {u.rank <= 3 && (
+                        <span className="text-xs px-2 py-0.5 rounded-full flex-shrink-0 hidden sm:block"
+                          style={{ background: 'hsl(var(--c-green)/0.12)', color: 'hsl(var(--c-green))', border: '1px solid hsl(var(--c-green)/0.2)' }}>
+                          ↑ {lang === 'en' ? 'Promotes' : 'Качва се'}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -254,6 +236,12 @@ export function League() {
           </>
         )}
       </div>
+
+      <UserProfileModal
+        userId={previewUserId}
+        onClose={() => setPreviewUserId(null)}
+        onFriendshipChange={loadStatuses}
+      />
     </div>
   );
 }

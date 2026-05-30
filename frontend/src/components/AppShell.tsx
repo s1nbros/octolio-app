@@ -179,14 +179,15 @@ function StatsBar() {
         <span>{lang === 'en' ? 'EN' : 'BG'}</span>
       </button>
 
-      {/* Streak */}
-      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
-        style={{ background: 'hsl(var(--c-orange)/0.1)', border: '1px solid hsl(var(--c-orange)/0.2)' }}>
+      {/* Streak (clickable label) */}
+      <PillWithLabel
+        label={lang === 'en' ? 'Streak — days in a row' : 'Стрийк — поредни дни'}
+        background="hsl(var(--c-orange)/0.1)" border="hsl(var(--c-orange)/0.2)" color="hsl(var(--c-orange))">
         <span className="text-sm">🔥</span>
         <span className="mono text-sm font-semibold" style={{ color: 'hsl(var(--c-orange))' }}>{user.streak}</span>
-      </div>
+      </PillWithLabel>
 
-      {/* Energy (clickable) */}
+      {/* Energy (clickable popover) */}
       <div className="relative">
         <button onClick={() => setEnergyOpen(o => !o)}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all"
@@ -202,23 +203,25 @@ function StatsBar() {
         {energyOpen && <EnergyPopover energy={user.energy} refillAt={user.energy_refill_at} isPro={user.is_pro} onClose={() => setEnergyOpen(false)} />}
       </div>
 
-      {/* XP */}
-      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
-        style={{ background: 'hsl(var(--c-primary)/0.1)', border: '1px solid hsl(var(--c-primary)/0.2)' }}>
+      {/* XP (clickable label) */}
+      <PillWithLabel
+        label={lang === 'en' ? 'XP — Experience points. Earned from lessons and chests.' : 'XP — Точки опит. Печелиш ги от уроци и сандъци.'}
+        background="hsl(var(--c-primary)/0.1)" border="hsl(var(--c-primary)/0.2)" color="hsl(var(--c-primary))">
         <span className="text-sm" style={{ color: 'hsl(var(--c-primary))' }}>✨</span>
         <span className="mono text-sm font-semibold" style={{ color: 'hsl(var(--c-primary))' }}>
           {user.xp.toLocaleString()}
         </span>
-      </div>
+      </PillWithLabel>
 
-      {/* Coins */}
-      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
-        style={{ background: 'hsl(var(--c-orange)/0.1)', border: '1px solid hsl(var(--c-orange)/0.3)' }}>
+      {/* Coins (clickable label) */}
+      <PillWithLabel
+        label={lang === 'en' ? 'Coins — Spend on cosmetics in the shop. Earn by trading XP.' : 'Монети — За костюми в магазина. Изкарваш ги срещу XP.'}
+        background="hsl(var(--c-orange)/0.1)" border="hsl(var(--c-orange)/0.3)" color="hsl(var(--c-orange))">
         <CoinIcon size={14} />
         <span className="mono text-sm font-semibold" style={{ color: 'hsl(var(--c-orange))' }}>
           {(user.coins ?? 0).toLocaleString()}
         </span>
-      </div>
+      </PillWithLabel>
 
       {/* Pro badge */}
       {user.is_pro && (
@@ -228,6 +231,64 @@ function StatsBar() {
         </div>
       )}
     </div>
+  );
+}
+
+/* ─── Pill that pops a label tooltip on click ─── */
+function PillWithLabel({
+  label,
+  background,
+  border,
+  color: _color,
+  children,
+}: {
+  label: string;
+  background: string;
+  border: string;
+  color: string;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onDocClick = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', onDocClick);
+    const t = setTimeout(() => setOpen(false), 3500); // auto-dismiss
+    return () => {
+      document.removeEventListener('mousedown', onDocClick);
+      clearTimeout(t);
+    };
+  }, [open]);
+
+  return (
+    <button
+      ref={ref}
+      onClick={() => setOpen(o => !o)}
+      className="relative flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all"
+      style={{ background, border: `1px solid ${border}` }}
+    >
+      {children}
+      {open && (
+        <span
+          className="absolute z-50 left-1/2 top-full mt-2 -translate-x-1/2 whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-semibold animate-fade-in pointer-events-none"
+          style={{
+            background: 'hsl(228, 24%, 10%)',
+            color: 'hsl(var(--c-fg))',
+            border: '1px solid rgba(255,255,255,0.1)',
+            boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
+            maxWidth: '260px',
+            whiteSpace: 'normal',
+            textAlign: 'center',
+          }}
+        >
+          {label}
+        </span>
+      )}
+    </button>
   );
 }
 
@@ -349,7 +410,6 @@ function LeftSidebar() {
         <SidebarLink to="/review" active={isActive('/review')} label={lang === 'en' ? 'Review' : 'Преглед'} icon={<IconReview />} badge={reviewDue} isNew={!seenReview} />
         <SidebarLink to="/tools" active={isActive('/tools')} label={lang === 'en' ? 'Tools' : 'Инструменти'} icon={<IconTools />} isNew={!seenTools} />
         <SidebarLink to="/league" active={isActive('/league')} label={labels.league} icon={<IconLeague />} />
-        <SidebarLink to="/friends" active={isActive('/friends')} label={lang === 'en' ? 'Friends' : 'Приятели'} icon={<IconFriends />} isNew={!seenFriends} badge={friendRequestsCount} />
         <SidebarLink to="/shop" active={isActive('/shop')} label={lang === 'en' ? 'Shop' : 'Магазин'} icon={<IconShop />} isNew={!seenShop} />
         {user.is_pro && (
           <SidebarLink to="/advisor" active={isActive('/advisor')} label={`✦ ${labels.advisor}`} icon={<IconAdvisor />} disabled />

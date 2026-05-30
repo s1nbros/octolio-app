@@ -288,6 +288,83 @@ friendsRouter.post('/remove', authenticate, async (req: AuthRequest, res: Respon
   }
 });
 
+/* ─── GET /api/friends/preview/:id ──────────────────────────────
+ * Lightweight public-ish snapshot of another user for the mini-profile
+ * modal. Includes friendship status with the caller + any pending
+ * request id so the modal can wire up Accept/Cancel/Add buttons.
+ */
+friendsRouter.get('/preview/:id', authenticate, async (req: AuthRequest, res: Response): Promise<void> => {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id) || id <= 0) {
+    res.status(400).json({ error: 'invalid id' });
+    return;
+  }
+  try {
+    const pool = getPool();
+    const userRow = (await pool.query(
+      `SELECT id, name, xp, streak, avatar,
+              equipped_hat, equipped_face, equipped_body, is_pro, created_at
+       FROM users WHERE id = $1`,
+      [id]
+    )).rows[0] as {
+      id: number; name: string; xp: number; streak: number; avatar: string | null;
+      equipped_hat: string | null; equipped_face: string | null; equipped_body: string | null;
+      is_pro: boolean; created_at: string;
+    } | undefined;
+
+    if (!userRow) {
+      res.status(404).json({ error: 'user_not_found' });
+      return;
+    }
+
+    // Lessons completed (for the small stats row)
+    const lessonsRow = (await pool.query(
+      `SELECT COUNT(*)::int AS n FROM progress WHERE user_id = $1`,
+      [id]
+    )).rows[0] as { n: number };
+
+    // Friendship status with the caller
+    let friendshipStatus: 'self' | 'friends' | 'pending_out' | 'pending_in' | 'none' = 'none';
+    let requestId: number | null = null;
+    if (id === req.userId) {
+      friendshipStatus = 'self';
+    } else {
+      const f = (await pool.query(
+        `SELECT id, requester_id, recipient_id, status FROM friendships
+         WHERE (requester_id = $1 AND recipient_id = $2)
+            OR (requester_id = $2 AND recipient_id = $1)`,
+        [req.userId, id]
+      )).rows[0] as { id: number; requester_id: number; recipient_id: number; status: string } | undefined;
+      if (f) {
+        requestId = f.id;
+        if (f.status === 'accepted') friendshipStatus = 'friends';
+        else if (f.status === 'pending') {
+          friendshipStatus = f.requester_id === req.userId ? 'pending_out' : 'pending_in';
+        }
+      }
+    }
+
+    res.json({
+      id: userRow.id,
+      name: userRow.name,
+      avatar: userRow.avatar,
+      xp: userRow.xp,
+      streak: userRow.streak,
+      isPro: userRow.is_pro,
+      equippedHat:  userRow.equipped_hat,
+      equippedFace: userRow.equipped_face,
+      equippedBody: userRow.equipped_body,
+      lessonsCompleted: lessonsRow?.n ?? 0,
+      memberSince: userRow.created_at,
+      friendshipStatus,
+      requestId,
+    });
+  } catch (err) {
+    console.error('Friends preview error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 /* ─── GET /api/friends/search?q=... ────────────────────────────
  * Up to 10 users with names matching q, excluding self and existing
  * accepted friends. Returns { results: [{id, name, xp, avatar, status}] }
