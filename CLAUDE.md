@@ -48,15 +48,17 @@ octolio-app/
   frontend/
     src/
       pages/
-        Modules.tsx         — module list (formerly Dashboard role)
+        Modules.tsx         — module list with snake-pattern lesson path + inline chest nodes
         Lesson.tsx          — exercise flow with hearts + energy; records misses for SR
         Review.tsx          — spaced-repetition session (reuses ExerciseRenderer)
         Tools.tsx           — calculator hub (compound/mortgage/debt/FIRE/goal/net-worth)
-        Shop.tsx            — cosmetics shop (browse / buy / equip / XP→coin exchange)
-        Friends.tsx         — friend list, incoming/outgoing requests, search-by-name
+        Shop.tsx            — cosmetics shop (browse / buy / equip-per-slot / XP→coin exchange)
         Quests.tsx          — daily quests + streak overview
-        Profile.tsx         — stats, achievements, octopus mascot + wallet, streak-freeze shop, sub mgmt
-        League.tsx          — XP leaderboard
+        Profile.tsx         — 4 tabs: overview / achievements / friends / settings
+                              ─ overview: mascot card + wallet, streak-freeze shop, sub mgmt
+                              ─ friends: <FriendsSection /> (replaces the old standalone /friends page)
+                              ─ tab is sync'd to URL ?tab=... so deep links work
+        League.tsx          — XP leaderboard; rows tap-to-open <UserProfileModal/>
         AiAdvisor.tsx       — AI chat (Pro-only, SSE streaming)
         Onboarding.tsx      — pro-vs-free plan picker (gated route)
         GeneratedLesson.tsx — AI-generated lesson runner
@@ -66,18 +68,26 @@ octolio-app/
         ForgotPassword.tsx  — request reset email
         ResetPassword.tsx   — set new password from emailed token
         Landing.tsx         — marketing landing for unauth users
+        ─ note: legacy /friends route now <Navigate>s to /profile?tab=friends
       components/
-        Navbar.tsx          — mobile-only header: energy pill + logo-button drawer trigger
-        AppShell.tsx        — desktop sidebar (md+) with Learn/Quests/Review/Tools/League/Advisor + due-count badge
+        Navbar.tsx          — mobile-only header: hamburger drawer button + energy + bell + avatar
+        AppShell.tsx        — desktop sidebar (md+) with Learn/Quests/Review/Tools/League/Shop +
+                              top StatsBar (Streak / Energy / XP / Coins / PRO) with click tooltips
+                              + mounts <WhatsNewModal/>
         ExerciseRenderer.tsx — routes exercise.type to specialized components (handles wrong-answer Continue too)
         DailyQuests.tsx     — quest cards on Quests page
         SidebarWidgets.tsx  — Pro upsell, league preview, streak, money-fact widgets
-        ProfileSheet.tsx
+        ProfileSheet.tsx    — mobile profile drawer; shows octopus mascot + 4-stat grid
         ModuleCard.tsx
         FloatingOrbs.tsx
         NotificationBell.tsx — bell + dropdown, polls /api/notifications/unread-count every 30s
-        OctopusAvatar.tsx    — animated SVG mascot, renders equipped cosmetic emoji per slot
-        ChestModal.tsx       — CS:GO-style chest opening with horizontal reel
+        OctopusAvatar.tsx    — animated SVG mascot, renders hat + face + body emojis simultaneously
+        ChestModal.tsx       — CS:GO-style chest opening, per-position (target = {moduleId, position})
+        ChestIcon.tsx        — branded treasure-chest SVG (replaces 🎁 emoji); status: available|opened|locked
+        CoinIcon.tsx         — branded gold-coin SVG (replaces 🪙 emoji which renders unevenly)
+        UserProfileModal.tsx — mini snapshot modal for any user; mascot + stats + friendship action
+        FriendsSection.tsx   — friends UI as a Profile tab (sub-tabs: friends / requests / add)
+        WhatsNewModal.tsx    — swipeable feature-tour modal shown once per device per update version
         exercises/
           TheoryCard.tsx        — theory slides (swipeable pages)
           RPGScenario.tsx       — branching-story financial scenarios
@@ -216,39 +226,112 @@ A second-currency layer that runs alongside XP — purely cosmetic / fun, no
 gameplay-power gating. Three coupled systems:
 
 **Octopus mascot** (`OctopusAvatar.tsx`)
-- Pure CSS/SVG octopus with idle bob + tentacle sway + occasional eye blink
-- Renders an equipped cosmetic emoji on top, positioned per slot (`hat` / `face` / `body`)
-- Single slot is equipped at a time via `users.equipped_costume` (item ID)
-- Shown on the Profile page header card; the Shop page uses it as a live preview
+- Pure CSS/SVG octopus with idle bob + tentacle sway + 4.5s eye blink
+- Renders **multi-slot** simultaneously — one emoji per slot (`hat` + `face` + `body`)
+  stacked on the same mascot. Per-slot positioning constants in the component:
+  - hat: `top: -18% · size: 0.52s` (sits above the head)
+  - face: `top: 13% · size: 0.34s` (lands on the eyes — eyes are at 37.5% in the SVG)
+  - body: `bottom: 2% · size: 0.38s` (over the tentacles)
+- Each slot's wrapper centers via `marginLeft: -W/2` (NOT `translateX`) so the inner
+  CSS hat-tilt animation can mutate `transform` without breaking the centering
+- Shown in: Profile mascot card, Shop preview, mini `UserProfileModal`, `ProfileSheet`,
+  and the `WhatsNewModal` mascot slide
 
 **Octolio Coins** (`users.coins INTEGER DEFAULT 0`)
-- Earned from chest opens (random) and from selling XP via the shop exchanger
+- Earned only by **trading XP** via the shop exchanger (chests no longer drop coins)
 - Spent on shop items
 - XP→coins rate: `XP_PER_COIN_EXCHANGE_RATE = 2` (2 XP = 1 coin), `MIN_XP_EXCHANGE = 100`
+- The shop exchanger UI uses `inputMode="numeric"` + a digit-strip on change (NOT
+  `type="number"` with `min/step` — iOS Safari rejects intermediate values mid-typing).
+  A MAX chip inside the input rounds the user's XP down to the largest even amount.
 
-**Chests** (`backend/src/routes/chests.ts` + `chest_opens` table)
-- 1 chest per `LESSONS_PER_CHEST = 3` completed lessons
-- Tracked via `users.chests_opened` counter; `available = floor(completed/3) - opened`
-- Reward pool defined in `backend/src/data/catalog.ts`:
-  - 40% coins (25 / 75 / 200 / 1000 weighted)
-  - 25% XP (20 / 50 / 150)
-  - 10% streak freeze (+1, capped at 3)
-  - 10% energy (+3, capped at 12)
-  - 15% cosmetic item (rarity-weighted, never gives duplicates)
-- Open is a single transactional `POST /api/chests/open` that re-checks availability
-  with `FOR UPDATE` to prevent double-spend
-- Frontend: `ChestModal.tsx` shows a CS:GO-style horizontal reel — 60 decoy tiles
-  with the real winning tile at index 52, animates with cubic-bezier(0.05,0.7,0.15,1)
-  over 5s using `animation-fill-mode: forwards`. The `--reel-end` CSS variable controls
-  the final translateX with a small jitter so it doesn't land dead-center.
+**Branded icons** (visual consistency across platforms)
+- `CoinIcon.tsx` — SVG gold coin with radial gradient, inner ring, "O" mark, shine.
+  Replaces the 🪙 emoji which fell back to a plain circle on some devices.
+- `ChestIcon.tsx` — SVG treasure chest (wooden body, curved lid, gold trim band,
+  vertical corner trims, lock plate with keyhole, lid gleam). `status` prop swaps
+  the palette: `available` (warm wood + gold), `opened` (muted green), `locked` (cold grey).
+
+**Chests** (`backend/src/routes/chests.ts` + `chest_opens` + `module_chests` tables)
+- Chests are **per-module**, NOT global. Each module gets up to 2 chest positions:
+  - `mid` — unlocks after lesson at index `floor(N/2) - 1`
+  - `end` — unlocks after the last lesson
+  - Modules with only 1 lesson get just an `end` chest
+- A chest is `available` when every lesson up to and including its anchor index is
+  completed; `opened` once a row exists in `module_chests(user_id, module_id, position)`.
+- Reward pool is **XP-only** (no coins / freezes / energy / cosmetics from chests).
+  Defined in `backend/src/data/catalog.ts` `POOL`:
+  - 25 XP (weight 30) — common
+  - 50 XP (weight 25) — common
+  - 100 XP (weight 20) — common
+  - 200 XP (weight 13) — rare
+  - 500 XP (weight 8) — epic
+  - 1000 XP (weight 3) — legendary
+  - 2500 XP (weight 1) — mythic jackpot
+- Open is a single transactional `POST /api/chests/open {moduleId, position}` that
+  re-validates with `buildChestStates()` inside `BEGIN`/`COMMIT`. `module_chests` has
+  `UNIQUE(user_id, module_id, position)` as the final guard against double-open.
+- Frontend: `Modules.tsx` renders a `ChestNode` in the snake-pattern path right after
+  the lesson that unlocks it (gold + pulsing when available, grey + ✓ when opened,
+  cold grey + 🔒 when locked). Tapping an available chest opens `ChestModal` with
+  `target={{moduleId, position}}`.
+- `ChestModal.tsx` shows a CS:GO-style horizontal reel — 60 decoy tiles with the real
+  winning tile at index 52, animates with `cubic-bezier(0.05, 0.7, 0.15, 1)` over 5s
+  using `animation-fill-mode: forwards`. The `--reel-end` CSS variable controls the
+  final translateX with a small jitter so it doesn't land dead-center.
 
 **Shop** (`backend/src/routes/shop.ts` + `user_inventory` table + `/shop` page)
 - Catalog lives in `backend/src/data/catalog.ts` AND mirrored in
-  `frontend/src/shared/catalogClient.ts` (kept in sync manually)
+  `frontend/src/shared/catalogClient.ts` (keep in sync manually)
 - 16 cosmetics across 3 slots (hat / face / body) and 4 rarities
-- Rarity → max price ladder: common 100–200 / rare 250–400 / epic 500–800 / legendary 1500–2500
-- Endpoints: `GET /catalog`, `GET /inventory`, `POST /buy`, `POST /equip`, `POST /exchange`
+- Rarity → price ladder: common 100–200 / rare 250–400 / epic 500–800 / legendary 1500–2500
+- **Multi-slot equip**: each slot is independent. Equipping a hat does NOT unequip
+  your sunglasses. Stored as 3 separate columns (`equipped_hat`, `equipped_face`,
+  `equipped_body`) on `users`. The legacy single `equipped_costume` column is kept
+  for grandfathering and back-filled on boot into the right per-slot column.
+- Endpoints: `GET /catalog` (returns `equipped: {hat, face, body}`), `GET /inventory`,
+  `POST /buy`, `POST /equip {itemId}` (slot inferred from catalog), `POST /unequip {slot}`,
+  `POST /exchange {xpAmount}`
 - All cosmetics are visible only — no gameplay effect
+
+### Friends & in-app notifications
+- Friends are a `Profile` tab, not a top-level nav item (the legacy `/friends` URL
+  redirects to `/profile?tab=friends`).
+- `FriendsSection` has 3 sub-tabs: friends list / pending requests / add by username search.
+- Friendship row in `friendships` table: `(requester_id, recipient_id, status)` with
+  `status ∈ pending | accepted | declined`. Re-requesting a previously-declined edge
+  flips it back to `pending`. Mutual pending (A→B then B→A) auto-accepts.
+- `UserProfileModal` opens whenever you tap any user (League row, friends list,
+  search result, etc.). Shows the target's mascot with their equipped cosmetics,
+  level, XP / streak / lessons stats, and one dynamic action button that morphs
+  based on friendship status:
+  - `none` → "+ Add friend"
+  - `pending_out` → "Request sent — tap to cancel"
+  - `pending_in` → "Accept friend request"
+  - `friends` → "✓ Friends" + a separate "Remove" button
+  - `self` → "That's you!"
+- Backend endpoint: `GET /api/friends/preview/:id` returns the snapshot + friendship
+  status + the pending requestId so the modal can wire Accept/Cancel directly.
+- **Cross-XP notifications**: when a friend overtakes you in XP, the loser gets a
+  notification. Detected in `/api/progress/complete` after a user completes a lesson:
+  for each `friend` with `friend.xp >= oldXp AND friend.xp < newXp`, insert a
+  `friend_overtook` row into `notifications`.
+- `NotificationBell` lives in both the desktop sidebar logo bar and the mobile
+  Navbar; polls `/api/notifications/unread-count` every 30s; click opens a dropdown
+  that lists the last 30 notifications and marks them read on tap. Each notification
+  carries an optional `link` and a typed `metadata` JSONB blob.
+
+### "What's new" announcement modal
+- `WhatsNewModal` pops up once per device after a user is authenticated + onboarded.
+- Storage key `octolio_seen_whatsnew_v1` — set on dismiss. Bumping the version
+  re-shows the tour after future updates.
+- Mounted in `AppShell` so it only triggers on protected routes. 700ms delay so it
+  doesn't pop the instant the page mounts.
+- Swipeable: touchstart/move/end with a 50px threshold; arrow keys ← → on desktop;
+  pagination dots clickable; Esc closes; last slide button changes to "Got it →".
+- Illustrations are **rendered live** (not static images) — they reuse `OctopusAvatar`,
+  `CoinIcon`, mock leaderboard rows, and a faux compound-interest card with an SVG
+  sparkline — so they never drift from the real UI.
 
 ### Modules
 - Free modules: orders 1–9 (static curated + generated fallback)
@@ -304,8 +387,12 @@ Key tables:
 - `users` — verified accounts. `email_verified` defaults TRUE for accounts created
   via `/verify-email`. Existing rows (xp > 0 or last_active set) were grandfathered
   to `email_verified = TRUE` during the migration so the upgrade didn't lock anyone out.
-  Recent additions: `streak_freezes INTEGER DEFAULT 0`, `coins INTEGER DEFAULT 0`,
-  `equipped_costume TEXT`, `chests_opened INTEGER DEFAULT 0`.
+  Cosmetics + economy columns: `streak_freezes`, `coins`, `equipped_costume` (legacy
+  single-equip, kept for backfill), `equipped_hat`, `equipped_face`, `equipped_body`
+  (current per-slot equip), `chests_opened`.
+  On boot, `initDb()` back-fills the per-slot columns from the legacy `equipped_costume`
+  by joining against the catalog's `(item_id, slot)` map — only writes if the new
+  column is NULL, so it's safe to run every boot.
 - `pending_registrations` — unverified signups (PK `email`). Cleaned out on successful
   verification. Index on `LOWER(name)` for nickname collision checks.
 - `progress` — lesson completions, `UNIQUE(user_id, lesson_id)`.
@@ -314,6 +401,14 @@ Key tables:
   `times_reviewed`, `times_correct`, `mastered`. Partial index on `(user_id, next_review_at) WHERE mastered = FALSE`.
 - `user_inventory` — owned cosmetics. `UNIQUE(user_id, item_id)`. Item IDs are stable strings from `catalog.ts`.
 - `chest_opens` — audit log of every chest pull. Columns: `reward_type`, `reward_value`, `coins_delta`, `xp_delta`, `opened_at`.
+- `module_chests` — which specific positional chests a user has opened.
+  `UNIQUE(user_id, module_id, position)` where `position ∈ {mid, end}`. Drives the
+  `available / opened` state computed by `buildChestStates()` on `/api/chests/info`.
+- `friendships` — directed friend edges. Columns: `requester_id`, `recipient_id`,
+  `status` (`pending|accepted|declined`), `created_at`, `responded_at`.
+  `UNIQUE(requester_id, recipient_id)` + `CHECK(requester_id <> recipient_id)`.
+- `notifications` — in-app feed. Columns: `user_id`, `type`, `title`, `body`, `link`,
+  `metadata JSONB`, `read BOOLEAN`, `created_at`. Index on `(user_id, read, created_at DESC)`.
 
 ### Email never blocks an API response
 All `sendVerificationEmail` / `sendPasswordResetEmail` calls go through the
@@ -402,18 +497,33 @@ Streak freezes (`/api/freeze/*`):
 - `POST /buy` — −100 XP, +1 freeze (capped at 3)
 
 Chests (`/api/chests/*`):
-- `GET /info` — `{available, opened, earned, completedLessons, nextChestInLessons, recentOpens[]}`
-- `POST /open` — atomically draws + applies a reward, returns `{reward, item, coinsDelta, xpDelta, availableChestsRemaining}`
+- `GET /info` — `{chests: [{moduleId, position, afterLessonIdx, status}…], available, opened, total, recentOpens[]}`
+- `POST /open {moduleId, position}` — atomically draws + applies a reward,
+  returns `{reward, item, coinsDelta, xpDelta, moduleId, position}`. (Coins/item
+  deltas always 0 today since pool is XP-only, but the fields are kept for the
+  audit log + ChestModal's coin/cosmetic UI branches that handle legacy `chest_opens` rows.)
 
 Shop (`/api/shop/*`):
-- `GET /catalog` — all items with `{owned, equipped}` joined for the caller
+- `GET /catalog` — all items with per-item `{owned, equipped}` + `equipped: {hat, face, body}`
 - `GET /inventory` — items the user owns
-- `POST /buy` `{itemId}` — −price coins, +inventory row
-- `POST /equip` `{itemId | null}` — set/clear `users.equipped_costume`
-- `POST /exchange` `{xpAmount}` — −XP / +coins at rate `XP_PER_COIN_EXCHANGE_RATE`
+- `POST /buy {itemId}` — −price coins, +inventory row
+- `POST /equip {itemId}` — sets the slot column matching `catalog[itemId].slot`
+- `POST /unequip {slot}` — clears `equipped_hat | equipped_face | equipped_body`
+- `POST /exchange {xpAmount}` — −XP / +coins at rate `XP_PER_COIN_EXCHANGE_RATE`
 
-Friends + notifications (`/api/friends/*`, `/api/notifications/*`):
-- request / accept / decline / cancel / remove / search; notifications list / unread-count / mark-read
+Friends (`/api/friends/*`):
+- `GET /list` — accepted friends with stats
+- `GET /pending` — `{incoming[], outgoing[]}`
+- `GET /search?q=` — up to 10 users matching name, excludes self, includes friendship status
+- `GET /preview/:id` — full snapshot for `UserProfileModal` (mascot, stats, friendship status)
+- `POST /request {targetUserId | targetName}` — auto-accepts if mutual pending
+- `POST /accept {requestId}`, `POST /decline {requestId}`, `POST /cancel {requestId}`
+- `POST /remove {friendUserId}` — unfriend
+
+Notifications (`/api/notifications/*`):
+- `GET /` — last 30, newest first
+- `GET /unread-count`
+- `POST /:id/read`, `POST /read-all`
 
 Other: `/api/ai/chat` (Pro SSE), `/api/stripe/*` (checkout + webhook), `/api/generate/*` (AI lesson generation)
 
