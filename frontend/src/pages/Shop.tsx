@@ -33,12 +33,14 @@ function rarityLabel(r: Rarity, lang: 'en' | 'bg'): string {
   return ({ common: 'обикновено', rare: 'рядко', epic: 'епично', legendary: 'легендарно' } as const)[r];
 }
 
+type EquippedBySlot = Record<Slot, string | null>;
+
 export function Shop() {
   const { token, user, refreshUser } = useAuth();
   const { lang } = useLang();
   const [items, setItems] = useState<ShopItem[]>([]);
   const [coins, setCoins] = useState(0);
-  const [equipped, setEquipped] = useState<string | null>(null);
+  const [equipped, setEquipped] = useState<EquippedBySlot>({ hat: null, face: null, body: null });
   const [loading, setLoading] = useState(true);
   const [slotFilter, setSlotFilter] = useState<Slot | 'all'>('all');
   const [exchangeXp, setExchangeXp] = useState<string>('100');
@@ -52,7 +54,11 @@ export function Shop() {
       const d = await r.json();
       setItems(d.items ?? []);
       setCoins(d.coins ?? 0);
-      setEquipped(d.equippedCostume ?? null);
+      setEquipped({
+        hat:  d.equipped?.hat  ?? null,
+        face: d.equipped?.face ?? null,
+        body: d.equipped?.body ?? null,
+      });
     } finally {
       setLoading(false);
     }
@@ -81,15 +87,33 @@ export function Shop() {
     refreshUser().catch(() => {});
   };
 
-  const equip = async (id: string | null) => {
+  const equipItem = async (id: string) => {
     if (!token) return;
+    const item = items.find(i => i.id === id);
+    if (!item) return;
     await fetch('/api/shop/equip', {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({ itemId: id }),
     });
-    setEquipped(id);
-    setItems(prev => prev.map(it => ({ ...it, equipped: it.id === id })));
+    // Update local: this item is now equipped in its slot; any other item
+    // in the same slot becomes unequipped.
+    setEquipped(prev => ({ ...prev, [item.slot]: id }));
+    setItems(prev => prev.map(it => it.slot === item.slot
+      ? { ...it, equipped: it.id === id }
+      : it));
+    refreshUser().catch(() => {});
+  };
+  const unequipSlot = async (slot: Slot) => {
+    if (!token) return;
+    await fetch('/api/shop/unequip', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ slot }),
+    });
+    setEquipped(prev => ({ ...prev, [slot]: null }));
+    setItems(prev => prev.map(it => it.slot === slot ? { ...it, equipped: false } : it));
+    refreshUser().catch(() => {});
   };
 
   const exchange = async () => {
@@ -137,7 +161,9 @@ export function Shop() {
   }
 
   const visibleItems = slotFilter === 'all' ? items : items.filter(i => i.slot === slotFilter);
-  const equippedItem = getCatalogItem(equipped);
+  const hatItem  = getCatalogItem(equipped.hat);
+  const faceItem = getCatalogItem(equipped.face);
+  const bodyItem = getCatalogItem(equipped.body);
 
   return (
     <div className="relative pb-24 sm:pb-12 overflow-hidden">
@@ -161,9 +187,9 @@ export function Shop() {
           style={{ background: 'linear-gradient(135deg, hsl(228, 30%, 12%), hsl(228, 32%, 8%))', border: '1px solid hsl(var(--c-primary)/0.2)' }}>
           <div className="flex flex-col items-center">
             <OctopusAvatar size={140}
-              equipped={equipped ?? null}
-              itemEmoji={equippedItem?.emoji ?? null}
-              itemSlot={equippedItem?.slot ?? null} />
+              hatEmoji={hatItem?.emoji ?? null}
+              faceEmoji={faceItem?.emoji ?? null}
+              bodyEmoji={bodyItem?.emoji ?? null} />
             <p className="text-xs mt-2 font-bold mono" style={{ color: 'hsl(var(--c-fg-muted))' }}>
               {user?.name ?? 'You'}
             </p>
@@ -197,19 +223,41 @@ export function Shop() {
                   ? <>Trade XP for coins (2 XP = 1 <CoinIcon size={12} />, min 100 XP)</>
                   : <>Обмени XP за монети (2 XP = 1 <CoinIcon size={12} />, мин 100)</>}
               </p>
-              <div className="flex gap-2">
+              <div className="flex gap-2 items-stretch">
                 <input
-                  type="number" min={100} step={50}
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   value={exchangeXp}
-                  onChange={e => setExchangeXp(e.target.value)}
-                  className="flex-1 px-3 py-2 rounded-lg text-sm font-semibold outline-none"
+                  onChange={e => {
+                    // Strip any non-digits so iOS keypad pastes don't break us.
+                    const cleaned = e.target.value.replace(/[^0-9]/g, '');
+                    setExchangeXp(cleaned);
+                  }}
+                  className="flex-1 min-w-0 px-3 py-2 rounded-lg text-sm font-semibold outline-none"
                   style={{
                     background: 'hsl(228, 14%, 14%)',
                     border: '1px solid hsla(0,0%,100%,0.08)',
                     color: 'hsl(var(--c-fg))',
                   }} />
+                <button
+                  type="button"
+                  onClick={() => {
+                    // Round the user's XP down to the largest multiple of 2 we can use
+                    // (since the exchange rate is 2 XP = 1 coin → we always want even amounts).
+                    const maxUsable = Math.max(0, Math.floor((user?.xp ?? 0) / 2) * 2);
+                    setExchangeXp(String(Math.max(100, maxUsable)));
+                  }}
+                  className="rounded-lg font-bold text-xs px-2.5"
+                  style={{
+                    background: 'rgba(255,255,255,0.06)',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    color: 'hsl(var(--c-fg-muted))',
+                  }}>
+                  MAX
+                </button>
                 <button onClick={exchange} disabled={exchangeBusy}
-                  className="rounded-lg font-bold text-sm px-4 py-2 flex items-center gap-1.5"
+                  className="rounded-lg font-bold text-sm px-4 py-2 flex items-center gap-1.5 flex-shrink-0"
                   style={{
                     background: 'linear-gradient(135deg, hsl(45, 95%, 55%), hsl(35, 90%, 55%))',
                     color: '#1a1f2e',
@@ -274,13 +322,13 @@ export function Shop() {
               </p>
               {item.owned ? (
                 item.equipped ? (
-                  <button onClick={() => equip(null)}
+                  <button onClick={() => unequipSlot(item.slot)}
                     className="w-full rounded-lg font-bold text-xs py-1.5"
                     style={{ background: 'hsl(var(--c-green)/0.15)', color: 'hsl(var(--c-green))', border: '1px solid hsl(var(--c-green)/0.4)' }}>
-                    ✓ {lang === 'en' ? 'Equipped' : 'Носи се'}
+                    ✓ {lang === 'en' ? 'Equipped — tap to remove' : 'Носи се — натисни за махане'}
                   </button>
                 ) : (
-                  <button onClick={() => equip(item.id)}
+                  <button onClick={() => equipItem(item.id)}
                     className="w-full rounded-lg font-bold text-xs py-1.5"
                     style={{ background: 'hsl(var(--c-primary))', color: '#fff' }}>
                     {lang === 'en' ? 'Equip' : 'Сложи'}

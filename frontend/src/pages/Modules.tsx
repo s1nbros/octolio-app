@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useCallback } from 'react';
+import { Fragment, useEffect, useMemo, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLang } from '../contexts/LanguageContext';
@@ -19,14 +19,21 @@ type Palette = { main: string; deep: string; soft: string };
 
 interface CurrentPosition { moduleIdx: number; lessonIdx: number; }
 
+interface ChestState {
+  moduleId: string;
+  position: 'mid' | 'end';
+  afterLessonIdx: number;
+  status: 'locked' | 'available' | 'opened';
+}
+
 export function Modules() {
   const { token, user } = useAuth();
   const { ui, lang } = useLang();
   const navigate = useNavigate();
   const [modules, setModules] = useState<ModuleMeta[]>([]);
   const [loading, setLoading] = useState(true);
-  const [chestInfo, setChestInfo] = useState<{ available: number; nextChestInLessons: number } | null>(null);
-  const [chestOpen, setChestOpen] = useState(false);
+  const [chestStates, setChestStates] = useState<ChestState[]>([]);
+  const [chestTarget, setChestTarget] = useState<{ moduleId: string; position: 'mid' | 'end' } | null>(null);
 
   useEffect(() => {
     if (!token) return;
@@ -41,11 +48,19 @@ export function Modules() {
     try {
       const r = await fetch('/api/chests/info', { headers: { Authorization: `Bearer ${token}` } });
       const d = await r.json();
-      setChestInfo({ available: d.available ?? 0, nextChestInLessons: d.nextChestInLessons ?? 3 });
+      setChestStates(d.chests ?? []);
     } catch {}
   }, [token]);
 
   useEffect(() => { loadChestInfo(); }, [loadChestInfo]);
+
+  // Look up chest states per (module, afterLessonIdx) — used to slot the
+  // chest button right after the lesson that unlocks it.
+  const chestByModuleAndIdx = useMemo(() => {
+    const m = new Map<string, ChestState>();
+    for (const c of chestStates) m.set(`${c.moduleId}:${c.afterLessonIdx}`, c);
+    return m;
+  }, [chestStates]);
 
   const isPro = user?.is_pro ?? false;
 
@@ -96,53 +111,6 @@ export function Modules() {
           </p>
         </div>
 
-        {/* Chest banner */}
-        {chestInfo && (
-          <button
-            onClick={() => chestInfo.available > 0 && setChestOpen(true)}
-            disabled={chestInfo.available === 0}
-            className="w-full mb-6 md:mb-8 rounded-2xl px-4 py-3 flex items-center gap-3 transition-all active:scale-[0.98] animate-fade-up"
-            style={{
-              background: chestInfo.available > 0
-                ? 'linear-gradient(135deg, hsl(45, 95%, 25%), hsl(35, 90%, 18%))'
-                : 'var(--c-glass)',
-              border: `1.5px solid ${chestInfo.available > 0 ? 'hsl(45, 95%, 55%)' : 'var(--c-border)'}`,
-              boxShadow: chestInfo.available > 0 ? '0 0 24px hsl(45, 95%, 50% / 0.35)' : 'none',
-              cursor: chestInfo.available > 0 ? 'pointer' : 'default',
-            }}>
-            <span className="text-3xl flex-shrink-0">
-              {chestInfo.available > 0 ? '🎁' : '🔒'}
-            </span>
-            <div className="flex-1 text-left">
-              {chestInfo.available > 0 ? (
-                <>
-                  <p className="font-extrabold text-sm" style={{ color: 'hsl(45, 95%, 70%)' }}>
-                    {chestInfo.available} {lang === 'en' ? 'chest ready!' : 'сандък готов!'}
-                  </p>
-                  <p className="text-xs" style={{ color: 'hsl(45, 70%, 80%)' }}>
-                    {lang === 'en' ? 'Spin to win coins, XP, freezes, or octopus cosmetics.' : 'Завърти за монети, XP, замразявания или костюми.'}
-                  </p>
-                </>
-              ) : (
-                <>
-                  <p className="font-bold text-sm" style={{ color: 'hsl(var(--c-fg))' }}>
-                    {lang === 'en' ? 'Next chest in' : 'Следващ сандък след'} {chestInfo.nextChestInLessons} {lang === 'en' ? 'lessons' : 'урока'}
-                  </p>
-                  <p className="text-xs" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
-                    {lang === 'en' ? 'Complete lessons to unlock loot.' : 'Завърши уроци, за да отключиш награди.'}
-                  </p>
-                </>
-              )}
-            </div>
-            {chestInfo.available > 0 && (
-              <span className="text-xs font-extrabold mono px-2.5 py-1 rounded-full"
-                style={{ background: 'hsl(45, 95%, 55%)', color: '#1a1f2e' }}>
-                {lang === 'en' ? 'OPEN' : 'ОТВОРИ'} →
-              </span>
-            )}
-          </button>
-        )}
-
         {/* Sections */}
         <div className="space-y-10 md:space-y-14">
           {modules.map((mod, mi) => {
@@ -163,7 +131,7 @@ export function Modules() {
                   lang={lang}
                 />
 
-                {/* Lesson nodes path */}
+                {/* Lesson + chest nodes path */}
                 <div className="relative flex flex-col items-center gap-8 md:gap-10 mt-8 md:mt-10">
                   {mod.lessons.map((lesson, li) => {
                     // Within an unlocked module, lessons unlock sequentially
@@ -178,22 +146,37 @@ export function Modules() {
                     const positions = [0, 60, 80, 60, 0, -60, -80, -60];
                     const xPx = positions[li % positions.length];
 
+                    // Is there a chest that unlocks RIGHT after this lesson?
+                    const chestAfter = chestByModuleAndIdx.get(`${mod.id}:${li}`);
+
                     return (
-                      <LessonNode
-                        key={lesson.id}
-                        lesson={lesson}
-                        locked={lessonLocked}
-                        proLocked={moduleProLocked}
-                        isCurrent={isLessonCurrent}
-                        xOffsetPx={xPx}
-                        palette={palette}
-                        lang={lang}
-                        onClick={() => {
-                          if (lessonLocked) return;
-                          if (moduleProLocked) { navigate('/profile'); return; }
-                          navigate(`/lesson/${mod.id}/${lesson.id}`);
-                        }}
-                      />
+                      <Fragment key={lesson.id}>
+                        <LessonNode
+                          lesson={lesson}
+                          locked={lessonLocked}
+                          proLocked={moduleProLocked}
+                          isCurrent={isLessonCurrent}
+                          xOffsetPx={xPx}
+                          palette={palette}
+                          lang={lang}
+                          onClick={() => {
+                            if (lessonLocked) return;
+                            if (moduleProLocked) { navigate('/profile'); return; }
+                            navigate(`/lesson/${mod.id}/${lesson.id}`);
+                          }}
+                        />
+                        {chestAfter && !moduleBlocked && (
+                          <ChestNode
+                            state={chestAfter}
+                            xOffsetPx={0}
+                            lang={lang}
+                            onClick={() => {
+                              if (chestAfter.status !== 'available') return;
+                              setChestTarget({ moduleId: chestAfter.moduleId, position: chestAfter.position });
+                            }}
+                          />
+                        )}
+                      </Fragment>
                     );
                   })}
                 </div>
@@ -204,10 +187,93 @@ export function Modules() {
       </div>
 
       <ChestModal
-        open={chestOpen}
-        onClose={() => setChestOpen(false)}
+        target={chestTarget}
+        onClose={() => setChestTarget(null)}
         onOpened={() => loadChestInfo()}
       />
+    </div>
+  );
+}
+
+/* ───────── Chest node — drops into the lesson path like LessonNode ───────── */
+function ChestNode({
+  state, xOffsetPx, lang, onClick,
+}: {
+  state: ChestState;
+  xOffsetPx: number;
+  lang: 'en' | 'bg';
+  onClick: () => void;
+}) {
+  const { status, position } = state;
+  const isAvailable = status === 'available';
+  const isOpened = status === 'opened';
+
+  // Color palette by state
+  const palette = isAvailable
+    ? { main: 'hsl(45, 95%, 55%)', deep: 'hsl(35, 90%, 38%)', soft: 'hsl(45, 95%, 70%)' }
+    : isOpened
+      ? { main: 'hsl(140, 35%, 45%)', deep: 'hsl(140, 35%, 30%)', soft: 'hsl(140, 30%, 60%)' }
+      : { main: 'hsl(228, 12%, 30%)', deep: 'hsl(228, 14%, 18%)', soft: 'hsl(228, 12%, 40%)' };
+
+  const label = isAvailable
+    ? (lang === 'en' ? 'CHEST' : 'САНДЪК')
+    : isOpened
+      ? (lang === 'en' ? 'opened' : 'отворен')
+      : (lang === 'en' ? 'locked' : 'заключен');
+
+  const positionLabel = position === 'end'
+    ? (lang === 'en' ? 'Module reward' : 'Награда за модул')
+    : (lang === 'en' ? 'Mid-module reward' : 'Награда по средата');
+
+  return (
+    <div
+      className="relative flex flex-col items-center transition-transform"
+      style={{ transform: `translateX(${xOffsetPx}px)` }}
+    >
+      <div className="relative">
+        {isAvailable && (
+          <span
+            className="absolute inset-0 rounded-full animate-pulse-soft pointer-events-none"
+            style={{ background: `${palette.main}33`, transform: 'scale(1.18)' }}
+            aria-hidden="true"
+          />
+        )}
+        <button
+          onClick={onClick}
+          disabled={!isAvailable}
+          aria-label={label}
+          className="relative w-20 h-20 md:w-24 md:h-24 rounded-2xl flex items-center justify-center transition-transform active:translate-y-[3px]"
+          style={{
+            background: `radial-gradient(circle at 35% 30%, ${palette.soft} 0%, ${palette.main} 60%)`,
+            boxShadow: isAvailable
+              ? `inset 0 -6px 0 ${palette.deep}, 0 6px 18px ${palette.main}55, 0 0 24px ${palette.main}66`
+              : `inset 0 -5px 0 ${palette.deep}, 0 4px 10px hsla(0,0%,0%,0.4)`,
+            opacity: !isAvailable ? 0.7 : 1,
+            cursor: isAvailable ? 'pointer' : 'not-allowed',
+          }}
+        >
+          <span
+            className="text-3xl md:text-4xl select-none"
+            style={{
+              filter: isAvailable
+                ? 'drop-shadow(0 2px 4px hsla(0,0%,0%,0.45))'
+                : 'grayscale(0.4) opacity(0.85)',
+            }}
+          >
+            {isOpened ? '✓' : '🎁'}
+          </span>
+        </button>
+      </div>
+
+      <p
+        className="mt-2 text-[11px] md:text-xs font-extrabold tracking-wider uppercase"
+        style={{ color: isAvailable ? palette.main : 'hsl(var(--c-fg-subtle))' }}
+      >
+        {label}
+      </p>
+      <p className="text-[10px] mt-0.5" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+        {positionLabel}
+      </p>
     </div>
   );
 }

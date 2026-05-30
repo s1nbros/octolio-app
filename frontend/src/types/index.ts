@@ -220,7 +220,11 @@ export interface User {
   onboarding_done: boolean;
   streak_freezes: number;
   coins?: number;
+  /** Legacy single-equipped field; superseded by per-slot equipped_* below. */
   equipped_costume?: string | null;
+  equipped_hat?: string | null;
+  equipped_face?: string | null;
+  equipped_body?: string | null;
   chests_opened?: number;
 }
 

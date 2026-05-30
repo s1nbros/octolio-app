@@ -374,7 +374,8 @@ exports.authRouter.get('/me', auth_1.authenticate, async (req, res) => {
         }
         const result = await pool.query(`SELECT id, name, email, xp, streak, last_active, created_at, avatar, is_pro,
               energy, energy_refill_at, onboarding_done, streak_freezes,
-              coins, equipped_costume, chests_opened
+              coins, equipped_costume, equipped_hat, equipped_face, equipped_body,
+              chests_opened
        FROM users WHERE id = $1`, [req.userId]);
         const user = result.rows[0];
         if (!user) {

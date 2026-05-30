@@ -457,24 +457,28 @@ export function Profile() {
 
         {/* ── OCTOPUS MASCOT + WALLET ── */}
         {(() => {
-          const equipped = user?.equipped_costume ?? null;
-          const equippedItem = getCatalogItem(equipped);
+          const hatItem  = getCatalogItem(user?.equipped_hat);
+          const faceItem = getCatalogItem(user?.equipped_face);
+          const bodyItem = getCatalogItem(user?.equipped_body);
+          const wornCount = [hatItem, faceItem, bodyItem].filter(Boolean).length;
           return (
             <div className="glass-card rounded-2xl p-5 mb-5 md:mb-6 flex items-center gap-4 animate-fade-up">
               <div className="flex-shrink-0">
                 <OctopusAvatar size={92}
-                  equipped={equipped}
-                  itemEmoji={equippedItem?.emoji ?? null}
-                  itemSlot={equippedItem?.slot ?? null} />
+                  hatEmoji={hatItem?.emoji ?? null}
+                  faceEmoji={faceItem?.emoji ?? null}
+                  bodyEmoji={bodyItem?.emoji ?? null} />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-bold uppercase tracking-wider mb-1" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
                   {lang === 'en' ? 'Your mascot' : 'Твоят талисман'}
                 </p>
                 <p className="text-base font-extrabold mb-2" style={{ color: 'hsl(var(--c-fg))' }}>
-                  {equippedItem
-                    ? (lang === 'en' ? `Wearing ${equippedItem.name.en}` : `Носи ${equippedItem.name.bg}`)
-                    : (lang === 'en' ? 'Naked octopus 🫧' : 'Гол октопод 🫧')}
+                  {wornCount === 0
+                    ? (lang === 'en' ? 'Naked octopus 🫧' : 'Гол октопод 🫧')
+                    : (lang === 'en'
+                        ? `Wearing ${wornCount} ${wornCount === 1 ? 'item' : 'items'}`
+                        : `Носи ${wornCount} ${wornCount === 1 ? 'предмет' : 'предмета'}`)}
                 </p>
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="px-2.5 py-1 rounded-full text-xs font-bold mono flex items-center gap-1"

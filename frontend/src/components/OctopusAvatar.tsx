@@ -10,13 +10,17 @@
 
 interface Props {
   size?: number;
-  equipped?: string | null;
-  /** Pass the slot of the equipped item so we can render multiple stacked later. */
-  itemEmoji?: string | null;
-  itemSlot?: 'hat' | 'face' | 'body' | null;
+  /**
+   * Per-slot equipped emojis. Pass null/undefined for an empty slot.
+   * One of (hat / face / body) can be set independently — the octopus
+   * can wear all three at the same time.
+   */
+  hatEmoji?: string | null;
+  faceEmoji?: string | null;
+  bodyEmoji?: string | null;
 }
 
-export function OctopusAvatar({ size = 120, equipped, itemEmoji, itemSlot }: Props) {
+export function OctopusAvatar({ size = 120, hatEmoji, faceEmoji, bodyEmoji }: Props) {
   const s = size;
   return (
     <div
@@ -70,22 +74,22 @@ export function OctopusAvatar({ size = 120, equipped, itemEmoji, itemSlot }: Pro
       </svg>
 
       {/*
-        Equipped cosmetic (emoji overlay) — positioned per slot.
-        We use a wrapper that handles centering (`left: 50%; margin-left: -W/2`)
-        instead of `translateX(-50%)` because the CSS animation on the inner
-        span overwrites `transform` and would otherwise offset the hat to the right.
+        Each cosmetic slot renders independently — hat + face + body can
+        all be worn at the same time. Wrapper handles centering via
+        margin-left: -W/2 (NOT transform) so the inner span's animation
+        is free to modify transform without breaking centering.
       */}
-      {itemEmoji && itemSlot === 'hat' && (() => {
-        const w = s * 0.5;        // 50% of avatar width — emoji box
+      {hatEmoji && (() => {
+        const w = s * 0.5;
         const h = s * 0.5;
         return (
           <div
             className="absolute pointer-events-none"
             style={{
-              top: `${s * -0.10}px`,           // sit just on top of the head
+              top: `${s * -0.10}px`,
               left: '50%',
-              marginLeft: `${-w / 2}px`,        // hard-centered, no transform
-              width: w, height: h, zIndex: 3,
+              marginLeft: `${-w / 2}px`,
+              width: w, height: h, zIndex: 4,
             }}
             aria-hidden="true"
           >
@@ -97,12 +101,12 @@ export function OctopusAvatar({ size = 120, equipped, itemEmoji, itemSlot }: Pro
                 filter: 'drop-shadow(0 3px 6px rgba(0,0,0,0.4))',
               }}
             >
-              {itemEmoji}
+              {hatEmoji}
             </span>
           </div>
         );
       })()}
-      {itemEmoji && itemSlot === 'face' && (() => {
+      {faceEmoji && (() => {
         const w = s * 0.4;
         return (
           <div
@@ -123,12 +127,12 @@ export function OctopusAvatar({ size = 120, equipped, itemEmoji, itemSlot }: Pro
                 filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.4))',
               }}
             >
-              {itemEmoji}
+              {faceEmoji}
             </span>
           </div>
         );
       })()}
-      {itemEmoji && itemSlot === 'body' && (() => {
+      {bodyEmoji && (() => {
         const w = s * 0.4;
         return (
           <div
@@ -149,17 +153,11 @@ export function OctopusAvatar({ size = 120, equipped, itemEmoji, itemSlot }: Pro
                 filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))',
               }}
             >
-              {itemEmoji}
+              {bodyEmoji}
             </span>
           </div>
         );
       })()}
-
-      {/* When equipped string is provided but emoji isn't passed in (e.g. when
-          we only know the ID), the parent can pass the emoji via itemEmoji. */}
-      {!itemEmoji && equipped && (
-        <span className="sr-only">Equipped: {equipped}</span>
-      )}
     </div>
   );
 }

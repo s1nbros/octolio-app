@@ -13,15 +13,20 @@ exports.shopRouter.get('/catalog', auth_1.authenticate, async (req, res) => {
     try {
         const pool = (0, db_1.getPool)();
         const owned = new Set((await pool.query(`SELECT item_id FROM user_inventory WHERE user_id = $1`, [req.userId])).rows.map((r) => r.item_id));
-        const user = (await pool.query('SELECT coins, equipped_costume FROM users WHERE id = $1', [req.userId])).rows[0];
+        const user = (await pool.query('SELECT coins, equipped_hat, equipped_face, equipped_body FROM users WHERE id = $1', [req.userId])).rows[0];
+        const equippedBySlot = {
+            hat: user?.equipped_hat ?? null,
+            face: user?.equipped_face ?? null,
+            body: user?.equipped_body ?? null,
+        };
         const items = catalog_1.CATALOG.map((c) => ({
             ...c,
             owned: owned.has(c.id),
-            equipped: user?.equipped_costume === c.id,
+            equipped: equippedBySlot[c.slot] === c.id,
         }));
         res.json({
             coins: user?.coins ?? 0,
-            equippedCostume: user?.equipped_costume ?? null,
+            equipped: equippedBySlot,
             items,
         });
     }
@@ -89,17 +94,19 @@ exports.shopRouter.post('/buy', auth_1.authenticate, async (req, res) => {
     }
 });
 /* ─── POST /api/shop/equip ─────────────────────────────────────
- * Body: { itemId | null }   (null = unequip)
+ * Equip an item into its slot. You can simultaneously equip one item
+ * per slot (hat + face + body).
+ * Body: { itemId }   — looks up the slot from the catalog
+ * To unequip, call /api/shop/unequip with the slot name.
  */
 exports.shopRouter.post('/equip', auth_1.authenticate, async (req, res) => {
     const { itemId } = req.body;
+    if (!itemId) {
+        res.status(400).json({ error: 'itemId required' });
+        return;
+    }
     try {
         const pool = (0, db_1.getPool)();
-        if (itemId === null || itemId === undefined) {
-            await pool.query('UPDATE users SET equipped_costume = NULL WHERE id = $1', [req.userId]);
-            res.json({ ok: true, equippedCostume: null });
-            return;
-        }
         const item = (0, catalog_1.getCatalogItem)(itemId);
         if (!item) {
             res.status(404).json({ error: 'item_not_found' });
@@ -110,11 +117,35 @@ exports.shopRouter.post('/equip', auth_1.authenticate, async (req, res) => {
             res.status(403).json({ error: 'not_owned' });
             return;
         }
-        await pool.query('UPDATE users SET equipped_costume = $1 WHERE id = $2', [itemId, req.userId]);
-        res.json({ ok: true, equippedCostume: itemId });
+        // Map slot → column name
+        const slotCol = item.slot === 'hat' ? 'equipped_hat'
+            : item.slot === 'face' ? 'equipped_face'
+                : 'equipped_body';
+        await pool.query(`UPDATE users SET ${slotCol} = $1 WHERE id = $2`, [itemId, req.userId]);
+        res.json({ ok: true, slot: item.slot, itemId });
     }
     catch (err) {
         console.error('Shop equip error:', err);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+/* ─── POST /api/shop/unequip ───────────────────────────────────
+ * Body: { slot: 'hat' | 'face' | 'body' }
+ */
+exports.shopRouter.post('/unequip', auth_1.authenticate, async (req, res) => {
+    const { slot } = req.body;
+    if (slot !== 'hat' && slot !== 'face' && slot !== 'body') {
+        res.status(400).json({ error: 'slot must be hat|face|body' });
+        return;
+    }
+    try {
+        const pool = (0, db_1.getPool)();
+        const slotCol = slot === 'hat' ? 'equipped_hat' : slot === 'face' ? 'equipped_face' : 'equipped_body';
+        await pool.query(`UPDATE users SET ${slotCol} = NULL WHERE id = $1`, [req.userId]);
+        res.json({ ok: true, slot });
+    }
+    catch (err) {
+        console.error('Shop unequip error:', err);
         res.status(500).json({ error: 'Server error' });
     }
 });

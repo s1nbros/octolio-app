@@ -348,15 +348,21 @@ export function Navbar() {
             onClick={() => !inLesson && setDrawerOpen(true)}
             disabled={inLesson}
             aria-label={inLesson ? 'Menu disabled during lesson' : 'Open menu'}
-            className="relative flex items-center justify-center flex-shrink-0 z-10 active:scale-95 transition-transform"
+            className="relative flex items-center justify-center flex-shrink-0 z-10 active:scale-95 transition-transform w-10 h-10 rounded-xl"
             style={{
+              background: inLesson ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.06)',
+              border: `1px solid ${inLesson ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.1)'}`,
               opacity: inLesson ? 0.5 : 1,
               cursor: inLesson ? 'not-allowed' : 'pointer',
-              filter: inLesson ? 'grayscale(0.6)' : undefined,
+              color: 'hsl(var(--c-fg))',
             }}
           >
-            <img src="/logo.png" alt="Octolio" className="w-9 h-9 object-contain"
-              style={{ filter: inLesson ? 'none' : 'drop-shadow(0 0 6px hsl(var(--c-green)/0.4))' }} />
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="4" y1="7"  x2="20" y2="7"  />
+              <line x1="4" y1="12" x2="20" y2="12" />
+              <line x1="4" y1="17" x2="20" y2="17" />
+            </svg>
             {inLesson && (
               <span
                 className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center"

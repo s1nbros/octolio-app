@@ -5,31 +5,80 @@ const express_1 = require("express");
 const auth_1 = require("../middleware/auth");
 const db_1 = require("../db");
 const catalog_1 = require("../data/catalog");
+const lessons_1 = require("../data/lessons");
 exports.chestsRouter = (0, express_1.Router)();
+/* ─── Helpers ────────────────────────────────────────────────── */
+/** For a module of N lessons, which lesson index (0-based) is the chest tied to?
+ *  - 'mid' unlocks after the lesson at index floor(N/2) − 1 (i.e. after half done)
+ *  - 'end' unlocks after the last lesson (index N − 1)
+ */
+function chestUnlockAfterLessonIdx(numLessons, pos) {
+    if (pos === 'end')
+        return numLessons - 1;
+    // For modules with 1–2 lessons we skip 'mid' entirely (only 'end' exists).
+    return Math.max(0, Math.floor(numLessons / 2) - 1);
+}
+/** Modules with 1 lesson get only an 'end' chest; everyone else gets both. */
+function chestPositionsFor(numLessons) {
+    if (numLessons <= 1)
+        return ['end'];
+    return ['mid', 'end'];
+}
+async function buildChestStates(userId) {
+    const pool = (0, db_1.getPool)();
+    // Get all completed lesson IDs for the user, indexed by module
+    const progressRows = (await pool.query(`SELECT lesson_id, module_id FROM progress WHERE user_id = $1`, [userId])).rows;
+    const completedByModule = new Map();
+    for (const r of progressRows) {
+        if (!completedByModule.has(r.module_id))
+            completedByModule.set(r.module_id, new Set());
+        completedByModule.get(r.module_id).add(r.lesson_id);
+    }
+    // Get all already-opened chest positions
+    const openedRows = (await pool.query(`SELECT module_id, position FROM module_chests WHERE user_id = $1`, [userId])).rows;
+    const openedSet = new Set(openedRows.map((r) => `${r.module_id}:${r.position}`));
+    const out = [];
+    for (const mod of lessons_1.modules) {
+        const lessons = mod.lessons;
+        const completedLessonIds = completedByModule.get(mod.id) ?? new Set();
+        const positions = chestPositionsFor(lessons.length);
+        for (const pos of positions) {
+            const afterIdx = chestUnlockAfterLessonIdx(lessons.length, pos);
+            // Unlocked when every lesson up to and including afterIdx is completed
+            const unlocked = lessons.slice(0, afterIdx + 1).every((l) => completedLessonIds.has(l.id));
+            const key = `${mod.id}:${pos}`;
+            const opened = openedSet.has(key);
+            out.push({
+                moduleId: mod.id,
+                position: pos,
+                afterLessonIdx: afterIdx,
+                status: opened ? 'opened' : unlocked ? 'available' : 'locked',
+            });
+        }
+    }
+    return out;
+}
 /* ─── GET /api/chests/info ─────────────────────────────────────
- * { available, opened, earned, nextChestInLessons, recentOpens[] }
+ * Returns full per-module chest map plus aggregate counters and
+ * the user's most recent opens.
  */
 exports.chestsRouter.get('/info', auth_1.authenticate, async (req, res) => {
     try {
+        const states = await buildChestStates(req.userId);
         const pool = (0, db_1.getPool)();
-        const stats = (await pool.query(`SELECT (SELECT COUNT(*) FROM progress WHERE user_id = $1) AS completed_lessons,
-              (SELECT chests_opened FROM users WHERE id = $1) AS chests_opened`, [req.userId])).rows[0];
-        const completed = Number(stats?.completed_lessons ?? 0);
-        const opened = Number(stats?.chests_opened ?? 0);
-        const earned = Math.floor(completed / catalog_1.LESSONS_PER_CHEST);
-        const available = Math.max(0, earned - opened);
-        const nextInLessons = catalog_1.LESSONS_PER_CHEST - (completed % catalog_1.LESSONS_PER_CHEST);
         const recent = (await pool.query(`SELECT reward_type, reward_value, coins_delta, xp_delta, opened_at
        FROM chest_opens
        WHERE user_id = $1
        ORDER BY opened_at DESC
        LIMIT 5`, [req.userId])).rows;
+        const available = states.filter((s) => s.status === 'available').length;
+        const opened = states.filter((s) => s.status === 'opened').length;
+        const total = states.length;
         res.json({
+            chests: states,
             available,
             opened,
-            earned,
-            completedLessons: completed,
-            nextChestInLessons: available > 0 ? 0 : nextInLessons,
+            total,
             recentOpens: recent,
         });
     }
@@ -39,30 +88,40 @@ exports.chestsRouter.get('/info', auth_1.authenticate, async (req, res) => {
     }
 });
 /* ─── POST /api/chests/open ────────────────────────────────────
- * Atomically draws a reward, persists it, returns it.
+ * Body: { moduleId, position }
+ * Atomically opens the specified chest if it's currently available.
  */
 exports.chestsRouter.post('/open', auth_1.authenticate, async (req, res) => {
+    const { moduleId, position } = req.body;
+    if (!moduleId || (position !== 'mid' && position !== 'end')) {
+        res.status(400).json({ error: 'moduleId and position (mid|end) required' });
+        return;
+    }
     const pool = (0, db_1.getPool)();
     const client = await pool.connect();
     try {
         await client.query('BEGIN');
-        const userRow = (await client.query(`SELECT xp, coins, chests_opened, streak_freezes, energy, is_pro
-       FROM users WHERE id = $1 FOR UPDATE`, [req.userId])).rows[0];
-        const completed = Number((await client.query(`SELECT COUNT(*)::int AS n FROM progress WHERE user_id = $1`, [req.userId])).rows[0]?.n ?? 0);
-        const earned = Math.floor(completed / catalog_1.LESSONS_PER_CHEST);
-        const available = earned - (userRow?.chests_opened ?? 0);
-        if (available <= 0) {
+        // Validate via re-check
+        const states = await buildChestStates(req.userId);
+        const target = states.find((s) => s.moduleId === moduleId && s.position === position);
+        if (!target) {
             await client.query('ROLLBACK');
-            res.status(400).json({
-                error: 'no_chest',
-                message: `Complete ${catalog_1.LESSONS_PER_CHEST - (completed % catalog_1.LESSONS_PER_CHEST)} more lessons to earn a chest.`,
-            });
+            res.status(404).json({ error: 'chest_not_found' });
+            return;
+        }
+        if (target.status === 'opened') {
+            await client.query('ROLLBACK');
+            res.status(400).json({ error: 'already_opened' });
+            return;
+        }
+        if (target.status === 'locked') {
+            await client.query('ROLLBACK');
+            res.status(400).json({ error: 'locked' });
             return;
         }
         // Get owned items so cosmetic draw skips duplicates
         const owned = new Set((await client.query(`SELECT item_id FROM user_inventory WHERE user_id = $1`, [req.userId])).rows.map((r) => r.item_id));
         const reward = (0, catalog_1.drawReward)(owned);
-        // Apply reward
         let coinsDelta = 0;
         let xpDelta = 0;
         let rewardValue = '';
@@ -79,7 +138,6 @@ exports.chestsRouter.post('/open', auth_1.authenticate, async (req, res) => {
             rewardValue = String(reward.amount);
         }
         else if (reward.type === 'energy') {
-            // bump energy, capped at 12 (no-op for Pro users since they're unlimited)
             await client.query(`UPDATE users SET energy = LEAST(energy + $1, 12) WHERE id = $2`, [reward.amount, req.userId]);
             rewardValue = String(reward.amount);
         }
@@ -88,12 +146,13 @@ exports.chestsRouter.post('/open', auth_1.authenticate, async (req, res) => {
          ON CONFLICT (user_id, item_id) DO NOTHING`, [req.userId, reward.itemId]);
             rewardValue = reward.itemId;
         }
-        // Apply coins/xp + bump opened counter
         await client.query(`UPDATE users SET coins = coins + $1, xp = xp + $2, chests_opened = chests_opened + 1 WHERE id = $3`, [coinsDelta, xpDelta, req.userId]);
         await client.query(`INSERT INTO chest_opens (user_id, reward_type, reward_value, coins_delta, xp_delta)
        VALUES ($1, $2, $3, $4, $5)`, [req.userId, reward.type, rewardValue, coinsDelta, xpDelta]);
+        // Mark this specific chest position as opened
+        await client.query(`INSERT INTO module_chests (user_id, module_id, position) VALUES ($1, $2, $3)
+       ON CONFLICT (user_id, module_id, position) DO NOTHING`, [req.userId, moduleId, position]);
         await client.query('COMMIT');
-        // Optional: include item details if it's a cosmetic so the client can render it.
         let item = null;
         if (reward.type === 'item') {
             const it = (0, catalog_1.getCatalogItem)(reward.itemId);
@@ -105,7 +164,8 @@ exports.chestsRouter.post('/open', auth_1.authenticate, async (req, res) => {
             item,
             coinsDelta,
             xpDelta,
-            availableChestsRemaining: available - 1,
+            moduleId,
+            position,
         });
     }
     catch (err) {

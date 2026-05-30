@@ -51,7 +51,26 @@ async function initDb() {
     await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS streak_freezes INTEGER DEFAULT 0`);
     await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS coins INTEGER DEFAULT 0`);
     await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS equipped_costume TEXT`);
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS equipped_hat TEXT`);
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS equipped_face TEXT`);
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS equipped_body TEXT`);
     await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS chests_opened INTEGER DEFAULT 0`);
+    // Backfill the new per-slot columns from the old single equipped_costume
+    // for accounts created before multi-slot equip existed. Safe to run on
+    // every boot: we only write if the new column is NULL.
+    await pool.query(`
+    UPDATE users u
+    SET equipped_hat  = CASE WHEN u.equipped_hat  IS NULL AND ci.slot = 'hat'  THEN u.equipped_costume ELSE u.equipped_hat  END,
+        equipped_face = CASE WHEN u.equipped_face IS NULL AND ci.slot = 'face' THEN u.equipped_costume ELSE u.equipped_face END,
+        equipped_body = CASE WHEN u.equipped_body IS NULL AND ci.slot = 'body' THEN u.equipped_costume ELSE u.equipped_body END
+    FROM (VALUES
+      ('hat_baseball','hat'),('hat_tophat','hat'),('hat_graduation','hat'),('hat_hardhat','hat'),
+      ('hat_helmet','hat'),('hat_pumpkin','hat'),('hat_crown','hat'),('hat_halo','hat'),
+      ('face_goggles','face'),('face_glasses','face'),('face_monocle','face'),('face_3d','face'),
+      ('body_scarf','body'),('body_bowtie','body'),('body_vest','body'),('body_rocket','body')
+    ) AS ci(item_id, slot)
+    WHERE u.equipped_costume IS NOT NULL AND ci.item_id = u.equipped_costume
+  `);
     // Existing accounts predate the verification flow — grandfather them in so the
     // upgrade doesn't lock active users out.
     await pool.query(`
@@ -168,5 +187,18 @@ async function initDb() {
     )
   `);
     await pool.query(`CREATE INDEX IF NOT EXISTS chest_opens_user_idx ON chest_opens(user_id, opened_at DESC)`);
+    // Per-module chest positions. Each module gets two chests (mid and end);
+    // a row here means the user has already opened that specific chest.
+    await pool.query(`
+    CREATE TABLE IF NOT EXISTS module_chests (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER NOT NULL REFERENCES users(id),
+      module_id TEXT NOT NULL,
+      position TEXT NOT NULL,
+      opened_at TIMESTAMP DEFAULT NOW(),
+      UNIQUE(user_id, module_id, position)
+    )
+  `);
+    await pool.query(`CREATE INDEX IF NOT EXISTS module_chests_user_idx ON module_chests(user_id)`);
     console.log('Database initialized');
 }

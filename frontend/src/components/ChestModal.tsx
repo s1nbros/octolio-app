@@ -21,7 +21,6 @@ interface OpenResponse {
   item: { id: string; name: { en: string; bg: string }; emoji: string; rarity: string; slot: string } | null;
   coinsDelta: number;
   xpDelta: number;
-  availableChestsRemaining: number;
 }
 
 const TILE_W = 100;          // px
@@ -30,7 +29,9 @@ const REEL_TILE_COUNT = 60;
 const WINNING_INDEX = 52;     // late tile so the reel really scrolls
 
 interface Props {
-  open: boolean;
+  /** When non-null the modal is shown for that specific chest position.
+   *  The caller passes null to dismiss. */
+  target: { moduleId: string; position: 'mid' | 'end' } | null;
   onClose: () => void;
   /** Optional callback fired after a successful open so the parent can refresh. */
   onOpened?: () => void;
@@ -87,7 +88,8 @@ function rewardToTile(
   return { id: 'unknown', emoji: '❓', label: '?', rarity: 'common' };
 }
 
-export function ChestModal({ open, onClose, onOpened }: Props) {
+export function ChestModal({ target, onClose, onOpened }: Props) {
+  const open = target !== null;
   const { token, refreshUser } = useAuth();
   const { lang } = useLang();
 
@@ -121,11 +123,12 @@ export function ChestModal({ open, onClose, onOpened }: Props) {
   if (!open) return null;
 
   const startSpin = async () => {
-    if (!token) return;
+    if (!token || !target) return;
     try {
       const r = await fetch('/api/chests/open', {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ moduleId: target.moduleId, position: target.position }),
       });
       if (!r.ok) {
         const d = await r.json().catch(() => ({}));
@@ -315,24 +318,9 @@ export function ChestModal({ open, onClose, onOpened }: Props) {
                 <div className="flex gap-2 mt-5 justify-center">
                   <button onClick={onClose}
                     className="rounded-full font-bold text-sm px-5 py-2"
-                    style={{ background: 'rgba(255,255,255,0.08)', color: 'hsl(var(--c-fg))' }}>
-                    {lang === 'en' ? 'Close' : 'Затвори'}
+                    style={{ background: 'linear-gradient(135deg, hsl(45, 95%, 55%), hsl(35, 90%, 55%))', color: '#1a1f2e' }}>
+                    {lang === 'en' ? 'Continue →' : 'Продължи →'}
                   </button>
-                  {resp.availableChestsRemaining > 0 && (
-                    <button
-                      onClick={() => {
-                        setPhase('idle');
-                        setTiles([]);
-                        setWinningTile(null);
-                        setResp(null);
-                      }}
-                      className="rounded-full font-bold text-sm px-5 py-2"
-                      style={{ background: 'linear-gradient(135deg, hsl(45, 95%, 55%), hsl(35, 90%, 55%))', color: '#1a1f2e' }}>
-                      {lang === 'en'
-                        ? `Open next (${resp.availableChestsRemaining} left)`
-                        : `Следващ (${resp.availableChestsRemaining} още)`}
-                    </button>
-                  )}
                 </div>
               </div>
             )}
