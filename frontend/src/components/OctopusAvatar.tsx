@@ -80,13 +80,14 @@ export function OctopusAvatar({ size = 120, hatEmoji, faceEmoji, bodyEmoji }: Pr
         is free to modify transform without breaking centering.
       */}
       {hatEmoji && (() => {
-        const w = s * 0.5;
-        const h = s * 0.5;
+        // Bigger hat, sits a little higher above the head.
+        const w = s * 0.58;
+        const h = s * 0.58;
         return (
           <div
             className="absolute pointer-events-none"
             style={{
-              top: `${s * -0.10}px`,
+              top: `${s * -0.18}px`,           // ↑ raised from -0.10
               left: '50%',
               marginLeft: `${-w / 2}px`,
               width: w, height: h, zIndex: 4,
@@ -96,7 +97,7 @@ export function OctopusAvatar({ size = 120, hatEmoji, faceEmoji, bodyEmoji }: Pr
             <span
               className="absolute inset-0 flex items-end justify-center select-none octopus-hat"
               style={{
-                fontSize: `${s * 0.42}px`,
+                fontSize: `${s * 0.52}px`,     // ↑ enlarged from 0.42
                 lineHeight: 1,
                 filter: 'drop-shadow(0 3px 6px rgba(0,0,0,0.4))',
               }}
@@ -107,22 +108,26 @@ export function OctopusAvatar({ size = 120, hatEmoji, faceEmoji, bodyEmoji }: Pr
         );
       })()}
       {faceEmoji && (() => {
-        const w = s * 0.4;
+        // Glasses sit ON the eyes (SVG eyes are at y=75/200 = 37.5% from top).
+        // Wrapper is 50% tall + items-center, so emoji center = top + 25%.
+        // To land center at ~38% from top → top = 38% − 25% = 13%.
+        const w = s * 0.5;
+        const h = s * 0.5;
         return (
           <div
             className="absolute pointer-events-none"
             style={{
-              top: `${s * 0.30}px`,
+              top: `${s * 0.13}px`,            // ↑ raised from 0.30
               left: '50%',
               marginLeft: `${-w / 2}px`,
-              width: w, height: w, zIndex: 3,
+              width: w, height: h, zIndex: 3,
             }}
             aria-hidden="true"
           >
             <span
               className="absolute inset-0 flex items-center justify-center select-none"
               style={{
-                fontSize: `${s * 0.22}px`,
+                fontSize: `${s * 0.34}px`,     // ↑ enlarged from 0.22
                 lineHeight: 1,
                 filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.4))',
               }}
@@ -133,7 +138,8 @@ export function OctopusAvatar({ size = 120, hatEmoji, faceEmoji, bodyEmoji }: Pr
         );
       })()}
       {bodyEmoji && (() => {
-        const w = s * 0.4;
+        const w = s * 0.5;
+        const h = s * 0.5;
         return (
           <div
             className="absolute pointer-events-none"
@@ -141,14 +147,14 @@ export function OctopusAvatar({ size = 120, hatEmoji, faceEmoji, bodyEmoji }: Pr
               bottom: `${s * 0.02}px`,
               left: '50%',
               marginLeft: `${-w / 2}px`,
-              width: w, height: w, zIndex: 3,
+              width: w, height: h, zIndex: 3,
             }}
             aria-hidden="true"
           >
             <span
               className="absolute inset-0 flex items-center justify-center select-none"
               style={{
-                fontSize: `${s * 0.30}px`,
+                fontSize: `${s * 0.38}px`,     // ↑ enlarged from 0.30
                 lineHeight: 1,
                 filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.4))',
               }}
