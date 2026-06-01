@@ -7,10 +7,45 @@ exports.authRouter = void 0;
 const express_1 = require("express");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const crypto_1 = __importDefault(require("crypto"));
+const google_auth_library_1 = require("google-auth-library");
 const db_1 = require("../db");
 const auth_1 = require("../middleware/auth");
 const banned_words_1 = require("../data/banned-words");
 const email_1 = require("../services/email");
+// Google ID-token verifier. Audience must match the OAuth client ID we used
+// in the frontend; tokens minted for any other audience are rejected.
+const googleClient = new google_auth_library_1.OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+/**
+ * Derive an available nickname from a Google profile.
+ * Strategy: strip the email's local-part to [a-z0-9_], cap at 16 chars,
+ * then suffix with 2..99 on collision. Banned nicks get random digits.
+ */
+async function generateAvailableNickname(email, fallback) {
+    const pool = (0, db_1.getPool)();
+    const base = (email.split('@')[0] || fallback || 'user')
+        .toLowerCase()
+        .replace(/[^a-z0-9_]/g, '')
+        .slice(0, 16) || 'user';
+    const isFree = async (n) => {
+        if ((0, banned_words_1.isNicknameBanned)(n))
+            return false;
+        const [u, p] = await Promise.all([
+            pool.query('SELECT 1 FROM users WHERE LOWER(name) = LOWER($1) LIMIT 1', [n]),
+            pool.query('SELECT 1 FROM pending_registrations WHERE LOWER(name) = LOWER($1) LIMIT 1', [n]),
+        ]);
+        return u.rowCount === 0 && p.rowCount === 0;
+    };
+    if (await isFree(base))
+        return base;
+    for (let i = 2; i < 100; i++) {
+        const candidate = `${base}${i}`.slice(0, 20);
+        if (await isFree(candidate))
+            return candidate;
+    }
+    // Worst case: append 4 random digits.
+    const rand = `${base}${crypto_1.default.randomInt(1000, 9999)}`.slice(0, 20);
+    return rand;
+}
 /**
  * Fire an email send without blocking the API response. Email providers can
  * stall for tens of seconds on bad creds — that must not freeze the user.
@@ -291,6 +326,103 @@ exports.authRouter.post('/login', async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 });
+/**
+ * POST /api/auth/google
+ *
+ * Body: { credential: string (Google ID token JWT), rememberMe?: boolean }
+ *
+ * Behavior:
+ *   1. Verify the ID token's signature + audience against GOOGLE_CLIENT_ID.
+ *   2. If a user already has google_id = sub  → returning login.
+ *      Else if a verified email matches an existing account → link google_id and log in.
+ *      Else → create a new account with auto-generated nickname, password_hash = NULL,
+ *             email_verified = TRUE, onboarding_done = FALSE.
+ *   3. Bump streak the same way /login does.
+ *   4. Respond with the standard { token, user } shape.
+ */
+exports.authRouter.post('/google', async (req, res) => {
+    const { credential, rememberMe } = req.body ?? {};
+    if (!credential || typeof credential !== 'string') {
+        res.status(400).json({ error: 'Missing Google credential' });
+        return;
+    }
+    if (!process.env.GOOGLE_CLIENT_ID) {
+        console.error('[google-auth] GOOGLE_CLIENT_ID is not configured');
+        res.status(500).json({ error: 'Google sign-in is not configured on this server' });
+        return;
+    }
+    try {
+        const ticket = await googleClient.verifyIdToken({
+            idToken: credential,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+        const payload = ticket.getPayload();
+        if (!payload || !payload.sub || !payload.email) {
+            res.status(400).json({ error: 'Invalid Google token' });
+            return;
+        }
+        if (!payload.email_verified) {
+            res.status(400).json({ error: 'Google account email is not verified' });
+            return;
+        }
+        const googleId = payload.sub;
+        const lowerEmail = payload.email.toLowerCase();
+        const googleName = payload.name?.trim() || payload.given_name?.trim() || '';
+        const pool = (0, db_1.getPool)();
+        // 1) Returning Google user.
+        let result = await pool.query('SELECT id, name, email, xp, streak, last_active FROM users WHERE google_id = $1 LIMIT 1', [googleId]);
+        let user = result.rows[0];
+        // 2) Existing email/password account — link this Google identity to it.
+        if (!user) {
+            result = await pool.query('SELECT id, name, email, xp, streak, last_active FROM users WHERE email = $1 LIMIT 1', [lowerEmail]);
+            user = result.rows[0];
+            if (user) {
+                await pool.query('UPDATE users SET google_id = $1, email_verified = TRUE WHERE id = $2', [googleId, user.id]);
+            }
+        }
+        // 3) Brand-new user — create.
+        if (!user) {
+            const nickname = await generateAvailableNickname(lowerEmail, googleName);
+            const today = new Date().toISOString().split('T')[0];
+            const inserted = await pool.query(`INSERT INTO users
+           (name, email, password_hash, xp, streak, last_active, email_verified, google_id, onboarding_done)
+         VALUES ($1, $2, NULL, 0, 1, $3, TRUE, $4, FALSE)
+         RETURNING id, name, email, xp, streak, last_active`, [nickname, lowerEmail, today, googleId]);
+            user = inserted.rows[0];
+            // Drop any stale pending registration for this email.
+            await pool.query('DELETE FROM pending_registrations WHERE email = $1', [lowerEmail]).catch(() => { });
+        }
+        else {
+            // Streak bump for returning users (mirrors /login).
+            const today = new Date().toISOString().split('T')[0];
+            const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+            let newStreak = user.streak;
+            if (user.last_active === today) {
+                // already active today
+            }
+            else if (user.last_active === yesterday) {
+                newStreak += 1;
+            }
+            else {
+                newStreak = 1;
+            }
+            if (newStreak !== user.streak || user.last_active !== today) {
+                await pool.query('UPDATE users SET streak = $1, last_active = $2 WHERE id = $3', [newStreak, today, user.id]);
+                user.streak = newStreak;
+            }
+        }
+        const token = (0, auth_1.signToken)(user.id, !!rememberMe);
+        res.json({
+            token,
+            rememberMe: !!rememberMe,
+            user: { id: user.id, name: user.name, email: user.email, xp: user.xp, streak: user.streak },
+        });
+    }
+    catch (err) {
+        console.error('Google auth error:', err);
+        res.status(401).json({ error: 'Google sign-in failed' });
+    }
+});
 exports.authRouter.post('/forgot-password', async (req, res) => {
     const { email } = req.body;
     if (!email) {
@@ -511,6 +643,13 @@ exports.authRouter.patch('/password', auth_1.authenticate, async (req, res) => {
         const pool = (0, db_1.getPool)();
         const result = await pool.query('SELECT password_hash FROM users WHERE id = $1', [req.userId]);
         const user = result.rows[0];
+        // Google-only accounts have no password to verify. They have to set one via
+        // /forgot-password (reset link goes to their verified Google email) before
+        // they can use this endpoint, since we can't validate `currentPassword`.
+        if (!user.password_hash) {
+            res.status(400).json({ error: 'This account uses Google sign-in. Set a password via "Forgot password" first.', googleAccount: true });
+            return;
+        }
         const valid = await bcryptjs_1.default.compare(currentPassword, user.password_hash);
         if (!valid) {
             res.status(401).json({ error: 'Current password is incorrect' });

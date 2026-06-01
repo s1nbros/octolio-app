@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLang } from '../contexts/LanguageContext';
 import { FloatingOrbs } from '../components/FloatingOrbs';
+import { GoogleSignInButton } from '../components/GoogleSignInButton';
 
 interface Availability {
   state: 'idle' | 'checking' | 'ok' | 'taken' | 'banned' | 'error';
@@ -10,7 +11,7 @@ interface Availability {
 
 export function Register() {
   const { register } = useAuth();
-  const { ui } = useLang();
+  const { ui, lang } = useLang();
   const navigate = useNavigate();
 
   const [name, setName] = useState('');
@@ -136,6 +137,20 @@ export function Register() {
               ✗ {error}
             </p>
           )}
+
+          {/* Google sign-up */}
+          <div className="mb-5">
+            <GoogleSignInButton rememberMe variant="signup" />
+          </div>
+
+          {/* Divider */}
+          <div className="flex items-center gap-3 mb-5">
+            <div className="flex-1 h-px" style={{ background: 'hsl(var(--c-fg)/0.1)' }} />
+            <span className="text-xs uppercase tracking-wider" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+              {lang === 'en' ? 'or' : 'или'}
+            </span>
+            <div className="flex-1 h-px" style={{ background: 'hsl(var(--c-fg)/0.1)' }} />
+          </div>
 
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             <div>

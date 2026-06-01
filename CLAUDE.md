@@ -154,6 +154,37 @@ octolio-app/
 - An unverified registration → 403 `{ emailNotVerified: true, email }` so the
   Login page can offer "Resend verification email".
 
+### Google sign-in (`POST /api/auth/google`)
+- Frontend renders the official Google button via Google Identity Services
+  (script loaded once in `index.html`, component is `<GoogleSignInButton />`).
+- The browser receives an ID-token JWT (`credential`) from Google and POSTs it
+  to `/api/auth/google` along with `rememberMe`.
+- Backend verifies the token against `GOOGLE_CLIENT_ID` (audience check + signature)
+  using `google-auth-library`. Token must have `email_verified = true`.
+- Account resolution order (in `auth.ts → /google`):
+  1. `users.google_id = sub` → returning Google user, fast path.
+  2. `users.email = payload.email` → existing email/password account; we set
+     `google_id` on it so future Google sign-ins hit the fast path.
+  3. Otherwise → create a brand-new row. `password_hash` stays NULL,
+     `email_verified = TRUE`, `onboarding_done = FALSE` so they go through
+     `/onboarding` next. Nickname is auto-derived from the email's local-part
+     (sanitised + suffixed on collision) by `generateAvailableNickname()`.
+- Streak is bumped the same way as `/login` (calendar-day diff).
+- Response shape mirrors `/login`: `{ token, rememberMe, user }`.
+- `PATCH /api/auth/password` refuses for Google-only accounts (no
+  `password_hash` to validate `currentPassword` against). They have to use
+  "Forgot password" first to set one.
+
+### Required env vars (Google sign-in)
+| var                       | scope    | purpose                                  |
+|---------------------------|----------|------------------------------------------|
+| `GOOGLE_CLIENT_ID`        | backend  | audience the ID token must match         |
+| `VITE_GOOGLE_CLIENT_ID`   | frontend | same client ID baked into the SPA bundle |
+
+Both should be set to the same **Web application** OAuth 2.0 Client ID from
+Google Cloud Console. If `VITE_GOOGLE_CLIENT_ID` is unset, the button renders
+a dev-only orange stub instead of failing silently.
+
 ### Email service (`backend/src/services/email.ts`)
 - **Prefers Resend HTTP API** (HTTPS port 443) — Render blocks outbound SMTP on
   ports 25/465/587. If `RESEND_API_KEY` is set, or `SMTP_HOST=smtp.resend.com`
@@ -179,6 +210,7 @@ octolio-app/
 | `SMTP_*`          | optional fallback    | only used if `RESEND_API_KEY` not set      |
 | `EMAIL_DEBUG_TOKEN` | optional           | enables `/api/auth/email-diag`             |
 | `STRIPE_*`, `ANTHROPIC_API_KEY` | yes      | for Stripe + AI advisor                    |
+| `GOOGLE_CLIENT_ID` | yes if Google sign-in | OAuth 2.0 Web Client ID — audience for ID-token verification |
 
 ## Key Business Rules
 
@@ -390,6 +422,10 @@ Key tables:
   Cosmetics + economy columns: `streak_freezes`, `coins`, `equipped_costume` (legacy
   single-equip, kept for backfill), `equipped_hat`, `equipped_face`, `equipped_body`
   (current per-slot equip), `chests_opened`.
+  **Google sign-in column:** `google_id TEXT` (nullable, unique via partial index).
+  `password_hash` is now `NULL`-able for Google-only accounts (legacy rows always
+  have one). The `password_hash NOT NULL` constraint is dropped on every boot in
+  `initDb()` for forward-compat.
   On boot, `initDb()` back-fills the per-slot columns from the legacy `equipped_costume`
   by joining against the catalog's `(item_id, slot)` map — only writes if the new
   column is NULL, so it's safe to run every boot.

@@ -55,6 +55,13 @@ async function initDb() {
     await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS equipped_face TEXT`);
     await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS equipped_body TEXT`);
     await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS chests_opened INTEGER DEFAULT 0`);
+    // Google OAuth — google_id links the account to a verified Google user.
+    // We allow it to be NULL for legacy email/password accounts that never logged in via Google.
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS google_id TEXT`);
+    await pool.query(`CREATE UNIQUE INDEX IF NOT EXISTS users_google_id_uniq ON users (google_id) WHERE google_id IS NOT NULL`);
+    // Google-only accounts have no password. Drop the NOT NULL constraint if it's still present
+    // (pre-existing rows always have a hash; new Google-only rows insert NULL).
+    await pool.query(`ALTER TABLE users ALTER COLUMN password_hash DROP NOT NULL`).catch(() => { });
     // Backfill the new per-slot columns from the old single equipped_costume
     // for accounts created before multi-slot equip existed. Safe to run on
     // every boot: we only write if the new column is NULL.

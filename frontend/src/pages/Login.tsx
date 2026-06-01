@@ -3,10 +3,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLang } from '../contexts/LanguageContext';
 import { FloatingOrbs } from '../components/FloatingOrbs';
+import { GoogleSignInButton } from '../components/GoogleSignInButton';
 
 export function Login() {
   const { login, resendVerification } = useAuth();
-  const { ui } = useLang();
+  const { ui, lang } = useLang();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
@@ -86,6 +87,20 @@ export function Login() {
               </button>
             </div>
           )}
+
+          {/* Google sign-in */}
+          <div className="mb-5">
+            <GoogleSignInButton rememberMe={rememberMe} variant="signin" />
+          </div>
+
+          {/* Divider */}
+          <div className="flex items-center gap-3 mb-5">
+            <div className="flex-1 h-px" style={{ background: 'hsl(var(--c-fg)/0.1)' }} />
+            <span className="text-xs uppercase tracking-wider" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+              {lang === 'en' ? 'or' : 'или'}
+            </span>
+            <div className="flex-1 h-px" style={{ background: 'hsl(var(--c-fg)/0.1)' }} />
+          </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>

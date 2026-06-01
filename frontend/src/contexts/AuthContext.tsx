@@ -33,6 +33,8 @@ interface AuthContextType {
   token: string | null;
   isLoading: boolean;
   login: (email: string, password: string, rememberMe: boolean) => Promise<void>;
+  /** Resolves to `true` if the Google sign-in created a brand-new account (caller should send them to onboarding). */
+  loginWithGoogle: (credential: string, rememberMe: boolean) => Promise<boolean>;
   register: (name: string, email: string, password: string) => Promise<{ pending: true; email: string; emailSent: boolean; devCode?: string }>;
   verifyEmail: (params: { email?: string; code?: string; token?: string }) => Promise<void>;
   resendVerification: (email: string) => Promise<void>;
@@ -92,6 +94,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     saveToken(data.token, rememberMe);
     setToken(data.token);
     setUser(data.user);
+  };
+
+  const loginWithGoogle = async (credential: string, rememberMe: boolean): Promise<boolean> => {
+    const res = await fetch('/api/auth/google', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ credential, rememberMe }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Google sign-in failed');
+
+    saveToken(data.token, rememberMe);
+    setToken(data.token);
+    setUser(data.user);
+    // /onboarding decides itself whether to show — but signal to the caller.
+    return !data.user.onboarding_done;
   };
 
   const register = async (name: string, email: string, password: string) => {
@@ -205,7 +223,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, isLoading, login, register, verifyEmail, resendVerification, forgotPassword, resetPassword, logout, updateUser, refreshUser, updateProfile, changePassword, completeOnboarding }}>
+    <AuthContext.Provider value={{ user, token, isLoading, login, loginWithGoogle, register, verifyEmail, resendVerification, forgotPassword, resetPassword, logout, updateUser, refreshUser, updateProfile, changePassword, completeOnboarding }}>
       {children}
     </AuthContext.Provider>
   );
