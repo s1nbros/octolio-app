@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLang } from '../contexts/LanguageContext';
+import { FloatingOrbs } from '../components/FloatingOrbs';
 import { GoogleSignInButton } from '../components/GoogleSignInButton';
-import { AuthLayout } from '../components/AuthLayout';
 
 interface Availability {
   state: 'idle' | 'checking' | 'ok' | 'taken' | 'banned' | 'error';
@@ -36,7 +36,7 @@ export function Register() {
   const nameOk = nameLocallyOk && nameAvail.state === 'ok';
   const emailOk = emailFormatOk && emailAvail.state === 'ok';
 
-  // ── Debounced nickname availability check ─────────────────
+  // Debounced server-side check (banned + uniqueness) for the nickname.
   const nameSeq = useRef(0);
   useEffect(() => {
     if (!nameLocallyOk) {
@@ -60,7 +60,7 @@ export function Register() {
     return () => clearTimeout(handle);
   }, [name, nameLocallyOk]);
 
-  // ── Debounced email availability check ────────────────────
+  // Same pattern for email — only blocks when an already-verified account owns it.
   const emailSeq = useRef(0);
   useEffect(() => {
     if (!emailFormatOk) {
@@ -106,207 +106,181 @@ export function Register() {
     }
   };
 
-  return (
-    <AuthLayout
-      mode="signup"
-      title={lang === 'en' ? 'Create your account' : 'Създай акаунт'}
-      subtitle={
-        lang === 'en'
-          ? 'Free forever. Pro is optional and unlocks advanced modules + the AI advisor.'
-          : 'Безплатно завинаги. Pro е по избор и отключва напреднали модули + AI съветника.'
-      }
-      topRightLink={
-        <>
-          {ui.have_account}{' '}
-          <Link to="/login" className="font-semibold" style={{ color: 'hsl(var(--c-primary))' }}>
-            {ui.sign_in}
-          </Link>
-        </>
-      }
-    >
-      {/* Google sign-up */}
-      <div className="mb-5">
-        <GoogleSignInButton rememberMe variant="signup" />
-      </div>
-
-      <Divider lang={lang} />
-
-      {error && (
-        <div
-          className="rounded-lg px-3.5 py-2.5 mb-4 text-sm flex items-start gap-2"
-          style={{
-            background: 'hsl(var(--c-red)/0.08)',
-            border: '1px solid hsl(var(--c-red)/0.25)',
-            color: 'hsl(var(--c-red))',
-          }}
-        >
-          <span>⚠</span>
-          <span>{error}</span>
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-        {/* Nickname */}
-        <div>
-          <FieldLabel>{ui.full_name}</FieldLabel>
-          <input
-            type="text"
-            className="input-field"
-            placeholder="AlexJohnson"
-            value={name}
-            onChange={(e) => setName(e.target.value.replace(/ /g, ''))}
-            autoComplete="username"
-          />
-          {(submitted || name.length > 0) && !nameLengthOk && (
-            <Hint ok={false} msg={ui.reg_name_min ?? 'At least 2 characters'} />
-          )}
-          {(submitted || name.length > 0) && nameLengthOk && !nameNoSpaces && (
-            <Hint ok={false} msg={ui.reg_name_no_spaces ?? 'No spaces allowed in username'} />
-          )}
-          {nameLocallyOk && nameAvail.state === 'checking' && (
-            <Hint ok={false} muted msg={ui.reg_checking ?? 'Checking availability…'} />
-          )}
-          {nameLocallyOk && nameAvail.state === 'banned' && (
-            <Hint ok={false} msg={ui.reg_name_banned ?? 'This nickname is not allowed'} />
-          )}
-          {nameLocallyOk && nameAvail.state === 'taken' && (
-            <Hint ok={false} msg={ui.reg_name_taken ?? 'This nickname is already taken'} />
-          )}
-          {nameLocallyOk && nameAvail.state === 'ok' && (
-            <Hint ok msg={ui.reg_name_available ?? 'Nickname available'} />
-          )}
-        </div>
-
-        {/* Email */}
-        <div>
-          <FieldLabel>{ui.email}</FieldLabel>
-          <input
-            type="email"
-            className="input-field"
-            placeholder="you@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            autoComplete="email"
-          />
-          {(submitted || email.length > 0) && !emailFormatOk && (
-            <Hint ok={false} msg={ui.reg_email_invalid ?? 'Enter a valid email address'} />
-          )}
-          {emailFormatOk && emailAvail.state === 'checking' && (
-            <Hint ok={false} muted msg={ui.reg_checking ?? 'Checking…'} />
-          )}
-          {emailFormatOk && emailAvail.state === 'taken' && (
-            <Hint ok={false} msg={ui.reg_email_taken ?? 'This email is already registered'} />
-          )}
-          {emailFormatOk && emailAvail.state === 'ok' && (
-            <Hint ok msg={ui.reg_email_ok ?? 'Email available'} />
-          )}
-        </div>
-
-        {/* Password */}
-        <div>
-          <FieldLabel>{ui.password}</FieldLabel>
-          <div className="relative">
-            <input
-              type={showPassword ? 'text' : 'password'}
-              className="input-field pr-11"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="new-password"
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword((p) => !p)}
-              className="absolute right-3 top-1/2 -translate-y-1/2"
-              style={{ color: 'hsl(var(--c-fg-muted))' }}
-              tabIndex={-1}
-            >
-              {showPassword ? '🙈' : '👁️'}
-            </button>
-          </div>
-          {/* Always-visible rule list for trust */}
-          <div className="mt-2 space-y-0.5">
-            <p
-              className="text-xs font-medium flex items-center gap-1.5"
-              style={{ color: password.length === 0 ? 'hsl(var(--c-fg-subtle))' : pwLength ? 'hsl(var(--c-green))' : 'hsl(var(--c-red))' }}
-            >
-              <span>{password.length === 0 ? '•' : pwLength ? '✓' : '✗'}</span>
-              {lang === 'en' ? 'At least 8 characters' : 'Поне 8 символа'}
-            </p>
-            <p
-              className="text-xs font-medium flex items-center gap-1.5"
-              style={{ color: password.length === 0 ? 'hsl(var(--c-fg-subtle))' : pwUppercase ? 'hsl(var(--c-green))' : 'hsl(var(--c-red))' }}
-            >
-              <span>{password.length === 0 ? '•' : pwUppercase ? '✓' : '✗'}</span>
-              {lang === 'en' ? 'At least 1 uppercase letter (A–Z)' : 'Поне 1 главна буква (A–Z)'}
-            </p>
-          </div>
-        </div>
-
-        {/* Tiny legal microcopy (a big-platform staple) */}
-        <p className="text-xs leading-relaxed" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
-          {lang === 'en' ? 'By creating an account, you agree to our ' : 'Със създаване на акаунт се съгласяваш с нашата '}
-          <Link to="/privacy" className="underline" style={{ color: 'hsl(var(--c-fg-muted))' }}>
-            {lang === 'en' ? 'Privacy Policy' : 'Политика за поверителност'}
-          </Link>
-          {lang === 'en' ? '. We never sell your data.' : '. Никога не продаваме данните ти.'}
-        </p>
-
-        <button
-          type="submit"
-          className="btn-green w-full mt-1"
-          disabled={isLoading || !nameOk || !emailOk || !passwordOk}
-        >
-          {isLoading ? (
-            <span className="flex items-center justify-center gap-2">
-              <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-              {ui.create_account}…
-            </span>
-          ) : (
-            <>{ui.create_account} →</>
-          )}
-        </button>
-      </form>
-
-      <p className="text-sm mt-7 lg:hidden text-center" style={{ color: 'hsl(var(--c-fg-muted))' }}>
-        {ui.have_account}{' '}
-        <Link to="/login" className="font-semibold" style={{ color: 'hsl(var(--c-primary))' }}>
-          {ui.sign_in}
-        </Link>
-      </p>
-    </AuthLayout>
-  );
-}
-
-/* ─── helpers ─────────────────────────────────────────────── */
-function FieldLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <label className="block text-xs font-semibold uppercase tracking-wide mb-1.5" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
-      {children}
-    </label>
-  );
-}
-
-function Hint({ ok, msg, muted }: { ok: boolean; msg: string; muted?: boolean }) {
-  return (
-    <p
-      className="text-xs mt-1.5 font-medium flex items-center gap-1.5"
-      style={{ color: muted ? 'hsl(var(--c-fg-subtle))' : ok ? 'hsl(var(--c-green))' : 'hsl(var(--c-red))' }}
-    >
-      <span>{muted ? '…' : ok ? '✓' : '✗'}</span>
-      {msg}
+  const Hint = ({ ok, msg, muted }: { ok: boolean; msg: string; muted?: boolean }) => (
+    <p className="text-xs mt-1.5 font-medium"
+      style={{ color: muted ? 'hsl(var(--c-fg-subtle))' : ok ? 'hsl(var(--c-green))' : 'hsl(var(--c-red))' }}>
+      {muted ? '…' : ok ? '✓' : '✗'} {msg}
     </p>
   );
-}
 
-function Divider({ lang }: { lang: 'en' | 'bg' }) {
   return (
-    <div className="flex items-center gap-3 mb-5">
-      <div className="flex-1 h-px" style={{ background: 'hsl(var(--c-fg)/0.1)' }} />
-      <span className="text-[11px] uppercase tracking-wider font-semibold" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
-        {lang === 'en' ? 'or continue with email' : 'или продължи с имейл'}
-      </span>
-      <div className="flex-1 h-px" style={{ background: 'hsl(var(--c-fg)/0.1)' }} />
+    <div className="relative min-h-screen flex items-center justify-center px-4 py-12">
+      <FloatingOrbs />
+
+      <div className="relative w-full max-w-md animate-scale-in" style={{ zIndex: 1 }}>
+        <div className="glass-card rounded-3xl p-8">
+          <div className="text-center mb-8">
+            <div className="flex justify-center mb-2">
+              <img src="/logo.png" alt="Octolio" className="w-20 h-20 object-contain"
+                style={{ filter: 'drop-shadow(0 4px 16px hsl(var(--c-green)/0.3))' }} />
+            </div>
+            <h1 className="text-2xl font-bold" style={{ color: 'hsl(var(--c-fg))' }}>
+              {ui.create_account}
+            </h1>
+            <p className="text-sm mt-1" style={{ color: 'hsl(var(--c-fg-muted))' }}>
+              {ui.hero_sub.split('.')[0]}.
+            </p>
+          </div>
+
+          {error && (
+            <p className="text-sm mb-4 font-medium" style={{ color: 'hsl(var(--c-red))' }}>
+              ✗ {error}
+            </p>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wide mb-2"
+                style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+                {ui.full_name}
+              </label>
+              <input
+                type="text"
+                className="input-field"
+                placeholder="AlexJohnson"
+                value={name}
+                onChange={e => setName(e.target.value.replace(/ /g, ''))}
+                autoComplete="username"
+              />
+              {(submitted || name.length > 0) && !nameLengthOk && (
+                <Hint ok={false} msg={ui.reg_name_min ?? 'At least 2 characters'} />
+              )}
+              {(submitted || name.length > 0) && nameLengthOk && !nameNoSpaces && (
+                <Hint ok={false} msg={ui.reg_name_no_spaces ?? 'No spaces allowed in username'} />
+              )}
+              {nameLocallyOk && nameAvail.state === 'checking' && (
+                <Hint ok={false} muted msg={ui.reg_checking ?? 'Checking availability…'} />
+              )}
+              {nameLocallyOk && nameAvail.state === 'banned' && (
+                <Hint ok={false} msg={ui.reg_name_banned ?? 'This nickname is not allowed'} />
+              )}
+              {nameLocallyOk && nameAvail.state === 'taken' && (
+                <Hint ok={false} msg={ui.reg_name_taken ?? 'This nickname is already taken'} />
+              )}
+              {nameLocallyOk && nameAvail.state === 'ok' && (
+                <Hint ok msg={ui.reg_name_available ?? 'Nickname available'} />
+              )}
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wide mb-2"
+                style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+                {ui.email}
+              </label>
+              <input
+                type="email"
+                className="input-field"
+                placeholder="you@example.com"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                autoComplete="email"
+              />
+              {(submitted || email.length > 0) && !emailFormatOk && (
+                <Hint ok={false} msg={ui.reg_email_invalid ?? 'Enter a valid email address'} />
+              )}
+              {emailFormatOk && emailAvail.state === 'checking' && (
+                <Hint ok={false} muted msg={ui.reg_checking ?? 'Checking…'} />
+              )}
+              {emailFormatOk && emailAvail.state === 'taken' && (
+                <Hint ok={false} msg={ui.reg_email_taken ?? 'This email is already registered'} />
+              )}
+              {emailFormatOk && emailAvail.state === 'ok' && (
+                <Hint ok msg={ui.reg_email_ok ?? 'Email available'} />
+              )}
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wide mb-2"
+                style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+                {ui.password}
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  className="input-field pr-11"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  autoComplete="new-password"
+                />
+                <button type="button" onClick={() => setShowPassword(p => !p)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2"
+                  style={{ color: 'hsl(var(--c-fg-muted))' }}>
+                  {showPassword ? '🙈' : '👁️'}
+                </button>
+              </div>
+              {password.length > 0 && (
+                <div className="mt-1.5 space-y-0.5">
+                  <p className="text-xs font-medium" style={{ color: pwLength ? 'hsl(var(--c-green))' : 'hsl(var(--c-red))' }}>
+                    {pwLength ? '✓' : '✗'} At least 8 characters
+                  </p>
+                  <p className="text-xs font-medium" style={{ color: pwUppercase ? 'hsl(var(--c-green))' : 'hsl(var(--c-red))' }}>
+                    {pwUppercase ? '✓' : '✗'} At least 1 uppercase letter (A–Z)
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              className="btn-green w-full mt-2"
+              disabled={isLoading || !nameOk || !emailOk || !passwordOk}
+            >
+              {isLoading
+                ? <span className="flex items-center gap-2">
+                    <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                    {ui.create_account}...
+                  </span>
+                : ui.create_account + ' →'}
+            </button>
+          </form>
+
+          {/* Divider */}
+          <div className="flex items-center gap-3 mt-6 mb-5">
+            <div className="flex-1 h-px" style={{ background: 'hsl(var(--c-fg)/0.1)' }} />
+            <span className="text-xs uppercase tracking-wider" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+              {lang === 'en' ? 'or continue with' : 'или продължи с'}
+            </span>
+            <div className="flex-1 h-px" style={{ background: 'hsl(var(--c-fg)/0.1)' }} />
+          </div>
+
+          {/* Google sign-up */}
+          <div className="mb-2">
+            <GoogleSignInButton rememberMe variant="signup" />
+          </div>
+
+          <p className="text-center text-sm mt-6" style={{ color: 'hsl(var(--c-fg-muted))' }}>
+            {ui.have_account}{' '}
+            <Link to="/login" className="font-semibold" style={{ color: 'hsl(var(--c-primary))' }}>
+              {ui.sign_in}
+            </Link>
+          </p>
+        </div>
+
+        {/* Footer outside the card — works on all screen sizes */}
+        <footer className="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs"
+          style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+          <Link to="/faq" className="hover:underline" style={{ color: 'hsl(var(--c-fg-muted))' }}>
+            {lang === 'en' ? 'FAQ' : 'ЧЗВ'}
+          </Link>
+          <span style={{ color: 'hsl(var(--c-fg)/0.25)' }}>•</span>
+          <Link to="/privacy" className="hover:underline" style={{ color: 'hsl(var(--c-fg-muted))' }}>
+            {lang === 'en' ? 'Privacy' : 'Поверителност'}
+          </Link>
+          <span style={{ color: 'hsl(var(--c-fg)/0.25)' }}>•</span>
+          <span>© Octolio 2026</span>
+        </footer>
+      </div>
     </div>
   );
 }
