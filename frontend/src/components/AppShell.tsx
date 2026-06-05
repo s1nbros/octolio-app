@@ -9,6 +9,7 @@ import { NotificationBell } from './NotificationBell';
 import { CoinIcon } from './CoinIcon';
 import { WhatsNewModal } from './WhatsNewModal';
 import { WheelOfLuck } from './WheelOfLuck';
+import { PrizeRevealPopup, type PrizeResult } from './PrizeRevealPopup';
 import { getLevel } from '../types';
 
 const SEEN_REVIEW_KEY  = 'octolio_seen_review_v1';
@@ -498,20 +499,21 @@ function RightRail() {
 
 /* ─── Main shell ─── */
 export function AppShell({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth();
-  // Local override so dismissing the wheel hides it immediately even before
-  // the next /me refresh confirms wheel_spun = true on the server.
-  const [wheelDismissed, setWheelDismissed] = useState(false);
+  const { user, refreshUser } = useAuth();
 
-  // First-spin gate: decided ONCE on first render. We can't recompute it from
-  // the live `user.wheel_spun` value, because the spin endpoint flips that
-  // bit immediately, and `refreshUser()` lands BEFORE the reveal screen
-  // renders — which would unmount the wheel and the user would never see
-  // "Congratulations, you won X". Keep the wheel mounted until the user
-  // explicitly clicks "Claim & continue".
+  // ── Wheel of Luck flow ──────────────────────────────────────
+  // The flow has 3 states managed here so the popup is INDEPENDENT of the
+  // wheel component. Even if the wheel unmounts, the popup keeps showing
+  // until the user clicks Claim.
+  //
+  //   shouldShowWheel  → captured ONCE; gates initial wheel mount
+  //   prize            → set when the wheel reports a completed spin
+  //   wheelClosed      → set when prize is claimed; hides everything for good
   const [shouldShowWheel] = useState<boolean>(
     () => !!user && user.onboarding_done && user.wheel_spun !== true,
   );
+  const [prize, setPrize] = useState<PrizeResult | null>(null);
+  const [wheelClosed, setWheelClosed] = useState(false);
 
   // If not logged in (shouldn't happen since shell only wraps protected routes), bail
   if (!user) return <>{children}</>;
@@ -539,9 +541,28 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* First-visit-after-update announcement */}
       <WhatsNewModal />
 
-      {/* One-time Wheel of Luck — gates everything until claimed */}
-      {shouldShowWheel && !wheelDismissed && (
-        <WheelOfLuck onClose={() => setWheelDismissed(true)} />
+      {/* One-time Wheel of Luck.
+          Show the spinning wheel while: gate=true, no prize yet, not closed.
+          The wheel calls onSpinComplete(prize); we then mount the popup. */}
+      {shouldShowWheel && !wheelClosed && !prize && (
+        <WheelOfLuck
+          onSpinComplete={(p) => setPrize(p)}
+          onClose={() => setWheelClosed(true)}
+        />
+      )}
+
+      {/* Prize reveal popup — independent of the wheel. Lives until Claim. */}
+      {prize && (
+        <PrizeRevealPopup
+          result={prize}
+          onClaim={() => {
+            setPrize(null);
+            setWheelClosed(true);
+            // Refresh so is_pro / wheel_spun / pro_trial_ends_at reflect everywhere
+            // by the time the user navigates to Pro-only routes.
+            refreshUser().catch(() => {});
+          }}
+        />
       )}
     </div>
   );
