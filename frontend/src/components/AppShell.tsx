@@ -503,14 +503,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   // the next /me refresh confirms wheel_spun = true on the server.
   const [wheelDismissed, setWheelDismissed] = useState(false);
 
+  // First-spin gate: decided ONCE on first render. We can't recompute it from
+  // the live `user.wheel_spun` value, because the spin endpoint flips that
+  // bit immediately, and `refreshUser()` lands BEFORE the reveal screen
+  // renders — which would unmount the wheel and the user would never see
+  // "Congratulations, you won X". Keep the wheel mounted until the user
+  // explicitly clicks "Claim & continue".
+  const [shouldShowWheel] = useState<boolean>(
+    () => !!user && user.onboarding_done && user.wheel_spun !== true,
+  );
+
   // If not logged in (shouldn't happen since shell only wraps protected routes), bail
   if (!user) return <>{children}</>;
-
-  // First-spin gate: show the wheel once when the user is authenticated +
-  // has completed onboarding + has never spun before.
-  // Field defaults to undefined for grandfathered accounts; treat undefined as
-  // "not yet spun" so legacy users get a one-time gift too.
-  const shouldShowWheel = !wheelDismissed && user.onboarding_done && user.wheel_spun !== true;
 
   return (
     <div className="relative min-h-screen">
@@ -536,7 +540,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <WhatsNewModal />
 
       {/* One-time Wheel of Luck — gates everything until claimed */}
-      {shouldShowWheel && <WheelOfLuck onClose={() => setWheelDismissed(true)} />}
+      {shouldShowWheel && !wheelDismissed && (
+        <WheelOfLuck onClose={() => setWheelDismissed(true)} />
+      )}
     </div>
   );
 }
