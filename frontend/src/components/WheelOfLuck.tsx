@@ -413,12 +413,12 @@ function PrizeReveal({
         />
 
         <div className="relative">
-          {/* Eyebrow: always "Congratulations!" regardless of which prize tier. */}
+          {/* Tiny rarity tag stays as an eyebrow for color/context. */}
           <p
             className="inline-block text-[11px] font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-4"
             style={{ background: `${color}1F`, color }}
           >
-            {lang === 'en' ? '🎉 Congratulations!' : '🎉 Поздравления!'}
+            {lang === 'en' ? '✦ Prize unlocked' : '✦ Награда отключена'}
           </p>
 
           <div
@@ -428,11 +428,20 @@ function PrizeReveal({
             {visual}
           </div>
 
-          {/* Primary "You won X" headline — same shape for every prize tier,
-              from 25 XP all the way to the cup. */}
-          <h2 className="text-2xl sm:text-3xl font-extrabold mb-3 leading-tight" style={{ color: 'hsl(var(--c-fg))' }}>
-            {lang === 'en' ? `You won ${rewardName}` : `Спечели ${rewardName}`}
+          {/* PRIMARY message — big "Congratulations!" + "You won X" line.
+              Shows for every prize tier from 25 XP up to the cup. */}
+          <h2
+            className="text-3xl sm:text-4xl font-extrabold mb-1 leading-tight"
+            style={{ color, letterSpacing: '-0.01em' }}
+          >
+            {lang === 'en' ? '🎉 Congratulations!' : '🎉 Поздравления!'}
           </h2>
+          <p
+            className="text-xl sm:text-2xl font-extrabold mb-3 leading-tight"
+            style={{ color: 'hsl(var(--c-fg))' }}
+          >
+            {lang === 'en' ? `You won ${rewardName}` : `Спечели ${rewardName}`}
+          </p>
           <p className="text-sm leading-relaxed mb-7" style={{ color: 'hsl(var(--c-fg-muted))' }}>
             {sub}
           </p>
