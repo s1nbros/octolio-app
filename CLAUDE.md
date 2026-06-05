@@ -353,6 +353,43 @@ gameplay-power gating. Three coupled systems:
   that lists the last 30 notifications and marks them read on tap. Each notification
   carries an optional `link` and a typed `metadata` JSONB blob.
 
+### Wheel of Luck (one-time welcome gift)
+- Shown once per account, ever, on the first authenticated visit after
+  onboarding is complete (gated in `AppShell` via `user.wheel_spun !== true`).
+- Mounted as a fullscreen modal — the user must spin and claim before they
+  can use the app.
+- 10 visible slots: 6 XP tiers (25/50/100/200/500/1000), 2 cosmetic tiers
+  (common/rare), 14-day Pro trial, and the Octolio cup (legendary).
+- **All prize logic is server-side** in `backend/src/routes/wheel.ts`:
+  - `crypto.randomInt` for an unguessable weighted draw.
+  - The whole spin runs inside a transaction with `SELECT FOR UPDATE` on the
+    user row so double-spins are impossible.
+  - **Global cup supply cap = 3.** If the draw lands on `cup` but
+    `SELECT COUNT(*) FROM wheel_prizes WHERE reward_type='cup'` is already ≥ 3,
+    we silently swap the slot to `xp_1000` so the user still gets a nice prize.
+  - Cosmetic rewards pick a random unowned item of the requested rarity from
+    the existing `CATALOG`. If the user owns everything, we fall back to 500 XP.
+  - Pro trial sets `users.is_pro = TRUE` AND `users.pro_trial_ends_at = NOW() + 14 days`.
+    `/api/auth/me` lazily downgrades expired trials (only if they don't ALSO
+    have a `stripe_subscription_id` — paid subs survive trial expiry).
+- Endpoints:
+  - `GET  /api/wheel/info`  → `{ canSpin, slots[], cupSupplyTotal }` — slot
+    weights are NOT in the public payload (anti-cheat).
+  - `POST /api/wheel/spin` → `{ slotIndex, slot, reward }` — `slotIndex`
+    drives the frontend wheel-rotation animation to land on the right slice.
+- Every spin is logged to `wheel_prizes (user_id, reward_type, reward_value, won_at)`.
+  Cup winners list:
+  ```sql
+  SELECT u.id, u.name, u.email, w.won_at
+  FROM wheel_prizes w JOIN users u ON u.id = w.user_id
+  WHERE w.reward_type = 'cup'
+  ORDER BY w.won_at;
+  ```
+- Frontend: `<WheelOfLuck />` in `frontend/src/components/WheelOfLuck.tsx`.
+  Pure SVG slices + a `transition: transform Xs cubic-bezier(...)` for the
+  spin, custom `@keyframes prize-pop` and `@keyframes confetti-fall` for the
+  reveal. No external animation library.
+
 ### "What's new" announcement modal
 - `WhatsNewModal` pops up once per device after a user is authenticated + onboarded.
 - Storage key `octolio_seen_whatsnew_v1` — set on dismiss. Bumping the version

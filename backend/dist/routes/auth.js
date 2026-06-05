@@ -504,10 +504,20 @@ exports.authRouter.get('/me', auth_1.authenticate, async (req, res) => {
                 await pool.query('UPDATE users SET energy = $1, energy_refill_at = $2 WHERE id = $3', [newEnergy, newRefillAt, req.userId]);
             }
         }
+        // Lazy Pro-trial downgrade: if the user is on a wheel-granted trial that
+        // has now expired AND they don't also have a real Stripe subscription,
+        // demote them back to free. Done here so no cron task is needed.
+        await pool.query(`UPDATE users
+         SET is_pro = FALSE
+       WHERE id = $1
+         AND is_pro = TRUE
+         AND pro_trial_ends_at IS NOT NULL
+         AND pro_trial_ends_at < NOW()
+         AND (stripe_subscription_id IS NULL OR stripe_subscription_id = '')`, [req.userId]);
         const result = await pool.query(`SELECT id, name, email, xp, streak, last_active, created_at, avatar, is_pro,
               energy, energy_refill_at, onboarding_done, streak_freezes,
               coins, equipped_costume, equipped_hat, equipped_face, equipped_body,
-              chests_opened
+              chests_opened, wheel_spun, pro_trial_ends_at
        FROM users WHERE id = $1`, [req.userId]);
         const user = result.rows[0];
         if (!user) {

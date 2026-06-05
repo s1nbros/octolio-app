@@ -65,6 +65,22 @@ export async function initDb(): Promise<void> {
   // (pre-existing rows always have a hash; new Google-only rows insert NULL).
   await pool.query(`ALTER TABLE users ALTER COLUMN password_hash DROP NOT NULL`).catch(() => {});
 
+  // Wheel of Luck — one spin per account, ever. Pro trial is granted in-app
+  // (no Stripe involvement); pro_trial_ends_at marks when to lazily downgrade.
+  await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS wheel_spun BOOLEAN DEFAULT FALSE`);
+  await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS pro_trial_ends_at TIMESTAMP`);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS wheel_prizes (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER NOT NULL REFERENCES users(id),
+      reward_type TEXT NOT NULL,          -- 'xp' | 'cosmetic' | 'pro_trial' | 'cup'
+      reward_value TEXT,                  -- amount as string, item id, '14d', or 'cup'
+      won_at TIMESTAMP DEFAULT NOW()
+    )
+  `);
+  await pool.query(`CREATE INDEX IF NOT EXISTS wheel_prizes_type_idx ON wheel_prizes (reward_type)`);
+  await pool.query(`CREATE INDEX IF NOT EXISTS wheel_prizes_user_idx ON wheel_prizes (user_id)`);
+
   // Backfill the new per-slot columns from the old single equipped_costume
   // for accounts created before multi-slot equip existed. Safe to run on
   // every boot: we only write if the new column is NULL.

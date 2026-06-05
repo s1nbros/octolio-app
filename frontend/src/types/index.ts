@@ -226,6 +226,8 @@ export interface User {
   equipped_face?: string | null;
   equipped_body?: string | null;
   chests_opened?: number;
+  wheel_spun?: boolean;
+  pro_trial_ends_at?: string | null;
 }
 
 export const LEVELS = [

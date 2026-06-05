@@ -8,6 +8,7 @@ import { ProWidget, LeagueWidget, MoneyFactWidget, StreakWidget, DailyQuestsTeas
 import { NotificationBell } from './NotificationBell';
 import { CoinIcon } from './CoinIcon';
 import { WhatsNewModal } from './WhatsNewModal';
+import { WheelOfLuck } from './WheelOfLuck';
 import { getLevel } from '../types';
 
 const SEEN_REVIEW_KEY  = 'octolio_seen_review_v1';
@@ -498,8 +499,18 @@ function RightRail() {
 /* ─── Main shell ─── */
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
+  // Local override so dismissing the wheel hides it immediately even before
+  // the next /me refresh confirms wheel_spun = true on the server.
+  const [wheelDismissed, setWheelDismissed] = useState(false);
+
   // If not logged in (shouldn't happen since shell only wraps protected routes), bail
   if (!user) return <>{children}</>;
+
+  // First-spin gate: show the wheel once when the user is authenticated +
+  // has completed onboarding + has never spun before.
+  // Field defaults to undefined for grandfathered accounts; treat undefined as
+  // "not yet spun" so legacy users get a one-time gift too.
+  const shouldShowWheel = !wheelDismissed && user.onboarding_done && user.wheel_spun !== true;
 
   return (
     <div className="relative min-h-screen">
@@ -523,6 +534,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       {/* First-visit-after-update announcement */}
       <WhatsNewModal />
+
+      {/* One-time Wheel of Luck — gates everything until claimed */}
+      {shouldShowWheel && <WheelOfLuck onClose={() => setWheelDismissed(true)} />}
     </div>
   );
 }

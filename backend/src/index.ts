@@ -20,6 +20,7 @@ import { friendsRouter } from './routes/friends';
 import { notificationsRouter } from './routes/notifications';
 import { chestsRouter } from './routes/chests';
 import { shopRouter } from './routes/shop';
+import { wheelRouter } from './routes/wheel';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -50,6 +51,7 @@ app.use('/api/friends', friendsRouter);
 app.use('/api/notifications', notificationsRouter);
 app.use('/api/chests', chestsRouter);
 app.use('/api/shop', shopRouter);
+app.use('/api/wheel', wheelRouter);
 
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });

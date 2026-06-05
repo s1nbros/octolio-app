@@ -25,6 +25,7 @@ const friends_1 = require("./routes/friends");
 const notifications_1 = require("./routes/notifications");
 const chests_1 = require("./routes/chests");
 const shop_1 = require("./routes/shop");
+const wheel_1 = require("./routes/wheel");
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 3001;
 const allowedOrigins = process.env.ALLOWED_ORIGINS
@@ -49,6 +50,7 @@ app.use('/api/friends', friends_1.friendsRouter);
 app.use('/api/notifications', notifications_1.notificationsRouter);
 app.use('/api/chests', chests_1.chestsRouter);
 app.use('/api/shop', shop_1.shopRouter);
+app.use('/api/wheel', wheel_1.wheelRouter);
 app.get('/api/health', (_req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
