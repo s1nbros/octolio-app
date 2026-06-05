@@ -273,3 +273,36 @@ wheelRouter.post('/spin', authenticate, async (req: AuthRequest, res: Response):
     client.release();
   }
 });
+
+/* ─────────────────────────────────────────────────────────────
+ * POST /api/wheel/reset  — DEV/TEST ONLY
+ *
+ * Resets the calling user's wheel state so they can spin again.
+ * Guarded by the WHEEL_DEBUG_TOKEN env var: requests must send a matching
+ * `X-Wheel-Debug-Token` header. If WHEEL_DEBUG_TOKEN is unset the endpoint
+ * 404s (effectively disabled in production unless you opt in).
+ *
+ * Usage:
+ *   curl -X POST https://<backend>/api/wheel/reset \
+ *     -H "Authorization: Bearer <jwt>" \
+ *     -H "X-Wheel-Debug-Token: <env value>"
+ *
+ * Does NOT roll back prizes already applied — XP added, cosmetics owned,
+ * and Pro-trial flags stay. It only clears wheel_spun so a new spin runs.
+ * ───────────────────────────────────────────────────────────── */
+wheelRouter.post('/reset', authenticate, async (req: AuthRequest, res: Response): Promise<void> => {
+  const expected = process.env.WHEEL_DEBUG_TOKEN;
+  const provided = req.header('X-Wheel-Debug-Token');
+  if (!expected || provided !== expected) {
+    res.status(404).json({ error: 'Not found' });
+    return;
+  }
+  try {
+    const pool = getPool();
+    await pool.query('UPDATE users SET wheel_spun = FALSE WHERE id = $1', [req.userId]);
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Wheel reset error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});

@@ -98,15 +98,17 @@ export function WheelOfLuck({ onClose }: { onClose: () => void }) {
       const finalRotation = 360 * EXTRA_TURNS - targetCentre;
       setRotation(finalRotation);
 
-      // After the spin animation completes, refresh the user record so
-      // wheel_spun + is_pro + pro_trial_ends_at are reflected everywhere,
-      // THEN reveal the prize. Awaiting guarantees that by the time the
-      // user clicks "Claim", any Pro-gated content they navigate to sees
-      // the freshly-granted Pro state.
-      setTimeout(async () => {
-        try { await refreshUser(); } catch { /* keep UX moving even if refresh fails */ }
+      // After the spin animation completes, flip to the reveal phase IMMEDIATELY
+      // (synchronously, no await), then kick off the user refresh in the
+      // background. Awaiting the refresh first used to race: AuthContext would
+      // re-render the tree mid-await and we'd never get a chance to call
+      // setPhase('revealing'). With the order swapped, the reveal renders
+      // instantly when the wheel stops; the refresh updates is_pro/wheel_spun
+      // in the background and we await it again on Claim as a safety net.
+      window.setTimeout(() => {
         setPhase('revealing');
-      }, SPIN_DURATION_MS + 200);
+        refreshUser().catch(() => { /* keep UX moving even if refresh fails */ });
+      }, SPIN_DURATION_MS + 100);
     } catch (e) {
       setPhase('error');
       setError(e instanceof Error ? e.message : 'Spin failed');
