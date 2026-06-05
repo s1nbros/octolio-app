@@ -24,9 +24,9 @@ interface SpinResponse {
   };
 }
 
-/** Slice colors — one per rarity tier, kept tidy with the wheel-of-fortune feel. */
+/** Slice colors — one per rarity tier. */
 const SLOT_FILL: Record<string, string> = {
-  xp_25:           'hsl(160, 55%, 55%)',  // green
+  xp_25:           'hsl(160, 55%, 55%)',
   xp_50:           'hsl(155, 65%, 50%)',
   xp_100:          'hsl(180, 60%, 50%)',
   xp_200:          'hsl(200, 70%, 55%)',
@@ -34,11 +34,10 @@ const SLOT_FILL: Record<string, string> = {
   xp_1000:         'hsl(260, 65%, 65%)',
   cosmetic_common: 'hsl(35, 80%, 60%)',
   cosmetic_rare:   'hsl(290, 70%, 65%)',
-  pro_trial:       'hsl(45, 95%, 55%)',   // gold
-  cup:             'hsl(0, 75%, 55%)',    // ruby red for legendary
+  pro_trial:       'hsl(45, 95%, 55%)',
+  cup:             'hsl(0, 75%, 55%)',
 };
 
-/** Smaller fonts for the longer labels so they fit inside thin slices. */
 const SLOT_FONT_SIZE: Record<string, number> = {
   pro_trial: 11,
   cosmetic_common: 11,
@@ -46,35 +45,79 @@ const SLOT_FONT_SIZE: Record<string, number> = {
   cup: 11,
 };
 
-const WHEEL_SIZE = 320;        // px
-const SPIN_DURATION_MS = 8500; // ms — longer build-up + slower deceleration
-const EXTRA_TURNS = 9;         // full rotations before settling
-/** Path to the real Octolio cup image. Place it at frontend/public/cup.png. */
+const WHEEL_SIZE = 320;
+const SPIN_DURATION_MS = 8500;
+const EXTRA_TURNS = 9;
 const CUP_IMG = '/cup.png';
 
+/* ─────────────────────────────────────────────────────────────
+ * Top-level component
+ * ─────────────────────────────────────────────────────────── */
 export function WheelOfLuck({ onClose }: { onClose: () => void }) {
   const { token, refreshUser } = useAuth();
   const { lang } = useLang();
 
-  const [slots, setSlots] = useState<SlotDef[] | null>(null);
-  const [phase, setPhase] = useState<'idle' | 'spinning' | 'revealing' | 'done' | 'error'>('idle');
-  const [rotation, setRotation] = useState(0);
+  // Phase state machine — kept intentionally tiny.
+  //   'loading'   → fetching the slot list
+  //   'idle'      → user can spin
+  //   'spinning'  → backend responded, SVG is rotating
+  //   'revealed'  → reveal screen is showing the prize
+  //   'error'     → fatal error; show retry/close
+  const [phase, setPhase] = useState<'loading' | 'idle' | 'spinning' | 'revealed' | 'error'>('loading');
+  const [slots, setSlots] = useState<SlotDef[]>([]);
   const [result, setResult] = useState<SpinResponse | null>(null);
+  const [rotation, setRotation] = useState(0);
   const [error, setError] = useState('');
 
-  // Load the slot list once.
+  // Used to make sure the reveal trigger only fires once per spin, even if
+  // both onTransitionEnd AND the fallback setTimeout race to a finish.
+  const revealFiredRef = useRef(false);
+
+  /* ── 1. Load the slot list ───────────────────────────────── */
   useEffect(() => {
     if (!token) return;
+    let cancelled = false;
     fetch('/api/wheel/info', { headers: { Authorization: `Bearer ${token}` } })
       .then((r) => r.json())
-      .then((d) => setSlots(d.slots ?? null))
-      .catch(() => setError(lang === 'en' ? 'Could not load the wheel.' : 'Колелото не успя да зареди.'));
+      .then((d) => {
+        if (cancelled) return;
+        setSlots(d.slots ?? []);
+        setPhase('idle');
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setError(lang === 'en' ? 'Could not load the wheel.' : 'Колелото не успя да зареди.');
+        setPhase('error');
+      });
+    return () => { cancelled = true; };
   }, [token, lang]);
 
+  /* ── 2. Reveal trigger — fired by EITHER onTransitionEnd or a fallback timer.
+        Whichever fires first wins; the other is no-op'd by revealFiredRef. ── */
+  const triggerReveal = () => {
+    if (revealFiredRef.current) return;
+    revealFiredRef.current = true;
+    setPhase('revealed');
+    // Fire-and-forget refresh so is_pro / wheel_spun update in the background.
+    // We re-refresh on Claim as a safety net before navigating to Pro routes.
+    refreshUser().catch(() => { /* keep UX moving */ });
+  };
+
+  /* ── 3. Fallback timer — fires `triggerReveal` if onTransitionEnd misses
+        (e.g. background tab throttling, reduced-motion, browser quirks). ── */
+  useEffect(() => {
+    if (phase !== 'spinning') return;
+    const id = window.setTimeout(triggerReveal, SPIN_DURATION_MS + 500);
+    return () => window.clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase]);
+
+  /* ── 4. Spin handler ─────────────────────────────────────── */
   const handleSpin = async () => {
-    if (!token || phase !== 'idle' || !slots) return;
-    setPhase('spinning');
+    if (!token || phase !== 'idle' || slots.length === 0) return;
     setError('');
+    revealFiredRef.current = false;
+    setPhase('spinning');
     try {
       const res = await fetch('/api/wheel/spin', {
         method: 'POST',
@@ -88,44 +131,33 @@ export function WheelOfLuck({ onClose }: { onClose: () => void }) {
       }
       setResult(data);
 
-      // Compute the final rotation so the target slot lands under the pointer (at the top).
+      // Land the winning slot under the top pointer.
       const sliceDeg = 360 / slots.length;
-      // Pointer is at 0° (12 o'clock). We want the centre of the winning slot there.
-      // Slot i centre angle (starting from 12 o'clock, clockwise) = i * sliceDeg + sliceDeg/2.
-      // The wheel rotates CCW visually because we apply a positive rotation that brings the
-      // target slot's centre under the pointer.
       const targetCentre = data.slotIndex * sliceDeg + sliceDeg / 2;
       const finalRotation = 360 * EXTRA_TURNS - targetCentre;
       setRotation(finalRotation);
-
-      // After the spin animation completes, flip to the reveal phase IMMEDIATELY
-      // (synchronously, no await), then kick off the user refresh in the
-      // background. Awaiting the refresh first used to race: AuthContext would
-      // re-render the tree mid-await and we'd never get a chance to call
-      // setPhase('revealing'). With the order swapped, the reveal renders
-      // instantly when the wheel stops; the refresh updates is_pro/wheel_spun
-      // in the background and we await it again on Claim as a safety net.
-      window.setTimeout(() => {
-        setPhase('revealing');
-        refreshUser().catch(() => { /* keep UX moving even if refresh fails */ });
-      }, SPIN_DURATION_MS + 100);
+      // Reveal is now driven by the SVG's onTransitionEnd (primary) + fallback timer.
     } catch (e) {
       setPhase('error');
       setError(e instanceof Error ? e.message : 'Spin failed');
     }
   };
 
+  /* ── 5. Close handler ────────────────────────────────────── */
   const handleClose = async () => {
-    // Safety net: refresh again on close in case the first refresh raced.
-    // This is the moment Pro-only routes will be hit, so we MUST have the
-    // freshest is_pro / pro_trial_ends_at before navigating away.
+    // Refresh one more time so any Pro-gated route the user lands on next
+    // sees the freshly-granted is_pro state.
     try { await refreshUser(); } catch { /* ignore */ }
-    setPhase('done');
     onClose();
   };
 
-  // ── Loading state ──────────────────────────────────────────
-  if (!slots) {
+  /* ── 6. Render ───────────────────────────────────────────── */
+  // Reveal takes over the modal entirely once a prize is in.
+  if (phase === 'revealed' && result) {
+    return <PrizeReveal result={result} lang={lang} onClose={handleClose} />;
+  }
+
+  if (phase === 'loading') {
     return (
       <Backdrop>
         <div className="text-sm" style={{ color: 'hsl(var(--c-fg-muted))' }}>
@@ -135,12 +167,6 @@ export function WheelOfLuck({ onClose }: { onClose: () => void }) {
     );
   }
 
-  // ── Prize reveal ──────────────────────────────────────────
-  if (phase === 'revealing' && result) {
-    return <PrizeReveal result={result} lang={lang} onClose={handleClose} />;
-  }
-
-  // ── Main wheel UI ─────────────────────────────────────────
   return (
     <Backdrop>
       <div
@@ -168,7 +194,7 @@ export function WheelOfLuck({ onClose }: { onClose: () => void }) {
           </p>
         </header>
 
-        <Wheel slots={slots} rotation={rotation} />
+        <Wheel slots={slots} rotation={rotation} onTransitionEnd={triggerReveal} />
 
         <div className="mt-6 flex flex-col items-center gap-3">
           {phase === 'idle' && (
@@ -203,26 +229,35 @@ export function WheelOfLuck({ onClose }: { onClose: () => void }) {
 /* ─────────────────────────────────────────────────────────────
  * The SVG wheel itself
  * ─────────────────────────────────────────────────────────── */
-function Wheel({ slots, rotation }: { slots: SlotDef[]; rotation: number }) {
+function Wheel({
+  slots,
+  rotation,
+  onTransitionEnd,
+}: {
+  slots: SlotDef[];
+  rotation: number;
+  onTransitionEnd: () => void;
+}) {
   const { lang } = useLang();
   const r = WHEEL_SIZE / 2;
-  const sliceDeg = 360 / slots.length;
+  const sliceDeg = slots.length > 0 ? 360 / slots.length : 36;
   const labelRadius = r * 0.65;
+
+  // Only fire on the transform transition completing — other CSS properties
+  // shouldn't bubble through but we guard just in case.
+  const handleEnd = (e: React.TransitionEvent<SVGSVGElement>) => {
+    if (e.propertyName === 'transform') onTransitionEnd();
+  };
 
   return (
     <div className="relative mx-auto" style={{ width: WHEEL_SIZE, maxWidth: '100%' }}>
-      {/* Pointer at the top, points down into the wheel */}
+      {/* Pointer */}
       <div
         className="absolute left-1/2 -translate-x-1/2 z-10"
         style={{ top: -4, filter: 'drop-shadow(0 4px 8px hsl(0, 0%, 0%, 0.4))' }}
       >
         <svg width="28" height="36" viewBox="0 0 28 36">
-          <path
-            d="M 14 36 L 0 0 L 28 0 Z"
-            fill="hsl(45, 95%, 60%)"
-            stroke="hsl(45, 95%, 30%)"
-            strokeWidth="1.5"
-          />
+          <path d="M 14 36 L 0 0 L 28 0 Z" fill="hsl(45, 95%, 60%)" stroke="hsl(45, 95%, 30%)" strokeWidth="1.5" />
           <circle cx="14" cy="6" r="2" fill="hsl(45, 95%, 90%)" />
         </svg>
       </div>
@@ -230,6 +265,7 @@ function Wheel({ slots, rotation }: { slots: SlotDef[]; rotation: number }) {
       <svg
         viewBox={`0 0 ${WHEEL_SIZE} ${WHEEL_SIZE}`}
         width="100%"
+        onTransitionEnd={handleEnd}
         style={{
           transform: `rotate(${rotation}deg)`,
           transition: rotation === 0 ? 'none' : `transform ${SPIN_DURATION_MS}ms cubic-bezier(0.12, 0.6, 0.15, 1)`,
@@ -243,14 +279,11 @@ function Wheel({ slots, rotation }: { slots: SlotDef[]; rotation: number }) {
           </radialGradient>
         </defs>
 
-        {/* Slices */}
         {slots.map((slot, i) => {
-          const startAngle = i * sliceDeg - 90 - sliceDeg / 2; // start from top-centred
+          const startAngle = i * sliceDeg - 90 - sliceDeg / 2;
           const endAngle = startAngle + sliceDeg;
           const path = arcPath(r, r, r - 4, startAngle, endAngle);
           const fill = SLOT_FILL[slot.id] ?? 'hsl(220, 30%, 40%)';
-
-          // Label position
           const midAngle = (startAngle + endAngle) / 2;
           const lblX = r + labelRadius * Math.cos((midAngle * Math.PI) / 180);
           const lblY = r + labelRadius * Math.sin((midAngle * Math.PI) / 180);
@@ -260,28 +293,11 @@ function Wheel({ slots, rotation }: { slots: SlotDef[]; rotation: number }) {
           return (
             <g key={slot.id}>
               <path d={path} fill={fill} stroke="hsl(0, 0%, 100%, 0.18)" strokeWidth="1.5" />
-              <g
-                transform={`translate(${lblX}, ${lblY}) rotate(${midAngle + 90})`}
-                style={{ pointerEvents: 'none' }}
-              >
-                <text
-                  x="0"
-                  y="-8"
-                  textAnchor="middle"
-                  fontSize="20"
-                  style={{ userSelect: 'none' }}
-                >
+              <g transform={`translate(${lblX}, ${lblY}) rotate(${midAngle + 90})`} style={{ pointerEvents: 'none' }}>
+                <text x="0" y="-8" textAnchor="middle" fontSize="20" style={{ userSelect: 'none' }}>
                   {slot.label.emoji}
                 </text>
-                <text
-                  x="0"
-                  y="12"
-                  textAnchor="middle"
-                  fontSize={fontSize}
-                  fontWeight="800"
-                  fill="white"
-                  style={{ userSelect: 'none' }}
-                >
+                <text x="0" y="12" textAnchor="middle" fontSize={fontSize} fontWeight="800" fill="white" style={{ userSelect: 'none' }}>
                   {labelText}
                 </text>
               </g>
@@ -289,20 +305,10 @@ function Wheel({ slots, rotation }: { slots: SlotDef[]; rotation: number }) {
           );
         })}
 
-        {/* Outer ring */}
         <circle cx={r} cy={r} r={r - 2} fill="none" stroke="hsl(45, 95%, 50%)" strokeWidth="4" />
         <circle cx={r} cy={r} r={r - 2} fill="url(#wheelGlow)" />
-
-        {/* Centre hub */}
         <circle cx={r} cy={r} r={28} fill="hsl(228, 24%, 14%)" stroke="hsl(45, 95%, 55%)" strokeWidth="3" />
-        <text
-          x={r}
-          y={r + 5}
-          textAnchor="middle"
-          fontSize="22"
-          fontWeight="900"
-          fill="hsl(45, 95%, 55%)"
-        >
+        <text x={r} y={r + 5} textAnchor="middle" fontSize="22" fontWeight="900" fill="hsl(45, 95%, 55%)">
           ✦
         </text>
       </svg>
@@ -310,7 +316,6 @@ function Wheel({ slots, rotation }: { slots: SlotDef[]; rotation: number }) {
   );
 }
 
-/** SVG arc path between two angles (degrees, clockwise). */
 function arcPath(cx: number, cy: number, r: number, startDeg: number, endDeg: number): string {
   const rad = (d: number) => (d * Math.PI) / 180;
   const x1 = cx + r * Math.cos(rad(startDeg));
@@ -322,7 +327,7 @@ function arcPath(cx: number, cy: number, r: number, startDeg: number, endDeg: nu
 }
 
 /* ─────────────────────────────────────────────────────────────
- * Prize reveal screen
+ * Prize reveal screen — ALWAYS shows "🎉 Congratulations!" big.
  * ─────────────────────────────────────────────────────────── */
 function PrizeReveal({
   result,
@@ -335,13 +340,6 @@ function PrizeReveal({
 }) {
   const isRare = result.slot.type === 'pro_trial' || result.slot.type === 'cup';
 
-  /**
-   * `rewardName` is the short noun used inside the "You won …" headline.
-   * Every prize tier — XP included — produces a headline so the user
-   * always sees the same encouraging phrasing.
-   * `sub` is the extra detail under the headline. `visual` is either an
-   * emoji or a JSX image of the real Octolio cup.
-   */
   const { rewardName, sub, visual, color } = useMemo(() => {
     const r = result.reward;
     if (r.isCup) {
@@ -383,8 +381,6 @@ function PrizeReveal({
       };
     }
     return {
-      // e.g. "25 XP" / "1000 XP" — same shape as every other prize so the
-      // headline reads "You won 25 XP" / "You won 1000 XP".
       rewardName: `${r.xpDelta} XP`,
       sub:
         lang === 'en'
@@ -406,16 +402,12 @@ function PrizeReveal({
           boxShadow: `0 24px 60px -10px ${color}44`,
         }}
       >
-        {/* Big radial glow behind the emoji */}
         <div
           className="absolute inset-0 pointer-events-none"
-          style={{
-            background: `radial-gradient(circle at 50% 30%, ${color}22, transparent 60%)`,
-          }}
+          style={{ background: `radial-gradient(circle at 50% 30%, ${color}22, transparent 60%)` }}
         />
 
         <div className="relative">
-          {/* Tiny rarity tag stays as an eyebrow for color/context. */}
           <p
             className="inline-block text-[11px] font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-4"
             style={{ background: `${color}1F`, color }}
@@ -430,8 +422,7 @@ function PrizeReveal({
             {visual}
           </div>
 
-          {/* PRIMARY message — big "Congratulations!" + "You won X" line.
-              Shows for every prize tier from 25 XP up to the cup. */}
+          {/* BIG primary message — shows for every prize, including 25 XP. */}
           <h2
             className="text-3xl sm:text-4xl font-extrabold mb-1 leading-tight"
             style={{ color, letterSpacing: '-0.01em' }}
@@ -448,10 +439,7 @@ function PrizeReveal({
             {sub}
           </p>
 
-          <button
-            onClick={onClose}
-            className="btn-green w-full py-3 font-bold"
-          >
+          <button onClick={onClose} className="btn-green w-full py-3 font-bold">
             {lang === 'en' ? 'Claim & continue →' : 'Вземи и продължи →'}
           </button>
         </div>
@@ -462,7 +450,7 @@ function PrizeReveal({
 
 /* ─────────────────────────────────────────────────────────────
  * Cup image with a graceful emoji fallback.
- * Source file lives at frontend/public/cup.png (drop the real photo there).
+ * Source file lives at frontend/public/cup.png.
  * ─────────────────────────────────────────────────────────── */
 function CupImage({ size = 144 }: { size?: number }) {
   const [failed, setFailed] = useState(false);
@@ -484,7 +472,6 @@ function CupImage({ size = 144 }: { size?: number }) {
         width: size,
         height: size,
         objectFit: 'contain',
-        // Subtle white plate so the photo doesn't clash with the dark modal.
         background: 'white',
         borderRadius: 16,
         padding: 6,
@@ -495,10 +482,9 @@ function CupImage({ size = 144 }: { size?: number }) {
 }
 
 /* ─────────────────────────────────────────────────────────────
- * Lightweight confetti for rare wins — no external library
+ * Lightweight confetti for rare wins.
  * ─────────────────────────────────────────────────────────── */
 function Confetti() {
-  // Generate 60 pieces once on mount with stable random props.
   const pieces = useRef<{ left: number; delay: number; rotate: number; color: string; size: number }[]>([]);
   if (pieces.current.length === 0) {
     const palette = ['hsl(45, 95%, 55%)', 'hsl(160, 55%, 55%)', 'hsl(0, 75%, 60%)', 'hsl(290, 70%, 65%)', 'hsl(200, 70%, 60%)'];
@@ -535,10 +521,9 @@ function Confetti() {
 }
 
 /* ─────────────────────────────────────────────────────────────
- * Backdrop
+ * Backdrop — locks body scroll while modal is open.
  * ─────────────────────────────────────────────────────────── */
 function Backdrop({ children }: { children: React.ReactNode }) {
-  // Lock body scroll while the wheel is open.
   useEffect(() => {
     const original = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
@@ -550,10 +535,7 @@ function Backdrop({ children }: { children: React.ReactNode }) {
   return (
     <div
       className="fixed inset-0 z-[100] flex items-center justify-center p-4"
-      style={{
-        background: 'hsl(0, 0%, 0%, 0.6)',
-        backdropFilter: 'blur(8px)',
-      }}
+      style={{ background: 'hsl(0, 0%, 0%, 0.6)', backdropFilter: 'blur(8px)' }}
     >
       {children}
     </div>
