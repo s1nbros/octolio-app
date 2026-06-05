@@ -69,6 +69,14 @@ export async function initDb(): Promise<void> {
   // (no Stripe involvement); pro_trial_ends_at marks when to lazily downgrade.
   await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS wheel_spun BOOLEAN DEFAULT FALSE`);
   await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS pro_trial_ends_at TIMESTAMP`);
+  // Convert pro_trial_ends_at to TIMESTAMPTZ so NOW()-vs-stored comparisons in
+  // the lazy-downgrade query are timezone-safe. Safe to run repeatedly — Postgres
+  // no-ops if the column is already TIMESTAMPTZ.
+  await pool.query(`
+    ALTER TABLE users
+      ALTER COLUMN pro_trial_ends_at TYPE TIMESTAMPTZ
+      USING pro_trial_ends_at AT TIME ZONE 'UTC'
+  `).catch(() => {});
   await pool.query(`
     CREATE TABLE IF NOT EXISTS wheel_prizes (
       id SERIAL PRIMARY KEY,

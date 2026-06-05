@@ -181,7 +181,7 @@ export function Onboarding() {
                     <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                     {lang === 'en' ? 'Opening checkout…' : 'Отваряне на плащане…'}
                   </span>
-                : `⚡ ${lang === 'en' ? 'Try Pro free for 7 days' : 'Пробвай Pro безплатно 7 дни'}`}
+                : `⚡ ${lang === 'en' ? 'Get Octolio Pro' : 'Вземи Octolio Pro'}`}
             </button>
             <p className="text-center text-xs mt-2 relative" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
               {lang === 'en' ? 'Cancel anytime. No commitment.' : 'Откажи по всяко време. Без ангажимент.'}

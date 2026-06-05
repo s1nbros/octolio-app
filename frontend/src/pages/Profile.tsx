@@ -945,8 +945,8 @@ function PlanSection({ isPro, token, lang }: { isPro: boolean; token: string | n
               ? 'Manage payment, view invoices, or cancel anytime. Cancellation takes effect at the end of the billing period.'
               : 'Управлявай плащане, виж фактури или откажи. Отказът влиза в сила в края на периода.')
           : (lang === 'en'
-              ? 'Unlock all premium modules, 2× XP and AI coach for €4.99/month. 7-day free trial.'
-              : 'Отключи всички премиум модули, 2× XP и AI треньор за €4.99/месец. 7 дни безплатен пробен период.')}
+              ? 'Unlock all premium modules, 2× XP and AI coach for €4.99/month. Cancel anytime.'
+              : 'Отключи всички премиум модули, 2× XP и AI треньор за €4.99/месец. Откажи по всяко време.')}
       </p>
     </div>
   );
@@ -1031,10 +1031,10 @@ function ProUpsellCard({ token, lang }: { token: string | null; lang: 'en' | 'bg
         onMouseLeave={e => (e.currentTarget.style.filter = '')}>
         {loading
           ? (lang === 'en' ? 'Opening checkout…' : 'Отваряне…')
-          : `✦ ${lang === 'en' ? 'Try Pro free for 7 days' : 'Пробвай Pro безплатно 7 дни'}`}
+          : `✦ ${lang === 'en' ? 'Get Octolio Pro' : 'Вземи Octolio Pro'}`}
       </button>
       <p className="text-center text-xs mt-2 relative tracking-wider" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
-        {lang === 'en' ? 'CANCEL ANYTIME · OFFER ENDS IN 2D 14H' : 'ОТКАЖИ ПО ВСЯКО ВРЕМЕ'}
+        {lang === 'en' ? 'CANCEL ANYTIME' : 'ОТКАЖИ ПО ВСЯКО ВРЕМЕ'}
       </p>
     </div>
   );

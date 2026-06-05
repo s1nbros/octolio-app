@@ -47,8 +47,10 @@ const SLOT_FONT_SIZE: Record<string, number> = {
 };
 
 const WHEEL_SIZE = 320;        // px
-const SPIN_DURATION_MS = 5500; // ms
-const EXTRA_TURNS = 6;         // full rotations before settling
+const SPIN_DURATION_MS = 8500; // ms — longer build-up + slower deceleration
+const EXTRA_TURNS = 9;         // full rotations before settling
+/** Path to the real Octolio cup image. Place it at frontend/public/cup.png. */
+const CUP_IMG = '/cup.png';
 
 export function WheelOfLuck({ onClose }: { onClose: () => void }) {
   const { token, refreshUser } = useAuth();
@@ -96,18 +98,26 @@ export function WheelOfLuck({ onClose }: { onClose: () => void }) {
       const finalRotation = 360 * EXTRA_TURNS - targetCentre;
       setRotation(finalRotation);
 
-      // After the spin animation completes, reveal the prize.
-      setTimeout(() => {
+      // After the spin animation completes, refresh the user record so
+      // wheel_spun + is_pro + pro_trial_ends_at are reflected everywhere,
+      // THEN reveal the prize. Awaiting guarantees that by the time the
+      // user clicks "Claim", any Pro-gated content they navigate to sees
+      // the freshly-granted Pro state.
+      setTimeout(async () => {
+        try { await refreshUser(); } catch { /* keep UX moving even if refresh fails */ }
         setPhase('revealing');
-        refreshUser().catch(() => {});
-      }, SPIN_DURATION_MS + 100);
+      }, SPIN_DURATION_MS + 200);
     } catch (e) {
       setPhase('error');
       setError(e instanceof Error ? e.message : 'Spin failed');
     }
   };
 
-  const handleClose = () => {
+  const handleClose = async () => {
+    // Safety net: refresh again on close in case the first refresh raced.
+    // This is the moment Pro-only routes will be hit, so we MUST have the
+    // freshest is_pro / pro_trial_ends_at before navigating away.
+    try { await refreshUser(); } catch { /* ignore */ }
     setPhase('done');
     onClose();
   };
@@ -323,16 +333,22 @@ function PrizeReveal({
 }) {
   const isRare = result.slot.type === 'pro_trial' || result.slot.type === 'cup';
 
-  const { headline, sub, emoji, color } = useMemo(() => {
+  /**
+   * `rewardName` is the short noun used inside the "Congratulations, you won …"
+   * line. `headline` is the bigger statement underneath. `visual` is either an
+   * emoji or a JSX image of the real Octolio cup.
+   */
+  const { rewardName, headline, sub, visual, color } = useMemo(() => {
     const r = result.reward;
     if (r.isCup) {
       return {
+        rewardName: lang === 'en' ? 'an Octolio cup' : 'чаша Octolio',
         headline: lang === 'en' ? 'A real Octolio cup!' : 'Истинска чаша Octolio!',
         sub:
           lang === 'en'
             ? "You're 1 of only 3 in the world. Our team will reach out by email to arrange delivery."
             : 'Ти си 1 от само 3-ма в света. Екипът ни ще се свърже с теб по имейл, за да уговори доставка.',
-        emoji: '🏆',
+        visual: <CupImage />,
         color: 'hsl(0, 75%, 55%)',
       };
     }
@@ -343,33 +359,36 @@ function PrizeReveal({
         year: 'numeric',
       });
       return {
-        headline: lang === 'en' ? '14 days of Pro!' : '14 дни Pro!',
+        rewardName: lang === 'en' ? '2 weeks of Pro' : '2 седмици Pro',
+        headline: lang === 'en' ? '2 weeks of Pro!' : '2 седмици Pro!',
         sub:
           lang === 'en'
             ? `All Pro features unlocked until ${date}. No card required.`
             : `Всички Pro функции отключени до ${date}. Без карта.`,
-        emoji: '👑',
+        visual: <span>👑</span>,
         color: 'hsl(45, 95%, 55%)',
       };
     }
     if (r.cosmeticId) {
       return {
+        rewardName: lang === 'en' ? 'a new cosmetic' : 'нова козметика',
         headline: lang === 'en' ? 'A new cosmetic!' : 'Нова козметика!',
         sub:
           lang === 'en'
             ? 'Equip it on your octopus from the Shop tab.'
             : 'Можеш да я екипираш на октопода си от раздела Shop.',
-        emoji: '🎁',
+        visual: <span>🎁</span>,
         color: 'hsl(290, 70%, 65%)',
       };
     }
     return {
+      rewardName: lang === 'en' ? `${r.xpDelta} XP` : `${r.xpDelta} XP`,
       headline: lang === 'en' ? `+${r.xpDelta} XP` : `+${r.xpDelta} XP`,
       sub:
         lang === 'en'
           ? 'Added to your account. Keep learning to climb the leaderboard.'
           : 'Добавени към акаунта ти. Продължавай да учиш, за да се изкачиш в класирането.',
-      emoji: '✨',
+      visual: <span>✨</span>,
       color: 'hsl(160, 55%, 55%)',
     };
   }, [result, lang]);
@@ -402,11 +421,18 @@ function PrizeReveal({
           </p>
 
           <div
-            className="text-[88px] leading-none mb-4 animate-prize-pop"
-            style={{ filter: `drop-shadow(0 8px 24px ${color}66)` }}
+            className="leading-none mb-4 animate-prize-pop flex items-center justify-center"
+            style={{ fontSize: 88, filter: `drop-shadow(0 8px 24px ${color}66)` }}
           >
-            {emoji}
+            {visual}
           </div>
+
+          {/* Explicit "Congratulations, you won X" line above the headline. */}
+          <p className="text-sm font-semibold mb-1" style={{ color }}>
+            {lang === 'en'
+              ? `Congratulations, you won ${rewardName}!`
+              : `Поздравления, спечели ${rewardName}!`}
+          </p>
 
           <h2 className="text-3xl font-extrabold mb-3" style={{ color: 'hsl(var(--c-fg))' }}>
             {headline}
@@ -424,6 +450,40 @@ function PrizeReveal({
         </div>
       </div>
     </Backdrop>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────
+ * Cup image with a graceful emoji fallback.
+ * Source file lives at frontend/public/cup.png (drop the real photo there).
+ * ─────────────────────────────────────────────────────────── */
+function CupImage({ size = 144 }: { size?: number }) {
+  const [failed, setFailed] = useState(false);
+  if (failed) {
+    return (
+      <span style={{ fontSize: size, lineHeight: 1 }} aria-label="Octolio cup">
+        🏆
+      </span>
+    );
+  }
+  return (
+    <img
+      src={CUP_IMG}
+      alt="Octolio cup"
+      width={size}
+      height={size}
+      onError={() => setFailed(true)}
+      style={{
+        width: size,
+        height: size,
+        objectFit: 'contain',
+        // Subtle white plate so the photo doesn't clash with the dark modal.
+        background: 'white',
+        borderRadius: 16,
+        padding: 6,
+        boxShadow: '0 8px 30px hsl(0, 0%, 0%, 0.35)',
+      }}
+    />
   );
 }
 

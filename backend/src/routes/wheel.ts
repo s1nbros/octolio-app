@@ -51,7 +51,7 @@ interface Slot {
  * 1000 XP   →   7.0%
  *  Common cosmetic →  8.0%
  *  Rare cosmetic   →  4.0%
- *  Pro trial (14d) →  2.5%
+ *  Pro trial (2 weeks) →  2.5%
  *  Octolio cup     →  0.5%  (then falls back to 1000 XP after global cap)
  */
 const SLOTS: Slot[] = [
@@ -77,7 +77,7 @@ const SLOT_LABELS: Record<SlotId, { en: string; bg: string; emoji: string }> = {
   xp_1000:         { en: '1000 XP',   bg: '1000 XP', emoji: '🎆' },
   cosmetic_common: { en: 'Cosmetic',  bg: 'Козметика', emoji: '🎁' },
   cosmetic_rare:   { en: 'Rare Item', bg: 'Рядък предмет', emoji: '💎' },
-  pro_trial:       { en: '14d PRO',   bg: '14д PRO', emoji: '👑' },
+  pro_trial:       { en: '2 weeks PRO', bg: '2 седмици PRO', emoji: '👑' },
   cup:             { en: 'Octolio Cup', bg: 'Чаша Octolio', emoji: '🏆' },
 };
 
