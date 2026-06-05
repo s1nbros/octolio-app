@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLang } from '../contexts/LanguageContext';
 import type { PrizeResult } from './PrizeRevealPopup';
@@ -46,8 +47,9 @@ const SLOT_FONT_SIZE: Record<string, number> = {
 };
 
 const WHEEL_SIZE = 320;
-const SPIN_DURATION_MS = 8500;
-const EXTRA_TURNS = 9;
+/** How long the wheel spins visually before the popup takes over. */
+const SPIN_DURATION_MS = 4500;
+const EXTRA_TURNS = 6;
 
 /* ─────────────────────────────────────────────────────────────
  * WheelOfLuck — spinning wheel modal. Calls `onSpinComplete(prize)`
@@ -127,6 +129,13 @@ export function WheelOfLuck({
     setError('');
     completedRef.current = false;
     setPhase('spinning');
+
+    // BULLETPROOF FALLBACK: schedule the popup to appear regardless of any
+    // animation event. This fires after SPIN_DURATION_MS + 500ms whether or
+    // not onTransitionEnd / the phase-watching useEffect ever ran. Cleared
+    // by completeSpin() if either of the other triggers wins.
+    const hardId = window.setTimeout(() => completeSpin(), SPIN_DURATION_MS + 500);
+
     try {
       const res = await fetch('/api/wheel/spin', {
         method: 'POST',
@@ -134,6 +143,7 @@ export function WheelOfLuck({
       });
       const data = (await res.json()) as SpinResponse & { error?: string };
       if (!res.ok) {
+        window.clearTimeout(hardId);
         setPhase('error');
         setError(data.error || 'Spin failed');
         return;
@@ -145,6 +155,7 @@ export function WheelOfLuck({
       const finalRotation = 360 * EXTRA_TURNS - targetCentre;
       setRotation(finalRotation);
     } catch (e) {
+      window.clearTimeout(hardId);
       setPhase('error');
       setError(e instanceof Error ? e.message : 'Spin failed');
     }
@@ -349,12 +360,15 @@ function Backdrop({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  return (
+  // Portal directly into document.body so no ancestor's stacking context,
+  // transform, or backdrop-filter can clip or hide the wheel.
+  return createPortal(
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+      className="fixed inset-0 z-[2147483646] flex items-center justify-center p-4"
       style={{ background: 'hsl(0, 0%, 0%, 0.6)', backdropFilter: 'blur(8px)' }}
     >
       {children}
-    </div>
+    </div>,
+    document.body,
   );
 }

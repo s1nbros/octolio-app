@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useLang } from '../contexts/LanguageContext';
 
 /**
@@ -95,11 +96,13 @@ export function PrizeRevealPopup({
     };
   }, [result, lang]);
 
-  return (
+  // Render into document.body so no parent CSS context (transform/filter/
+  // backdrop-filter on an ancestor) can clip or hide the popup.
+  return createPortal(
     <>
       {isRare && <Confetti />}
       <div
-        className="fixed inset-0 z-[200] flex items-center justify-center p-4"
+        className="fixed inset-0 z-[2147483647] flex items-center justify-center p-4"
         style={{
           background: 'hsl(0, 0%, 0%, 0.7)',
           backdropFilter: 'blur(10px)',
@@ -163,7 +166,8 @@ export function PrizeRevealPopup({
           </div>
         </div>
       </div>
-    </>
+    </>,
+    document.body,
   );
 }
 
