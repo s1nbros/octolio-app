@@ -334,16 +334,17 @@ function PrizeReveal({
   const isRare = result.slot.type === 'pro_trial' || result.slot.type === 'cup';
 
   /**
-   * `rewardName` is the short noun used inside the "Congratulations, you won …"
-   * line. `headline` is the bigger statement underneath. `visual` is either an
+   * `rewardName` is the short noun used inside the "You won …" headline.
+   * Every prize tier — XP included — produces a headline so the user
+   * always sees the same encouraging phrasing.
+   * `sub` is the extra detail under the headline. `visual` is either an
    * emoji or a JSX image of the real Octolio cup.
    */
-  const { rewardName, headline, sub, visual, color } = useMemo(() => {
+  const { rewardName, sub, visual, color } = useMemo(() => {
     const r = result.reward;
     if (r.isCup) {
       return {
-        rewardName: lang === 'en' ? 'an Octolio cup' : 'чаша Octolio',
-        headline: lang === 'en' ? 'A real Octolio cup!' : 'Истинска чаша Octolio!',
+        rewardName: lang === 'en' ? 'an Octolio cup!' : 'чаша Octolio!',
         sub:
           lang === 'en'
             ? "You're 1 of only 3 in the world. Our team will reach out by email to arrange delivery."
@@ -359,8 +360,7 @@ function PrizeReveal({
         year: 'numeric',
       });
       return {
-        rewardName: lang === 'en' ? '2 weeks of Pro' : '2 седмици Pro',
-        headline: lang === 'en' ? '2 weeks of Pro!' : '2 седмици Pro!',
+        rewardName: lang === 'en' ? '2 weeks of Pro!' : '2 седмици Pro!',
         sub:
           lang === 'en'
             ? `All Pro features unlocked until ${date}. No card required.`
@@ -371,8 +371,7 @@ function PrizeReveal({
     }
     if (r.cosmeticId) {
       return {
-        rewardName: lang === 'en' ? 'a new cosmetic' : 'нова козметика',
-        headline: lang === 'en' ? 'A new cosmetic!' : 'Нова козметика!',
+        rewardName: lang === 'en' ? 'a new cosmetic!' : 'нова козметика!',
         sub:
           lang === 'en'
             ? 'Equip it on your octopus from the Shop tab.'
@@ -382,8 +381,9 @@ function PrizeReveal({
       };
     }
     return {
-      rewardName: lang === 'en' ? `${r.xpDelta} XP` : `${r.xpDelta} XP`,
-      headline: lang === 'en' ? `+${r.xpDelta} XP` : `+${r.xpDelta} XP`,
+      // e.g. "25 XP" / "1000 XP" — same shape as every other prize so the
+      // headline reads "You won 25 XP" / "You won 1000 XP".
+      rewardName: `${r.xpDelta} XP`,
       sub:
         lang === 'en'
           ? 'Added to your account. Keep learning to climb the leaderboard.'
@@ -413,29 +413,25 @@ function PrizeReveal({
         />
 
         <div className="relative">
+          {/* Eyebrow: always "Congratulations!" regardless of which prize tier. */}
           <p
             className="inline-block text-[11px] font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-4"
             style={{ background: `${color}1F`, color }}
           >
-            {lang === 'en' ? 'You won!' : 'Печелиш!'}
+            {lang === 'en' ? '🎉 Congratulations!' : '🎉 Поздравления!'}
           </p>
 
           <div
-            className="leading-none mb-4 animate-prize-pop flex items-center justify-center"
+            className="leading-none mb-5 animate-prize-pop flex items-center justify-center"
             style={{ fontSize: 88, filter: `drop-shadow(0 8px 24px ${color}66)` }}
           >
             {visual}
           </div>
 
-          {/* Explicit "Congratulations, you won X" line above the headline. */}
-          <p className="text-sm font-semibold mb-1" style={{ color }}>
-            {lang === 'en'
-              ? `Congratulations, you won ${rewardName}!`
-              : `Поздравления, спечели ${rewardName}!`}
-          </p>
-
-          <h2 className="text-3xl font-extrabold mb-3" style={{ color: 'hsl(var(--c-fg))' }}>
-            {headline}
+          {/* Primary "You won X" headline — same shape for every prize tier,
+              from 25 XP all the way to the cup. */}
+          <h2 className="text-2xl sm:text-3xl font-extrabold mb-3 leading-tight" style={{ color: 'hsl(var(--c-fg))' }}>
+            {lang === 'en' ? `You won ${rewardName}` : `Спечели ${rewardName}`}
           </h2>
           <p className="text-sm leading-relaxed mb-7" style={{ color: 'hsl(var(--c-fg-muted))' }}>
             {sub}
