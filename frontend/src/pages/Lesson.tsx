@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useLang } from '../contexts/LanguageContext';
 import { FloatingOrbs } from '../components/FloatingOrbs';
 import { ExerciseRenderer } from '../components/ExerciseRenderer';
+import { LessonCompletePopup } from '../components/LessonCompletePopup';
 import type { Lesson as LessonType } from '../types';
 
 type LessonState = 'loading' | 'intro' | 'exercise' | 'complete' | 'error' | 'no_energy';
@@ -350,63 +351,17 @@ export function Lesson() {
     );
   }
 
-  // Complete screen
+  // Complete screen — fireworks + popup. The XP is already credited to the
+  // account at this point (by /api/progress/complete); "Claim XP" simply
+  // dismisses the popup and routes back to /modules.
   if (state === 'complete') {
     return (
-      <div className="relative min-h-screen flex items-center justify-center px-4">
-        <FloatingOrbs />
-        <div className="relative max-w-lg w-full animate-scale-in" style={{ zIndex: 1 }}>
-          <div className="glass-card rounded-3xl p-8 text-center"
-            style={{ border: '1px solid hsl(var(--c-green)/0.3)' }}>
-            {/* Celebration */}
-            <div className="text-6xl mb-4 animate-bounce-soft">🎉</div>
-            <h1 className="text-2xl font-bold mb-2" style={{ color: 'hsl(var(--c-fg))' }}>
-              {ui.lesson_complete}
-            </h1>
-            <p className="mb-6" style={{ color: 'hsl(var(--c-fg-muted))' }}>
-              {lesson.title[lang]}
-            </p>
-
-            {/* XP earned */}
-            <div className="inline-flex items-center gap-3 px-6 py-4 rounded-2xl mb-8"
-              style={{ background: 'hsl(var(--c-green)/0.1)', border: '1px solid hsl(var(--c-green)/0.25)' }}>
-              <span className="text-3xl">⚡</span>
-              <div className="text-left">
-                <p className="text-xs" style={{ color: 'hsl(var(--c-green))' }}>{ui.xp_earned}</p>
-                <p className="text-3xl font-black" style={{ color: 'hsl(var(--c-green))' }}>
-                  +{lesson.xpReward} XP
-                </p>
-              </div>
-            </div>
-
-            {/* Hearts remaining */}
-            <div className="flex justify-center gap-1 mb-8">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <span key={i} className={`text-2xl ${i >= hearts ? 'grayscale opacity-30' : ''}`}>❤️</span>
-              ))}
-            </div>
-
-            <div className="space-y-3">
-              <Link to="/modules">
-                <button className="btn-green w-full">
-                  {ui.back_to_modules} →
-                </button>
-              </Link>
-              <button
-                className="btn-ghost w-full"
-                onClick={() => {
-                  setCurrentExerciseIndex(0);
-                  setHearts(3);
-                  setXpEarned(0);
-                  setState('exercise');
-                }}
-              >
-                {lang === 'en' ? '↻ Practice again' : '↻ Практикувай отново'}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <LessonCompletePopup
+        lessonTitle={lesson.title[lang]}
+        xpGained={xpEarned || lesson.xpReward}
+        heartsRemaining={hearts}
+        onClaim={() => navigate('/modules')}
+      />
     );
   }
 

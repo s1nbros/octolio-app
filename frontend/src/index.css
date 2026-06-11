@@ -460,6 +460,25 @@ body::after {
 }
 .animate-confetti-fall { animation: confetti-fall 2.6s linear forwards; }
 
+/* ── Fireworks ── */
+@keyframes firework-particle {
+  0%   { transform: translate(0, 0)              scale(1);   opacity: 1; }
+  60%  { transform: translate(var(--dx), var(--dy)) scale(1); opacity: 1; }
+  100% { transform: translate(var(--dx), calc(var(--dy) + 30px)) scale(0.4); opacity: 0; }
+}
+.animate-firework-particle {
+  animation: firework-particle 1.5s cubic-bezier(0.15, 0.7, 0.2, 1) infinite;
+}
+@keyframes firework-flash {
+  0%   { transform: scale(0.4); opacity: 0; }
+  10%  { transform: scale(1.4); opacity: 1; }
+  30%  { transform: scale(0.6); opacity: 0; }
+  100% { transform: scale(0.6); opacity: 0; }
+}
+.animate-firework-flash {
+  animation: firework-flash 1.5s ease-out infinite;
+}
+
 .delay-50  { animation-delay:  50ms; }
 .delay-100 { animation-delay: 100ms; }
 .delay-150 { animation-delay: 150ms; }
