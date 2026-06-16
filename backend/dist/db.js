@@ -85,6 +85,13 @@ async function initDb() {
   `);
     await pool.query(`CREATE INDEX IF NOT EXISTS wheel_prizes_type_idx ON wheel_prizes (reward_type)`);
     await pool.query(`CREATE INDEX IF NOT EXISTS wheel_prizes_user_idx ON wheel_prizes (user_id)`);
+    // Onboarding profile — captured by the goal-based onboarding wizard.
+    //   goal             — what the user wants to achieve (save/debt/invest/understand/budget)
+    //   experience_level — beginner/intermediate/advanced, derived from the diagnostic
+    //   daily_goal_min   — chosen daily commitment in minutes (3/5/10) → drives streak target
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS goal TEXT`);
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS experience_level TEXT`);
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS daily_goal_min INTEGER DEFAULT 5`);
     // Backfill the new per-slot columns from the old single equipped_costume
     // for accounts created before multi-slot equip existed. Safe to run on
     // every boot: we only write if the new column is NULL.

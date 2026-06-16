@@ -46,6 +46,7 @@ interface AuthContextType {
   updateProfile: (updates: { name?: string; avatar?: string }) => Promise<void>;
   changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
   completeOnboarding: () => Promise<void>;
+  saveOnboardingProfile: (p: { goal: string; experienceLevel: string; dailyGoalMin: number }) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -201,6 +202,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser((u) => (u ? { ...u, onboarding_done: true } : u));
   };
 
+  const saveOnboardingProfile = async (p: { goal: string; experienceLevel: string; dailyGoalMin: number }) => {
+    const res = await fetch('/api/auth/onboarding-profile', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify(p),
+    });
+    if (res.ok) {
+      setUser((u) =>
+        u ? { ...u, goal: p.goal, experience_level: p.experienceLevel, daily_goal_min: p.dailyGoalMin } : u
+      );
+    }
+  };
+
   const updateProfile = async (updates: { name?: string; avatar?: string }) => {
     const res = await fetch('/api/auth/profile', {
       method: 'PATCH',
@@ -223,7 +237,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, isLoading, login, loginWithGoogle, register, verifyEmail, resendVerification, forgotPassword, resetPassword, logout, updateUser, refreshUser, updateProfile, changePassword, completeOnboarding }}>
+    <AuthContext.Provider value={{ user, token, isLoading, login, loginWithGoogle, register, verifyEmail, resendVerification, forgotPassword, resetPassword, logout, updateUser, refreshUser, updateProfile, changePassword, completeOnboarding, saveOnboardingProfile }}>
       {children}
     </AuthContext.Provider>
   );

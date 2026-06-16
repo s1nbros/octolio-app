@@ -5,6 +5,7 @@ import { useLang } from '../contexts/LanguageContext';
 import { FloatingOrbs } from '../components/FloatingOrbs';
 import { ChestModal } from '../components/ChestModal';
 import { ChestIcon } from '../components/ChestIcon';
+import { getGoal } from '../shared/onboardingData';
 import type { ModuleMeta, LessonMeta } from '../types';
 
 /* Color palette per module color key */
@@ -102,6 +103,15 @@ export function Modules() {
       <div className="md:hidden"><FloatingOrbs /></div>
 
       <div className="relative max-w-md md:max-w-2xl mx-auto px-4 sm:px-6 md:px-0 py-2 sm:py-4 md:py-2" style={{ zIndex: 1 }}>
+        {/* Continue hero — the single obvious "what do I do next" */}
+        <ContinueHero
+          modules={modules}
+          currentPos={currentPos}
+          user={user}
+          lang={lang}
+          onContinue={(mId, lId) => navigate(`/lesson/${mId}/${lId}`)}
+        />
+
         {/* Page header */}
         <div className="mb-4 md:mb-6 text-center md:text-left animate-fade-up">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-1" style={{ color: 'hsl(var(--c-fg))' }}>
@@ -192,6 +202,108 @@ export function Modules() {
         onClose={() => setChestTarget(null)}
         onOpened={() => loadChestInfo()}
       />
+    </div>
+  );
+}
+
+/* ───────── Continue hero — the single focal "next action" ───────── */
+function ContinueHero({
+  modules,
+  currentPos,
+  user,
+  lang,
+  onContinue,
+}: {
+  modules: ModuleMeta[];
+  currentPos: CurrentPosition | null;
+  user: ReturnType<typeof useAuth>['user'];
+  lang: 'en' | 'bg';
+  onContinue: (moduleId: string, lessonId: string) => void;
+}) {
+  const goal = getGoal(user?.goal);
+  const streak = user?.streak ?? 0;
+
+  // All caught up — no incomplete lesson anywhere.
+  if (!currentPos) {
+    return (
+      <div className="mb-6 md:mb-8 animate-fade-up">
+        <div className="glass-card rounded-2xl p-5 sm:p-6 text-center"
+          style={{ border: '1px solid hsl(var(--c-green)/0.3)' }}>
+          <div className="text-4xl mb-2">🎉</div>
+          <h2 className="font-extrabold text-lg sm:text-xl mb-1" style={{ color: 'hsl(var(--c-fg))' }}>
+            {lang === 'en' ? "You're all caught up!" : 'Завърши всичко!'}
+          </h2>
+          <p className="text-sm" style={{ color: 'hsl(var(--c-fg-muted))' }}>
+            {lang === 'en'
+              ? 'Review past lessons to lock in what you learned, or explore a new module below.'
+              : 'Прегледай минали уроци, за да затвърдиш наученото, или разгледай нов модул долу.'}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  const mod = modules[currentPos.moduleIdx];
+  const lesson = mod?.lessons[currentPos.lessonIdx];
+  if (!mod || !lesson) return null;
+
+  // Has the user started (any completed lesson)? Tunes the CTA wording.
+  const anyCompleted = modules.some((m) => m.lessons.some((l) => l.completed));
+
+  return (
+    <div className="mb-6 md:mb-8 animate-fade-up">
+      {/* Goal + streak context line */}
+      <div className="flex items-center justify-between gap-3 mb-3 px-1">
+        <p className="text-sm font-semibold truncate" style={{ color: 'hsl(var(--c-fg-muted))' }}>
+          {goal
+            ? (lang === 'en' ? `On your way to: ${goal.label.en.replace(/^./, c => c.toLowerCase())}` : `На път към: ${goal.label.bg}`)
+            : (lang === 'en' ? 'Pick up where you left off' : 'Продължи откъдето спря')}
+        </p>
+        {streak > 0 && (
+          <span className="flex items-center gap-1 text-sm font-bold flex-shrink-0" style={{ color: 'hsl(var(--c-orange))' }}>
+            🔥 {streak}
+          </span>
+        )}
+      </div>
+
+      {/* The card */}
+      <div
+        className="rounded-2xl p-5 sm:p-6 relative overflow-hidden"
+        style={{
+          background: 'linear-gradient(135deg, hsl(var(--c-primary)/0.16), hsl(var(--c-green)/0.10))',
+          border: '1px solid hsl(var(--c-primary)/0.3)',
+        }}
+      >
+        <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full pointer-events-none"
+          style={{ background: 'radial-gradient(circle, hsl(var(--c-primary)/0.20), transparent 70%)', filter: 'blur(24px)' }} />
+
+        <div className="relative flex items-center gap-4">
+          <div className="flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center text-3xl"
+            style={{ background: 'hsl(var(--c-bg-elevated, var(--c-bg)))', border: '1px solid hsl(var(--c-fg)/0.08)' }}>
+            {lesson.icon || mod.icon || '📘'}
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-[11px] font-bold uppercase tracking-widest mb-0.5" style={{ color: 'hsl(var(--c-primary))' }}>
+              {mod.title[lang]}
+            </p>
+            <p className="font-extrabold text-lg sm:text-xl leading-tight truncate" style={{ color: 'hsl(var(--c-fg))' }}>
+              {lesson.title[lang]}
+            </p>
+            <p className="text-xs mt-0.5" style={{ color: 'hsl(var(--c-fg-muted))' }}>
+              +{lesson.xpReward} XP · {lesson.exerciseCount} {lang === 'en' ? 'exercises' : 'упражнения'}
+            </p>
+          </div>
+        </div>
+
+        <button
+          onClick={() => onContinue(mod.id, lesson.id)}
+          className="btn-green w-full mt-4 py-3 font-bold text-base"
+        >
+          {anyCompleted
+            ? (lang === 'en' ? 'Continue →' : 'Продължи →')
+            : (lang === 'en' ? 'Start your first lesson →' : 'Започни първия си урок →')}
+        </button>
+      </div>
     </div>
   );
 }

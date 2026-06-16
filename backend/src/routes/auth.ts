@@ -594,7 +594,8 @@ authRouter.get('/me', authenticate, async (req: AuthRequest, res: Response): Pro
       `SELECT id, name, email, xp, streak, last_active, created_at, avatar, is_pro,
               energy, energy_refill_at, onboarding_done, streak_freezes,
               coins, equipped_costume, equipped_hat, equipped_face, equipped_body,
-              chests_opened, wheel_spun, pro_trial_ends_at
+              chests_opened, wheel_spun, pro_trial_ends_at,
+              goal, experience_level, daily_goal_min
        FROM users WHERE id = $1`,
       [req.userId]
     );
@@ -608,6 +609,37 @@ authRouter.get('/me', authenticate, async (req: AuthRequest, res: Response): Pro
     res.json({ user });
   } catch (err) {
     console.error('Me error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+/**
+ * Save the goal-based onboarding profile. Called from the onboarding wizard
+ * AFTER the user picks a goal + completes the diagnostic + chooses a daily
+ * goal, but BEFORE they pick free/pro — so the profile persists regardless
+ * of plan choice. Does NOT mark onboarding_done (that's /onboarding or the
+ * Stripe webhook).
+ */
+authRouter.post('/onboarding-profile', authenticate, async (req: AuthRequest, res: Response): Promise<void> => {
+  const { goal, experienceLevel, dailyGoalMin } = req.body ?? {};
+
+  const VALID_GOALS = ['save', 'debt', 'invest', 'understand', 'budget'];
+  const VALID_LEVELS = ['beginner', 'intermediate', 'advanced'];
+  const VALID_MINS = [3, 5, 10];
+
+  const g = VALID_GOALS.includes(goal) ? goal : null;
+  const lvl = VALID_LEVELS.includes(experienceLevel) ? experienceLevel : 'beginner';
+  const mins = VALID_MINS.includes(Number(dailyGoalMin)) ? Number(dailyGoalMin) : 5;
+
+  try {
+    const pool = getPool();
+    await pool.query(
+      'UPDATE users SET goal = $1, experience_level = $2, daily_goal_min = $3 WHERE id = $4',
+      [g, lvl, mins, req.userId]
+    );
+    res.json({ success: true, goal: g, experienceLevel: lvl, dailyGoalMin: mins });
+  } catch (err) {
+    console.error('Onboarding profile error:', err);
     res.status(500).json({ error: 'Server error' });
   }
 });

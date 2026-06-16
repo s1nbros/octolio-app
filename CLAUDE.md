@@ -402,6 +402,28 @@ gameplay-power gating. Three coupled systems:
   `CoinIcon`, mock leaderboard rows, and a faux compound-interest card with an SVG
   sparkline — so they never drift from the real UI.
 
+### Goal-based onboarding (wizard)
+- `Onboarding.tsx` is a 5-step wizard, not just a plan picker:
+  1. **Goal** — pick one of save / debt / invest / understand / budget
+  2. **Diagnostic** — 3 quick questions → `experience_level` (beginner/intermediate/advanced)
+  3. **Daily time** — 3 / 5 / 10 min → `daily_goal_min`
+  4. **Plan reveal** — personalized "Money Plan" (goal + level + daily commitment + 3-step path)
+  5. **Pricing** — the original free/pro picker (unchanged behavior)
+- Shared definitions in `frontend/src/shared/onboardingData.ts` (GOALS, DIAGNOSTIC,
+  DAILY_OPTIONS, `scoreToLevel`, `buildPlan`) — used by both the wizard and the dashboard.
+- Profile persisted via `POST /api/auth/onboarding-profile {goal, experienceLevel, dailyGoalMin}`
+  at the plan→pricing transition (so it saves regardless of free/pro choice). Does NOT set
+  `onboarding_done` — that stays on `/onboarding` (free) or the Stripe webhook (pro).
+- Columns on `users`: `goal TEXT`, `experience_level TEXT`, `daily_goal_min INTEGER DEFAULT 5`.
+  Surfaced in `/me`. `AuthContext.saveOnboardingProfile()` updates them.
+
+### Continue hero (dashboard)
+- `Modules.tsx` renders a `<ContinueHero>` at the top — the single obvious "what do I do next".
+- Shows the current lesson (module name + lesson title + XP + exercise count) with one big
+  Continue CTA → jumps straight to that lesson. Reuses the existing `currentPos` (first
+  unlocked, not-completed lesson). Shows goal context ("On your way to: …") if `user.goal` is
+  set, plus the streak flame. "All caught up" state when every lesson is done.
+
 ### Modules
 - Free modules: orders 1–9 (static curated + generated fallback)
 - Pro-only modules: orders 10+ (`advanced-investing`, `real-estate`, `tax-strategy`, etc.)

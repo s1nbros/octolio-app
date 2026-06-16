@@ -228,6 +228,9 @@ export interface User {
   chests_opened?: number;
   wheel_spun?: boolean;
   pro_trial_ends_at?: string | null;
+  goal?: string | null;
+  experience_level?: string | null;
+  daily_goal_min?: number | null;
 }
 
 export const LEVELS = [
