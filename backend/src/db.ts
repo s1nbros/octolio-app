@@ -101,6 +101,10 @@ export async function initDb(): Promise<void> {
   // last_workout_date ('YYYY-MM-DD') gates the once-per-day reward.
   await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS last_workout_date TEXT`);
 
+  // Reminder-email cadence — last date we emailed this user a reminder, so the
+  // cron can avoid daily nagging and rate-limit win-back emails to ~monthly.
+  await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS last_reminder_sent TEXT`);
+
   // Backfill the new per-slot columns from the old single equipped_costume
   // for accounts created before multi-slot equip existed. Safe to run on
   // every boot: we only write if the new column is NULL.

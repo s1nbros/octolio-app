@@ -9,6 +9,7 @@ exports.logSmtpStatus = logSmtpStatus;
 exports.sendVerificationEmail = sendVerificationEmail;
 exports.sendPasswordResetEmail = sendPasswordResetEmail;
 exports.sendStreakReminderEmail = sendStreakReminderEmail;
+exports.sendWinbackEmail = sendWinbackEmail;
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const SMTP_HOST = process.env.SMTP_HOST;
 const SMTP_PORT = process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT, 10) : 587;
@@ -172,6 +173,33 @@ async function sendStreakReminderEmail(to, name, streak, lang = 'en') {
        <a href="${link}" style="display:inline-block;background:#5fd7a8;color:#0a0e1a;text-decoration:none;font-weight:600;padding:12px 24px;border-radius:10px">${t.cta} →</a>
      </p>`);
     const text = `${t.title}\n\n${t.body.replace(/<[^>]+>/g, '')}\n\n${t.cta}: ${link}`;
+    await send({ to, subject: t.subject, html, text });
+}
+/**
+ * "We miss you" win-back email. Sent at most once a month to dormant users
+ * (30+ days inactive) — NOT a daily nag. Like Duolingo's comeback emails.
+ */
+async function sendWinbackEmail(to, name, lang = 'en') {
+    const link = `${APP_URL}/modules`;
+    const en = {
+        subject: '🐙 We miss you at Octolio',
+        title: 'Your octopus misses you!',
+        body: `Hi ${escapeHtml(name)}, it's been a while. Your money goals are still waiting — come back for a quick 5-minute lesson and pick up right where you left off.`,
+        cta: 'Come back',
+    };
+    const bg = {
+        subject: '🐙 Липсваш ни в Octolio',
+        title: 'Октоподът ти липсва!',
+        body: `Здравей ${escapeHtml(name)}, мина известно време. Финансовите ти цели още те чакат — върни се за бърз 5-минутен урок и продължи откъдето спря.`,
+        cta: 'Върни се',
+    };
+    const t = lang === 'bg' ? bg : en;
+    const html = shell(t.title, `<div style="text-align:center;font-size:48px;margin-bottom:8px">🐙</div>
+     <p>${t.body}</p>
+     <p style="text-align:center;margin:24px 0">
+       <a href="${link}" style="display:inline-block;background:#5fd7a8;color:#0a0e1a;text-decoration:none;font-weight:600;padding:12px 24px;border-radius:10px">${t.cta} →</a>
+     </p>`);
+    const text = `${t.title}\n\n${t.body}\n\n${t.cta}: ${link}`;
     await send({ to, subject: t.subject, html, text });
 }
 function escapeHtml(s) {

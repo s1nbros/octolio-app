@@ -198,6 +198,42 @@ export async function sendStreakReminderEmail(
   await send({ to, subject: t.subject, html, text });
 }
 
+/**
+ * "We miss you" win-back email. Sent at most once a month to dormant users
+ * (30+ days inactive) — NOT a daily nag. Like Duolingo's comeback emails.
+ */
+export async function sendWinbackEmail(
+  to: string,
+  name: string,
+  lang: 'en' | 'bg' = 'en'
+): Promise<void> {
+  const link = `${APP_URL}/modules`;
+  const en = {
+    subject: '🐙 We miss you at Octolio',
+    title: 'Your octopus misses you!',
+    body: `Hi ${escapeHtml(name)}, it's been a while. Your money goals are still waiting — come back for a quick 5-minute lesson and pick up right where you left off.`,
+    cta: 'Come back',
+  };
+  const bg = {
+    subject: '🐙 Липсваш ни в Octolio',
+    title: 'Октоподът ти липсва!',
+    body: `Здравей ${escapeHtml(name)}, мина известно време. Финансовите ти цели още те чакат — върни се за бърз 5-минутен урок и продължи откъдето спря.`,
+    cta: 'Върни се',
+  };
+  const t = lang === 'bg' ? bg : en;
+
+  const html = shell(
+    t.title,
+    `<div style="text-align:center;font-size:48px;margin-bottom:8px">🐙</div>
+     <p>${t.body}</p>
+     <p style="text-align:center;margin:24px 0">
+       <a href="${link}" style="display:inline-block;background:#5fd7a8;color:#0a0e1a;text-decoration:none;font-weight:600;padding:12px 24px;border-radius:10px">${t.cta} →</a>
+     </p>`
+  );
+  const text = `${t.title}\n\n${t.body}\n\n${t.cta}: ${link}`;
+  await send({ to, subject: t.subject, html, text });
+}
+
 function escapeHtml(s: string): string {
   return s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!));
 }

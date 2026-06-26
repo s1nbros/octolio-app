@@ -421,10 +421,17 @@ NO energy, awards a small XP+coin reward once per calendar day, and **counts as
 **Daily goal tracker** — uses the onboarding `daily_goal_min` (3/5/10 → target
 1/2/3 lessons). `TodayPanel` shows progress = lessons completed today + workout.
 
-**Streak reminder emails** (`/api/reminders/send`) — token-guarded by
-`REMINDER_CRON_TOKEN` (404s if unset). Meant to be hit ONCE/DAY by an external
-scheduler (Render Cron, cron-job.org). Finds verified+onboarded users not active
-today and emails a nudge (`sendStreakReminderEmail`, EN/BG). NOT triggered by the app.
+**Reminder emails** (`/api/reminders/send`) — token-guarded by `REMINDER_CRON_TOKEN`
+(404s if unset). Hit ONCE/DAY by an external scheduler (Render Cron, cron-job.org);
+NOT triggered by the app. Smart Duolingo-style cadence (per user, in `decide()`):
+  - active today → no email
+  - 1–2 days inactive → STREAK reminder (`sendStreakReminderEmail`)
+  - 3–29 days inactive → silent (no nagging)
+  - 30+ days inactive → WIN-BACK ("we miss you", `sendWinbackEmail`), at most once
+    every ~28 days (rate-limited by `last_reminder_sent`).
+`last_reminder_sent` (YYYY-MM-DD) on `users` prevents double-sends + caps win-back.
+Test helpers in the POST body: `{testEmail}` sends one to that user (bypasses cadence);
+`{dryRun:true}` reports who WOULD be emailed without sending.
 
 **Frontend:** `TodayPanel` (top of `Modules.tsx`) = daily goal pills + the workout
 card + the portal-rendered answer modal. Updates xp/coins/streak in context on answer.
