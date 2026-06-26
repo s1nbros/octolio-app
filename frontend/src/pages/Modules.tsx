@@ -5,6 +5,7 @@ import { useLang } from '../contexts/LanguageContext';
 import { FloatingOrbs } from '../components/FloatingOrbs';
 import { ChestModal } from '../components/ChestModal';
 import { ChestIcon } from '../components/ChestIcon';
+import { TodayPanel } from '../components/TodayPanel';
 import { getGoal } from '../shared/onboardingData';
 import type { ModuleMeta, LessonMeta } from '../types';
 
@@ -103,6 +104,9 @@ export function Modules() {
       <div className="md:hidden"><FloatingOrbs /></div>
 
       <div className="relative max-w-md md:max-w-2xl mx-auto px-4 sm:px-6 md:px-0 py-2 sm:py-4 md:py-2" style={{ zIndex: 1 }}>
+        {/* Today panel — daily goal + Daily Money Workout */}
+        <TodayPanel />
+
         {/* Continue hero — the single obvious "what do I do next" */}
         <ContinueHero
           modules={modules}

@@ -158,6 +158,46 @@ export async function sendPasswordResetEmail(to: string, name: string, token: st
   await send({ to, subject: 'Reset your Octolio password', html, text });
 }
 
+/**
+ * Daily streak reminder. Sent by the reminders cron to users who haven't
+ * been active today. Bilingual copy based on the user's saved language.
+ */
+export async function sendStreakReminderEmail(
+  to: string,
+  name: string,
+  streak: number,
+  lang: 'en' | 'bg' = 'en'
+): Promise<void> {
+  const link = `${APP_URL}/modules`;
+  const en = {
+    subject: streak > 0 ? `🔥 Keep your ${streak}-day streak alive` : '👋 Your daily money lesson is ready',
+    title: streak > 0 ? `Don't lose your ${streak}-day streak!` : 'Ready for today?',
+    body: streak > 0
+      ? `Hi ${escapeHtml(name)}, you're on a <b>${streak}-day streak</b> — one quick lesson (or a 60-second Daily Workout) keeps it going.`
+      : `Hi ${escapeHtml(name)}, a 5-minute lesson today builds the habit. Even a 60-second Daily Workout counts.`,
+    cta: 'Practice now',
+  };
+  const bg = {
+    subject: streak > 0 ? `🔥 Запази ${streak}-дневната си поредица` : '👋 Дневният ти урок е готов',
+    title: streak > 0 ? `Не губи ${streak}-дневната си поредица!` : 'Готов ли си за днес?',
+    body: streak > 0
+      ? `Здравей ${escapeHtml(name)}, имаш <b>${streak}-дневна поредица</b> — един бърз урок (или 60-секундна Дневна тренировка) я запазва.`
+      : `Здравей ${escapeHtml(name)}, 5-минутен урок днес гради навика. Дори 60-секундна Дневна тренировка се брои.`,
+    cta: 'Учи сега',
+  };
+  const t = lang === 'bg' ? bg : en;
+
+  const html = shell(
+    t.title,
+    `<p>${t.body}</p>
+     <p style="text-align:center;margin:24px 0">
+       <a href="${link}" style="display:inline-block;background:#5fd7a8;color:#0a0e1a;text-decoration:none;font-weight:600;padding:12px 24px;border-radius:10px">${t.cta} →</a>
+     </p>`
+  );
+  const text = `${t.title}\n\n${t.body.replace(/<[^>]+>/g, '')}\n\n${t.cta}: ${link}`;
+  await send({ to, subject: t.subject, html, text });
+}
+
 function escapeHtml(s: string): string {
   return s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!));
 }

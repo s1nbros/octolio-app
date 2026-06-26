@@ -402,6 +402,33 @@ gameplay-power gating. Three coupled systems:
   `CoinIcon`, mock leaderboard rows, and a faux compound-interest card with an SVG
   sparkline — so they never drift from the real UI.
 
+### Daily-return mechanics (retention engine)
+**Daily Money Workout** — a 60-second, single-question daily action that costs
+NO energy, awards a small XP+coin reward once per calendar day, and **counts as
+"active today" so it keeps the streak alive** (the daily bar drops to 60s).
+- Question pool: `backend/src/data/workouts.ts`. Today's question is picked
+  deterministically by UTC day number (`getTodaysWorkout`) so every user shares
+  the same daily question (Wordle-style). `last_workout_date` (YYYY-MM-DD) on
+  `users` gates the once-per-day reward.
+- Endpoints (`/api/workout/*`): `GET /today` → `{alreadyDone, rewardXp, rewardCoins, question}`
+  (correctIndex omitted); `POST /answer {choice}` → validates, awards (correct = 15 XP
+  + 5 coins, wrong = 5 XP), runs the streak update, returns `{correct, correctIndex,
+  explanation, xpAwarded, coinsAwarded, totalXp, coins, streak}`. Transactional, FOR UPDATE.
+- Shared streak logic now lives in `backend/src/services/streak.ts`
+  (`computeStreakUpdate`, `todayStr`). Both `/api/progress/complete` and the
+  workout use it — identical calendar-day rules.
+
+**Daily goal tracker** — uses the onboarding `daily_goal_min` (3/5/10 → target
+1/2/3 lessons). `TodayPanel` shows progress = lessons completed today + workout.
+
+**Streak reminder emails** (`/api/reminders/send`) — token-guarded by
+`REMINDER_CRON_TOKEN` (404s if unset). Meant to be hit ONCE/DAY by an external
+scheduler (Render Cron, cron-job.org). Finds verified+onboarded users not active
+today and emails a nudge (`sendStreakReminderEmail`, EN/BG). NOT triggered by the app.
+
+**Frontend:** `TodayPanel` (top of `Modules.tsx`) = daily goal pills + the workout
+card + the portal-rendered answer modal. Updates xp/coins/streak in context on answer.
+
 ### Goal-based onboarding (wizard)
 - `Onboarding.tsx` is a 5-step wizard, not just a plan picker:
   1. **Goal** — pick one of save / debt / invest / understand / budget

@@ -97,6 +97,10 @@ export async function initDb(): Promise<void> {
   await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS experience_level TEXT`);
   await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS daily_goal_min INTEGER DEFAULT 5`);
 
+  // Daily Money Workout — one bite-sized question per calendar day.
+  // last_workout_date ('YYYY-MM-DD') gates the once-per-day reward.
+  await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS last_workout_date TEXT`);
+
   // Backfill the new per-slot columns from the old single equipped_costume
   // for accounts created before multi-slot equip existed. Safe to run on
   // every boot: we only write if the new column is NULL.

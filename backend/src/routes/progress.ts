@@ -3,6 +3,7 @@ import { authenticate, AuthRequest } from '../middleware/auth';
 import { getPool } from '../db';
 import { modules } from '../data/lessons';
 import { detectCrossesAndNotify } from './friends';
+import { computeStreakUpdate } from '../services/streak';
 
 export const progressRouter = Router();
 
@@ -145,37 +146,11 @@ progressRouter.post('/complete', authenticate, async (req: AuthRequest, res: Res
     );
     const currentUser = userResult.rows[0] as { xp: number; streak: number; last_active: string | null; streak_freezes: number; name: string };
 
-    // Calendar-day diff between today and last_active.
-    // 0 = same day (no streak change). 1 = yesterday (+1). >1 = needs freezes or reset.
-    let daysSince = Infinity;
-    if (currentUser.last_active) {
-      const lastDate = new Date(currentUser.last_active + 'T00:00:00');
-      const todayDate = new Date(today + 'T00:00:00');
-      daysSince = Math.round((todayDate.getTime() - lastDate.getTime()) / 86400000);
-    }
-
-    let newStreak = currentUser.streak;
-    let newFreezes = currentUser.streak_freezes ?? 0;
-    let freezesUsed = 0;
-
-    if (daysSince === 0) {
-      // already practiced today — no change
-    } else if (daysSince === 1) {
-      newStreak = newStreak + 1;
-    } else if (daysSince > 1) {
-      // Missed (daysSince - 1) days. Spend that many freezes to keep the streak alive.
-      const missed = daysSince - 1;
-      if (newFreezes >= missed) {
-        newFreezes -= missed;
-        freezesUsed = missed;
-        newStreak = newStreak + 1;
-      } else {
-        newStreak = 1;
-      }
-    } else {
-      // No prior activity — first lesson ever
-      newStreak = 1;
-    }
+    // Shared calendar-day streak logic (also used by the Daily Money Workout).
+    const { newStreak, newFreezes, freezesUsed } = computeStreakUpdate(
+      { streak: currentUser.streak, last_active: currentUser.last_active, streak_freezes: currentUser.streak_freezes ?? 0 },
+      today
+    );
 
     const newXp = currentUser.xp + xpEarned;
 
