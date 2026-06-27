@@ -20,6 +20,7 @@ import { IncomeStreams } from './exercises/IncomeStreams';
 import { CoverageCalc } from './exercises/CoverageCalc';
 import { RiskMatrix } from './exercises/RiskMatrix';
 import { UnitPrice } from './exercises/UnitPrice';
+import { LifeSimulation } from './exercises/LifeSimulation';
 
 interface Props {
   exercise: Exercise;
@@ -221,6 +222,16 @@ export function ExerciseRenderer({ exercise, onAnswer, questionNumber, totalQues
       <div>
         <ExerciseHeader questionNumber={questionNumber} totalQuestions={totalQuestions} xp={exercise.xp} />
         <UnitPrice exercise={exercise} onAnswer={onAnswer} />
+      </div>
+    );
+  }
+
+  // ── Life Simulation ──
+  if (exercise.type === 'life_sim') {
+    return (
+      <div>
+        <ExerciseHeader questionNumber={questionNumber} totalQuestions={totalQuestions} xp={exercise.xp} />
+        <LifeSimulation exercise={exercise} onAnswer={onAnswer} />
       </div>
     );
   }

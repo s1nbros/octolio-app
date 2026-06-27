@@ -10,7 +10,7 @@ export interface TheorySlide {
 
 export interface Exercise {
   id: string;
-  type: 'theory' | 'choice' | 'fill_blank' | 'budget_slider' | 'rpg_scenario' | 'rat_race' | 'compound_sim' | 'sort_items' | 'match_terms' | 'order_items' | 'true_false' | 'scenario_decision' | 'fill_number' | 'stock_chart' | 'portfolio_pie' | 'debt_payoff' | 'tax_brackets' | 'income_streams' | 'coverage_calc' | 'risk_matrix' | 'unit_price';
+  type: 'theory' | 'choice' | 'fill_blank' | 'budget_slider' | 'rpg_scenario' | 'rat_race' | 'compound_sim' | 'sort_items' | 'match_terms' | 'order_items' | 'true_false' | 'scenario_decision' | 'fill_number' | 'stock_chart' | 'portfolio_pie' | 'debt_payoff' | 'tax_brackets' | 'income_streams' | 'coverage_calc' | 'risk_matrix' | 'unit_price' | 'life_sim';
   xp: number;
   // theory
   slides?: TheorySlide[];
@@ -176,6 +176,42 @@ export interface Exercise {
     }[];
     // correct option = lowest price/quantity automatically
   };
+  // life_sim — connected, longitudinal decisions with persistent state
+  lifeSim?: LifeSimConfig;
+}
+
+export interface LifeSimChoice {
+  label: LocalizedText;
+  emoji?: string;
+  outcome: LocalizedText;
+  cashDelta?: number;            // one-time cash change €
+  investDelta?: number;          // one-time move into investments €
+  debtDelta?: number;            // one-time debt change € (+adds, −pays off)
+  monthlySurplusDelta?: number;  // change to ongoing monthly money available €
+  monthlyInvestDelta?: number;   // change to ongoing monthly auto-invest €
+  investMultiplier?: number;     // applied to current investments (e.g. 0.65 = realize a 35% loss)
+  cashOutInvestments?: boolean;  // move all investments → cash and stop auto-investing
+  happinessDelta?: number;       // −100..100 life-satisfaction change
+  wise: boolean;                 // counts toward the wisdom tally
+}
+
+export interface LifeSimStage {
+  age: number;
+  yearsToNext: number;           // years until the next stage (drives compounding)
+  title: LocalizedText;
+  scenario: LocalizedText;
+  emoji?: string;
+  choices: LifeSimChoice[];
+}
+
+export interface LifeSimConfig {
+  startAge: number;
+  startCash: number;
+  monthlySurplus: number;        // money left over each month at the start
+  annualReturn: number;          // investment growth rate (e.g. 0.07)
+  debtApr: number;               // interest rate on unpaid debt (e.g. 0.18)
+  stages: LifeSimStage[];
+  endings: { minNetWorth: number; title: LocalizedText; emoji: string; message: LocalizedText }[];
 }
 
 export interface LessonMeta {

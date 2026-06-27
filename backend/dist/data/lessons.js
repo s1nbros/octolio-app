@@ -439,6 +439,120 @@ const staticModules = [
                     },
                 ],
             },
+            // ── Lesson 5: Life Simulation capstone ──
+            {
+                id: 'money-life-sim',
+                moduleId: 'budgeting',
+                title: { en: 'Your Money Life', bg: 'Твоят финансов живот' },
+                description: { en: 'Live 40 years of money decisions in 5 minutes — and watch them compound.', bg: 'Изживей 40 години финансови решения за 5 минути — и виж как се натрупват.' },
+                icon: '🎮', xpReward: 120, order: 5,
+                exercises: [
+                    {
+                        id: 'mls-theory-1',
+                        type: 'theory',
+                        xp: 0,
+                        slides: [
+                            {
+                                emoji: '🎮',
+                                title: { en: 'Play your money life', bg: 'Изиграй финансовия си живот' },
+                                body: { en: "You're about to live ~40 years of money decisions in a few minutes — from your first paycheck to retirement. Every choice (what to do with a raise, a windfall, a market crash) carries forward and compounds.\n\nThere are no single right answers, but some paths build wealth and freedom while others quietly leak it. Watch your net worth at the top change as you go.", bg: "Ще изживееш ~40 години финансови решения за няколко минути — от първата заплата до пенсия. Всеки избор (какво да правиш с увеличение, неочаквани пари, срив на пазара) се пренася напред и се натрупва.\n\nНяма единствено правилни отговори, но някои пътища изграждат богатство и свобода, а други тихо го изтичат. Следи нетната си стойност горе." },
+                                highlight: { en: '💡 The same €200/month invested at 22 vs spent is often a €400,000+ difference by 60.', bg: '💡 Същите €200/месец, инвестирани на 22 спрямо изхарчени, често са разлика от €400,000+ до 60-годишна възраст.' },
+                            },
+                        ],
+                    },
+                    {
+                        id: 'mls-sim-1',
+                        type: 'life_sim',
+                        xp: 120,
+                        lifeSim: {
+                            startAge: 22,
+                            startCash: 1000,
+                            monthlySurplus: 300,
+                            annualReturn: 0.07,
+                            debtApr: 0.18,
+                            stages: [
+                                {
+                                    age: 22, yearsToNext: 3, emoji: '🎓',
+                                    title: { en: 'First paycheck', bg: 'Първа заплата' },
+                                    scenario: { en: 'You just landed your first real job — €1,900/month. After rent and essentials, about €300 is left over each month. What do you do with it?', bg: 'Току-що започна първата си истинска работа — €1,900/месец. След наем и основни разходи остават около €300 на месец. Какво правиш с тях?' },
+                                    choices: [
+                                        { label: { en: 'Invest €200/mo in a UCITS index fund', bg: 'Инвестирай €200/мес в UCITS индексен фонд' }, emoji: '📈', monthlyInvestDelta: 200, happinessDelta: 4, wise: true, outcome: { en: 'The single best move of your life. €200/month at 22, growing ~7% a year, becomes a fortune by 60. Time is your superpower.', bg: 'Най-добрият ход в живота ти. €200/месец на 22 г., растящи ~7% годишно, стават цяло състояние до 60. Времето е твоята суперсила.' } },
+                                        { label: { en: "Spend it all — you're young!", bg: 'Изхарчи всичко — млад си!' }, emoji: '🎉', happinessDelta: 10, wise: false, outcome: { en: 'Fun now — but your most valuable asset, decades of compounding, is ticking away uninvested.', bg: 'Забавно сега — но най-ценният ти актив, десетилетия натрупване, тече без да е инвестиран.' } },
+                                        { label: { en: 'Leave it in a savings account', bg: 'Остави ги в спестовна сметка' }, emoji: '🏦', happinessDelta: 2, wise: false, outcome: { en: 'Safer than spending, but idle cash quietly loses to inflation. Investing would put it to work.', bg: 'По-безопасно от харчене, но застоялият кеш тихо губи от инфлацията. Инвестирането би го накарало да работи.' } },
+                                    ],
+                                },
+                                {
+                                    age: 25, yearsToNext: 3, emoji: '📈',
+                                    title: { en: 'Your first raise', bg: 'Първото увеличение' },
+                                    scenario: { en: 'A promotion bumps your take-home pay by €500/month. Lifestyle, or future?', bg: 'Повишение увеличава нетната ти заплата с €500/месец. Начин на живот или бъдеще?' },
+                                    choices: [
+                                        { label: { en: 'Bank the whole raise into investments', bg: 'Вкарай цялото увеличение в инвестиции' }, emoji: '💪', monthlyInvestDelta: 500, happinessDelta: 3, wise: true, outcome: { en: 'Avoiding lifestyle inflation is how ordinary incomes build extraordinary wealth.', bg: 'Избягването на инфлацията на начина на живот е как обикновените доходи изграждат необикновено богатство.' } },
+                                        { label: { en: 'Upgrade: nicer flat + a car on a €15,000 loan', bg: 'Ъпгрейд: по-хубав апартамент + кола на €15,000 заем' }, emoji: '🚗', debtDelta: 15000, monthlySurplusDelta: -250, happinessDelta: 9, wise: false, outcome: { en: 'Lifestyle creep plus 18% debt. The car loses value while the loan compounds against you.', bg: 'Пълзяща инфлация на разходите плюс дълг при 18%. Колата губи стойност, а заемът се натрупва срещу теб.' } },
+                                        { label: { en: 'Split it: invest €250, enjoy €250', bg: 'Раздели: инвестирай €250, харчи €250' }, emoji: '⚖️', monthlyInvestDelta: 250, happinessDelta: 6, wise: true, outcome: { en: 'Balanced and sustainable — you grow wealth and still enjoy your 20s.', bg: 'Балансирано и устойчиво — трупаш богатство и пак се радваш на 20-те си.' } },
+                                    ],
+                                },
+                                {
+                                    age: 28, yearsToNext: 4, emoji: '🎁',
+                                    title: { en: 'A windfall', bg: 'Неочаквани пари' },
+                                    scenario: { en: 'A €10,000 work bonus just landed in your account. What\'s the plan?', bg: 'Бонус от €10,000 току-що влезе в сметката ти. Какъв е планът?' },
+                                    choices: [
+                                        { label: { en: 'Emergency fund first, invest the rest', bg: 'Първо авариен фонд, инвестирай остатъка' }, emoji: '🛡️', cashDelta: 4000, investDelta: 6000, happinessDelta: 5, wise: true, outcome: { en: 'A safety net AND growth — exactly how the financially secure handle a windfall.', bg: 'Предпазна мрежа И растеж — точно как финансово стабилните се справят с неочаквани пари.' } },
+                                        { label: { en: 'Book the dream trip around the world', bg: 'Резервирай мечтаното околосветско пътуване' }, emoji: '✈️', happinessDelta: 16, wise: false, outcome: { en: 'Unforgettable memories — but €10,000 invested could have become €40,000+ by retirement.', bg: 'Незабравими спомени — но €10,000 инвестирани можеха да станат €40,000+ до пенсия.' } },
+                                        { label: { en: 'Go all-in on a hot stock tip', bg: 'Заложи всичко на горещ съвет за акция' }, emoji: '🎰', investDelta: 3000, happinessDelta: -6, wise: false, outcome: { en: "The 'sure thing' cratered — €10,000 became €3,000. Betting big on one tip is gambling, not investing.", bg: '„Сигурната работа" се срина — €10,000 станаха €3,000. Залагането на един съвет е хазарт, не инвестиране.' } },
+                                    ],
+                                },
+                                {
+                                    age: 32, yearsToNext: 6, emoji: '📉',
+                                    title: { en: 'Market crash', bg: 'Срив на пазара' },
+                                    scenario: { en: 'A global recession hits. Your investments are down 35% on paper overnight and the news is all doom. Your gut screams: do something!', bg: 'Глобална рецесия удря. Инвестициите ти са надолу 35% на хартия за една нощ и новините са само мрак. Инстинктът ти крещи: направи нещо!' },
+                                    choices: [
+                                        { label: { en: 'Hold steady, keep investing', bg: 'Дръж позицията, продължавай да инвестираш' }, emoji: '🧘', happinessDelta: -4, wise: true, outcome: { en: "Paper losses aren't real until you sell. You held — and markets recovered to new highs within a few years.", bg: 'Загубите на хартия не са реални, докато не продадеш. Ти задържа — и пазарите се възстановиха до нови върхове за няколко години.' } },
+                                        { label: { en: 'Panic-sell to stop the bleeding', bg: 'Продай в паника, за да спреш загубите' }, emoji: '😱', investMultiplier: 0.65, monthlyInvestDelta: -9999, happinessDelta: -8, wise: false, outcome: { en: 'You locked in the 35% loss, then watched from the sidelines as the market roared back. The classic wealth-killer.', bg: 'Заключи 35% загуба, после гледа отстрани как пазарът се върна нагоре. Класическият убиец на богатство.' } },
+                                        { label: { en: 'Buy more at the discount', bg: 'Купи още на по-ниската цена' }, emoji: '🛒', investDelta: 3000, cashDelta: -3000, happinessDelta: -2, wise: true, outcome: { en: 'Buying quality assets on sale supercharged your recovery. Be greedy when others are fearful.', bg: 'Купуването на качествени активи в разпродажба ускори възстановяването ти. Бъди алчен, когато другите се страхуват.' } },
+                                    ],
+                                },
+                                {
+                                    age: 38, yearsToNext: 7, emoji: '🏡',
+                                    title: { en: 'Putting down roots', bg: 'Пускане на корени' },
+                                    scenario: { en: 'You\'re thinking about buying a home. The bank pre-approves you for a big mortgage. How do you play it?', bg: 'Мислиш да купиш жилище. Банката те одобрява предварително за голяма ипотека. Как ще постъпиш?' },
+                                    choices: [
+                                        { label: { en: 'Buy a modest home you can easily afford', bg: 'Купи скромен дом, който лесно си позволяваш' }, emoji: '🏡', cashDelta: -15000, investDelta: 15000, monthlySurplusDelta: -100, happinessDelta: 12, wise: true, outcome: { en: 'A home within your means builds equity and stability without crushing your budget.', bg: 'Дом по джоба ти изгражда собствен капитал и стабилност, без да смазва бюджета.' } },
+                                        { label: { en: 'Stretch for the dream house', bg: 'Напъни се за мечтаната къща' }, emoji: '🏰', cashDelta: -25000, debtDelta: 30000, monthlySurplusDelta: -400, happinessDelta: 15, wise: false, outcome: { en: 'House-poor: a beautiful home, renovations on credit, and a budget with no breathing room.', bg: 'Беден заради къщата: красив дом, ремонти на кредит и бюджет без глътка въздух.' } },
+                                        { label: { en: 'Keep renting, invest the difference', bg: 'Продължи под наем, инвестирай разликата' }, emoji: '🔑', monthlyInvestDelta: 150, happinessDelta: 4, wise: true, outcome: { en: "Renting isn't 'throwing money away' if you invest the difference. A perfectly valid path.", bg: 'Наемът не е „хвърляне на пари", ако инвестираш разликата. Напълно валиден път.' } },
+                                    ],
+                                },
+                                {
+                                    age: 45, yearsToNext: 10, emoji: '💼',
+                                    title: { en: 'Peak earning years', bg: 'Върхови години на доходи' },
+                                    scenario: { en: 'You\'re at the top of your career, earning more than ever. What do you prioritize?', bg: 'На върха на кариерата си, печелиш повече от всякога. Какво приоритизираш?' },
+                                    choices: [
+                                        { label: { en: 'Max out pension contributions', bg: 'Максимизирай пенсионните вноски' }, emoji: '🏦', monthlyInvestDelta: 400, happinessDelta: 3, wise: true, outcome: { en: 'Tax-advantaged and automatic — maxing your pension in peak years is rocket fuel for retirement.', bg: 'Данъчно изгодно и автоматично — максимизирането на пенсията във върховите години е ракетно гориво за пенсия.' } },
+                                        { label: { en: 'Reward yourself — boat, luxury holidays', bg: 'Възнагради се — лодка, луксозни почивки' }, emoji: '🛥️', cashDelta: -20000, monthlySurplusDelta: -300, happinessDelta: 13, wise: false, outcome: { en: 'You earned it — but lifestyle inflation at peak income is the biggest missed-wealth window of all.', bg: 'Заслужи го — но инфлацията на разходите при върхов доход е най-големият пропуснат шанс за богатство.' } },
+                                        { label: { en: 'Start a side business', bg: 'Започни страничен бизнес' }, emoji: '🚀', cashDelta: -10000, monthlySurplusDelta: 400, happinessDelta: 7, wise: true, outcome: { en: 'The startup cost paid off — a new income stream that compounds your options.', bg: 'Стартовият разход се изплати — нов източник на доход, който умножава възможностите ти.' } },
+                                    ],
+                                },
+                                {
+                                    age: 55, yearsToNext: 5, emoji: '🌅',
+                                    title: { en: 'Retirement on the horizon', bg: 'Пенсията на хоризонта' },
+                                    scenario: { en: 'Retirement is just years away and your portfolio has grown nicely. How do you position for the home stretch?', bg: 'Пенсията е само на няколко години, а портфейлът ти порасна добре. Как се позиционираш за финалната права?' },
+                                    choices: [
+                                        { label: { en: 'Shift some money to safer assets', bg: 'Прехвърли част към по-безопасни активи' }, emoji: '🛡️', happinessDelta: 5, wise: true, outcome: { en: 'De-risking near retirement protects your gains from a badly-timed crash. Sequence-of-returns risk is real.', bg: 'Намаляването на риска близо до пенсия пази печалбите от зле уцелен срив. Рискът от поредността на доходността е реален.' } },
+                                        { label: { en: 'Stay 100% in stocks for max growth', bg: 'Остани 100% в акции за максимален растеж' }, emoji: '🎢', happinessDelta: 1, wise: false, outcome: { en: 'It worked out this time — but a crash at 60 with no time to recover could have been devastating.', bg: 'Този път се получи — но срив на 60 без време за възстановяване можеше да е опустошителен.' } },
+                                        { label: { en: 'Cash out everything to a savings account', bg: 'Изтегли всичко в спестовна сметка' }, emoji: '💵', cashOutInvestments: true, happinessDelta: -3, wise: false, outcome: { en: 'Totally safe — and totally exposed to inflation. You also gave up years of growth you still needed.', bg: 'Напълно безопасно — и напълно изложено на инфлация. Освен това се отказа от години растеж, които още ти трябваха.' } },
+                                    ],
+                                },
+                            ],
+                            endings: [
+                                { minNetWorth: 750000, emoji: '🏝️', title: { en: 'Financially Free', bg: 'Финансово свободен' }, message: { en: 'You can retire early and live life on your terms. Your 22-year-old self made you rich — compounding did the rest.', bg: 'Можеш да се пенсионираш рано и да живееш по своите правила. 22-годишният ти те направи богат — натрупването свърши останалото.' } },
+                                { minNetWorth: 400000, emoji: '😎', title: { en: 'Comfortable', bg: 'Спокоен' }, message: { en: 'A solid nest egg. Retirement is secure and you have real options. A few bolder early moves could have doubled this.', bg: 'Солиден резерв. Пенсията е сигурна и имаш реални опции. Няколко по-смели ранни хода можеха да удвоят това.' } },
+                                { minNetWorth: 150000, emoji: '🌱', title: { en: 'On Track', bg: 'В правилна посока' }, message: { en: 'A real foundation — but a few different choices could have multiplied this. Now you know exactly which ones.', bg: 'Истинска основа — но няколко различни избора можеха да го умножат. Сега знаеш точно кои.' } },
+                                { minNetWorth: 0, emoji: '😅', title: { en: 'Just Getting By', bg: 'Едва свързваш двата края' }, message: { en: 'You stayed afloat, but compounding barely got a chance to work. Small, consistent investing changes everything — and it\'s never too late to start.', bg: 'Остана на повърхността, но натрупването едва получи шанс. Малкото последователно инвестиране променя всичко — и никога не е късно да започнеш.' } },
+                                { minNetWorth: -999999999, emoji: '😬', title: { en: 'In the Red', bg: 'На червено' }, message: { en: 'Debt outran you. The good news: every choice that got you here is reversible — and you just practiced the better ones.', bg: 'Дългът те изпревари. Добрата новина: всеки избор, който те доведе тук, е обратим — и току-що упражни по-добрите.' } },
+                            ],
+                        },
+                    },
+                ],
+            },
         ],
     },
     // ─────────────────────────────────────────────

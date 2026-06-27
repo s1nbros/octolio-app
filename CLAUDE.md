@@ -577,6 +577,27 @@ handler — Render-blocked SMTP can stall for 60+ seconds and freeze the user.
 | `risk_matrix` | RiskMatrix | Risk Management / Emergency Planning | Sort risks into 2×2 impact-vs-likelihood grid (Accept/Mitigate/Transfer/Avoid) |
 | `unit_price` | UnitPrice | Smart Shopping | Pick best price-per-unit across packaging options |
 
+### Life Simulation (`life_sim`) — flagship connected-decision lesson
+A new exercise type that plays a whole financial life (age 22→60) as ONE
+connected experience with persistent state, instead of isolated questions.
+- Component: `frontend/src/components/exercises/LifeSimulation.tsx`. State carried
+  across stages: `cash`, `investments`, `debt`, `monthlySurplus`, `monthlyInvest`,
+  `happiness`, `wisdom`. A persistent stats dashboard (age / net worth / invested /
+  debt) updates as you go.
+- Each stage = a scenario + choices. Choosing applies immediate deltas
+  (`cashDelta`, `investDelta`, `debtDelta`, `monthlySurplusDelta`,
+  `monthlyInvestDelta`, `investMultiplier` for crashes, `cashOutInvestments` flag),
+  shows an outcome, then **`{yearsToNext} years later →`** advances time:
+  investments compound (lump + monthly-contribution future value at `annualReturn`),
+  idle surplus piles into cash, unpaid debt grows at `debtApr`.
+- Ends on a payoff reveal: net worth headline + invested/cash/debt breakdown +
+  a tiered ending title (`endings[]` by `minNetWorth`) + fireworks for a great run,
+  then `onAnswer(true, xp)`.
+- Config type `LifeSimConfig` lives in BOTH `frontend/src/types/index.ts` and
+  `backend/src/data/lessons.ts`. Registered in `ExerciseRenderer.tsx`.
+- First instance: the **"Your Money Life"** capstone lesson (`money-life-sim`) at the
+  end of the **budgeting** module — theory intro + a 7-stage simulation.
+
 ### Lesson Structure Rules
 - Each lesson has 6–7 exercises (target: 7)
 - **Theory always goes first** (1–2 slides max per theory block)
