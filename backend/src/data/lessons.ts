@@ -990,10 +990,18 @@ const staticModules: Module[] = [
             ],
           },
           {
-            id: 'cm-tf-1', type: 'true_false', xp: 15,
-            statement: { en: 'Doubling your monthly contribution and doubling your time horizon produce roughly the same final amount.', bg: 'Удвояването на месечната вноска и удвояването на времето дават приблизително еднаква крайна сума.' },
-            isTrue: false,
-            explanation: { en: 'FALSE. Time wins because of exponential compounding. €200/mo for 40 yrs at 7% ≈ €525k, but €400/mo for 20 yrs ≈ €209k. Same total contributed (€96k), wildly different result.', bg: 'НЕВЯРНО. Времето печели заради експоненциалната капитализация. €200/мес за 40 г. при 7% ≈ €525k, а €400/мес за 20 г. ≈ €209k. Същата вноска (€96k), коренно различен резултат.' },
+            id: 'cm-speed-1', type: 'speed_round', xp: 25,
+            speedRound: {
+              prompt: { en: 'Compounding rapid fire!', bg: 'Сложна лихва — бърз рунд!' },
+              secondsPerQuestion: 8, passScore: 0.6,
+              questions: [
+                { q: { en: 'What grows investments fastest over decades?', bg: 'Какво кара инвестициите да растат най-бързо за десетилетия?' }, options: [ { en: 'Time in the market', bg: 'Време на пазара' }, { en: 'Timing the market', bg: 'Уцелване на пазара' }, { en: 'Checking daily', bg: 'Ежедневна проверка' } ], correctIndex: 0 },
+                { q: { en: '€200/mo for 40 yrs vs €400/mo for 20 yrs — which ends bigger?', bg: '€200/мес за 40 г. срещу €400/мес за 20 г. — кое е по-голямо?' }, options: [ { en: '40 years wins', bg: '40 години печели' }, { en: '20 years wins', bg: '20 години печели' }, { en: 'They tie', bg: 'Равни са' } ], correctIndex: 0 },
+                { q: { en: 'Earning interest on past interest is called…', bg: 'Лихва върху натрупаната лихва се нарича…' }, options: [ { en: 'Compounding', bg: 'Сложна лихва' }, { en: 'Inflation', bg: 'Инфлация' }, { en: 'Leverage', bg: 'Ливъридж' } ], correctIndex: 0 },
+                { q: { en: 'Best time to start investing?', bg: 'Най-доброто време да започнеш да инвестираш?' }, options: [ { en: 'As early as possible', bg: 'Колкото може по-рано' }, { en: 'After you are rich', bg: 'След като забогатееш' }, { en: 'At retirement', bg: 'При пенсиониране' } ], correctIndex: 0 },
+                { q: { en: 'Idle cash in a 0% account over 10 years…', bg: 'Застоял кеш в сметка с 0% за 10 години…' }, options: [ { en: 'Loses value to inflation', bg: 'Губи стойност от инфлация' }, { en: 'Doubles', bg: 'Удвоява се' }, { en: 'Stays equal in real terms', bg: 'Остава равен реално' } ], correctIndex: 0 },
+              ],
+            },
           },
           {
             id: 'cm-decision-1', type: 'scenario_decision', xp: 25,
@@ -1268,10 +1276,18 @@ const staticModules: Module[] = [
             ],
           },
           {
-            id: 'if-tf-1', type: 'true_false', xp: 15,
-            statement: { en: 'Most professional fund managers beat the S&P 500 over a 15-year period.', bg: 'Повечето професионални мениджъри побеждават S&P 500 за 15 г.' },
-            isTrue: false,
-            explanation: { en: 'FALSE. SPIVA studies show ~85–90% of large-cap active funds underperform the S&P 500 over 15 years AFTER fees. The few who win can\'t be predicted in advance.', bg: 'НЕВЯРНО. SPIVA проучвания: ~85–90% от активните фондове губят от S&P 500 за 15 г. след такси. Печелившите не могат да се предскажат.' },
+            id: 'if-speed-1', type: 'speed_round', xp: 25,
+            speedRound: {
+              prompt: { en: 'Index investing rapid fire!', bg: 'Индексно инвестиране — бърз рунд!' },
+              secondsPerQuestion: 8, passScore: 0.6,
+              questions: [
+                { q: { en: 'Over 15 years, most active fund managers…', bg: 'За 15 години повечето активни мениджъри…' }, options: [ { en: 'Lose to the index', bg: 'Губят от индекса' }, { en: 'Beat the index', bg: 'Бият индекса' }, { en: 'Match exactly', bg: 'Изравняват точно' } ], correctIndex: 0 },
+                { q: { en: 'A low-cost index fund mainly wins because of…', bg: 'Евтиният индексен фонд печели основно заради…' }, options: [ { en: 'Low fees + diversification', bg: 'Ниски такси + диверсификация' }, { en: 'Lucky stock picks', bg: 'Късметлийски избори' }, { en: 'Frequent trading', bg: 'Честа търговия' } ], correctIndex: 0 },
+                { q: { en: 'For EU investors, the common fund wrapper is…', bg: 'За ЕС инвеститори честият тип фонд е…' }, options: [ { en: 'UCITS ETF', bg: 'UCITS ETF' }, { en: 'US 401(k)', bg: 'US 401(k)' }, { en: 'Penny stock', bg: 'Пени акция' } ], correctIndex: 0 },
+                { q: { en: 'Spreading money across many assets is…', bg: 'Разпределяне на пари между много активи е…' }, options: [ { en: 'Diversification', bg: 'Диверсификация' }, { en: 'Speculation', bg: 'Спекулация' }, { en: 'Leverage', bg: 'Ливъридж' } ], correctIndex: 0 },
+                { q: { en: 'Panic-selling at every market dip tends to…', bg: 'Паническо продаване при всеки спад обикновено…' }, options: [ { en: 'Hurt long-term returns', bg: 'Вреди на дългосрочната доходност' }, { en: 'Boost returns', bg: 'Повишава доходността' }, { en: 'Have no effect', bg: 'Няма ефект' } ], correctIndex: 0 },
+              ],
+            },
           },
           {
             id: 'if-decision-1', type: 'scenario_decision', xp: 25,
@@ -1457,10 +1473,18 @@ const staticModules: Module[] = [
             explanation: { en: 'Payment history (35%) and utilization (30%) drive 65% of your score. The other three factors split the remaining 35%. Focus where it matters: never miss a payment, keep balances low.', bg: 'История (35%) и усвояване (30%) дават 65% от рейтинга. Останалите три фактора делят 35%. Фокусирай: никога не пропускай плащане, дръж балансите ниски.' },
           },
           {
-            id: 'cs2-tf-1', type: 'true_false', xp: 15,
-            statement: { en: 'Closing an old credit card you no longer use will help your credit score.', bg: 'Затварянето на стара неизползвана кредитна карта ще помогне на рейтинга ти.' },
-            isTrue: false,
-            explanation: { en: 'FALSE. Closing it (a) shortens your credit history average and (b) drops your total available limit, which raises your utilization ratio. Both hurt your score. Leave old cards open with a small recurring charge + autopay.', bg: 'НЕВЯРНО. Затварянето (а) скъсява средната дължина на историята и (б) сваля общия лимит, което вдига усвояването. И двете вредят. Остави старите отворени с малка повтаряща се сметка + автоплащане.' },
+            id: 'cs2-speed-1', type: 'speed_round', xp: 25,
+            speedRound: {
+              prompt: { en: 'Credit score rapid fire!', bg: 'Кредитен рейтинг — бърз рунд!' },
+              secondsPerQuestion: 8, passScore: 0.6,
+              questions: [
+                { q: { en: 'The biggest driver of your credit score is…', bg: 'Най-големият фактор за рейтинга е…' }, options: [ { en: 'Payment history', bg: 'История на плащанията' }, { en: 'Your salary', bg: 'Заплатата ти' }, { en: 'Your age', bg: 'Възрастта ти' } ], correctIndex: 0 },
+                { q: { en: 'Keep your card balance below what % of the limit?', bg: 'Под какъв % от лимита да държиш баланса?' }, options: [ { en: 'Under 30%', bg: 'Под 30%' }, { en: 'Around 90%', bg: 'Около 90%' }, { en: 'Exactly 100%', bg: 'Точно 100%' } ], correctIndex: 0 },
+                { q: { en: 'Closing your oldest credit card usually…', bg: 'Затварянето на най-старата карта обикновено…' }, options: [ { en: 'Hurts your score', bg: 'Вреди на рейтинга' }, { en: 'Helps your score', bg: 'Помага на рейтинга' }, { en: 'Does nothing', bg: 'Не прави нищо' } ], correctIndex: 0 },
+                { q: { en: 'To build credit you should…', bg: 'За да изградиш кредит трябва да…' }, options: [ { en: 'Use a card and pay it in full', bg: 'Ползваш карта и плащаш изцяло' }, { en: 'Carry a balance with interest', bg: 'Държиш баланс с лихва' }, { en: 'Never use credit', bg: 'Никога не ползваш кредит' } ], correctIndex: 0 },
+                { q: { en: 'Which debt usually costs the most?', bg: 'Кой дълг обикновено струва най-много?' }, options: [ { en: 'Credit card at 20%+', bg: 'Кредитна карта при 20%+' }, { en: 'Mortgage at 3%', bg: 'Ипотека при 3%' }, { en: 'Student loan at 5%', bg: 'Студентски заем при 5%' } ], correctIndex: 0 },
+              ],
+            },
           },
           {
             id: 'cs2-decision-1', type: 'scenario_decision', xp: 25,
@@ -1676,16 +1700,20 @@ const staticModules: Module[] = [
             explanation: { en: 'The best first hustle has 3 things: it uses an existing skill, has near-zero startup cost, and has buyers ALREADY looking for it. Freelancing on a marketplace nails all three.', bg: 'Най-добрият първи бизнес има 3 неща: ползва съществуващо умение, почти нулеви разходи и купувачите ВЕЧЕ търсят. Фрийлансът покрива и трите.' },
           },
           {
-            id: 'sh1-choice-1', type: 'choice', xp: 15,
-            question: { en: 'You earn your first €500 from your hustle. What\'s the smartest move?', bg: 'Спечели първите €500 от бизнеса. Кой е най-умният ход?' },
-            options: [
-              { en: 'Reinvest €450 into business growth tools', bg: 'Реинвестирай €450 в инструменти за растеж' },
-              { en: 'Save 30% for taxes, reinvest most, celebrate 10%', bg: 'Заделѝ 30% за данъци, реинвестирай по-голямата част, празнувай 10%' },
-              { en: 'Spend it all on the laptop you\'ve been wanting', bg: 'Похарчи всичко за лаптопа, който искаш' },
-              { en: 'Quit your day job to focus full-time', bg: 'Напусни работа за пълно фокусиране' },
-            ],
-            correctIndex: 1,
-            explanation: { en: 'Forgetting taxes is the #1 freelancer mistake. Carve them off FIRST (15–35% depending on jurisdiction). Then reinvest most for growth, leave a small celebration to stay motivated.', bg: 'Забравянето на данъци е грешка №1. Първо ги махни (15–35% според страната). После реинвестирай за растеж, остави малко за празнуване.' },
+            id: 'sh1-swipe-1', type: 'swipe_sort', xp: 20,
+            swipeSort: {
+              prompt: { en: 'Smart side-hustle move or rookie trap? Swipe each one.', bg: 'Умен ход за страничен бизнес или капан за начинаещи? Плъзни всяко.' },
+              leftLabel: { en: 'Trap', bg: 'Капан' },
+              rightLabel: { en: 'Smart', bg: 'Умен' },
+              cards: [
+                { label: { en: 'Set aside ~30% of income for taxes', bg: 'Заделяш ~30% от дохода за данъци' }, emoji: '🧾', isRight: true, explanation: { en: 'Forgetting taxes is the #1 freelancer mistake.', bg: 'Забравянето на данъци е грешка №1.' } },
+                { label: { en: 'Quit your day job after the first €500', bg: 'Напускаш работа след първите €500' }, emoji: '🚪', isRight: false, explanation: { en: 'Keep stability until the side income is proven.', bg: 'Запази стабилност, докато доходът се докаже.' } },
+                { label: { en: 'Reinvest part of early profit into growth', bg: 'Реинвестираш част от ранната печалба в растеж' }, emoji: '🌱', isRight: true, explanation: { en: 'Smart — once taxes are set aside.', bg: 'Умно — след като данъците са заделени.' } },
+                { label: { en: 'Spend the first profit on a fancy laptop', bg: 'Харчиш първата печалба за скъп лаптоп' }, emoji: '💻', isRight: false, explanation: { en: 'Buy tools when they pay for themselves, not before.', bg: 'Купувай инструменти, когато се изплащат, не преди.' } },
+                { label: { en: 'Track income and expenses from day one', bg: 'Следиш доходи и разходи от ден едно' }, emoji: '📊', isRight: true, explanation: { en: 'You can not manage what you do not measure.', bg: 'Не можеш да управляваш това, което не измерваш.' } },
+                { label: { en: 'Price your work on "whatever feels nice"', bg: 'Определяш цена както ти се струва' }, emoji: '🎲', isRight: false, explanation: { en: 'Price on value and demand, not vibes.', bg: 'Цени на стойност и търсене, не на усещане.' } },
+              ],
+            },
           },
         ],
       },
@@ -1984,16 +2012,18 @@ const staticModules: Module[] = [
             explanation: { en: 'Extended warranties on items under €1,000 are almost always a bad deal — they\'re priced for the SELLER\'s margin, not for the actual risk you face.', bg: 'Удължените гаранции под €1,000 почти винаги са лоша сделка — цената е за маржа на продавача, не за реалния риск.' },
           },
           {
-            id: 'ins1-choice-1', type: 'choice', xp: 15,
-            question: { en: 'You\'re 25, healthy, single, renting an apartment, driving a used car. Which insurance matters MOST?', bg: 'На 25 си, здрав, неженен, наемател, караш стара кола. Коя застраховка е НАЙ-важна?' },
-            options: [
-              { en: 'Phone screen insurance', bg: 'Застраховка на екран на телефона' },
-              { en: 'Health insurance + auto liability', bg: 'Здравна + гражданска отговорност' },
-              { en: 'Whole life insurance', bg: 'Цяла Живот застраховка' },
-              { en: 'Travel insurance for every trip', bg: 'Застраховка пътуване за всяко пътуване' },
-            ],
-            correctIndex: 1,
-            explanation: { en: 'Health (one accident = €50k+ debt) + auto liability (you injure someone = €200k+ judgment) are the two policies that can financially destroy a young person. Everything else is optional or wasteful at this stage.', bg: 'Здравна (един инцидент = €50к+ дълг) + гражданска отговорност (нараниш някого = €200к+ присъда) са двете полици, които могат да разрушат финансово млад човек.' },
+            id: 'ins1-speed-1', type: 'speed_round', xp: 25,
+            speedRound: {
+              prompt: { en: 'Insurance basics rapid fire!', bg: 'Основи на застраховането — бърз рунд!' },
+              secondsPerQuestion: 8, passScore: 0.6,
+              questions: [
+                { q: { en: 'Insurance is worth buying for risks that are…', bg: 'Застраховката си струва за рискове, които са…' }, options: [ { en: 'Rare but financially ruinous', bg: 'Редки, но финансово опустошителни' }, { en: 'Small and frequent', bg: 'Малки и чести' }, { en: 'Certain to happen', bg: 'Сигурни да се случат' } ], correctIndex: 0 },
+                { q: { en: 'For a healthy 25-year-old, the MOST vital cover is…', bg: 'За здрав 25-годишен НАЙ-важна е…' }, options: [ { en: 'Health + liability', bg: 'Здравна + гражданска отговорност' }, { en: 'Phone screen cover', bg: 'Застраховка на екран' }, { en: 'Whole-life policy', bg: 'Цяла Живот полица' } ], correctIndex: 0 },
+                { q: { en: 'A higher deductible usually means…', bg: 'По-високо самоучастие обикновено значи…' }, options: [ { en: 'A lower premium', bg: 'По-нисък премиум' }, { en: 'A higher premium', bg: 'По-висок премиум' }, { en: 'No coverage', bg: 'Без покритие' } ], correctIndex: 0 },
+                { q: { en: 'Insuring your cheap old phone is usually…', bg: 'Застраховането на евтиния стар телефон обикновено е…' }, options: [ { en: 'A waste of money', bg: 'Загуба на пари' }, { en: 'Essential', bg: 'Задължително' }, { en: 'Legally required', bg: 'Изисквано по закон' } ], correctIndex: 0 },
+                { q: { en: 'Liability cover mainly protects you from…', bg: 'Гражданската отговорност те пази основно от…' }, options: [ { en: 'Harm you cause to others', bg: 'Вреди, които причиняваш на други' }, { en: 'Your own phone breaking', bg: 'Счупване на твоя телефон' }, { en: 'Stock losses', bg: 'Загуби от акции' } ], correctIndex: 0 },
+              ],
+            },
           },
         ],
       },
@@ -2949,10 +2979,18 @@ const staticModules: Module[] = [
             ],
           },
           {
-            id: 'tax-tf-1', type: 'true_false', xp: 15,
-            statement: { en: 'A €1 tax credit and a €1 deduction reduce your tax bill by the same amount.', bg: '€1 данъчен кредит и €1 приспадане намаляват данъка с еднаква сума.' },
-            isTrue: false,
-            explanation: { en: 'FALSE. A €1 CREDIT cuts tax by €1 directly. A €1 DEDUCTION cuts taxable income by €1, which only saves the marginal rate (e.g. 32%) of that €1 = €0.32. Credits are 3–4× more valuable euro-for-euro than deductions.', bg: 'НЕВЯРНО. €1 КРЕДИТ маха €1 от данъка директно. €1 ПРИСПАДАНЕ намалява облагаемия доход с €1, което спестява само пределната ставка (напр. 32%) на това €1 = €0.32. Кредитите са 3–4× по-ценни.' },
+            id: 'tax-speed-1', type: 'speed_round', xp: 25,
+            speedRound: {
+              prompt: { en: 'Tax strategy rapid fire!', bg: 'Данъчна стратегия — бърз рунд!' },
+              secondsPerQuestion: 9, passScore: 0.6,
+              questions: [
+                { q: { en: 'Which cuts your tax bill more, euro-for-euro?', bg: 'Кое намалява данъка повече, евро за евро?' }, options: [ { en: 'A tax credit', bg: 'Данъчен кредит' }, { en: 'A tax deduction', bg: 'Данъчно приспадане' }, { en: 'They are equal', bg: 'Равни са' } ], correctIndex: 0 },
+                { q: { en: 'Legally lowering your tax is called…', bg: 'Законното намаляване на данъка се нарича…' }, options: [ { en: 'Tax optimization', bg: 'Данъчна оптимизация' }, { en: 'Tax evasion', bg: 'Данъчно укриване' }, { en: 'Fraud', bg: 'Измама' } ], correctIndex: 0 },
+                { q: { en: 'Contributing to a pension typically…', bg: 'Вноската в пенсия обикновено…' }, options: [ { en: 'Lowers taxable income now', bg: 'Намалява облагаемия доход сега' }, { en: 'Raises your tax now', bg: 'Вдига данъка сега' }, { en: 'Is illegal', bg: 'Е незаконно' } ], correctIndex: 0 },
+                { q: { en: 'Hiding income from the tax authority is…', bg: 'Скриването на доход от данъчните е…' }, options: [ { en: 'Illegal evasion', bg: 'Незаконно укриване' }, { en: 'Smart optimization', bg: 'Умна оптимизация' }, { en: 'A tax credit', bg: 'Данъчен кредит' } ], correctIndex: 0 },
+                { q: { en: 'A €1 deduction saves you…', bg: 'Приспадане от €1 ти спестява…' }, options: [ { en: 'Your marginal rate on €1', bg: 'Пределната ставка върху €1' }, { en: 'The full €1', bg: 'Цялото €1' }, { en: 'Nothing', bg: 'Нищо' } ], correctIndex: 0 },
+              ],
+            },
           },
           {
             id: 'tax-fill-num-1', type: 'fill_number', xp: 25,
