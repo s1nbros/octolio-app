@@ -51,6 +51,36 @@ export const CATALOG_ITEMS: CatalogItem[] = [
     description: { en: 'Visible from any timezone.', bg: 'Видим от всяка часова зона.' } },
   { id: 'body_rocket',    name: { en: 'Rocket Pack', bg: 'Ракетен раница' },             emoji: '🚀', slot: 'body', rarity: 'legendary', price: 2500,
     description: { en: 'To the moon. Literally.', bg: 'Към луната. Буквално.' } },
+
+  // ── NEW: extra hats ──
+  { id: 'hat_sunhat',     name: { en: 'Sun Hat', bg: 'Шапка за слънце' },               emoji: '👒', slot: 'hat',  rarity: 'common',    price: 150,
+    description: { en: 'For sunny portfolio days.', bg: 'За слънчеви дни на портфейла.' } },
+  { id: 'hat_lightbulb',  name: { en: 'Bright Idea', bg: 'Светла идея' },                emoji: '💡', slot: 'hat',  rarity: 'rare',      price: 350,
+    description: { en: 'Ding! A new strategy appears.', bg: 'Дзън! Нова стратегия се появи.' } },
+  { id: 'hat_flame',      name: { en: 'Hot Streak', bg: 'Гореща серия' },                emoji: '🔥', slot: 'hat',  rarity: 'epic',      price: 700,
+    description: { en: 'Matches your streak — literally on fire.', bg: 'В тон с поредицата ти — буквално в огън.' } },
+  { id: 'hat_star',       name: { en: 'Star Power', bg: 'Звездна сила' },                emoji: '⭐', slot: 'hat',  rarity: 'legendary', price: 1800,
+    description: { en: 'Top of the class.', bg: 'Първи в класа.' } },
+
+  // ── NEW: extra faces ──
+  { id: 'face_nerd',      name: { en: 'Study Buddy', bg: 'Учебен другар' },              emoji: '🤓', slot: 'face', rarity: 'common',    price: 150,
+    description: { en: 'Did the reading. Twice.', bg: 'Прочете урока. Два пъти.' } },
+  { id: 'face_disguise',  name: { en: 'Incognito Investor', bg: 'Инкогнито инвеститор' }, emoji: '🥸', slot: 'face', rarity: 'rare',      price: 300,
+    description: { en: 'Quietly compounding in the shadows.', bg: 'Тихо натрупва в сянка.' } },
+  { id: 'face_starstruck', name: { en: 'Moon Eyes', bg: 'Лунни очи' },                   emoji: '🤩', slot: 'face', rarity: 'epic',      price: 650,
+    description: { en: 'When the gains finally hit.', bg: 'Когато печалбите най-сетне дойдат.' } },
+  { id: 'face_robot',     name: { en: 'Algo Mode', bg: 'Алго режим' },                   emoji: '🤖', slot: 'face', rarity: 'legendary', price: 1600,
+    description: { en: 'Emotion-free trading engaged.', bg: 'Търговия без емоции — активирана.' } },
+
+  // ── NEW: extra bodies ──
+  { id: 'body_tie',       name: { en: 'Business Octopus', bg: 'Бизнес октопод' },        emoji: '👔', slot: 'body', rarity: 'common',    price: 200,
+    description: { en: 'Means business. All eight arms.', bg: 'Сериозен бизнес. И с осемте ръце.' } },
+  { id: 'body_medal',     name: { en: 'Lesson Champion', bg: 'Шампион на уроците' },     emoji: '🏅', slot: 'body', rarity: 'rare',      price: 400,
+    description: { en: 'Earned, not bought. (Okay, bought.)', bg: 'Заслужен, не купен. (Е, купен.)' } },
+  { id: 'body_guitar',    name: { en: 'Rockstar Saver', bg: 'Рокзвезда на спестяванията' }, emoji: '🎸', slot: 'body', rarity: 'epic',   price: 550,
+    description: { en: 'Budgets hard, riffs harder.', bg: 'Бюджетира яко, свири още по-яко.' } },
+  { id: 'body_trophy',    name: { en: 'Champion of the Deep', bg: 'Шампион на дълбините' }, emoji: '🏆', slot: 'body', rarity: 'legendary', price: 2000,
+    description: { en: 'Defeated every boss in the sea.', bg: 'Победи всеки бос в морето.' } },
 ];
 
 export function getCatalogItem(id: string | null | undefined): CatalogItem | undefined {

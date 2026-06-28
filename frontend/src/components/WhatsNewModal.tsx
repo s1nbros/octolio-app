@@ -4,7 +4,7 @@
  * the actual UI elements so the "screenshots" stay accurate and never
  * drift from the real app).
  *
- * Storage key:   octolio_seen_whatsnew_v1
+ * Storage key:   octolio_seen_whatsnew_v2  (bump the version to re-show after an update)
  * Trigger:       only for authenticated + onboarded users
  * Dismiss:       last slide → "Got it" button OR close (X)
  */
@@ -12,9 +12,8 @@ import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLang } from '../contexts/LanguageContext';
 import { OctopusAvatar } from './OctopusAvatar';
-import { CoinIcon } from './CoinIcon';
 
-const STORAGE_KEY = 'octolio_seen_whatsnew_v1';
+const STORAGE_KEY = 'octolio_seen_whatsnew_v2';
 
 interface Slide {
   badge: { en: string; bg: string };
@@ -24,127 +23,95 @@ interface Slide {
   accent: string;            // hsl(...) — colors the badge + dot
 }
 
-/* ─── Illustration 1: Octopus mascot ─────────────────────────── */
+/* ─── Illustration 1: Wheel of Luck ──────────────────────────── */
+function WheelShot() {
+  const colors = ['hsl(160,55%,55%)', 'hsl(45,95%,55%)', 'hsl(200,70%,55%)', 'hsl(290,70%,65%)', 'hsl(0,75%,55%)', 'hsl(28,85%,60%)', 'hsl(239,84%,67%)', 'hsl(155,65%,50%)'];
+  const segs = colors.length;
+  const cx = 80, cy = 80, r = 68;
+  const paths = colors.map((c, i) => {
+    const a0 = (i / segs) * 2 * Math.PI - Math.PI / 2;
+    const a1 = ((i + 1) / segs) * 2 * Math.PI - Math.PI / 2;
+    const x0 = cx + r * Math.cos(a0), y0 = cy + r * Math.sin(a0);
+    const x1 = cx + r * Math.cos(a1), y1 = cy + r * Math.sin(a1);
+    return <path key={i} d={`M ${cx} ${cy} L ${x0} ${y0} A ${r} ${r} 0 0 1 ${x1} ${y1} Z`} fill={c} stroke="rgba(255,255,255,0.15)" strokeWidth="1" />;
+  });
+  return (
+    <div className="flex flex-col items-center justify-center w-full h-full">
+      <svg width="170" height="178" viewBox="0 0 160 168" style={{ filter: 'drop-shadow(0 10px 24px rgba(0,0,0,0.4))' }}>
+        <g className="animate-spin" style={{ transformOrigin: '80px 80px', animationDuration: '14s' }}>{paths}</g>
+        <circle cx={cx} cy={cy} r={r} fill="none" stroke="hsl(45,95%,52%)" strokeWidth="3" />
+        <circle cx={cx} cy={cy} r="14" fill="hsl(228,24%,12%)" stroke="hsl(45,95%,55%)" strokeWidth="2.5" />
+        <text x={cx} y={cy + 5} textAnchor="middle" fontSize="16" fill="hsl(45,95%,60%)" fontWeight="900">✦</text>
+        <path d="M 80 4 L 71 22 L 89 22 Z" fill="hsl(45,95%,60%)" stroke="hsl(45,95%,30%)" strokeWidth="1" />
+      </svg>
+      <div className="flex gap-2 mt-1 text-lg">✨ 👑 🏆</div>
+    </div>
+  );
+}
+
+/* ─── Illustration 2: New interactive lessons (boss battle) ──── */
+function LessonsShot() {
+  return (
+    <div className="w-full h-full flex items-center justify-center px-4">
+      <div className="w-full max-w-[280px] rounded-2xl p-4 space-y-3"
+        style={{ background: 'hsl(228, 24%, 12%)', border: '1px solid hsla(0,0%,100%,0.08)', boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}>
+        <p className="text-[10px] uppercase tracking-wider font-bold" style={{ color: 'hsl(var(--c-red))' }}>⚔️ Boss Battle</p>
+        <div className="flex items-center gap-2.5">
+          <span className="text-3xl">🐉</span>
+          <div className="flex-1 min-w-0">
+            <p className="text-[11px] font-bold truncate" style={{ color: 'hsl(var(--c-fg))' }}>The Debt Dragon</p>
+            <div className="h-2.5 rounded-full mt-1 overflow-hidden" style={{ background: 'hsl(var(--c-fg)/0.12)' }}>
+              <div className="h-full rounded-full" style={{ width: '40%', background: 'hsl(var(--c-red))' }} />
+            </div>
+          </div>
+          <span className="text-sm tracking-tighter">❤️❤️❤️</span>
+        </div>
+        <div className="flex gap-1.5">
+          {['🃏 Swipe', '⚡ Speed', '🎮 Life Sim'].map((t) => (
+            <span key={t} className="text-[9px] font-bold px-2 py-1 rounded-md"
+              style={{ background: 'hsl(var(--c-primary)/0.12)', color: 'hsl(var(--c-primary))' }}>{t}</span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Illustration 3: Daily Money Workout ───────────────────── */
+function WorkoutShot() {
+  return (
+    <div className="w-full h-full flex items-center justify-center px-4">
+      <div className="w-full max-w-[280px] rounded-2xl p-4"
+        style={{ background: 'linear-gradient(135deg, hsl(45,95%,55%,0.12), hsl(var(--c-orange)/0.08))', border: '1px solid hsl(45,95%,55%,0.3)', boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}>
+        <div className="flex items-center gap-3">
+          <div className="w-11 h-11 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
+            style={{ background: 'hsl(228,24%,14%)', border: '1px solid hsla(0,0%,100%,0.08)' }}>🧠</div>
+          <div className="flex-1 min-w-0">
+            <p className="font-bold text-sm" style={{ color: 'hsl(var(--c-fg))' }}>Daily Money Workout</p>
+            <p className="text-[11px]" style={{ color: 'hsl(var(--c-fg-muted))' }}>60 seconds · +15 XP · keeps your streak</p>
+          </div>
+        </div>
+        <div className="mt-3 flex items-center justify-between">
+          <span className="text-[11px] font-bold" style={{ color: 'hsl(var(--c-orange))' }}>🔥 12-day streak</span>
+          <span className="text-[10px] font-bold px-3 py-1.5 rounded-lg" style={{ background: 'hsl(var(--c-green))', color: '#fff' }}>Start</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Illustration 4: Octopus in new outfits ─────────────────── */
 function MascotShot() {
   return (
     <div className="relative flex flex-col items-center justify-center w-full h-full">
       <div className="absolute inset-0 pointer-events-none"
-        style={{
-          background: 'radial-gradient(circle at 50% 40%, hsl(var(--c-primary) / 0.18), transparent 60%)',
-        }} />
-      <OctopusAvatar size={150} hatEmoji="🎩" faceEmoji="🕶️" bodyEmoji="🎀" />
+        style={{ background: 'radial-gradient(circle at 50% 40%, hsl(var(--c-green) / 0.18), transparent 60%)' }} />
+      <OctopusAvatar size={150} hatEmoji="⭐" faceEmoji="🤖" bodyEmoji="🏆" />
       <div className="relative mt-3 flex items-center gap-2">
-        <span className="px-2.5 py-1 rounded-full text-xs font-bold mono flex items-center gap-1.5"
-          style={{ background: 'hsl(var(--c-orange)/0.15)', color: 'hsl(var(--c-orange))', border: '1px solid hsl(var(--c-orange)/0.35)' }}>
-          <CoinIcon size={13} /> 1,250
-        </span>
         <span className="px-2.5 py-1 rounded-full text-xs font-bold"
           style={{ background: 'hsl(var(--c-green)/0.15)', color: 'hsl(var(--c-green))', border: '1px solid hsl(var(--c-green)/0.35)' }}>
-          🔥 12-day streak
+          ✨ 12 new outfits
         </span>
-      </div>
-    </div>
-  );
-}
-
-/* ─── Illustration 2: Friends ───────────────────────────────── */
-function FriendsShot() {
-  const rows = [
-    { rank: 1, medal: '🥇', name: 's1nbros',  xp: 1240, color: 'hsl(var(--c-gold))', chip: '+260' },
-    { rank: 2, medal: '🥈', name: 'You',      xp:  980, color: 'hsl(var(--c-gold))', chip: 'you',     isYou: true },
-    { rank: 3, medal: '🥉', name: 'spoko',    xp:  810, color: 'hsl(var(--c-gold))', chip: 'friend' },
-    { rank: 4, medal: '4',  name: 'thefoid',  xp:  670, color: 'hsl(var(--c-fg-subtle))', chip: null },
-  ];
-  return (
-    <div className="w-full h-full flex items-center justify-center px-4">
-      <div className="w-full max-w-[280px] rounded-2xl overflow-hidden"
-        style={{ background: 'hsl(228, 24%, 12%)', border: '1px solid hsla(0,0%,100%,0.08)', boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}>
-        <div className="px-3.5 py-2.5 border-b" style={{ borderColor: 'hsla(0,0%,100%,0.06)' }}>
-          <p className="text-[10px] uppercase tracking-wider font-bold" style={{ color: 'hsl(var(--c-fg-subtle))' }}>League</p>
-        </div>
-        {rows.map((r) => (
-          <div key={r.rank} className="flex items-center gap-2.5 px-3.5 py-2.5"
-            style={{ background: r.isYou ? 'hsl(var(--c-primary)/0.08)' : 'transparent' }}>
-            <span className="text-xs mono w-5 text-center font-bold" style={{ color: r.color }}>{r.medal}</span>
-            <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
-              style={{ background: r.isYou ? 'hsl(var(--c-primary)/0.25)' : 'hsl(var(--c-fg-subtle)/0.15)',
-                color: r.isYou ? 'hsl(var(--c-primary))' : 'hsl(var(--c-fg-muted))',
-                border: r.isYou ? '1.5px solid hsl(var(--c-primary)/0.5)' : '1.5px solid hsl(var(--c-fg-subtle)/0.2)' }}>
-              {r.name[0]?.toUpperCase()}
-            </div>
-            <span className="text-xs font-semibold flex-1 truncate"
-              style={{ color: r.isYou ? 'hsl(var(--c-fg))' : 'hsl(var(--c-fg-muted))' }}>{r.name}</span>
-            {r.chip === 'you' && (
-              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: 'hsl(var(--c-primary)/0.18)', color: 'hsl(var(--c-primary))' }}>you</span>
-            )}
-            {r.chip === 'friend' && (
-              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: 'hsl(var(--c-green)/0.15)', color: 'hsl(var(--c-green))', border: '1px solid hsl(var(--c-green)/0.3)' }}>✓ friend</span>
-            )}
-            <span className="text-[10px] mono font-bold" style={{ color: 'hsl(var(--c-fg-subtle))' }}>{r.xp.toLocaleString()}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-/* ─── Illustration 3: Tools (compound calculator preview) ───── */
-function ToolsShot() {
-  // Tiny sparkline path — looks like a compound-interest curve
-  const points = Array.from({ length: 20 }, (_, i) => {
-    const x = (i / 19) * 100;
-    const y = 80 - Math.pow(i / 19, 1.8) * 70;
-    return `${x},${y}`;
-  });
-  const linePath = `M ${points.join(' L ')}`;
-  const areaPath = `${linePath} L 100,80 L 0,80 Z`;
-
-  return (
-    <div className="w-full h-full flex items-center justify-center px-4">
-      <div className="w-full max-w-[280px] rounded-2xl px-4 py-4"
-        style={{ background: 'hsl(228, 24%, 12%)', border: '1px solid hsla(0,0%,100%,0.08)', boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}>
-        {/* Tabs */}
-        <div className="flex gap-1.5 mb-3 text-[10px] font-bold uppercase tracking-wider">
-          <span className="px-2 py-1 rounded-md" style={{ background: 'hsl(var(--c-primary))', color: '#fff' }}>Compound</span>
-          <span className="px-2 py-1 rounded-md" style={{ color: 'hsl(var(--c-fg-subtle))' }}>Debt</span>
-          <span className="px-2 py-1 rounded-md" style={{ color: 'hsl(var(--c-fg-subtle))' }}>FIRE</span>
-        </div>
-
-        {/* Big number */}
-        <div className="mb-3">
-          <p className="text-[9px] uppercase tracking-wider font-bold mb-0.5" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
-            Future value at 7% / 30 yrs
-          </p>
-          <p className="text-2xl font-extrabold mono leading-none" style={{ color: 'hsl(var(--c-green))' }}>
-            €245,800
-          </p>
-        </div>
-
-        {/* Chart */}
-        <svg viewBox="0 0 100 80" width="100%" height="80" className="mb-3">
-          <defs>
-            <linearGradient id="ws-grad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%"  stopColor="hsl(var(--c-green))" stopOpacity="0.35" />
-              <stop offset="100%" stopColor="hsl(var(--c-green))" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-          <path d={areaPath} fill="url(#ws-grad)" />
-          <path d={linePath} fill="none" stroke="hsl(var(--c-green))" strokeWidth="1.5" strokeLinecap="round" />
-        </svg>
-
-        {/* Sliders */}
-        <div className="space-y-2">
-          {[
-            { label: 'Starting',   value: '€5,000',   accent: 'hsl(var(--c-primary))' },
-            { label: 'Monthly',    value: '€300',     accent: 'hsl(var(--c-orange))' },
-            { label: 'Annual %',   value: '7%',       accent: 'hsl(var(--c-green))' },
-          ].map((s) => (
-            <div key={s.label} className="flex items-center justify-between text-[10px]">
-              <span style={{ color: 'hsl(var(--c-fg-muted))' }}>{s.label}</span>
-              <span className="mono font-bold" style={{ color: s.accent }}>{s.value}</span>
-            </div>
-          ))}
-        </div>
       </div>
     </div>
   );
@@ -183,28 +150,36 @@ export function WhatsNewModal() {
 
   const slides: Slide[] = [
     {
-      badge:        { en: 'NEW MASCOT', bg: 'НОВ ТАЛИСМАН' },
-      title:        { en: 'Meet your octopus', bg: 'Запознай се с октопода си' },
-      body:         { en: 'You now have a personal octopus on your profile. Dress it up with hats, glasses, and accessories from the new Shop — earn coins by trading XP.',
-                      bg: 'Сега имаш личен октопод на профила си. Облечи го с шапки, очила и аксесоари от новия Магазин — изкарваш монети, обменяйки XP.' },
-      illustration: <MascotShot />,
+      badge:        { en: 'SPIN TO WIN', bg: 'ВЪРТИ И ПЕЧЕЛИ' },
+      title:        { en: 'Wheel of Luck', bg: 'Колело на късмета' },
+      body:         { en: 'A one-time welcome spin: win XP, free outfits, a 2-week Pro trial — or one of only 3 real Octolio cups in the whole world.',
+                      bg: 'Еднократно завъртане: спечели XP, безплатни дрехи, 2 седмици Pro — или една от само 3 истински чаши Octolio в целия свят.' },
+      illustration: <WheelShot />,
+      accent:       'hsl(45, 95%, 55%)',
+    },
+    {
+      badge:        { en: 'NEW LESSONS', bg: 'НОВИ УРОЦИ' },
+      title:        { en: 'Fresh ways to learn', bg: 'Нови начини да учиш' },
+      body:         { en: 'Swipe-sort decks, timed Speed Rounds, epic Boss Battles, and a Life Simulation where your choices compound across 40 years.',
+                      bg: 'Swipe колоди, времеви Бързи рундове, епични Битки с босове и Симулация на живота, където изборите ти се натрупват 40 години.' },
+      illustration: <LessonsShot />,
       accent:       'hsl(var(--c-primary))',
     },
     {
-      badge:        { en: 'FRIENDS', bg: 'ПРИЯТЕЛИ' },
-      title:        { en: 'Compete with friends', bg: 'Състезавай се с приятели' },
-      body:         { en: 'Add friends by nickname or right from the League. Tap anyone to view their profile, mascot, and stats. Find them under Profile → Friends.',
-                      bg: 'Добавяй приятели по никнейм или от Лигата. Натисни на някого, за да видиш профила, талисмана и статистиката му. Намери ги в Профил → Приятели.' },
-      illustration: <FriendsShot />,
-      accent:       'hsl(var(--c-green))',
+      badge:        { en: 'DAILY HABIT', bg: 'ДНЕВЕН НАВИК' },
+      title:        { en: '60-second Daily Workout', bg: '60-секундна дневна тренировка' },
+      body:         { en: 'One quick question a day keeps your streak alive — no energy needed. We can even email you a reminder so you never lose it.',
+                      bg: 'Един бърз въпрос на ден пази поредицата ти — без енергия. Можем дори да ти изпратим имейл напомняне, за да не я загубиш.' },
+      illustration: <WorkoutShot />,
+      accent:       'hsl(var(--c-orange))',
     },
     {
-      badge:        { en: 'TOOLS', bg: 'ИНСТРУМЕНТИ' },
-      title:        { en: 'Real money calculators', bg: 'Реални финансови калкулатори' },
-      body:         { en: 'A whole new Tools tab with calculators for compound interest, debt payoff, mortgage, FIRE, and net worth. Use what you learn — right away.',
-                      bg: 'Изцяло нов раздел Инструменти с калкулатори за сложна лихва, изплащане на дълг, ипотека, FIRE и собствен капитал.' },
-      illustration: <ToolsShot />,
-      accent:       'hsl(var(--c-orange))',
+      badge:        { en: 'SHOP & MODULES', bg: 'МАГАЗИН И МОДУЛИ' },
+      title:        { en: 'New outfits & modules', bg: 'Нови дрехи и модули' },
+      body:         { en: 'Dress your octopus in 12 fresh outfits, and master two new free modules: Fraud & Scam Defense and Money Psychology.',
+                      bg: 'Облечи октопода с 12 нови тоалета и усвои два нови безплатни модула: Защита от измами и Психология на парите.' },
+      illustration: <MascotShot />,
+      accent:       'hsl(var(--c-green))',
     },
   ];
 

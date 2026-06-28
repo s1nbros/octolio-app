@@ -315,7 +315,7 @@ gameplay-power gating. Three coupled systems:
 **Shop** (`backend/src/routes/shop.ts` + `user_inventory` table + `/shop` page)
 - Catalog lives in `backend/src/data/catalog.ts` AND mirrored in
   `frontend/src/shared/catalogClient.ts` (keep in sync manually)
-- 16 cosmetics across 3 slots (hat / face / body) and 4 rarities
+- 28 cosmetics across 3 slots (hat / face / body) and 4 rarities (emoji glyphs)
 - Rarity → price ladder: common 100–200 / rare 250–400 / epic 500–800 / legendary 1500–2500
 - **Multi-slot equip**: each slot is independent. Equipping a hat does NOT unequip
   your sunglasses. Stored as 3 separate columns (`equipped_hat`, `equipped_face`,
@@ -392,8 +392,11 @@ gameplay-power gating. Three coupled systems:
 
 ### "What's new" announcement modal
 - `WhatsNewModal` pops up once per device after a user is authenticated + onboarded.
-- Storage key `octolio_seen_whatsnew_v1` — set on dismiss. Bumping the version
-  re-shows the tour after future updates.
+- Storage key `octolio_seen_whatsnew_v2` — set on dismiss. **Bump the version
+  (vN → vN+1) whenever you ship an update** to re-show the tour to everyone.
+- Current v2 slides announce: Wheel of Luck, new interactive lessons (swipe /
+  speed round / boss battle / life sim), the Daily Workout, and new outfits +
+  the Fraud and Money-Psychology modules. Illustrations are rendered live.
 - Mounted in `AppShell` so it only triggers on protected routes. 700ms delay so it
   doesn't pop the instant the page mounts.
 - Swipeable: touchstart/move/end with a 50px threshold; arrow keys ← → on desktop;
