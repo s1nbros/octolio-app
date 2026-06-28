@@ -2682,6 +2682,196 @@ const staticModules = [
             },
         ],
     },
+    // ─────────────────────────────────────────────
+    // MODULE — FRAUD & SCAM DEFENSE (free, slots after Side Hustles)
+    // ─────────────────────────────────────────────
+    {
+        id: 'fraud-defense',
+        title: { en: 'Fraud & Scam Defense', bg: 'Защита от измами' },
+        description: { en: 'Spot scams before they cost you — phishing, fake bank texts, investment cons and more.', bg: 'Разпознай измамите, преди да ти струват — фишинг, фалшиви банкови SMS-и, инвестиционни схеми и още.' },
+        icon: '🛡️', color: 'orange', order: 5.5,
+        lessons: [
+            // ── Lesson 1: Spot the Phishing ──
+            {
+                id: 'phishing-defense',
+                moduleId: 'fraud-defense',
+                title: { en: 'Spot the Phishing', bg: 'Разпознай фишинга' },
+                description: { en: 'Fake texts and emails that steal your money — and the red flags that give them away.', bg: 'Фалшиви SMS-и и имейли, които крадат парите ти — и сигналите, които ги издават.' },
+                icon: '🎣', xpReward: 95, order: 1,
+                exercises: [
+                    {
+                        id: 'ph-theory-1',
+                        type: 'theory',
+                        xp: 0,
+                        slides: [
+                            {
+                                emoji: '🎣',
+                                title: { en: 'What is phishing?', bg: 'Какво е фишинг?' },
+                                body: { en: 'Phishing is when a scammer pretends to be someone you trust — your bank, a delivery company, a government office — to trick you into handing over money, card details, or login codes.\n\nMost arrive as an SMS or email with a link. The link leads to a fake page that looks real and captures whatever you type.', bg: 'Фишингът е когато измамник се представя за някого, на когото вярваш — банката ти, куриерска фирма, държавна институция — за да те подмами да дадеш пари, данни за карта или кодове за вход.\n\nПовечето идват като SMS или имейл с връзка. Връзката води към фалшива страница, която изглежда истинска и записва всичко, което въведеш.' },
+                                highlight: { en: '💡 Your bank will NEVER ask for your full PIN, password, or a one-time code by SMS, email or phone.', bg: '💡 Банката ти НИКОГА няма да поиска пълния ти PIN, парола или еднократен код по SMS, имейл или телефон.' },
+                            },
+                            {
+                                emoji: '🚩',
+                                title: { en: 'The 4 red flags', bg: 'Четирите тревожни сигнала' },
+                                body: { en: '1. URGENCY — act in 24h or your account is blocked.\n2. A LINK to click and verify or log in.\n3. ASKS for codes, PINs, passwords or card numbers.\n4. A sender that is ALMOST right — oct0bank.com instead of octobank.bg.\n\nSee any of these? Stop. Go to the real app or website yourself instead.', bg: '1. СПЕШНОСТ — действай до 24ч или сметката ти ще бъде блокирана.\n2. ВРЪЗКА за цъкане и потвърждаване или вход.\n3. ИСКА кодове, PIN-ове, пароли или номера на карти.\n4. Подател, който е ПОЧТИ верен — oct0bank.com вместо octobank.bg.\n\nВиждаш някой от тези? Спри. Отиди сам в истинското приложение или сайт.' },
+                            },
+                        ],
+                    },
+                    {
+                        id: 'ph-tf-1',
+                        type: 'true_false',
+                        xp: 15,
+                        statement: { en: 'Your bank may ask for your full online-banking password by SMS if your account is at risk.', bg: 'Банката ти може да поиска пълната ти парола за онлайн банкиране по SMS, ако сметката е застрашена.' },
+                        isTrue: false,
+                        explanation: { en: 'FALSE — and this is the most important rule in the whole module. No legitimate bank EVER asks for your full password, PIN, or a one-time code. Anyone who does is a scammer, full stop.', bg: 'НЕВЯРНО — и това е най-важното правило в целия модул. Нито една истинска банка НИКОГА не иска пълната ти парола, PIN или еднократен код. Който го прави, е измамник, точка.' },
+                    },
+                    {
+                        id: 'ph-rpg-1',
+                        type: 'rpg_scenario',
+                        xp: 25,
+                        avatar: '📱',
+                        scenario: { en: 'You get an SMS: OCTOBANK — your card has been BLOCKED for security, re-activate now at octobank-secure-login.com. You do bank with Octobank. What do you do?', bg: 'Получаваш SMS: OCTOBANK — картата ти е БЛОКИРАНА за сигурност, активирай сега на octobank-secure-login.com. Наистина си клиент на Octobank. Какво правиш?' },
+                        choices: [
+                            { label: { en: 'Tap the link and re-activate my card', bg: 'Цъкам връзката и активирам картата' }, emoji: '🔗', isGood: false, cashFlowChange: -1200, consequence: { en: 'The page looked perfect — and stole your login and card details. €1,200 gone within the hour. The link domain was a fake, not your bank.', bg: 'Страницата изглеждаше идеално — и открадна данните ти за вход и картата. €1,200 изчезнаха за час. Домейнът на връзката беше фалшив, не банката ти.' } },
+                            { label: { en: 'Call the number printed on the back of my card', bg: 'Звъня на номера от гърба на картата' }, emoji: '☎️', isGood: true, cashFlowChange: 0, consequence: { en: 'Exactly right. You ignored the SMS link and contacted the bank through a channel YOU trust. They confirmed the SMS was a scam. Crisis avoided.', bg: 'Точно така. Игнорира връзката в SMS-а и се свърза с банката през канал, на който ТИ вярваш. Потвърдиха, че SMS-ът беше измама. Кризата е избегната.' } },
+                            { label: { en: 'Reply STOP to the message', bg: 'Отговарям STOP на съобщението' }, emoji: '💬', isGood: false, cashFlowChange: 0, consequence: { en: 'Replying just tells the scammer your number is live — expect more attempts. Never engage. Report and delete instead.', bg: 'Отговорът само казва на измамника, че номерът ти е активен — очаквай още опити. Никога не отговаряй. Докладвай и изтрий.' } },
+                        ],
+                    },
+                    {
+                        id: 'ph-choice-1',
+                        type: 'choice',
+                        xp: 15,
+                        question: { en: 'Octobank\'s real site is octobank.bg. Which link below is the REAL bank — not a scam look-alike?', bg: 'Истинският сайт на Octobank е octobank.bg. Коя връзка по-долу е ИСТИНСКАТА банка — а не измамна имитация?' },
+                        options: [
+                            { en: 'http://octobank-secure-login.com', bg: 'http://octobank-secure-login.com' },
+                            { en: 'https://octobank.bg', bg: 'https://octobank.bg' },
+                            { en: 'https://oct0bank.bg', bg: 'https://oct0bank.bg' },
+                            { en: 'https://octobank.verify-account.net', bg: 'https://octobank.verify-account.net' },
+                        ],
+                        correctIndex: 1,
+                        explanation: { en: 'Only octobank.bg is the genuine domain. The others bolt on extra words (-secure-login, verify-account) or swap a letter for a number (oct0bank). Always check the exact domain before the first slash.', bg: 'Само octobank.bg е истинският домейн. Останалите добавят думи (-secure-login, verify-account) или сменят буква с цифра (oct0bank). Винаги проверявай точния домейн преди първата наклонена черта.' },
+                    },
+                    {
+                        id: 'ph-decision-1',
+                        type: 'scenario_decision',
+                        xp: 25,
+                        decisionAvatar: '📧',
+                        decisionScenario: { en: 'An email says: Congratulations, you\'ve won a €500 IKEA gift card — claim within 24 hours, just pay €2 shipping with your card. How do you respond?', bg: 'Имейл казва: Поздравления, спечели подаръчна карта IKEA за €500 — вземи я до 24 часа, просто плати €2 доставка с картата си. Как реагираш?' },
+                        decisionChoices: [
+                            { label: { en: 'Pay the €2 — it\'s tiny', bg: 'Плащам €2 — дребна сума' }, emoji: '💳', isBest: false, outcome: { en: 'The €2 was never the goal — your card details were. Scammers use a tiny charge to harvest card data for big fraud later. You don\'t win prizes you never entered.', bg: 'Целта никога не бяха €2 — а данните на картата ти. Измамниците използват малка сума, за да съберат данни за голяма измама после. Не печелиш награди, за които не си участвал.' } },
+                            { label: { en: 'Delete it and report as phishing', bg: 'Изтривам и докладвам като фишинг' }, emoji: '🗑️', isBest: true, outcome: { en: 'Correct. A prize you never entered, plus urgency, plus pay a small fee equals a textbook scam. Deleting and reporting is exactly right.', bg: 'Правилно. Награда, за която не си участвал, плюс спешност, плюс плати малка такса е класическа измама. Изтриването и докладването е точно вярно.' } },
+                            { label: { en: 'Reply to ask if it\'s real', bg: 'Отговарям, за да питам дали е истина' }, emoji: '✉️', isBest: false, outcome: { en: 'Replying confirms your address is active and invites more scams. You can\'t fact-check a scammer by asking the scammer.', bg: 'Отговорът потвърждава, че адресът ти е активен и кани още измами. Не можеш да провериш измамник, като питаш самия измамник.' } },
+                        ],
+                    },
+                    {
+                        id: 'ph-tf-2',
+                        type: 'true_false',
+                        xp: 15,
+                        statement: { en: 'A padlock icon in your browser bar means the website is safe and legitimate.', bg: 'Икона на катинар в адресната лента означава, че сайтът е безопасен и легитимен.' },
+                        isTrue: false,
+                        explanation: { en: 'FALSE. The padlock only means the connection is encrypted (HTTPS) — scammers get those for free too. It tells you nothing about WHO runs the site. Always check the domain name itself.', bg: 'НЕВЯРНО. Катинарът означава само, че връзката е криптирана (HTTPS) — измамниците също ги получават безплатно. Не казва нищо за това КОЙ управлява сайта. Винаги проверявай самото име на домейна.' },
+                    },
+                ],
+            },
+            // ── Lesson 2: Money Scams & Cons ──
+            {
+                id: 'money-scams',
+                moduleId: 'fraud-defense',
+                title: { en: 'Money Scams & Cons', bg: 'Парични схеми и измами' },
+                description: { en: 'Investment cons, romance scams, fake invoices — and what to do if you get hit.', bg: 'Инвестиционни схеми, любовни измами, фалшиви фактури — и какво да правиш, ако пострадаш.' },
+                icon: '🚨', xpReward: 120, order: 2,
+                exercises: [
+                    {
+                        id: 'ms-theory-1',
+                        type: 'theory',
+                        xp: 0,
+                        slides: [
+                            {
+                                emoji: '🎭',
+                                title: { en: 'The big four money scams', bg: 'Големите четири парични измами' },
+                                body: { en: '1. INVESTMENT — guaranteed high returns, crypto doublers, pressure to act fast.\n2. ROMANCE — an online partner you never meet who eventually needs money.\n3. INVOICE / CEO FRAUD — a fake email that your supplier or boss changed bank details.\n4. ADVANCE-FEE — pay a small fee now to unlock a big prize, loan or inheritance.', bg: '1. ИНВЕСТИЦИОННА — гарантирана висока доходност, крипто удвоители, натиск да действаш бързо.\n2. ЛЮБОВНА — онлайн партньор, когото никога не срещаш и който в крайна сметка иска пари.\n3. ФАКТУРА / CEO ИЗМАМА — фалшив имейл, че доставчикът или шефът ти е сменил банкови данни.\n4. ПРЕДВАРИТЕЛНА ТАКСА — плати малка такса сега, за да отключиш голяма награда, заем или наследство.' },
+                                highlight: { en: '💡 One rule beats them all: if it is urgent AND involves you sending money or details, slow down and verify independently.', bg: '💡 Едно правило ги бие всички: ако е спешно И включва изпращане на пари или данни, забави и провери независимо.' },
+                            },
+                        ],
+                    },
+                    {
+                        id: 'ms-rpg-1',
+                        type: 'rpg_scenario',
+                        xp: 25,
+                        avatar: '📈',
+                        scenario: { en: 'A slick message: our crypto fund returns a GUARANTEED 30% per month, spots close tonight, send €1,000 and watch it grow. What do you do?', bg: 'Лъскаво съобщение: нашият крипто фонд носи ГАРАНТИРАНИ 30% на месец, местата се затварят довечера, изпрати €1,000 и гледай как растат. Какво правиш?' },
+                        choices: [
+                            { label: { en: 'Send €1,000 before spots close', bg: 'Изпращам €1,000 преди да затворят местата' }, emoji: '🚀', isGood: false, cashFlowChange: -1000, consequence: { en: 'It paid out €50 once to build trust, then vanished. Guaranteed 30%/month is mathematically impossible — that turns €1,000 into €23,000 in a year. It was a Ponzi.', bg: 'Изплати €50 веднъж, за да изгради доверие, после изчезна. Гарантирани 30%/месец е математически невъзможно — превръща €1,000 в €23,000 за година. Беше Понци схема.' } },
+                            { label: { en: 'Ask for the firm\'s regulator licence, then walk away', bg: 'Искам лиценза от регулатора, после се отдръпвам' }, emoji: '🛡️', isGood: true, cashFlowChange: 0, consequence: { en: 'Perfect. No real EU investment is guaranteed high-return, and licensed firms are listed by your national regulator. They had nothing. You kept your €1,000.', bg: 'Идеално. Нито една истинска ЕС инвестиция не е с гарантирана висока доходност, а лицензираните фирми са в списък при националния регулатор. Те нямаха нищо. Запази си €1,000.' } },
+                            { label: { en: 'Send a smaller €100 to test it', bg: 'Изпращам по-малко €100 за тест' }, emoji: '🪙', isGood: false, cashFlowChange: -100, consequence: { en: 'Testing a scam still funds the scam — and marks you as a payer they will push harder. The right test is verifying the licence, not sending money.', bg: 'Тестването на измама пак я финансира — и те маркира като платец, върху когото ще натискат повече. Правилният тест е проверка на лиценза, не изпращане на пари.' } },
+                        ],
+                    },
+                    {
+                        id: 'ms-tf-1',
+                        type: 'true_false',
+                        xp: 15,
+                        statement: { en: 'A legitimate investment can promise high returns with no risk.', bg: 'Легитимна инвестиция може да обещае висока доходност без риск.' },
+                        isTrue: false,
+                        explanation: { en: 'FALSE. Risk and return are linked — always. High return, no risk, guaranteed is the single most reliable signal of a scam in all of finance.', bg: 'НЕВЯРНО. Рискът и доходността са свързани — винаги. Висока доходност, без риск, гарантирано е най-надеждният сигнал за измама във финансите.' },
+                    },
+                    {
+                        id: 'ms-choice-1',
+                        type: 'choice',
+                        xp: 15,
+                        question: { en: 'Someone you only know from an online chat — never met in person — says they have an emergency and asks you to send money. Best move?', bg: 'Някой, когото познаваш само от онлайн чат — никога срещан на живо — казва, че има спешен случай и иска да изпратиш пари. Най-добрият ход?' },
+                        options: [
+                            { en: 'Send it via crypto so it arrives fast', bg: 'Изпращам през крипто, за да стигне бързо' },
+                            { en: 'Never send money to someone you haven\'t met; offer to video-call', bg: 'Никога не изпращам пари на несрещан човек; предлагам видеоразговор' },
+                            { en: 'Send a smaller amount to be safe', bg: 'Изпращам по-малка сума за всеки случай' },
+                            { en: 'Ask them to pay you back double later', bg: 'Моля ги да върнат двойно после' },
+                        ],
+                        correctIndex: 1,
+                        explanation: { en: 'This is the classic romance scam. The emergency and request for money — especially crypto or gift cards — is the whole con. Never send money to someone you have not met in person. A real person will understand a video-call.', bg: 'Това е класическата любовна измама. Спешният случай и молбата за пари — особено крипто или ваучери — са цялата схема. Никога не изпращай пари на несрещан човек. Истински човек ще разбере видеоразговора.' },
+                    },
+                    {
+                        id: 'ms-decision-1',
+                        type: 'scenario_decision',
+                        xp: 25,
+                        decisionAvatar: '🧾',
+                        decisionScenario: { en: 'You run a small business. An email from your regular supplier says: we\'ve changed banks, please pay this invoice to our new IBAN. The amount and logo look normal. What do you do?', bg: 'Имаш малък бизнес. Имейл от редовния ти доставчик казва: сменихме банка, моля плати тази фактура към новия ни IBAN. Сумата и логото изглеждат нормални. Какво правиш?' },
+                        decisionChoices: [
+                            { label: { en: 'Pay the new IBAN — the email looks right', bg: 'Плащам към новия IBAN — имейлът изглежда наред' }, emoji: '💸', isBest: false, outcome: { en: 'This is invoice (CEO) fraud — scammers spoof a known supplier and swap the IBAN. The money lands in their account. Changed bank details ALWAYS need a second check.', bg: 'Това е фактурна (CEO) измама — измамниците имитират познат доставчик и сменят IBAN. Парите отиват в тяхната сметка. Сменени банкови данни ВИНАГИ изискват втора проверка.' } },
+                            { label: { en: 'Call the supplier on their known number to confirm', bg: 'Звъня на доставчика на познатия номер за потвърждение' }, emoji: '☎️', isBest: true, outcome: { en: 'Exactly. A 30-second call to a number you already have — not one from the email — defeats nearly every invoice scam. Verify any change of bank details out-of-band.', bg: 'Точно. 30-секунден разговор на номер, който вече имаш — не от имейла — побеждава почти всяка фактурна измама. Проверявай всяка смяна на банкови данни по отделен канал.' } },
+                            { label: { en: 'Reply to the email asking them to confirm', bg: 'Отговарям на имейла да потвърдят' }, emoji: '↩️', isBest: false, outcome: { en: 'If the email is hijacked or spoofed, the scammer answers yes, it is us. Confirm through a DIFFERENT channel, never by replying.', bg: 'Ако имейлът е хакнат или фалшифициран, измамникът отговаря да, ние сме. Потвърждавай през ДРУГ канал, никога с отговор.' } },
+                        ],
+                    },
+                    {
+                        id: 'ms-order-1',
+                        type: 'order_items',
+                        xp: 25,
+                        orderInstruction: { en: 'You realize you just sent money to a scammer. Order these steps from FIRST to LAST:', bg: 'Осъзнаваш, че току-що си изпратил пари на измамник. Подреди стъпките от ПЪРВА към ПОСЛЕДНА:' },
+                        orderItems: [
+                            { label: { en: 'Call your bank immediately to try to recall the payment', bg: 'Звъни веднага на банката да опита да върне плащането' }, emoji: '🏦' },
+                            { label: { en: 'Change passwords on any exposed accounts', bg: 'Смени паролите на засегнатите акаунти' }, emoji: '🔑' },
+                            { label: { en: 'Report to police / the national fraud line', bg: 'Докладвай в полицията / националната линия за измами' }, emoji: '👮' },
+                            { label: { en: 'Warn friends and family in case they\'re targeted too', bg: 'Предупреди близки, в случай че и те са набелязани' }, emoji: '📢' },
+                        ],
+                        correctOrder: [0, 1, 2, 3],
+                        explanation: { en: 'Speed matters most: the bank may recall a SEPA payment if you call FAST. Then secure your accounts, create an official report (needed for any refund), and warn others. The first hour is everything.', bg: 'Скоростта е най-важна: банката може да върне SEPA плащане, ако звъннеш БЪРЗО. После защити акаунтите, подай официален сигнал (нужен за възстановяване) и предупреди другите. Първият час решава всичко.' },
+                    },
+                    {
+                        id: 'ms-choice-2',
+                        type: 'choice',
+                        xp: 15,
+                        question: { en: 'Across every scam in this module, what is the single most reliable warning sign?', bg: 'През всички измами в този модул, кой е най-надеждният предупредителен знак?' },
+                        options: [
+                            { en: 'Bad spelling in the message', bg: 'Правописни грешки в съобщението' },
+                            { en: 'Pressure to act NOW plus a request for money or details', bg: 'Натиск да действаш СЕГА плюс молба за пари или данни' },
+                            { en: 'The message is in English', bg: 'Съобщението е на английски' },
+                            { en: 'It arrives in the evening', bg: 'Идва вечерта' },
+                        ],
+                        correctIndex: 1,
+                        explanation: { en: 'Urgency plus a request to send money or reveal details is the universal scam fingerprint. Spelling has gotten good (and AI writes cleanly now). When you feel rushed, that is the moment to STOP and verify independently.', bg: 'Спешност плюс молба да изпратиш пари или да разкриеш данни е универсалният отпечатък на измамата. Правописът се подобри (а AI пише чисто вече). Когато се почувстваш притиснат, това е моментът да СПРЕШ и да провериш независимо.' },
+                    },
+                ],
+            },
+        ],
+    },
 ];
 // Merge static + generated modules.
 // Static modules take precedence — generated ones fill in IDs not already in static.
