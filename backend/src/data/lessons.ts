@@ -3160,6 +3160,198 @@ const staticModules: Module[] = [
       },
     ],
   },
+
+  // ─────────────────────────────────────────────
+  // MODULE — MONEY PSYCHOLOGY (free, behavioral finance)
+  // ─────────────────────────────────────────────
+  {
+    id: 'money-psychology',
+    title: { en: 'Money Psychology', bg: 'Психология на парите' },
+    description: { en: 'The hidden biases that sabotage your money — and how to outsmart your own brain.', bg: 'Скритите изкривявания, които саботират парите ти — и как да надхитриш собствения си мозък.' },
+    icon: '🧠', color: 'purple', order: 5.7,
+    lessons: [
+      // ── Lesson 1: Your Brain on Money ──
+      {
+        id: 'brain-on-money',
+        moduleId: 'money-psychology',
+        title: { en: 'Your Brain on Money', bg: 'Мозъкът ти и парите' },
+        description: { en: 'Why smart people make money mistakes — meet the biases pulling your strings.', bg: 'Защо умни хора правят финансови грешки — запознай се с изкривяванията, които те дърпат за конците.' },
+        icon: '🧠', xpReward: 95, order: 1,
+        exercises: [
+          {
+            id: 'bom-theory-1',
+            type: 'theory',
+            xp: 0,
+            slides: [
+              {
+                emoji: '🧠',
+                title: { en: 'Smart people, dumb money moves', bg: 'Умни хора, глупави финансови ходове' },
+                body: { en: 'Your brain evolved to survive in a tribe, not to invest for 40 years. The same instincts that kept your ancestors alive — fear losses, follow the crowd, grab rewards now — quietly wreck modern money decisions.\n\nThe good news: you can\'t delete these biases, but once you can NAME them, you can catch yourself in the act.', bg: 'Мозъкът ти е еволюирал да оцелява в племе, а не да инвестира 40 години. Същите инстинкти, които са пазили предците ти живи — страх от загуби, следване на тълпата, грабване на награди сега — тихо рушат модерните финансови решения.\n\nДобрата новина: не можеш да изтриеш тези изкривявания, но щом можеш да ги НАЗОВЕШ, можеш да се хванеш на местопрестъплението.' },
+                highlight: { en: '💡 You don\'t need more willpower. You need to recognize the trap before you fall in.', bg: '💡 Не ти трябва повече воля. Трябва да разпознаеш капана, преди да паднеш в него.' },
+              },
+            ],
+          },
+          {
+            id: 'bom-tf-1',
+            type: 'true_false',
+            xp: 15,
+            statement: { en: 'Losing €100 and gaining €100 feel about equally intense.', bg: 'Загубата на €100 и печалбата на €100 се усещат приблизително еднакво силно.' },
+            isTrue: false,
+            explanation: { en: 'FALSE. This is LOSS AVERSION: losing hurts roughly twice as much as the equivalent gain feels good. It\'s why people panic-sell crashes and cling to losing bets — the pain of locking in a loss feels unbearable.', bg: 'НЕВЯРНО. Това е ОТБЯГВАНЕ НА ЗАГУБИ: загубата боли около два пъти повече, отколкото еквивалентната печалба радва. Затова хората продават в паника при сривове и се вкопчват в губещи залози.' },
+          },
+          {
+            id: 'bom-choice-1',
+            type: 'choice',
+            xp: 15,
+            question: { en: 'You get a €500 tax refund. Which mindset protects you best?', bg: 'Получаваш €500 връщане на данък. Кой начин на мислене те пази най-добре?' },
+            options: [
+              { en: 'It\'s free bonus money, so splurge it guilt-free', bg: 'Това са безплатни бонус пари, харчи ги без вина' },
+              { en: 'Treat it exactly like money you earned — budget it', bg: 'Третирай ги точно като изкарани пари — вкарай ги в бюджета' },
+              { en: 'Keep it separate so it doesn\'t count', bg: 'Дръж ги отделно, за да не се броят' },
+              { en: 'Spend half because it appeared suddenly', bg: 'Похарчи половината, защото се появиха внезапно' },
+            ],
+            correctIndex: 1,
+            explanation: { en: 'This is MENTAL ACCOUNTING — treating a refund, bonus or gift as less "real" than salary, so we waste it. A euro is a euro. Refund money invested grows exactly like earned money invested.', bg: 'Това е МЕНТАЛНО СЧЕТОВОДСТВО — третиране на връщане, бонус или подарък като по-малко истински от заплатата, затова ги пилеем. Едно евро си е едно евро. Върнатите пари растат точно като изкараните, ако се инвестират.' },
+          },
+          {
+            id: 'bom-rpg-1',
+            type: 'rpg_scenario',
+            xp: 25,
+            avatar: '📈',
+            scenario: { en: 'You get a €600/month raise. Almost immediately you\'re eyeing a nicer flat, a newer car, fancier dinners — each feels deserved. What\'s really happening?', bg: 'Получаваш увеличение от €600/месец. Почти веднага оглеждаш по-хубав апартамент, по-нова кола, по-луксозни вечери — всяко изглежда заслужено. Какво всъщност се случва?' },
+            choices: [
+              { label: { en: 'Upgrade everything — I earned it', bg: 'Ъпгрейд на всичко — заслужих го' }, emoji: '🛍️', isGood: false, cashFlowChange: -600, consequence: { en: 'This is LIFESTYLE CREEP. Within months the raise vanishes into higher fixed costs, and your happiness resets to where it was — but now you NEED more to keep it. The treadmill speeds up.', bg: 'Това е ПЪЛЗЯЩА ИНФЛАЦИЯ НА РАЗХОДИТЕ. За месеци увеличението изчезва във по-високи фиксирани разходи, а щастието ти се връща там, където беше — но сега ти ТРЯБВА повече, за да го задържиш.' } },
+              { label: { en: 'Automatically invest the raise, lifestyle stays put', bg: 'Автоматично инвестирам увеличението, начинът на живот остава' }, emoji: '🔒', isGood: true, cashFlowChange: 600, consequence: { en: 'Brilliant. By banking the raise BEFORE you adapt to it, you avoid the hedonic treadmill entirely. This one habit is how normal salaries turn into real wealth.', bg: 'Блестящо. Като заделиш увеличението, ПРЕДИ да свикнеш с него, избягваш изцяло хедонистичната пътека. Този навик превръща нормалните заплати в истинско богатство.' } },
+              { label: { en: 'Spend half, invest half', bg: 'Харча половина, инвестирам половина' }, emoji: '⚖️', isGood: true, cashFlowChange: 300, consequence: { en: 'Solid and sustainable — you enjoy some of the reward while still escaping full lifestyle creep. The key is deciding the split BEFORE the money arrives.', bg: 'Стабилно и устойчиво — радваш се на част от наградата, докато избягваш пълната инфлация на разходите. Ключът е да решиш разпределението, ПРЕДИ да дойдат парите.' } },
+            ],
+          },
+          {
+            id: 'bom-decision-1',
+            type: 'scenario_decision',
+            xp: 25,
+            decisionAvatar: '🚗',
+            decisionScenario: { en: 'You\'ve spent €3,000 fixing an old car this year. The mechanic says it now needs another €2,000 repair, and more will follow. A reliable used car costs €6,000. What do you do?', bg: 'Похарчил си €3,000 за ремонт на стара кола тази година. Механикът казва, че сега ѝ трябва още €2,000 ремонт, и ще последват още. Надеждна употребявана кола струва €6,000. Какво правиш?' },
+            decisionChoices: [
+              { label: { en: 'Pay the €2,000 — I\'ve already put so much in', bg: 'Плащам €2,000 — вече вложих толкова' }, emoji: '🔧', isBest: false, outcome: { en: 'That\'s the SUNK COST FALLACY. The €3,000 is already gone whatever you choose — it should NOT influence the decision. You\'re throwing good money after bad to justify the past.', bg: 'Това е ЗАБЛУДАТА НА НЕВЪЗВРАТИМИТЕ РАЗХОДИ. €3,000 вече ги няма, каквото и да избереш — те НЕ бива да влияят на решението. Хвърляш добри пари след лоши, за да оправдаеш миналото.' } },
+              { label: { en: 'Ignore what I\'ve spent; compare €2,000+more vs a reliable car', bg: 'Игнорирам похарченото; сравнявам €2,000+още срещу надеждна кола' }, emoji: '🧮', isBest: true, outcome: { en: 'Exactly right. Decisions should look FORWARD, not back. A car that bleeds €2,000 repeatedly is worse than a reliable one — the past €3,000 is irrelevant to today\'s choice.', bg: 'Точно вярно. Решенията гледат НАПРЕД, не назад. Кола, която източва по €2,000 многократно, е по-лоша от надеждна — миналите €3,000 са без значение за днешния избор.' } },
+              { label: { en: 'Keep repairing forever to avoid "wasting" the past spend', bg: 'Ремонтирам вечно, за да не е напразно похарченото' }, emoji: '♾️', isBest: false, outcome: { en: 'This is the trap at its worst — the more you\'ve sunk, the harder it feels to walk away, so you sink even more. Name the bias and you break the loop.', bg: 'Това е капанът в най-лошия му вид — колкото повече си вложил, толкова по-трудно е да се откажеш, затова влагаш още. Назови изкривяването и разкъсваш цикъла.' } },
+            ],
+          },
+          {
+            id: 'bom-choice-2',
+            type: 'choice',
+            xp: 15,
+            question: { en: 'A jacket\'s tag reads "was €200, now €100". When is buying it actually smart?', bg: 'Етикетът на яке гласи „беше €200, сега €100". Кога купуването му е наистина умно?' },
+            options: [
+              { en: 'Always — you\'re saving €100', bg: 'Винаги — спестяваш €100' },
+              { en: 'Only if you\'d happily pay €100 for it regardless of the old price', bg: 'Само ако с радост би платил €100, без значение от старата цена' },
+              { en: 'Because the discount won\'t last', bg: 'Защото отстъпката няма да трае' },
+              { en: 'Since €100 off must mean it\'s high quality', bg: 'Щом е €100 отстъпка, значи е качествено' },
+            ],
+            correctIndex: 1,
+            explanation: { en: 'This is ANCHORING. The "€200" is a number designed to make €100 feel like a win. The original price is irrelevant — the only question is whether the jacket is worth €100 to YOU. A discount on something you didn\'t need is 100% spending, not saving.', bg: 'Това е ЗАКОТВЯНЕ. „€200" е число, създадено да накара €100 да изглежда като победа. Старата цена е без значение — единственият въпрос е дали якето струва €100 за ТЕБ. Отстъпка за нещо ненужно е 100% харчене, не спестяване.' },
+          },
+        ],
+      },
+      // ── Lesson 2: Beating the Traps ──
+      {
+        id: 'beating-the-traps',
+        moduleId: 'money-psychology',
+        title: { en: 'Beating the Traps', bg: 'Победи капаните' },
+        description: { en: 'FOMO, instant gratification and the systems that beat willpower every time.', bg: 'FOMO, моментално удоволствие и системите, които бият волята всеки път.' },
+        icon: '🛡️', xpReward: 120, order: 2,
+        exercises: [
+          {
+            id: 'btt-theory-1',
+            type: 'theory',
+            xp: 0,
+            slides: [
+              {
+                emoji: '⚙️',
+                title: { en: 'Systems beat willpower', bg: 'Системите бият волята' },
+                body: { en: 'Willpower is a battery that drains all day. By evening, the disciplined version of you is gone — which is exactly when bad money choices happen.\n\nThe fix isn\'t trying harder. It\'s building SYSTEMS that make the good choice automatic and the bad choice slower: auto-transfers, spending speed bumps, removing saved cards from shopping sites.', bg: 'Волята е батерия, която се изтощава през деня. До вечерта дисциплинираната версия от теб я няма — точно когато се случват лошите финансови решения.\n\nРешението не е да се стараеш повече. А да изградиш СИСТЕМИ, които правят добрия избор автоматичен, а лошия — по-бавен: автоматични преводи, спирачки при харчене, премахване на запазени карти от сайтове.' },
+                highlight: { en: '💡 Make saving automatic and spending effortful — and you barely need discipline at all.', bg: '💡 Направи спестяването автоматично, а харченето трудоемко — и почти няма да ти трябва дисциплина.' },
+              },
+            ],
+          },
+          {
+            id: 'btt-rpg-1',
+            type: 'rpg_scenario',
+            xp: 25,
+            avatar: '🚀',
+            scenario: { en: 'A coin is up 300% in a month. Your group chat is euphoric, a colleague just doubled their money, and you feel the pull to jump in before you miss out. What do you do?', bg: 'Монета е нагоре 300% за месец. Груповият чат е в еуфория, колега току-що удвои парите си, и усещаш порива да скочиш, преди да изпуснеш. Какво правиш?' },
+            choices: [
+              { label: { en: 'Buy now before it goes higher', bg: 'Купувам сега, преди да поскъпне още' }, emoji: '🤑', isGood: false, cashFlowChange: -1500, consequence: { en: 'Classic FOMO and herd behavior. By the time everyone is euphoric, you\'re usually buying the TOP from the early crowd who are about to sell. It dropped 70% the next month.', bg: 'Класическо FOMO и стадно поведение. Докато всички са в еуфория, обикновено купуваш ВЪРХА от ранната тълпа, която ще продава. Падна 70% следващия месец.' } },
+              { label: { en: 'Stick to my plan and skip the hype', bg: 'Държа се за плана си и пропускам хайпа' }, emoji: '🧭', isGood: true, cashFlowChange: 0, consequence: { en: 'Disciplined. If something only looks attractive because it already went up and everyone\'s talking about it, that\'s a crowd signal, not an investment thesis. Boring and rich beats exciting and broke.', bg: 'Дисциплинирано. Ако нещо изглежда привлекателно само защото вече е поскъпнало и всички говорят за него, това е сигнал на тълпата, не инвестиционна теза.' } },
+              { label: { en: 'Put in a tiny amount I can fully afford to lose', bg: 'Влагам малка сума, която мога да си позволя да загубя' }, emoji: '🎲', isGood: true, cashFlowChange: -50, consequence: { en: 'Acceptable IF it\'s genuinely money you\'d shrug off losing and it\'s a tiny slice of your portfolio. The danger is when "a little fun" quietly becomes your rent money.', bg: 'Приемливо, АКО наистина са пари, чиято загуба не би те засегнала, и са малка част от портфейла. Опасността е когато малко забавление тихо стане парите за наема.' } },
+            ],
+          },
+          {
+            id: 'btt-choice-1',
+            type: 'choice',
+            xp: 15,
+            question: { en: 'Why do so many people under-save for the future even when they intend to?', bg: 'Защо толкова хора спестяват твърде малко за бъдещето, дори когато имат намерение?' },
+            options: [
+              { en: 'The future feels less real than right now (present bias)', bg: 'Бъдещето изглежда по-малко реално от сега (изкривяване към настоящето)' },
+              { en: 'Saving is mathematically impossible', bg: 'Спестяването е математически невъзможно' },
+              { en: 'Banks forbid it', bg: 'Банките го забраняват' },
+              { en: 'Future-you doesn\'t need money', bg: 'Бъдещото ти аз не се нуждае от пари' },
+            ],
+            correctIndex: 0,
+            explanation: { en: 'This is PRESENT BIAS — we massively overvalue rewards now versus later, so "future me" keeps getting robbed by "current me". Automating savings takes the decision away from the impatient present version of you.', bg: 'Това е ИЗКРИВЯВАНЕ КЪМ НАСТОЯЩЕТО — надценяваме наградите сега спрямо после, затова бъдещото аз постоянно бива ограбвано от сегашното. Автоматизирането на спестяванията отнема решението от нетърпеливата версия от теб.' },
+          },
+          {
+            id: 'btt-tf-1',
+            type: 'true_false',
+            xp: 15,
+            statement: { en: 'Waiting 24-48 hours before a big non-essential purchase reliably reduces regret.', bg: 'Изчакването 24-48 часа преди голяма ненужна покупка надеждно намалява съжалението.' },
+            isTrue: true,
+            explanation: { en: 'TRUE. The urge to buy is an emotional SPIKE that fades fast. A simple cooling-off rule — sleep on anything above a set amount — lets the rational you decide. Most "must-haves" quietly stop mattering by tomorrow.', bg: 'ВЯРНО. Импулсът за покупка е емоционален ПИК, който бързо избледнява. Просто правило за изчакване — преспи върху всичко над определена сума — позволява на рационалния теб да реши. Повечето задължителни неща тихо спират да имат значение до утре.' },
+          },
+          {
+            id: 'btt-decision-1',
+            type: 'scenario_decision',
+            xp: 25,
+            decisionAvatar: '🤖',
+            decisionScenario: { en: 'You keep meaning to save but somehow there\'s never anything left at month-end. What\'s the most reliable fix?', bg: 'Все се каниш да спестяваш, но някак в края на месеца никога не остава нищо. Кое е най-надеждното решение?' },
+            decisionChoices: [
+              { label: { en: 'Try harder to spend less each day', bg: 'Старая се повече да харча по-малко всеки ден' }, emoji: '💪', isBest: false, outcome: { en: 'Relying on daily willpower is the plan that fails most. Every purchase becomes a fresh battle you eventually lose by month-end.', bg: 'Разчитането на ежедневна воля е планът, който се проваля най-често. Всяка покупка става нова битка, която накрая губиш до края на месеца.' } },
+              { label: { en: 'Auto-transfer savings the DAY you\'re paid', bg: 'Автоматичен превод към спестявания в ДЕНЯ на заплатата' }, emoji: '🤖', isBest: true, outcome: { en: 'This is the single highest-impact money system. Pay yourself FIRST, automatically, and you spend what\'s left guilt-free. No willpower required — the decision already happened.', bg: 'Това е системата с най-голям ефект. Плати на себе си ПЪРВО, автоматично, и харчиш остатъка без вина. Не е нужна воля — решението вече е взето.' } },
+              { label: { en: 'Wait for a high-income month to start', bg: 'Изчаквам месец с висок доход, за да започна' }, emoji: '⏳', isBest: false, outcome: { en: '"I\'ll start when I earn more" rarely arrives — lifestyle creep eats every raise. Automating even a small amount NOW beats a big amount someday.', bg: 'Ще започна, когато печеля повече рядко идва — инфлацията на разходите изяжда всяко увеличение. Автоматизиране дори на малка сума СЕГА бие голяма сума някой ден.' } },
+            ],
+          },
+          {
+            id: 'btt-order-1',
+            type: 'order_items',
+            xp: 25,
+            orderInstruction: { en: 'Build a "spending speed bump" for big purchases. Order the steps from FIRST to LAST:', bg: 'Изгради спирачка при големи покупки. Подреди стъпките от ПЪРВА към ПОСЛЕДНА:' },
+            orderItems: [
+              { label: { en: 'Set a rule: anything over €X waits 48 hours', bg: 'Задай правило: всичко над €X чака 48 часа' }, emoji: '⏱️' },
+              { label: { en: 'Remove saved cards from shopping apps and sites', bg: 'Премахни запазените карти от приложения и сайтове' }, emoji: '💳' },
+              { label: { en: 'When the urge hits, add it to a wishlist instead of buying', bg: 'Когато дойде импулсът, добави в списък с желания вместо да купуваш' }, emoji: '📝' },
+              { label: { en: 'After 48h, ask: would I still buy this at full price?', bg: 'След 48ч се питай: бих ли го купил на пълна цена?' }, emoji: '✅' },
+            ],
+            correctOrder: [0, 1, 2, 3],
+            explanation: { en: 'First set the rule, then make impulse-buying harder (no saved cards = friction), park the urge on a wishlist so it can cool, and finally judge it rationally. You\'re engineering your environment so the lazy path is the smart one.', bg: 'Първо задай правилото, после направи импулсивното купуване по-трудно (без запазени карти = триене), паркирай импулса в списък, за да изстине, и накрая прецени рационално. Проектираш средата си така, че мързеливият път да е умният.' },
+          },
+          {
+            id: 'btt-choice-2',
+            type: 'choice',
+            xp: 15,
+            question: { en: 'What\'s the most powerful long-term defense against ALL these money biases?', bg: 'Коя е най-мощната дългосрочна защита срещу ВСИЧКИ тези изкривявания?' },
+            options: [
+              { en: 'Having more self-discipline than everyone else', bg: 'Да имаш повече самодисциплина от всички' },
+              { en: 'Automating good choices so your biases never get a vote', bg: 'Автоматизиране на добрите избори, така че изкривяванията да нямат глас' },
+              { en: 'Checking your investments every hour', bg: 'Проверяване на инвестициите всеки час' },
+              { en: 'Never thinking about money', bg: 'Никога да не мислиш за пари' },
+            ],
+            correctIndex: 1,
+            explanation: { en: 'Willpower runs out; systems don\'t. Automating savings, investing on a fixed schedule, and adding friction to spending means the smart choice happens whether or not your biases show up that day. Design beats discipline.', bg: 'Волята свършва; системите не. Автоматизиране на спестяванията, инвестиране по график и добавяне на триене при харченето означава, че умният избор се случва, независимо дали изкривяванията се появят. Дизайнът бие дисциплината.' },
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 // Merge static + generated modules.
