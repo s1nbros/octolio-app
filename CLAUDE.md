@@ -546,7 +546,10 @@ handler — Render-blocked SMTP can stall for 60+ seconds and freeze the user.
 
 ## Exercise System
 
-### Exercise Types (21 total)
+### Exercise Types (25 total)
+> Beyond the core/module-signature tables below, the newer interactive types are
+> `life_sim`, `swipe_sort`, `speed_round`, `boss_battle` — documented in their own
+> sections above ("Interactive exercise types" + "Life Simulation").
 
 **Core types (work in any module):**
 | Type | Component | Description |
@@ -591,9 +594,18 @@ types (`choice` / `true_false`):
   questions[{q, options[], correctIndex}]}`.
 - Both registered in `ExerciseRenderer.tsx`; types mirrored in
   `frontend/src/types/index.ts` + `backend/src/data/lessons.ts`.
-- In use: budgeting L1 asset/liability **swipe** (was sort_items), fraud L1
-  "Scam or Safe?" **swipe** (was true_false), money-psychology L2 "Name that bias"
-  **speed_round** (was choice). More can replace repetitive passive questions.
+- **`boss_battle`** (`BossBattle.tsx`) — end-of-module capstone duel. A themed
+  boss has an HP bar (= `questions.length − 2`); each correct answer deals 1
+  damage, each wrong costs a heart (3 total) + reveals an explanation. Defeat the
+  boss → mastery badge + fireworks + big XP; lose all hearts → retry (only victory
+  calls `onAnswer(true)`, so it's a real gate). Config: `bossBattle {boss{name,
+  emoji}, intro, badge{label, emoji}, questions[{q, options[], correctIndex,
+  explanation?}]}`. Lives as its own short capstone LESSON at a module's end.
+- **In use (kept light for variety, NOT every lesson):**
+  - swipe: budgeting L1 (asset/liability), fraud L1 (scam/safe), side-hustles L1 (smart/trap)
+  - speed_round: money-psychology L2, saving, investing, credit-debt, insurance, tax-strategy
+  - boss_battle: investing → "The Hype Beast" 🐲, credit-debt → "The Debt Dragon" 🐉
+  - untouched for contrast: budgeting L2–4, risk-management, advanced-investing, real-estate, all generated modules
 
 ### Life Simulation (`life_sim`) — flagship connected-decision lesson
 A new exercise type that plays a whole financial life (age 22→60) as ONE

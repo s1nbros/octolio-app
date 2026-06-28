@@ -33,7 +33,8 @@ export interface Exercise {
     | 'unit_price'          // pick best price-per-unit option (smart-shopping)
     | 'life_sim'            // connected, longitudinal life decisions (capstone)
     | 'swipe_sort'         // Tinder-style swipe deck (binary categorize)
-    | 'speed_round';        // timed rapid-fire questions
+    | 'speed_round'        // timed rapid-fire questions
+    | 'boss_battle';        // end-of-module HP-duel capstone
   // theory
   slides?: TheorySlide[];
   // choice / fill_blank shared
@@ -219,6 +220,13 @@ export interface Exercise {
     secondsPerQuestion?: number;
     passScore?: number;
     questions: { q: LocalizedText; options: LocalizedText[]; correctIndex: number }[];
+  };
+  // boss_battle — end-of-module HP-duel capstone
+  bossBattle?: {
+    boss: { name: LocalizedText; emoji: string };
+    intro: LocalizedText;
+    badge: { label: LocalizedText; emoji: string };
+    questions: { q: LocalizedText; options: LocalizedText[]; correctIndex: number; explanation?: LocalizedText }[];
   };
   xp: number;
 }
@@ -1403,6 +1411,33 @@ const staticModules: Module[] = [
           },
         ],
       },
+      // ── Boss Battle capstone ──
+      {
+        id: 'investing-boss',
+        moduleId: 'investing',
+        title: { en: 'Boss: The Hype Beast', bg: 'Бос: Звярът на хайпа' },
+        description: { en: 'Defeat the hype with everything you learned about investing.', bg: 'Победи хайпа с всичко научено за инвестирането.' },
+        icon: '🐲', xpReward: 150, order: 4,
+        exercises: [
+          {
+            id: 'investing-boss-1', type: 'boss_battle', xp: 150,
+            bossBattle: {
+              boss: { name: { en: 'The Hype Beast', bg: 'Звярът на хайпа' }, emoji: '🐲' },
+              intro: { en: 'It feeds on FOMO, hot tips and panic-selling. Land enough clean hits to take it down — three wrong answers and it wins.', bg: 'Храни се с FOMO, горещи съвети и паническо продаване. Нанеси достатъчно точни удари — три грешни отговора и то печели.' },
+              badge: { label: { en: 'Market Master', bg: 'Майстор на пазара' }, emoji: '📈' },
+              questions: [
+                { q: { en: 'Over 15 years, most active fund managers…', bg: 'За 15 години повечето активни мениджъри…' }, options: [ { en: 'Lose to the index', bg: 'Губят от индекса' }, { en: 'Beat the index', bg: 'Бият индекса' }, { en: 'Match it', bg: 'Изравняват го' } ], correctIndex: 0, explanation: { en: '~85–90% underperform a low-cost index fund after fees.', bg: '~85–90% изостават от евтин индексен фонд след такси.' } },
+                { q: { en: 'Spreading money across many assets is…', bg: 'Разпределяне на пари между много активи е…' }, options: [ { en: 'Diversification', bg: 'Диверсификация' }, { en: 'Speculation', bg: 'Спекулация' }, { en: 'Leverage', bg: 'Ливъридж' } ], correctIndex: 0, explanation: { en: 'Diversification lowers the risk of any single asset sinking you.', bg: 'Диверсификацията намалява риска един актив да те потопи.' } },
+                { q: { en: 'For EU investors, the common fund wrapper is…', bg: 'За ЕС инвеститори честият тип фонд е…' }, options: [ { en: 'UCITS ETF', bg: 'UCITS ETF' }, { en: 'US 401(k)', bg: 'US 401(k)' }, { en: 'Penny stock', bg: 'Пени акция' } ], correctIndex: 0, explanation: { en: 'UCITS ETFs are the EU-regulated standard (VWCE, CSPX).', bg: 'UCITS ETF са ЕС-регулираният стандарт (VWCE, CSPX).' } },
+                { q: { en: 'What grows wealth most over decades?', bg: 'Какво трупа богатство най-много за десетилетия?' }, options: [ { en: 'Time in the market', bg: 'Време на пазара' }, { en: 'Timing the market', bg: 'Уцелване на пазара' }, { en: 'Day trading', bg: 'Дневна търговия' } ], correctIndex: 0, explanation: { en: 'Time + compounding beats trying to time tops and bottoms.', bg: 'Времето + сложната лихва бият опитите да уцелиш върхове и дъна.' } },
+                { q: { en: 'The market drops 35%. The wise move is usually to…', bg: 'Пазарът пада 35%. Мъдрият ход обикновено е да…' }, options: [ { en: 'Hold and keep investing', bg: 'Задържиш и продължиш да инвестираш' }, { en: 'Panic-sell everything', bg: 'Продадеш всичко в паника' }, { en: 'Stop forever', bg: 'Спреш завинаги' } ], correctIndex: 0, explanation: { en: 'Paper losses are not real until you sell; markets recover.', bg: 'Загубите на хартия не са реални, докато не продадеш; пазарите се възстановяват.' } },
+                { q: { en: 'An offer of "guaranteed high returns, no risk" is…', bg: 'Оферта за „гарантирана висока доходност, без риск" е…' }, options: [ { en: 'A scam signal', bg: 'Сигнал за измама' }, { en: 'A great deal', bg: 'Страхотна сделка' }, { en: 'Totally normal', bg: 'Напълно нормално' } ], correctIndex: 0, explanation: { en: 'Risk and return are linked — guaranteed-no-risk-high-return is a scam.', bg: 'Рискът и доходността са свързани — гарантирано-без-риск-висока-доходност е измама.' } },
+                { q: { en: 'A low-cost index fund mainly wins because of…', bg: 'Евтиният индексен фонд печели основно заради…' }, options: [ { en: 'Low fees + diversification', bg: 'Ниски такси + диверсификация' }, { en: 'Lucky picks', bg: 'Късметлийски избори' }, { en: 'Frequent trading', bg: 'Честа търговия' } ], correctIndex: 0, explanation: { en: 'Low costs are one of the few things you control, and they compound.', bg: 'Ниските разходи са от малкото, които контролираш, и се натрупват.' } },
+              ],
+            },
+          },
+        ],
+      },
     ],
   },
 
@@ -1597,6 +1632,33 @@ const staticModules: Module[] = [
               { label: { en: 'Skip the loan, run avalanche on cards instead', bg: 'Пропусни заема, направи лавина на картите' }, emoji: '⚔️', outcome: { en: 'Works if you can match the same monthly payment. But the average APR on the cards is ~17.5% — you\'ll pay ~€1,200 more interest than the 9% loan over 3 years.', bg: 'Работи, ако можеш със същата вноска. Но средният ГПР на картите е ~17.5% — ще платиш ~€1,200 повече за 3 г. от заема при 9%.' }, isBest: false },
             ],
             explanation: { en: 'Consolidation works ONLY if you simultaneously kill access to the original credit. The math wins; behavior decides if you keep the win.', bg: 'Консолидацията работи САМО ако едновременно затвориш достъпа до старите карти. Математиката печели; поведението решава дали ще задържиш победата.' },
+          },
+        ],
+      },
+      // ── Boss Battle capstone ──
+      {
+        id: 'credit-boss',
+        moduleId: 'credit-debt',
+        title: { en: 'Boss: The Debt Dragon', bg: 'Бос: Драконът на дълга' },
+        description: { en: 'Slay the dragon with everything you learned about credit and debt.', bg: 'Победи дракона с всичко научено за кредити и дългове.' },
+        icon: '🐉', xpReward: 150, order: 3,
+        exercises: [
+          {
+            id: 'credit-boss-1', type: 'boss_battle', xp: 150,
+            bossBattle: {
+              boss: { name: { en: 'The Debt Dragon', bg: 'Драконът на дълга' }, emoji: '🐉' },
+              intro: { en: 'It grows fat on high interest and minimum payments. Strike true — three wrong answers and the dragon wins.', bg: 'Тлъстее от висока лихва и минимални вноски. Удряй точно — три грешни отговора и драконът печели.' },
+              badge: { label: { en: 'Debt Slayer', bg: 'Победител на дълга' }, emoji: '🛡️' },
+              questions: [
+                { q: { en: 'The biggest factor in your credit score is…', bg: 'Най-големият фактор за кредитния рейтинг е…' }, options: [ { en: 'Payment history', bg: 'История на плащанията' }, { en: 'Your income', bg: 'Доходът ти' }, { en: 'Your age', bg: 'Възрастта ти' } ], correctIndex: 0, explanation: { en: 'Payment history is the #1 driver — never miss a due date.', bg: 'Историята на плащанията е №1 — никога не пропускай падеж.' } },
+                { q: { en: 'Keep your credit utilization below…', bg: 'Дръж усвояването на кредита под…' }, options: [ { en: '30% of your limit', bg: '30% от лимита' }, { en: '90% of your limit', bg: '90% от лимита' }, { en: '100%', bg: '100%' } ], correctIndex: 0, explanation: { en: 'Under 30% (ideally under 10%) keeps your score healthy.', bg: 'Под 30% (идеално под 10%) пази рейтинга здрав.' } },
+                { q: { en: 'The avalanche method pays off which debt first?', bg: 'Методът лавина изплаща първо кой дълг?' }, options: [ { en: 'Highest interest rate', bg: 'Най-високата лихва' }, { en: 'Smallest balance', bg: 'Най-малкия баланс' }, { en: 'The oldest one', bg: 'Най-стария' } ], correctIndex: 0, explanation: { en: 'Avalanche targets the highest APR first — the cheapest path.', bg: 'Лавината атакува първо най-високата лихва — най-евтиният път.' } },
+                { q: { en: 'Which debt usually costs the most over time?', bg: 'Кой дълг обикновено струва най-много с времето?' }, options: [ { en: 'Credit card at 20%+', bg: 'Кредитна карта при 20%+' }, { en: 'Mortgage at 3%', bg: 'Ипотека при 3%' }, { en: 'Student loan at 5%', bg: 'Студентски заем при 5%' } ], correctIndex: 0, explanation: { en: 'High-APR card debt is the most expensive — kill it first.', bg: 'Картовият дълг с висока лихва е най-скъп — унищожи го пръв.' } },
+                { q: { en: 'Closing your oldest credit card usually…', bg: 'Затварянето на най-старата карта обикновено…' }, options: [ { en: 'Hurts your score', bg: 'Вреди на рейтинга' }, { en: 'Helps your score', bg: 'Помага на рейтинга' }, { en: 'Does nothing', bg: 'Не прави нищо' } ], correctIndex: 0, explanation: { en: 'It shortens your history and cuts your limit — both hurt.', bg: 'Скъсява историята и сваля лимита — и двете вредят.' } },
+                { q: { en: 'Paying only the minimum on a card means…', bg: 'Плащане само на минимума по карта означава…' }, options: [ { en: 'You pay interest for years', bg: 'Плащаш лихва години наред' }, { en: 'You are debt-free fast', bg: 'Бързо си без дълг' }, { en: 'It costs nothing', bg: 'Не струва нищо' } ], correctIndex: 0, explanation: { en: 'Minimums are designed to keep you paying interest for years.', bg: 'Минимумите са направени да плащаш лихва с години.' } },
+                { q: { en: 'Debt consolidation works only if you also…', bg: 'Консолидацията на дълг работи само ако също…' }, options: [ { en: 'Stop using the old credit', bg: 'Спреш да ползваш старите карти' }, { en: 'Open more cards', bg: 'Отвориш още карти' }, { en: 'Ignore the balance', bg: 'Игнорираш баланса' } ], correctIndex: 0, explanation: { en: 'The math wins only if you close access to the old credit.', bg: 'Математиката печели само ако затвориш достъпа до стария кредит.' } },
+              ],
+            },
           },
         ],
       },

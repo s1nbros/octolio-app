@@ -10,7 +10,7 @@ export interface TheorySlide {
 
 export interface Exercise {
   id: string;
-  type: 'theory' | 'choice' | 'fill_blank' | 'budget_slider' | 'rpg_scenario' | 'rat_race' | 'compound_sim' | 'sort_items' | 'match_terms' | 'order_items' | 'true_false' | 'scenario_decision' | 'fill_number' | 'stock_chart' | 'portfolio_pie' | 'debt_payoff' | 'tax_brackets' | 'income_streams' | 'coverage_calc' | 'risk_matrix' | 'unit_price' | 'life_sim' | 'swipe_sort' | 'speed_round';
+  type: 'theory' | 'choice' | 'fill_blank' | 'budget_slider' | 'rpg_scenario' | 'rat_race' | 'compound_sim' | 'sort_items' | 'match_terms' | 'order_items' | 'true_false' | 'scenario_decision' | 'fill_number' | 'stock_chart' | 'portfolio_pie' | 'debt_payoff' | 'tax_brackets' | 'income_streams' | 'coverage_calc' | 'risk_matrix' | 'unit_price' | 'life_sim' | 'swipe_sort' | 'speed_round' | 'boss_battle';
   xp: number;
   // theory
   slides?: TheorySlide[];
@@ -191,6 +191,14 @@ export interface Exercise {
     secondsPerQuestion?: number;   // default 8
     passScore?: number;            // fraction 0–1 needed to pass (default 0.6)
     questions: { q: LocalizedText; options: LocalizedText[]; correctIndex: number }[];
+  };
+  // boss_battle — end-of-module duel: damage the boss with correct answers,
+  // lose hearts on wrong ones; defeat it to earn a mastery badge.
+  bossBattle?: {
+    boss: { name: LocalizedText; emoji: string };
+    intro: LocalizedText;
+    badge: { label: LocalizedText; emoji: string };
+    questions: { q: LocalizedText; options: LocalizedText[]; correctIndex: number; explanation?: LocalizedText }[];
   };
 }
 
