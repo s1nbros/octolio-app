@@ -577,6 +577,24 @@ handler — Render-blocked SMTP can stall for 60+ seconds and freeze the user.
 | `risk_matrix` | RiskMatrix | Risk Management / Emergency Planning | Sort risks into 2×2 impact-vs-likelihood grid (Accept/Mitigate/Transfer/Avoid) |
 | `unit_price` | UnitPrice | Smart Shopping | Pick best price-per-unit across packaging options |
 
+### Interactive exercise types (variety boosters)
+Two newer types add tactile/timed interactions and displace overused passive
+types (`choice` / `true_false`):
+- **`swipe_sort`** (`SwipeSort.tsx`) — Tinder-style swipe deck. Flick cards
+  left/right (or tap the side buttons) to binary-categorize. Pointer-drag with a
+  90px commit threshold, per-card ✓/✗ flash + optional explanation, score at the
+  end. Passing bar = at most one mistake. Config: `swipeSort {prompt, leftLabel,
+  rightLabel, cards[{label, emoji?, isRight, explanation?}]}`.
+- **`speed_round`** (`SpeedRound.tsx`) — timed rapid-fire. Per-question countdown
+  bar (timeout = wrong), combo counter, score reveal. Pass if score ≥ `passScore`
+  (default 0.6). Config: `speedRound {prompt, secondsPerQuestion?, passScore?,
+  questions[{q, options[], correctIndex}]}`.
+- Both registered in `ExerciseRenderer.tsx`; types mirrored in
+  `frontend/src/types/index.ts` + `backend/src/data/lessons.ts`.
+- In use: budgeting L1 asset/liability **swipe** (was sort_items), fraud L1
+  "Scam or Safe?" **swipe** (was true_false), money-psychology L2 "Name that bias"
+  **speed_round** (was choice). More can replace repetitive passive questions.
+
 ### Life Simulation (`life_sim`) — flagship connected-decision lesson
 A new exercise type that plays a whole financial life (age 22→60) as ONE
 connected experience with persistent state, instead of isolated questions.

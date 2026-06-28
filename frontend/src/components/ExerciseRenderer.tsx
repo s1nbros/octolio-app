@@ -21,6 +21,8 @@ import { CoverageCalc } from './exercises/CoverageCalc';
 import { RiskMatrix } from './exercises/RiskMatrix';
 import { UnitPrice } from './exercises/UnitPrice';
 import { LifeSimulation } from './exercises/LifeSimulation';
+import { SwipeSort } from './exercises/SwipeSort';
+import { SpeedRound } from './exercises/SpeedRound';
 
 interface Props {
   exercise: Exercise;
@@ -232,6 +234,26 @@ export function ExerciseRenderer({ exercise, onAnswer, questionNumber, totalQues
       <div>
         <ExerciseHeader questionNumber={questionNumber} totalQuestions={totalQuestions} xp={exercise.xp} />
         <LifeSimulation exercise={exercise} onAnswer={onAnswer} />
+      </div>
+    );
+  }
+
+  // ── Swipe Sort ──
+  if (exercise.type === 'swipe_sort') {
+    return (
+      <div>
+        <ExerciseHeader questionNumber={questionNumber} totalQuestions={totalQuestions} xp={exercise.xp} />
+        <SwipeSort exercise={exercise} onAnswer={onAnswer} />
+      </div>
+    );
+  }
+
+  // ── Speed Round ──
+  if (exercise.type === 'speed_round') {
+    return (
+      <div>
+        <ExerciseHeader questionNumber={questionNumber} totalQuestions={totalQuestions} xp={exercise.xp} />
+        <SpeedRound exercise={exercise} onAnswer={onAnswer} />
       </div>
     );
   }

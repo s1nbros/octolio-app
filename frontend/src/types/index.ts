@@ -10,7 +10,7 @@ export interface TheorySlide {
 
 export interface Exercise {
   id: string;
-  type: 'theory' | 'choice' | 'fill_blank' | 'budget_slider' | 'rpg_scenario' | 'rat_race' | 'compound_sim' | 'sort_items' | 'match_terms' | 'order_items' | 'true_false' | 'scenario_decision' | 'fill_number' | 'stock_chart' | 'portfolio_pie' | 'debt_payoff' | 'tax_brackets' | 'income_streams' | 'coverage_calc' | 'risk_matrix' | 'unit_price' | 'life_sim';
+  type: 'theory' | 'choice' | 'fill_blank' | 'budget_slider' | 'rpg_scenario' | 'rat_race' | 'compound_sim' | 'sort_items' | 'match_terms' | 'order_items' | 'true_false' | 'scenario_decision' | 'fill_number' | 'stock_chart' | 'portfolio_pie' | 'debt_payoff' | 'tax_brackets' | 'income_streams' | 'coverage_calc' | 'risk_matrix' | 'unit_price' | 'life_sim' | 'swipe_sort' | 'speed_round';
   xp: number;
   // theory
   slides?: TheorySlide[];
@@ -178,6 +178,20 @@ export interface Exercise {
   };
   // life_sim — connected, longitudinal decisions with persistent state
   lifeSim?: LifeSimConfig;
+  // swipe_sort — Tinder-style swipe deck (left/right binary categorize)
+  swipeSort?: {
+    prompt: LocalizedText;
+    leftLabel: LocalizedText;
+    rightLabel: LocalizedText;
+    cards: { label: LocalizedText; emoji?: string; isRight: boolean; explanation?: LocalizedText }[];
+  };
+  // speed_round — timed rapid-fire questions
+  speedRound?: {
+    prompt: LocalizedText;
+    secondsPerQuestion?: number;   // default 8
+    passScore?: number;            // fraction 0–1 needed to pass (default 0.6)
+    questions: { q: LocalizedText; options: LocalizedText[]; correctIndex: number }[];
+  };
 }
 
 export interface LifeSimChoice {
