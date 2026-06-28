@@ -107,13 +107,31 @@ export function Modules() {
         {/* Today panel — daily goal + Daily Money Workout */}
         <TodayPanel />
 
-        {/* Continue hero — the single obvious "what do I do next" */}
+        {/* Continue hero — the single obvious "what do I do next".
+            Continue scrolls the learning path to the current lesson node
+            (in context) rather than opening the lesson runner directly. */}
         <ContinueHero
           modules={modules}
           currentPos={currentPos}
           user={user}
           lang={lang}
-          onContinue={(mId, lId) => navigate(`/lesson/${mId}/${lId}`)}
+          onContinue={() => {
+            const el = document.getElementById('current-lesson-node');
+            if (!el) return;
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // A little bounce so the eye lands on it after the scroll settles.
+            try {
+              const base = el.style.transform || '';
+              el.animate(
+                [
+                  { transform: `${base} scale(1)` },
+                  { transform: `${base} scale(1.12)` },
+                  { transform: `${base} scale(1)` },
+                ],
+                { duration: 600, delay: 350, easing: 'ease-in-out' }
+              );
+            } catch { /* Web Animations API unsupported — scroll is enough */ }
+          }}
         />
 
         {/* Page header */}
@@ -171,6 +189,7 @@ export function Modules() {
                           locked={lessonLocked}
                           proLocked={moduleProLocked}
                           isCurrent={isLessonCurrent}
+                          nodeId={isLessonCurrent ? 'current-lesson-node' : undefined}
                           xOffsetPx={xPx}
                           palette={palette}
                           lang={lang}
@@ -222,7 +241,7 @@ function ContinueHero({
   currentPos: CurrentPosition | null;
   user: ReturnType<typeof useAuth>['user'];
   lang: 'en' | 'bg';
-  onContinue: (moduleId: string, lessonId: string) => void;
+  onContinue: () => void;
 }) {
   const goal = getGoal(user?.goal);
   const streak = user?.streak ?? 0;
@@ -300,7 +319,7 @@ function ContinueHero({
         </div>
 
         <button
-          onClick={() => onContinue(mod.id, lesson.id)}
+          onClick={onContinue}
           className="btn-green w-full mt-4 py-3 font-bold text-base"
         >
           {anyCompleted
@@ -485,6 +504,7 @@ function LessonNode({
   palette,
   lang,
   onClick,
+  nodeId,
 }: {
   lesson: LessonMeta;
   locked: boolean;
@@ -494,14 +514,16 @@ function LessonNode({
   palette: Palette;
   lang: 'en' | 'bg';
   onClick: () => void;
+  nodeId?: string;
 }) {
   const completed = lesson.completed;
   const nodePalette: Palette = locked ? LOCKED : palette;
 
   return (
     <div
+      id={nodeId}
       className={`relative flex flex-col items-center transition-transform ${isCurrent && !locked ? 'mt-6' : ''}`}
-      style={{ transform: `translateX(${xOffsetPx}px)` }}
+      style={{ transform: `translateX(${xOffsetPx}px)`, scrollMarginTop: '96px' }}
     >
       {/* START bubble — only on current lesson */}
       {isCurrent && !locked && (
