@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import type { Exercise } from '../../types';
 import { useLang } from '../../contexts/LanguageContext';
+import { ExplainMistake } from '../ExplainMistake';
 
 interface Props { exercise: Exercise; onAnswer: (correct: boolean, xp: number) => void; }
 
@@ -181,9 +182,12 @@ export function PortfolioPie({ exercise, onAnswer }: Props) {
         </button>
       )}
       {submitted && !isCorrect && (
-        <button className="btn-primary w-full" onClick={() => onAnswer(false, 0)}>
-          {lang === 'en' ? 'Continue →' : 'Продължи →'}
-        </button>
+        <>
+          <ExplainMistake exercise={exercise} />
+          <button className="btn-primary w-full" onClick={() => onAnswer(false, 0)}>
+            {lang === 'en' ? 'Continue →' : 'Продължи →'}
+          </button>
+        </>
       )}
     </div>
   );

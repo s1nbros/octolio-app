@@ -146,6 +146,7 @@ function buildContext(ex: Exercise, lang: 'en' | 'bg'): string {
   const g = (v?: LocalizedText) => (v ? v[lang] : '');
   const lines: string[] = [];
 
+  // ── Generic top-level fields (choice / fill_blank / true_false / scenario_decision) ──
   if (ex.question) lines.push(`Question: ${g(ex.question)}`);
   if (ex.statement) lines.push(`Statement: ${g(ex.statement)}`);
   if (ex.scenario) lines.push(`Scenario: ${g(ex.scenario)}`);
@@ -173,6 +174,60 @@ function buildContext(ex: Exercise, lang: 'en' | 'bg'): string {
   if (typeof ex.isTrue === 'boolean') {
     lines.push(`Correct answer: ${ex.isTrue ? 'True' : 'False'}`);
   }
+
+  // ── fill_number ──
+  if (ex.fillNumberScenario) lines.push(`Scenario: ${g(ex.fillNumberScenario)}`);
+  if (typeof ex.fillNumberAnswer === 'number') {
+    lines.push(`Correct answer: ${ex.fillNumberUnit ?? ''}${ex.fillNumberAnswer}`);
+  }
+
+  // ── stock_chart ──
+  if (ex.stockChart) {
+    const sc = ex.stockChart;
+    if (sc.scenario) lines.push(`Scenario: ${g(sc.scenario)}`);
+    lines.push(`Question: ${g(sc.question)}`);
+    if (sc.mode === 'identify_pattern' && Array.isArray(sc.patternOptions)) {
+      lines.push('Pattern options:');
+      sc.patternOptions.forEach((o, i) =>
+        lines.push(`  - ${g(o)}${i === sc.correctPatternIndex ? '  (correct)' : ''}`));
+    } else if (sc.mode === 'identify_point') {
+      lines.push('Task: click the best (lowest-price) entry point on the chart.');
+    }
+  }
+
+  // ── portfolio_pie ──
+  if (ex.portfolioPie) {
+    const pp = ex.portfolioPie;
+    if (pp.scenario) lines.push(`Scenario: ${g(pp.scenario)}`);
+    if (pp.question) lines.push(`Question: ${g(pp.question)}`);
+    lines.push('Ideal allocation:');
+    pp.assets.forEach((a) => lines.push(`  - ${g(a.label)}: ${a.ideal}%`));
+  }
+
+  // ── debt_payoff ──
+  if (ex.debtPayoff) {
+    const dp = ex.debtPayoff;
+    if (dp.scenario) lines.push(`Scenario: ${g(dp.scenario)}`);
+    lines.push(`Question: ${g(dp.question)}`);
+    lines.push(`Correct strategy: ${dp.correctStrategy} (snowball = smallest balance first, avalanche = highest APR first, even = split evenly)`);
+  }
+
+  // ── tax_brackets ──
+  if (ex.taxBrackets) {
+    const tb = ex.taxBrackets;
+    if (tb.scenario) lines.push(`Scenario: ${g(tb.scenario)}`);
+    lines.push(`Question: ${g(tb.question)}`);
+    lines.push(`Correct answer: ${tb.correctAnswer}${tb.unit ?? ''} for an income of ${tb.testIncome}.`);
+  }
+
+  // ── coverage_calc ──
+  if (ex.coverageCalc) {
+    const cc = ex.coverageCalc;
+    if (cc.scenario) lines.push(`Scenario: ${g(cc.scenario)}`);
+    lines.push(`Question: ${g(cc.question)}`);
+    lines.push(`Correct setup: premium ${cc.correctPremium}, deductible ${cc.correctDeductible}, coverage limit ${cc.correctCoverageLimit}.`);
+  }
+
   if (ex.explanation) lines.push(`Official explanation: ${g(ex.explanation)}`);
 
   // Fallback so the AI always has something to work with.

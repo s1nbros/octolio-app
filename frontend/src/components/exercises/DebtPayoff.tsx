@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import type { Exercise } from '../../types';
 import { useLang } from '../../contexts/LanguageContext';
+import { ExplainMistake } from '../ExplainMistake';
 
 interface Props { exercise: Exercise; onAnswer: (correct: boolean, xp: number) => void; }
 
@@ -229,9 +230,15 @@ export function DebtPayoff({ exercise, onAnswer }: Props) {
         </button>
       )}
       {submitted && strategy !== cfg.correctStrategy && (
-        <button className="btn-primary w-full" onClick={() => onAnswer(false, 0)}>
-          {lang === 'en' ? 'Continue →' : 'Продължи →'}
-        </button>
+        <>
+          <ExplainMistake
+            exercise={exercise}
+            userAnswer={strategy ? strategyLabels[strategy].label[lang] : undefined}
+          />
+          <button className="btn-primary w-full" onClick={() => onAnswer(false, 0)}>
+            {lang === 'en' ? 'Continue →' : 'Продължи →'}
+          </button>
+        </>
       )}
     </div>
   );

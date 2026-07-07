@@ -516,10 +516,16 @@ card + the portal-rendered answer modal. Updates xp/coins/streak in context on a
 - Quota lives on `users.ai_explain_date` (YYYY-MM-DD) + `users.ai_explain_count`, reset
   lazily when the day rolls over (same pattern as the workout). `/api/auth/me` surfaces the
   derived `ai_explains_remaining` (null = unlimited/Pro).
-- Frontend: reusable `<ExplainMistake exercise userAnswer? />` component. Currently wired
-  into the wrong-answer path of `choice`, `fill_blank` (in `ExerciseRenderer.tsx`),
-  `true_false`, and `scenario_decision`. To add to another exercise type, render it above
-  that component's "Continue →" button — no backend change needed.
+- Frontend: reusable `<ExplainMistake exercise userAnswer? />` component. Wired into the
+  wrong-answer path of every discrete-question type that pauses on a wrong answer:
+  `choice`, `fill_blank` (in `ExerciseRenderer.tsx`), `true_false`, `scenario_decision`,
+  `fill_number`, `stock_chart`, `portfolio_pie`, `debt_payoff`, `tax_brackets`,
+  `coverage_calc`. `buildContext()` flattens each type (including the nested config
+  objects like `debtPayoff`/`taxBrackets`/`coverageCalc`) into localized text for the AI.
+  Not wired into auto-advancing/activity types (`sort_items`, `match_terms`, `swipe_sort`,
+  `speed_round`, `boss_battle`, sliders, sims) which don't pause on a single wrong answer.
+  To add to another type, render it above that component's "Continue →" button — no
+  backend change needed.
 
 ## Deployment
 - Render: backend + frontend as separate services
