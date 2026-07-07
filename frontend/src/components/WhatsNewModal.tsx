@@ -4,16 +4,15 @@
  * the actual UI elements so the "screenshots" stay accurate and never
  * drift from the real app).
  *
- * Storage key:   octolio_seen_whatsnew_v2  (bump the version to re-show after an update)
+ * Storage key:   octolio_seen_whatsnew_v3  (bump the version to re-show after an update)
  * Trigger:       only for authenticated + onboarded users
  * Dismiss:       last slide → "Got it" button OR close (X)
  */
 import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLang } from '../contexts/LanguageContext';
-import { OctopusAvatar } from './OctopusAvatar';
 
-const STORAGE_KEY = 'octolio_seen_whatsnew_v2';
+const STORAGE_KEY = 'octolio_seen_whatsnew_v3';
 
 interface Slide {
   badge: { en: string; bg: string };
@@ -23,95 +22,79 @@ interface Slide {
   accent: string;            // hsl(...) — colors the badge + dot
 }
 
-/* ─── Illustration 1: Wheel of Luck ──────────────────────────── */
-function WheelShot() {
-  const colors = ['hsl(160,55%,55%)', 'hsl(45,95%,55%)', 'hsl(200,70%,55%)', 'hsl(290,70%,65%)', 'hsl(0,75%,55%)', 'hsl(28,85%,60%)', 'hsl(239,84%,67%)', 'hsl(155,65%,50%)'];
-  const segs = colors.length;
-  const cx = 80, cy = 80, r = 68;
-  const paths = colors.map((c, i) => {
-    const a0 = (i / segs) * 2 * Math.PI - Math.PI / 2;
-    const a1 = ((i + 1) / segs) * 2 * Math.PI - Math.PI / 2;
-    const x0 = cx + r * Math.cos(a0), y0 = cy + r * Math.sin(a0);
-    const x1 = cx + r * Math.cos(a1), y1 = cy + r * Math.sin(a1);
-    return <path key={i} d={`M ${cx} ${cy} L ${x0} ${y0} A ${r} ${r} 0 0 1 ${x1} ${y1} Z`} fill={c} stroke="rgba(255,255,255,0.15)" strokeWidth="1" />;
-  });
-  return (
-    <div className="flex flex-col items-center justify-center w-full h-full">
-      <svg width="170" height="178" viewBox="0 0 160 168" style={{ filter: 'drop-shadow(0 10px 24px rgba(0,0,0,0.4))' }}>
-        <g className="animate-spin" style={{ transformOrigin: '80px 80px', animationDuration: '14s' }}>{paths}</g>
-        <circle cx={cx} cy={cy} r={r} fill="none" stroke="hsl(45,95%,52%)" strokeWidth="3" />
-        <circle cx={cx} cy={cy} r="14" fill="hsl(228,24%,12%)" stroke="hsl(45,95%,55%)" strokeWidth="2.5" />
-        <text x={cx} y={cy + 5} textAnchor="middle" fontSize="16" fill="hsl(45,95%,60%)" fontWeight="900">✦</text>
-        <path d="M 80 4 L 71 22 L 89 22 Z" fill="hsl(45,95%,60%)" stroke="hsl(45,95%,30%)" strokeWidth="1" />
-      </svg>
-      <div className="flex gap-2 mt-1 text-lg">✨ 👑 🏆</div>
-    </div>
-  );
-}
-
-/* ─── Illustration 2: New interactive lessons (boss battle) ──── */
-function LessonsShot() {
+/* ─── Illustration 1: AI "Explain my mistake" ────────────────── */
+function ExplainShot() {
   return (
     <div className="w-full h-full flex items-center justify-center px-4">
-      <div className="w-full max-w-[280px] rounded-2xl p-4 space-y-3"
+      <div className="w-full max-w-[280px] rounded-2xl p-4 space-y-2.5"
         style={{ background: 'hsl(228, 24%, 12%)', border: '1px solid hsla(0,0%,100%,0.08)', boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}>
-        <p className="text-[10px] uppercase tracking-wider font-bold" style={{ color: 'hsl(var(--c-red))' }}>⚔️ Boss Battle</p>
-        <div className="flex items-center gap-2.5">
-          <span className="text-3xl">🐉</span>
-          <div className="flex-1 min-w-0">
-            <p className="text-[11px] font-bold truncate" style={{ color: 'hsl(var(--c-fg))' }}>The Debt Dragon</p>
-            <div className="h-2.5 rounded-full mt-1 overflow-hidden" style={{ background: 'hsl(var(--c-fg)/0.12)' }}>
-              <div className="h-full rounded-full" style={{ width: '40%', background: 'hsl(var(--c-red))' }} />
-            </div>
-          </div>
-          <span className="text-sm tracking-tighter">❤️❤️❤️</span>
+        <div className="rounded-lg px-3 py-2" style={{ background: 'hsl(var(--c-red)/0.1)', border: '1px solid hsl(var(--c-red)/0.3)' }}>
+          <p className="text-[11px] font-bold" style={{ color: 'hsl(var(--c-red))' }}>✗ Not quite…</p>
         </div>
-        <div className="flex gap-1.5">
-          {['🃏 Swipe', '⚡ Speed', '🎮 Life Sim'].map((t) => (
-            <span key={t} className="text-[9px] font-bold px-2 py-1 rounded-md"
-              style={{ background: 'hsl(var(--c-primary)/0.12)', color: 'hsl(var(--c-primary))' }}>{t}</span>
-          ))}
+        <div className="rounded-lg px-3 py-2 flex items-center justify-center gap-1.5 text-[11px] font-bold"
+          style={{ background: 'hsl(var(--c-primary)/0.1)', color: 'hsl(var(--c-primary))', border: '1px solid hsl(var(--c-primary)/0.25)' }}>
+          🐙 Why was this wrong? <span className="font-normal opacity-70">(2 left today)</span>
+        </div>
+        <div className="rounded-lg px-3 py-2.5" style={{ background: 'hsl(var(--c-primary)/0.08)', border: '1px solid hsl(var(--c-primary)/0.25)' }}>
+          <p className="text-[10px] font-bold mb-1" style={{ color: 'hsl(var(--c-primary))' }}>🐙 Octolio explains</p>
+          <p className="text-[10px] leading-relaxed" style={{ color: 'hsl(var(--c-fg-muted))' }}>
+            Compound interest grows on your gains too — so the €100 you skipped isn't €100, it's what it'd become in 30 years…
+          </p>
         </div>
       </div>
     </div>
   );
 }
 
-/* ─── Illustration 3: Daily Money Workout ───────────────────── */
-function WorkoutShot() {
-  return (
-    <div className="w-full h-full flex items-center justify-center px-4">
-      <div className="w-full max-w-[280px] rounded-2xl p-4"
-        style={{ background: 'linear-gradient(135deg, hsl(45,95%,55%,0.12), hsl(var(--c-orange)/0.08))', border: '1px solid hsl(45,95%,55%,0.3)', boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}>
-        <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
-            style={{ background: 'hsl(228,24%,14%)', border: '1px solid hsla(0,0%,100%,0.08)' }}>🧠</div>
-          <div className="flex-1 min-w-0">
-            <p className="font-bold text-sm" style={{ color: 'hsl(var(--c-fg))' }}>Daily Money Workout</p>
-            <p className="text-[11px]" style={{ color: 'hsl(var(--c-fg-muted))' }}>60 seconds · +15 XP · keeps your streak</p>
-          </div>
-        </div>
-        <div className="mt-3 flex items-center justify-between">
-          <span className="text-[11px] font-bold" style={{ color: 'hsl(var(--c-orange))' }}>🔥 12-day streak</span>
-          <span className="text-[10px] font-bold px-3 py-1.5 rounded-lg" style={{ background: 'hsl(var(--c-green))', color: '#fff' }}>Start</span>
-        </div>
-      </div>
+/* ─── Illustration 2: Friend streaks ─────────────────────────── */
+function FriendStreakShot() {
+  const Bubble = ({ letter, color }: { letter: string; color: string }) => (
+    <div className="rounded-full flex items-center justify-center font-black"
+      style={{ width: 60, height: 60, fontSize: 24, background: `${color}22`, color, border: `2px solid ${color}` }}>
+      {letter}
     </div>
   );
-}
-
-/* ─── Illustration 4: Octopus in new outfits ─────────────────── */
-function MascotShot() {
   return (
     <div className="relative flex flex-col items-center justify-center w-full h-full">
       <div className="absolute inset-0 pointer-events-none"
-        style={{ background: 'radial-gradient(circle at 50% 40%, hsl(var(--c-green) / 0.18), transparent 60%)' }} />
-      <OctopusAvatar size={150} hatEmoji="⭐" faceEmoji="🤖" bodyEmoji="🏆" />
-      <div className="relative mt-3 flex items-center gap-2">
-        <span className="px-2.5 py-1 rounded-full text-xs font-bold"
-          style={{ background: 'hsl(var(--c-green)/0.15)', color: 'hsl(var(--c-green))', border: '1px solid hsl(var(--c-green)/0.35)' }}>
-          ✨ 12 new outfits
-        </span>
+        style={{ background: 'radial-gradient(circle at 50% 42%, hsl(var(--c-orange) / 0.18), transparent 60%)' }} />
+      <div className="relative flex items-center gap-3">
+        <Bubble letter="Y" color="hsl(var(--c-primary))" />
+        <div className="text-3xl">🤝</div>
+        <Bubble letter="M" color="hsl(var(--c-green))" />
+      </div>
+      <div className="relative mt-4 px-3 py-1.5 rounded-full text-sm font-black"
+        style={{ background: 'hsl(var(--c-orange)/0.15)', color: 'hsl(var(--c-orange))', border: '1px solid hsl(var(--c-orange)/0.35)' }}>
+        🤝🔥 14-day friend streak
+      </div>
+    </div>
+  );
+}
+
+/* ─── Illustration 3: Weekly co-op quests ────────────────────── */
+function CoopQuestShot() {
+  return (
+    <div className="w-full h-full flex items-center justify-center px-4">
+      <div className="w-full max-w-[280px] rounded-2xl p-4"
+        style={{ background: 'hsl(var(--c-primary)/0.06)', border: '1px solid hsl(var(--c-primary)/0.2)', boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}>
+        <p className="text-[10px] uppercase tracking-wider font-bold mb-3" style={{ color: 'hsl(var(--c-primary))' }}>
+          🤝 Weekly co-op quest
+        </p>
+        <div className="rounded-xl p-3" style={{ background: 'hsl(228,24%,12%)', border: '1px solid hsla(0,0%,100%,0.08)' }}>
+          <div className="flex items-center justify-between mb-1.5">
+            <p className="text-[12px] font-bold" style={{ color: 'hsl(var(--c-fg))' }}>You + Maria</p>
+            <span className="text-[10px] mono" style={{ color: 'hsl(var(--c-fg-subtle))' }}>500 / 500 XP</span>
+          </div>
+          <div className="h-2 rounded-full overflow-hidden mb-2.5" style={{ background: 'hsl(var(--c-fg)/0.12)' }}>
+            <div className="h-full rounded-full" style={{ width: '100%', background: 'hsl(var(--c-green))' }} />
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-[9px] mono" style={{ color: 'hsl(var(--c-fg-subtle))' }}>You 280 · Maria 220</span>
+            <span className="text-[10px] font-black px-3 py-1 rounded-full" style={{ background: 'hsl(var(--c-green))', color: '#fff' }}>
+              Claim +120 XP · +25 🪙
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -150,35 +133,27 @@ export function WhatsNewModal() {
 
   const slides: Slide[] = [
     {
-      badge:        { en: 'SPIN TO WIN', bg: 'ВЪРТИ И ПЕЧЕЛИ' },
-      title:        { en: 'Wheel of Luck', bg: 'Колело на късмета' },
-      body:         { en: 'A one-time welcome spin: win XP, free outfits, a 2-week Pro trial — or one of only 3 real Octolio cups in the whole world.',
-                      bg: 'Еднократно завъртане: спечели XP, безплатни дрехи, 2 седмици Pro — или една от само 3 истински чаши Octolio в целия свят.' },
-      illustration: <WheelShot />,
-      accent:       'hsl(45, 95%, 55%)',
-    },
-    {
-      badge:        { en: 'NEW LESSONS', bg: 'НОВИ УРОЦИ' },
-      title:        { en: 'Fresh ways to learn', bg: 'Нови начини да учиш' },
-      body:         { en: 'Swipe-sort decks, timed Speed Rounds, epic Boss Battles, and a Life Simulation where your choices compound across 40 years.',
-                      bg: 'Swipe колоди, времеви Бързи рундове, епични Битки с босове и Симулация на живота, където изборите ти се натрупват 40 години.' },
-      illustration: <LessonsShot />,
+      badge:        { en: 'AI TUTOR', bg: 'AI НАСТАВНИК' },
+      title:        { en: 'Explain my mistake', bg: 'Обясни грешката ми' },
+      body:         { en: 'Got one wrong? Tap 🐙 and Octolio explains exactly why — in plain words. Free every day, and unlimited with Pro.',
+                      bg: 'Сгреши ли? Натисни 🐙 и Octolio ти обяснява точно защо — просто и ясно. Безплатно всеки ден, неограничено с Pro.' },
+      illustration: <ExplainShot />,
       accent:       'hsl(var(--c-primary))',
     },
     {
-      badge:        { en: 'DAILY HABIT', bg: 'ДНЕВЕН НАВИК' },
-      title:        { en: '60-second Daily Workout', bg: '60-секундна дневна тренировка' },
-      body:         { en: 'One quick question a day keeps your streak alive — no energy needed. We can even email you a reminder so you never lose it.',
-                      bg: 'Един бърз въпрос на ден пази поредицата ти — без енергия. Можем дори да ти изпратим имейл напомняне, за да не я загубиш.' },
-      illustration: <WorkoutShot />,
+      badge:        { en: 'LEARN TOGETHER', bg: 'УЧЕТЕ ЗАЕДНО' },
+      title:        { en: 'Friend streaks', bg: 'Приятелски серии' },
+      body:         { en: 'Practice on the same day as a friend and build a shared streak. Miss a day together and it resets — so keep each other going!',
+                      bg: 'Учи в същия ден като приятел и трупайте обща серия. Пропуснете ли ден заедно, тя се нулира — така че се мотивирайте!' },
+      illustration: <FriendStreakShot />,
       accent:       'hsl(var(--c-orange))',
     },
     {
-      badge:        { en: 'SHOP & MODULES', bg: 'МАГАЗИН И МОДУЛИ' },
-      title:        { en: 'New outfits & modules', bg: 'Нови дрехи и модули' },
-      body:         { en: 'Dress your octopus in 12 fresh outfits, and master two new free modules: Fraud & Scam Defense and Money Psychology.',
-                      bg: 'Облечи октопода с 12 нови тоалета и усвои два нови безплатни модула: Защита от измами и Психология на парите.' },
-      illustration: <MascotShot />,
+      badge:        { en: 'TEAM UP', bg: 'ОБЕДИНЕТЕ СЕ' },
+      title:        { en: 'Weekly co-op quests', bg: 'Седмични съвместни куестове' },
+      body:         { en: 'You and each friend share a weekly XP goal. Hit it together and you BOTH claim a reward — XP and coins.',
+                      bg: 'Ти и всеки приятел споделяте седмична XP цел. Постигнете я заедно и ДВАМАТА получавате награда — XP и монети.' },
+      illustration: <CoopQuestShot />,
       accent:       'hsl(var(--c-green))',
     },
   ];
