@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { Exercise } from '../../types';
 import { useLang } from '../../contexts/LanguageContext';
+import { ExplainMistake } from '../ExplainMistake';
 
 interface Props { exercise: Exercise; onAnswer: (correct: boolean, xp: number) => void; }
 
@@ -132,9 +133,12 @@ export function ScenarioDecision({ exercise, onAnswer }: Props) {
           )}
 
           {!selected.isBest && (
-            <button className="btn-primary w-full" onClick={() => onAnswer(false, 0)}>
-              {lang === 'en' ? 'Continue →' : 'Продължи →'}
-            </button>
+            <>
+              <ExplainMistake exercise={exercise} userAnswer={selected.label[lang]} />
+              <button className="btn-primary w-full" onClick={() => onAnswer(false, 0)}>
+                {lang === 'en' ? 'Continue →' : 'Продължи →'}
+              </button>
+            </>
           )}
         </div>
       )}

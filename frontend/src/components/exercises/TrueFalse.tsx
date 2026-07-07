@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { Exercise } from '../../types';
 import { useLang } from '../../contexts/LanguageContext';
+import { ExplainMistake } from '../ExplainMistake';
 
 interface Props { exercise: Exercise; onAnswer: (correct: boolean, xp: number) => void; }
 
@@ -115,9 +116,15 @@ export function TrueFalse({ exercise, onAnswer }: Props) {
       )}
 
       {isAnswered && !isCorrect && (
-        <button className="btn-primary w-full mt-4" onClick={() => onAnswer(false, 0)}>
-          {lang === 'en' ? 'Continue →' : 'Продължи →'}
-        </button>
+        <div className="mt-4">
+          <ExplainMistake
+            exercise={exercise}
+            userAnswer={chosen ? (lang === 'en' ? 'True' : 'Вярно') : (lang === 'en' ? 'False' : 'Невярно')}
+          />
+          <button className="btn-primary w-full" onClick={() => onAnswer(false, 0)}>
+            {lang === 'en' ? 'Continue →' : 'Продължи →'}
+          </button>
+        </div>
       )}
     </div>
   );

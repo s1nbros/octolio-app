@@ -474,6 +474,24 @@ card + the portal-rendered answer modal. Updates xp/coins/streak in context on a
 - Model: `claude-haiku-4-5-20251001`
 - Free users see upsell wall with Stripe checkout button
 
+### AI "Explain my mistake" (wrong-answer tutor)
+- After a wrong answer, a `🐙 Why was this wrong?` button appears; tapping it asks
+  Claude Haiku to explain the mistake in ≤90 words, in the exercise's language.
+- **Free users get `DAILY_FREE_EXPLAINS = 3`/calendar day; Pro is unlimited.** When a
+  free user runs out, the button becomes a Pro upsell (→ Stripe checkout).
+- Route: `POST /api/ai/explain {context, userAnswer?}` (auth) — `context` is a compact,
+  already-localized flattening of the exercise built client-side (`buildContext()` in
+  `ExplainMistake.tsx`), so the endpoint stays schema-agnostic across all exercise types.
+  Returns `{text, remaining, limit, unlimited}`. Quota is only decremented on a successful
+  AI response (failed calls don't burn it). `403 {error:'daily_limit'}` when exhausted.
+- Quota lives on `users.ai_explain_date` (YYYY-MM-DD) + `users.ai_explain_count`, reset
+  lazily when the day rolls over (same pattern as the workout). `/api/auth/me` surfaces the
+  derived `ai_explains_remaining` (null = unlimited/Pro).
+- Frontend: reusable `<ExplainMistake exercise userAnswer? />` component. Currently wired
+  into the wrong-answer path of `choice`, `fill_blank` (in `ExerciseRenderer.tsx`),
+  `true_false`, and `scenario_decision`. To add to another exercise type, render it above
+  that component's "Continue →" button — no backend change needed.
+
 ## Deployment
 - Render: backend + frontend as separate services
 - Backend build command: `npm run build` (runs `tsc && cp src/data/generated-modules.json dist/data/generated-modules.json`)
@@ -708,7 +726,11 @@ Notifications (`/api/notifications/*`):
 - `GET /unread-count`
 - `POST /:id/read`, `POST /read-all`
 
-Other: `/api/ai/chat` (Pro SSE), `/api/stripe/*` (checkout + webhook), `/api/generate/*` (AI lesson generation)
+AI (`/api/ai/*`):
+- `POST /chat` — Pro-only advisor (Haiku)
+- `POST /explain {context, userAnswer?}` — wrong-answer tutor; free quota `DAILY_FREE_EXPLAINS`/day, Pro unlimited
+
+Other: `/api/stripe/*` (checkout + webhook), `/api/generate/*` (AI lesson generation)
 
 ## Languages
 - App supports English (`en`) and Bulgarian (`bg`)

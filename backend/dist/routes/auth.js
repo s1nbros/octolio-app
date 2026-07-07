@@ -12,6 +12,8 @@ const db_1 = require("../db");
 const auth_1 = require("../middleware/auth");
 const banned_words_1 = require("../data/banned-words");
 const email_1 = require("../services/email");
+const streak_1 = require("../services/streak");
+const ai_1 = require("./ai");
 // Google ID-token verifier. Audience must match the OAuth client ID we used
 // in the frontend; tokens minted for any other audience are rejected.
 const googleClient = new google_auth_library_1.OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -518,13 +520,21 @@ exports.authRouter.get('/me', auth_1.authenticate, async (req, res) => {
               energy, energy_refill_at, onboarding_done, streak_freezes,
               coins, equipped_costume, equipped_hat, equipped_face, equipped_body,
               chests_opened, wheel_spun, pro_trial_ends_at,
-              goal, experience_level, daily_goal_min
+              goal, experience_level, daily_goal_min,
+              ai_explain_date, ai_explain_count
        FROM users WHERE id = $1`, [req.userId]);
         const user = result.rows[0];
         if (!user) {
             res.status(404).json({ error: 'User not found' });
             return;
         }
+        // "Explain my mistake" daily quota — null means unlimited (Pro).
+        const explainUsedToday = user.ai_explain_date === (0, streak_1.todayStr)() ? (user.ai_explain_count ?? 0) : 0;
+        user.ai_explains_remaining = user.is_pro
+            ? null
+            : Math.max(0, ai_1.DAILY_FREE_EXPLAINS - explainUsedToday);
+        delete user.ai_explain_date;
+        delete user.ai_explain_count;
         res.json({ user });
     }
     catch (err) {

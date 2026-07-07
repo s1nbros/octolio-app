@@ -6,6 +6,8 @@ import { getPool } from '../db';
 import { signToken, authenticate, AuthRequest } from '../middleware/auth';
 import { isNicknameBanned } from '../data/banned-words';
 import { sendVerificationEmail, sendPasswordResetEmail, isEmailConfigured } from '../services/email';
+import { todayStr } from '../services/streak';
+import { DAILY_FREE_EXPLAINS } from './ai';
 
 // Google ID-token verifier. Audience must match the OAuth client ID we used
 // in the frontend; tokens minted for any other audience are rejected.
@@ -595,7 +597,8 @@ authRouter.get('/me', authenticate, async (req: AuthRequest, res: Response): Pro
               energy, energy_refill_at, onboarding_done, streak_freezes,
               coins, equipped_costume, equipped_hat, equipped_face, equipped_body,
               chests_opened, wheel_spun, pro_trial_ends_at,
-              goal, experience_level, daily_goal_min
+              goal, experience_level, daily_goal_min,
+              ai_explain_date, ai_explain_count
        FROM users WHERE id = $1`,
       [req.userId]
     );
@@ -605,6 +608,14 @@ authRouter.get('/me', authenticate, async (req: AuthRequest, res: Response): Pro
       res.status(404).json({ error: 'User not found' });
       return;
     }
+
+    // "Explain my mistake" daily quota — null means unlimited (Pro).
+    const explainUsedToday = user.ai_explain_date === todayStr() ? (user.ai_explain_count ?? 0) : 0;
+    user.ai_explains_remaining = user.is_pro
+      ? null
+      : Math.max(0, DAILY_FREE_EXPLAINS - explainUsedToday);
+    delete user.ai_explain_date;
+    delete user.ai_explain_count;
 
     res.json({ user });
   } catch (err) {

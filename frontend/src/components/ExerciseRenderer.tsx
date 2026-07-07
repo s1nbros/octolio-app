@@ -24,6 +24,7 @@ import { LifeSimulation } from './exercises/LifeSimulation';
 import { SwipeSort } from './exercises/SwipeSort';
 import { SpeedRound } from './exercises/SpeedRound';
 import { BossBattle } from './exercises/BossBattle';
+import { ExplainMistake } from './ExplainMistake';
 
 interface Props {
   exercise: Exercise;
@@ -326,6 +327,12 @@ export function ExerciseRenderer({ exercise, onAnswer, questionNumber, totalQues
           </button>
         )}
         {isChecked && answerState === 'wrong' && (
+          <ExplainMistake
+            exercise={exercise}
+            userAnswer={selectedIndex !== null ? exercise.options?.[selectedIndex]?.[lang] : undefined}
+          />
+        )}
+        {isChecked && answerState === 'wrong' && (
           <button className="btn-primary w-full" onClick={() => onAnswer(false, 0)}>
             {lang === 'en' ? 'Continue →' : 'Продължи →'}
           </button>
@@ -394,6 +401,9 @@ export function ExerciseRenderer({ exercise, onAnswer, questionNumber, totalQues
           <button className="btn-primary w-full" onClick={handleCheck} disabled={!fillValue.trim()}>
             {ui.check}
           </button>
+        )}
+        {isChecked && answerState === 'wrong' && (
+          <ExplainMistake exercise={exercise} userAnswer={fillValue || undefined} />
         )}
         {isChecked && answerState === 'wrong' && (
           <button className="btn-primary w-full" onClick={() => onAnswer(false, 0)}>

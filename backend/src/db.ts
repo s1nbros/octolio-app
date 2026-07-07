@@ -101,6 +101,13 @@ export async function initDb(): Promise<void> {
   // last_workout_date ('YYYY-MM-DD') gates the once-per-day reward.
   await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS last_workout_date TEXT`);
 
+  // AI "Explain my mistake" — free users get a small daily quota of AI-generated
+  // explanations of why an answer was wrong; Pro users are unlimited.
+  //   ai_explain_date  ('YYYY-MM-DD') — the day ai_explain_count applies to
+  //   ai_explain_count — explanations used on ai_explain_date (reset lazily when the day rolls over)
+  await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS ai_explain_date TEXT`);
+  await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS ai_explain_count INTEGER DEFAULT 0`);
+
   // Reminder-email cadence — last date we emailed this user a reminder, so the
   // cron can avoid daily nagging and rate-limit win-back emails to ~monthly.
   await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS last_reminder_sent TEXT`);

@@ -289,6 +289,8 @@ export interface User {
   goal?: string | null;
   experience_level?: string | null;
   daily_goal_min?: number | null;
+  /** Remaining free AI "Explain my mistake" uses today. null = unlimited (Pro). */
+  ai_explains_remaining?: number | null;
 }
 
 export const LEVELS = [
