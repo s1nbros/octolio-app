@@ -359,6 +359,20 @@ gameplay-power gating. Three coupled systems:
   - Surfaced in `GET /api/friends/list` (`friend_streak` per friend, shown as a `🤝🔥N`
     badge in `FriendsSection`) and `GET /api/friends/preview/:id` (`friendStreak`,
     shown as a banner in `UserProfileModal`).
+- **Friend quests** (`friend_quests` table): a weekly co-op goal per friend pair.
+  Both friends' XP earned during the ISO week (Monday-anchored, UTC) counts toward a
+  shared `goal` (`QUEST_GOAL = 500`); at the goal each friend can claim a reward once
+  (`QUEST_REWARD_XP = 120`, `QUEST_REWARD_COINS = 25`). Logic in
+  `backend/src/services/friendQuest.ts`:
+  - `contributeToFriendQuests(userId, xpEarned, today)` is called fire-and-forget from
+    `/api/progress/complete` (lesson XP) and `/api/workout/answer` (workout XP); it
+    upserts the current-week row, adding the XP to the caller's side.
+  - `GET /api/friends/quests` → `{weekStart, goal, quests[]}` (per-friend combined
+    progress, your/their split, `claimable`/`claimed`).
+  - `POST /api/friends/quests/claim {friendId}` — transactional + FOR UPDATE; validates
+    goal met and not already claimed by the caller, then awards XP+coins.
+  - Frontend: a "Weekly co-op quests" section at the top of the friends sub-tab in
+    `FriendsSection` (progress bar + Claim button), shown for pairs with any progress.
 - **Cross-XP notifications**: when a friend overtakes you in XP, the loser gets a
   notification. Detected in `/api/progress/complete` after a user completes a lesson:
   for each `friend` with `friend.xp >= oldXp AND friend.xp < newXp`, insert a
@@ -577,6 +591,9 @@ Key tables:
 - `friend_streaks` — shared streak per friend pair. PK `(user_low, user_high)` with
   `CHECK(user_low < user_high)`. Columns: `streak_count`, `best_streak`,
   `last_incr_date` (YYYY-MM-DD), `updated_at`.
+- `friend_quests` — weekly co-op quest per friend pair. PK `(user_low, user_high, week_start)`
+  with `CHECK(user_low < user_high)`. Columns: `goal`, `xp_low`, `xp_high`,
+  `claimed_low`, `claimed_high`, `updated_at`.
 
 ### Email never blocks an API response
 All `sendVerificationEmail` / `sendPasswordResetEmail` calls go through the
@@ -738,6 +755,8 @@ Friends (`/api/friends/*`):
 - `POST /request {targetUserId | targetName}` — auto-accepts if mutual pending
 - `POST /accept {requestId}`, `POST /decline {requestId}`, `POST /cancel {requestId}`
 - `POST /remove {friendUserId}` — unfriend
+- `GET /quests` — this week's co-op quests (combined XP progress per friend)
+- `POST /quests/claim {friendId}` — claim the co-op reward once the shared goal is met
 
 Notifications (`/api/notifications/*`):
 - `GET /` — last 30, newest first

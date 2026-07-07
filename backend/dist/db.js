@@ -214,6 +214,27 @@ async function initDb() {
       CHECK (user_low < user_high)
     )
   `);
+    // Friend quests — a weekly co-op goal per friend pair. Both friends'
+    // XP earned during the ISO week counts toward a shared `goal`; when the
+    // combined total reaches it, each friend can claim a reward once.
+    //   week_start   — 'YYYY-MM-DD' Monday (UTC) the quest belongs to
+    //   xp_low/xp_high — each side's XP contribution this week
+    //   claimed_low/high — whether that side has claimed the reward
+    await pool.query(`
+    CREATE TABLE IF NOT EXISTS friend_quests (
+      user_low INTEGER NOT NULL REFERENCES users(id),
+      user_high INTEGER NOT NULL REFERENCES users(id),
+      week_start TEXT NOT NULL,
+      goal INTEGER NOT NULL DEFAULT 500,
+      xp_low INTEGER NOT NULL DEFAULT 0,
+      xp_high INTEGER NOT NULL DEFAULT 0,
+      claimed_low BOOLEAN NOT NULL DEFAULT FALSE,
+      claimed_high BOOLEAN NOT NULL DEFAULT FALSE,
+      updated_at TIMESTAMP DEFAULT NOW(),
+      PRIMARY KEY (user_low, user_high, week_start),
+      CHECK (user_low < user_high)
+    )
+  `);
     // Notifications: in-app feed. read flag drives the unread badge.
     await pool.query(`
     CREATE TABLE IF NOT EXISTS notifications (

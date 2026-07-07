@@ -7,6 +7,7 @@ const auth_1 = require("../middleware/auth");
 const db_1 = require("../db");
 const friendStreak_1 = require("../services/friendStreak");
 const streak_1 = require("../services/streak");
+const friendQuest_1 = require("../services/friendQuest");
 exports.friendsRouter = (0, express_1.Router)();
 /* ─── Helper: push a notification row ──────────────────────────── */
 async function notify(userId, type, title, body, link, metadata) {
@@ -345,6 +346,108 @@ exports.friendsRouter.get('/search', auth_1.authenticate, async (req, res) => {
     catch (err) {
         console.error('Friends search error:', err);
         res.status(500).json({ error: 'Server error' });
+    }
+});
+/* ─── GET /api/friends/quests ──────────────────────────────────
+ * This week's co-op quests. One per accepted friend, with combined XP
+ * progress toward the shared goal and whether the caller can claim.
+ */
+exports.friendsRouter.get('/quests', auth_1.authenticate, async (req, res) => {
+    try {
+        const pool = (0, db_1.getPool)();
+        const week = (0, friendQuest_1.weekStartStr)((0, streak_1.todayStr)());
+        const rows = (await pool.query(`SELECT u.id AS friend_id, u.name AS friend_name, u.avatar AS friend_avatar,
+              q.goal, q.xp_low, q.xp_high, q.claimed_low, q.claimed_high
+       FROM friendships f
+       JOIN users u ON u.id = CASE WHEN f.requester_id = $1 THEN f.recipient_id ELSE f.requester_id END
+       LEFT JOIN friend_quests q
+         ON q.user_low = LEAST($1, u.id) AND q.user_high = GREATEST($1, u.id)
+        AND q.week_start = $2
+       WHERE f.status = 'accepted'
+         AND (f.requester_id = $1 OR f.recipient_id = $1)
+       ORDER BY (COALESCE(q.xp_low, 0) + COALESCE(q.xp_high, 0)) DESC`, [req.userId, week])).rows;
+        const quests = rows.map((r) => {
+            const goal = r.goal ?? friendQuest_1.QUEST_GOAL;
+            const yourIsLow = req.userId < r.friend_id;
+            const yours = (yourIsLow ? r.xp_low : r.xp_high) ?? 0;
+            const theirs = (yourIsLow ? r.xp_high : r.xp_low) ?? 0;
+            const combined = yours + theirs;
+            const youClaimed = (yourIsLow ? r.claimed_low : r.claimed_high) ?? false;
+            const complete = combined >= goal;
+            return {
+                friendId: r.friend_id,
+                friendName: r.friend_name,
+                friendAvatar: r.friend_avatar,
+                goal,
+                combined,
+                yourContribution: yours,
+                friendContribution: theirs,
+                complete,
+                claimed: youClaimed,
+                claimable: complete && !youClaimed,
+                rewardXp: friendQuest_1.QUEST_REWARD_XP,
+                rewardCoins: friendQuest_1.QUEST_REWARD_COINS,
+            };
+        });
+        res.json({ weekStart: week, goal: friendQuest_1.QUEST_GOAL, quests });
+    }
+    catch (err) {
+        console.error('Friend quests error:', err);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+/* ─── POST /api/friends/quests/claim ───────────────────────────
+ * Body: { friendId }. Claim this week's co-op reward once the combined
+ * goal is met. Transactional + FOR UPDATE so a double-tap can't double-pay.
+ */
+exports.friendsRouter.post('/quests/claim', auth_1.authenticate, async (req, res) => {
+    const { friendId } = req.body;
+    if (typeof friendId !== 'number') {
+        res.status(400).json({ error: 'friendId required' });
+        return;
+    }
+    const pool = (0, db_1.getPool)();
+    const client = await pool.connect();
+    try {
+        const me = req.userId;
+        const low = Math.min(me, friendId);
+        const high = Math.max(me, friendId);
+        const isLow = me === low;
+        const week = (0, friendQuest_1.weekStartStr)((0, streak_1.todayStr)());
+        await client.query('BEGIN');
+        const q = (await client.query(`SELECT goal, xp_low, xp_high, claimed_low, claimed_high
+         FROM friend_quests
+        WHERE user_low = $1 AND user_high = $2 AND week_start = $3
+        FOR UPDATE`, [low, high, week])).rows[0];
+        if (!q) {
+            await client.query('ROLLBACK');
+            res.status(404).json({ error: 'no_quest' });
+            return;
+        }
+        if (q.xp_low + q.xp_high < q.goal) {
+            await client.query('ROLLBACK');
+            res.status(400).json({ error: 'goal_not_met' });
+            return;
+        }
+        if (isLow ? q.claimed_low : q.claimed_high) {
+            await client.query('ROLLBACK');
+            res.status(400).json({ error: 'already_claimed' });
+            return;
+        }
+        await client.query(`UPDATE friend_quests SET ${isLow ? 'claimed_low' : 'claimed_high'} = TRUE, updated_at = NOW()
+        WHERE user_low = $1 AND user_high = $2 AND week_start = $3`, [low, high, week]);
+        const upd = (await client.query(`UPDATE users SET xp = xp + $2, coins = COALESCE(coins, 0) + $3 WHERE id = $1
+       RETURNING xp, coins`, [me, friendQuest_1.QUEST_REWARD_XP, friendQuest_1.QUEST_REWARD_COINS])).rows[0];
+        await client.query('COMMIT');
+        res.json({ ok: true, xp: upd.xp, coins: upd.coins, rewardXp: friendQuest_1.QUEST_REWARD_XP, rewardCoins: friendQuest_1.QUEST_REWARD_COINS });
+    }
+    catch (err) {
+        await client.query('ROLLBACK').catch(() => { });
+        console.error('Friend quest claim error:', err);
+        res.status(500).json({ error: 'Server error' });
+    }
+    finally {
+        client.release();
     }
 });
 /* ─── Internal helper used by other routes ────────────────────── */

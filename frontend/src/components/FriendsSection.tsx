@@ -34,6 +34,21 @@ interface SearchResult {
   status: 'none' | 'pending_out' | 'pending_in' | 'friends';
 }
 
+interface Quest {
+  friendId: number;
+  friendName: string;
+  friendAvatar: string | null;
+  goal: number;
+  combined: number;
+  yourContribution: number;
+  friendContribution: number;
+  complete: boolean;
+  claimed: boolean;
+  claimable: boolean;
+  rewardXp: number;
+  rewardCoins: number;
+}
+
 type SubTab = 'friends' | 'requests' | 'add';
 
 function Avatar({ avatar, name, size = 40 }: { avatar: string | null; name: string; size?: number }) {
@@ -59,7 +74,7 @@ function Avatar({ avatar, name, size = 40 }: { avatar: string | null; name: stri
 }
 
 export function FriendsSection() {
-  const { token, user } = useAuth();
+  const { token, user, updateUser } = useAuth();
   const { lang } = useLang();
   const [subTab, setSubTab] = useState<SubTab>('friends');
   const [previewUserId, setPreviewUserId] = useState<number | null>(null);
@@ -67,6 +82,8 @@ export function FriendsSection() {
   const [friends, setFriends] = useState<Friend[]>([]);
   const [incoming, setIncoming] = useState<PendingRow[]>([]);
   const [outgoing, setOutgoing] = useState<PendingRow[]>([]);
+  const [quests, setQuests] = useState<Quest[]>([]);
+  const [claiming, setClaiming] = useState<number | null>(null);
 
   const [q, setQ] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
@@ -75,15 +92,37 @@ export function FriendsSection() {
   const loadAll = useCallback(async () => {
     if (!token) return;
     try {
-      const [a, b] = await Promise.all([
+      const [a, b, c] = await Promise.all([
         fetch('/api/friends/list', { headers: { Authorization: `Bearer ${token}` } }).then(r => r.json()),
         fetch('/api/friends/pending', { headers: { Authorization: `Bearer ${token}` } }).then(r => r.json()),
+        fetch('/api/friends/quests', { headers: { Authorization: `Bearer ${token}` } }).then(r => r.json()),
       ]);
       setFriends(a.friends ?? []);
       setIncoming(b.incoming ?? []);
       setOutgoing(b.outgoing ?? []);
+      setQuests(c.quests ?? []);
     } catch {}
   }, [token]);
+
+  const claimQuest = async (friendId: number) => {
+    if (!token || claiming !== null) return;
+    setClaiming(friendId);
+    try {
+      const res = await fetch('/api/friends/quests/claim', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ friendId }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        if (typeof data.xp === 'number') updateUser({ xp: data.xp });
+        if (typeof data.coins === 'number') updateUser({ coins: data.coins });
+        await loadAll();
+      }
+    } catch {} finally {
+      setClaiming(null);
+    }
+  };
 
   useEffect(() => { loadAll(); }, [loadAll]);
 
@@ -140,6 +179,58 @@ export function FriendsSection() {
           );
         })}
       </div>
+
+      {/* Weekly co-op quests */}
+      {subTab === 'friends' && quests.some(q => q.combined > 0 || q.claimable) && (
+        <div className="rounded-2xl p-3 mb-4" style={{ background: 'hsl(var(--c-primary)/0.06)', border: '1px solid hsl(var(--c-primary)/0.2)' }}>
+          <p className="text-xs font-bold uppercase tracking-wide mb-3 flex items-center gap-1.5" style={{ color: 'hsl(var(--c-primary))' }}>
+            🤝 {lang === 'en' ? 'Weekly co-op quests' : 'Седмични съвместни куестове'}
+          </p>
+          <div className="space-y-3">
+            {quests.filter(q => q.combined > 0 || q.claimable).map(q => {
+              const pct = Math.min(100, Math.round((q.combined / q.goal) * 100));
+              return (
+                <div key={q.friendId} className="rounded-xl p-3" style={{ background: 'var(--c-glass)', border: '1px solid var(--c-border)' }}>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <p className="text-sm font-bold truncate" style={{ color: 'hsl(var(--c-fg))' }}>
+                      {lang === 'en' ? 'You + ' : 'Ти + '}{q.friendName}
+                    </p>
+                    <span className="text-[11px] mono flex-shrink-0" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+                      {q.combined.toLocaleString()} / {q.goal.toLocaleString()} XP
+                    </span>
+                  </div>
+                  <div className="progress-bar-track mb-2" style={{ height: '8px' }}>
+                    <div className="progress-bar-fill" style={{ width: `${pct}%` }} />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] mono" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+                      {lang === 'en' ? 'You' : 'Ти'} {q.yourContribution.toLocaleString()} · {q.friendName} {q.friendContribution.toLocaleString()}
+                    </span>
+                    {q.claimed ? (
+                      <span className="text-[11px] font-bold px-2 py-0.5 rounded-full"
+                        style={{ background: 'hsl(var(--c-green)/0.12)', color: 'hsl(var(--c-green))' }}>
+                        ✓ {lang === 'en' ? 'Claimed' : 'Взето'}
+                      </span>
+                    ) : q.claimable ? (
+                      <button onClick={() => claimQuest(q.friendId)} disabled={claiming === q.friendId}
+                        className="text-[11px] font-black px-3 py-1 rounded-full transition-all disabled:opacity-60"
+                        style={{ background: 'hsl(var(--c-green))', color: '#fff' }}>
+                        {claiming === q.friendId
+                          ? '…'
+                          : `${lang === 'en' ? 'Claim' : 'Вземи'} +${q.rewardXp} XP · +${q.rewardCoins} 🪙`}
+                      </button>
+                    ) : (
+                      <span className="text-[10px]" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+                        {lang === 'en' ? `${q.goal - q.combined} XP to go` : `Още ${q.goal - q.combined} XP`}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Friends list */}
       {subTab === 'friends' && (

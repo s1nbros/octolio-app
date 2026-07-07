@@ -19,6 +19,7 @@ import {
 } from '../data/workouts';
 import { computeStreakUpdate, todayStr } from '../services/streak';
 import { updateFriendStreaksForUser } from '../services/friendStreak';
+import { contributeToFriendQuests } from '../services/friendQuest';
 
 export const workoutRouter = Router();
 
@@ -124,6 +125,10 @@ workoutRouter.post('/answer', authenticate, async (req: AuthRequest, res: Respon
     // friend streaks for any friend also active today.
     updateFriendStreaksForUser(req.userId!, today)
       .catch((e) => console.error('friend-streak update failed:', e));
+
+    // Fire-and-forget: workout XP counts toward every friend's weekly co-op quest.
+    contributeToFriendQuests(req.userId!, reward.xp, today)
+      .catch((e) => console.error('friend-quest contribute failed:', e));
 
     res.json({
       alreadyDone: false,

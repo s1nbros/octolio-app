@@ -8,6 +8,7 @@ const lessons_1 = require("../data/lessons");
 const friends_1 = require("./friends");
 const streak_1 = require("../services/streak");
 const friendStreak_1 = require("../services/friendStreak");
+const friendQuest_1 = require("../services/friendQuest");
 exports.progressRouter = (0, express_1.Router)();
 exports.progressRouter.get('/', auth_1.authenticate, async (req, res) => {
     try {
@@ -119,6 +120,9 @@ exports.progressRouter.post('/complete', auth_1.authenticate, async (req, res) =
         // Fire-and-forget: bump shared friend streaks for any friend also active today.
         (0, friendStreak_1.updateFriendStreaksForUser)(req.userId, today)
             .catch((e) => console.error('friend-streak update failed:', e));
+        // Fire-and-forget: add this lesson's XP toward every friend's weekly co-op quest.
+        (0, friendQuest_1.contributeToFriendQuests)(req.userId, xpEarned, today)
+            .catch((e) => console.error('friend-quest contribute failed:', e));
         res.json({
             alreadyCompleted: false,
             xpEarned,

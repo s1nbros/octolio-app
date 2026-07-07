@@ -5,6 +5,7 @@ import { modules } from '../data/lessons';
 import { detectCrossesAndNotify } from './friends';
 import { computeStreakUpdate } from '../services/streak';
 import { updateFriendStreaksForUser } from '../services/friendStreak';
+import { contributeToFriendQuests } from '../services/friendQuest';
 
 export const progressRouter = Router();
 
@@ -172,6 +173,10 @@ progressRouter.post('/complete', authenticate, async (req: AuthRequest, res: Res
     // Fire-and-forget: bump shared friend streaks for any friend also active today.
     updateFriendStreaksForUser(req.userId!, today)
       .catch((e) => console.error('friend-streak update failed:', e));
+
+    // Fire-and-forget: add this lesson's XP toward every friend's weekly co-op quest.
+    contributeToFriendQuests(req.userId!, xpEarned, today)
+      .catch((e) => console.error('friend-quest contribute failed:', e));
 
     res.json({
       alreadyCompleted: false,

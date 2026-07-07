@@ -18,6 +18,7 @@ const db_1 = require("../db");
 const workouts_1 = require("../data/workouts");
 const streak_1 = require("../services/streak");
 const friendStreak_1 = require("../services/friendStreak");
+const friendQuest_1 = require("../services/friendQuest");
 exports.workoutRouter = (0, express_1.Router)();
 /* ── GET /api/workout/today ──────────────────────────────────
  * Returns today's question (without the answer) + whether the user
@@ -96,6 +97,9 @@ exports.workoutRouter.post('/answer', auth_1.authenticate, async (req, res) => {
         // friend streaks for any friend also active today.
         (0, friendStreak_1.updateFriendStreaksForUser)(req.userId, today)
             .catch((e) => console.error('friend-streak update failed:', e));
+        // Fire-and-forget: workout XP counts toward every friend's weekly co-op quest.
+        (0, friendQuest_1.contributeToFriendQuests)(req.userId, reward.xp, today)
+            .catch((e) => console.error('friend-quest contribute failed:', e));
         res.json({
             alreadyDone: false,
             correct,
