@@ -14,6 +14,8 @@ interface Friend {
   xp: number;
   streak: number;
   avatar: string | null;
+  /** Shared friend streak: days both of you practiced in a row. 0 = none/broken. */
+  friend_streak?: number;
 }
 
 interface PendingRow {
@@ -163,7 +165,17 @@ export function FriendsSection() {
                 >
                   <Avatar avatar={f.avatar} name={f.name} />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold truncate" style={{ color: 'hsl(var(--c-fg))' }}>{f.name}</p>
+                    <p className="text-sm font-bold truncate flex items-center gap-1.5" style={{ color: 'hsl(var(--c-fg))' }}>
+                      {f.name}
+                      {(f.friend_streak ?? 0) > 0 && (
+                        <span
+                          className="text-[10px] font-black px-1.5 py-0.5 rounded-full inline-flex items-center gap-0.5"
+                          title={lang === 'en' ? 'Friend streak — days you both practiced in a row' : 'Приятелска серия — дни, в които и двамата тренирахте подред'}
+                          style={{ background: 'hsl(var(--c-orange)/0.15)', color: 'hsl(var(--c-orange))', border: '1px solid hsl(var(--c-orange)/0.3)' }}>
+                          🤝🔥{f.friend_streak}
+                        </span>
+                      )}
+                    </p>
                     <p className="text-[11px] mono" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
                       {f.xp.toLocaleString()} XP · 🔥{f.streak}
                       <span className="ml-2" style={{ color: diff > 0 ? 'hsl(var(--c-red))' : diff < 0 ? 'hsl(var(--c-green))' : 'hsl(var(--c-fg-subtle))' }}>

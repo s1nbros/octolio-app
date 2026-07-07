@@ -344,6 +344,21 @@ gameplay-power gating. Three coupled systems:
   - `self` → "That's you!"
 - Backend endpoint: `GET /api/friends/preview/:id` returns the snapshot + friendship
   status + the pending requestId so the modal can wire Accept/Cancel directly.
+- **Friend streaks** (`friend_streaks` table): a shared streak between two friends
+  that grows +1 on every calendar day BOTH were active (lesson OR Daily Workout) and
+  breaks once a day passes without both. Stored one row per pair, normalized
+  `(user_low < user_high)`. Logic in `backend/src/services/friendStreak.ts`:
+  - `updateFriendStreaksForUser(userId, today)` is called fire-and-forget after the
+    user is marked active in `/api/progress/complete` AND `/api/workout/answer`. It
+    finds accepted friends whose `users.last_active = today` and does a single atomic
+    once-per-day upsert per pair (`ON CONFLICT … WHERE last_incr_date IS DISTINCT FROM
+    today` guards against double-count when both finish at once).
+  - Milestones (3/7/14/30/50/100/200/365) push a `friend_streak` notification to both.
+  - `effectiveStreak(count, lastIncrDate, today)` returns the display value — alive if
+    the last bump was today or yesterday, else 0 (broken).
+  - Surfaced in `GET /api/friends/list` (`friend_streak` per friend, shown as a `🤝🔥N`
+    badge in `FriendsSection`) and `GET /api/friends/preview/:id` (`friendStreak`,
+    shown as a banner in `UserProfileModal`).
 - **Cross-XP notifications**: when a friend overtakes you in XP, the loser gets a
   notification. Detected in `/api/progress/complete` after a user completes a lesson:
   for each `friend` with `friend.xp >= oldXp AND friend.xp < newXp`, insert a
@@ -559,6 +574,9 @@ Key tables:
   `UNIQUE(requester_id, recipient_id)` + `CHECK(requester_id <> recipient_id)`.
 - `notifications` — in-app feed. Columns: `user_id`, `type`, `title`, `body`, `link`,
   `metadata JSONB`, `read BOOLEAN`, `created_at`. Index on `(user_id, read, created_at DESC)`.
+- `friend_streaks` — shared streak per friend pair. PK `(user_low, user_high)` with
+  `CHECK(user_low < user_high)`. Columns: `streak_count`, `best_streak`,
+  `last_incr_date` (YYYY-MM-DD), `updated_at`.
 
 ### Email never blocks an API response
 All `sendVerificationEmail` / `sendPasswordResetEmail` calls go through the

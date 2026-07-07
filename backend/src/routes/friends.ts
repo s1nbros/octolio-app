@@ -1,6 +1,8 @@
 import { Router, Response } from 'express';
 import { authenticate, AuthRequest } from '../middleware/auth';
 import { getPool } from '../db';
+import { effectiveStreak } from '../services/friendStreak';
+import { todayStr } from '../services/streak';
 
 export const friendsRouter = Router();
 
@@ -28,15 +30,32 @@ friendsRouter.get('/list', authenticate, async (req: AuthRequest, res: Response)
   try {
     const pool = getPool();
     const rows = (await pool.query(
-      `SELECT u.id, u.name, u.xp, u.streak, u.avatar, f.created_at AS friend_since
+      `SELECT u.id, u.name, u.xp, u.streak, u.avatar, f.created_at AS friend_since,
+              fs.streak_count AS fs_count, fs.last_incr_date AS fs_date
        FROM friendships f
        JOIN users u ON u.id = CASE WHEN f.requester_id = $1 THEN f.recipient_id ELSE f.requester_id END
+       LEFT JOIN friend_streaks fs
+         ON fs.user_low = LEAST($1, u.id) AND fs.user_high = GREATEST($1, u.id)
        WHERE f.status = 'accepted'
          AND (f.requester_id = $1 OR f.recipient_id = $1)
        ORDER BY u.xp DESC`,
       [req.userId]
-    )).rows;
-    res.json({ friends: rows });
+    )).rows as Array<{
+      id: number; name: string; xp: number; streak: number; avatar: string | null;
+      friend_since: string; fs_count: number | null; fs_date: string | null;
+    }>;
+
+    const today = todayStr();
+    const friends = rows.map((r) => ({
+      id: r.id,
+      name: r.name,
+      xp: r.xp,
+      streak: r.streak,
+      avatar: r.avatar,
+      friend_since: r.friend_since,
+      friend_streak: effectiveStreak(r.fs_count ?? 0, r.fs_date, today),
+    }));
+    res.json({ friends });
   } catch (err) {
     console.error('Friends list error:', err);
     res.status(500).json({ error: 'Server error' });
@@ -326,6 +345,7 @@ friendsRouter.get('/preview/:id', authenticate, async (req: AuthRequest, res: Re
     // Friendship status with the caller
     let friendshipStatus: 'self' | 'friends' | 'pending_out' | 'pending_in' | 'none' = 'none';
     let requestId: number | null = null;
+    let friendStreak = 0;
     if (id === req.userId) {
       friendshipStatus = 'self';
     } else {
@@ -337,8 +357,15 @@ friendsRouter.get('/preview/:id', authenticate, async (req: AuthRequest, res: Re
       )).rows[0] as { id: number; requester_id: number; recipient_id: number; status: string } | undefined;
       if (f) {
         requestId = f.id;
-        if (f.status === 'accepted') friendshipStatus = 'friends';
-        else if (f.status === 'pending') {
+        if (f.status === 'accepted') {
+          friendshipStatus = 'friends';
+          const fs = (await pool.query(
+            `SELECT streak_count, last_incr_date FROM friend_streaks
+             WHERE user_low = LEAST($1, $2) AND user_high = GREATEST($1, $2)`,
+            [req.userId, id]
+          )).rows[0] as { streak_count: number; last_incr_date: string | null } | undefined;
+          if (fs) friendStreak = effectiveStreak(fs.streak_count, fs.last_incr_date, todayStr());
+        } else if (f.status === 'pending') {
           friendshipStatus = f.requester_id === req.userId ? 'pending_out' : 'pending_in';
         }
       }
@@ -358,6 +385,7 @@ friendsRouter.get('/preview/:id', authenticate, async (req: AuthRequest, res: Re
       memberSince: userRow.created_at,
       friendshipStatus,
       requestId,
+      friendStreak,
     });
   } catch (err) {
     console.error('Friends preview error:', err);

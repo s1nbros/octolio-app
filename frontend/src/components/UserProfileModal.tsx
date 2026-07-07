@@ -24,6 +24,7 @@ interface Preview {
   memberSince: string;
   friendshipStatus: 'self' | 'friends' | 'pending_out' | 'pending_in' | 'none';
   requestId: number | null;
+  friendStreak?: number;
 }
 
 interface Props {
@@ -204,6 +205,16 @@ export function UserProfileModal({ userId, onClose, onFriendshipChange }: Props)
                 <Stat label={lang === 'en' ? 'Streak' : 'Стрийк'} value={`🔥 ${preview.streak}`} accent="var(--c-orange)" />
                 <Stat label={lang === 'en' ? 'Lessons' : 'Уроци'} value={String(preview.lessonsCompleted)} accent="var(--c-green)" />
               </div>
+
+              {/* Shared friend streak */}
+              {preview.friendshipStatus === 'friends' && (preview.friendStreak ?? 0) > 0 && (
+                <div className="mb-4 rounded-xl px-4 py-2.5 flex items-center justify-center gap-2 text-sm font-bold"
+                  style={{ background: 'hsl(var(--c-orange)/0.12)', color: 'hsl(var(--c-orange))', border: '1px solid hsl(var(--c-orange)/0.3)' }}>
+                  🤝🔥 {lang === 'en'
+                    ? `${preview.friendStreak}-day friend streak`
+                    : `${preview.friendStreak}-дневна приятелска серия`}
+                </div>
+              )}
 
               {/* Friendship action */}
               {preview.friendshipStatus === 'self' ? (

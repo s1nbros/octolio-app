@@ -4,6 +4,7 @@ import { getPool } from '../db';
 import { modules } from '../data/lessons';
 import { detectCrossesAndNotify } from './friends';
 import { computeStreakUpdate } from '../services/streak';
+import { updateFriendStreaksForUser } from '../services/friendStreak';
 
 export const progressRouter = Router();
 
@@ -167,6 +168,10 @@ progressRouter.post('/complete', authenticate, async (req: AuthRequest, res: Res
     // Fire-and-forget: notify friends we just overtook in XP.
     detectCrossesAndNotify(req.userId!, currentUser.name, currentUser.xp, newXp)
       .catch((e) => console.error('cross-XP notify failed:', e));
+
+    // Fire-and-forget: bump shared friend streaks for any friend also active today.
+    updateFriendStreaksForUser(req.userId!, today)
+      .catch((e) => console.error('friend-streak update failed:', e));
 
     res.json({
       alreadyCompleted: false,

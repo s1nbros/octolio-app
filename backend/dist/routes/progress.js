@@ -7,6 +7,7 @@ const db_1 = require("../db");
 const lessons_1 = require("../data/lessons");
 const friends_1 = require("./friends");
 const streak_1 = require("../services/streak");
+const friendStreak_1 = require("../services/friendStreak");
 exports.progressRouter = (0, express_1.Router)();
 exports.progressRouter.get('/', auth_1.authenticate, async (req, res) => {
     try {
@@ -115,6 +116,9 @@ exports.progressRouter.post('/complete', auth_1.authenticate, async (req, res) =
         // Fire-and-forget: notify friends we just overtook in XP.
         (0, friends_1.detectCrossesAndNotify)(req.userId, currentUser.name, currentUser.xp, newXp)
             .catch((e) => console.error('cross-XP notify failed:', e));
+        // Fire-and-forget: bump shared friend streaks for any friend also active today.
+        (0, friendStreak_1.updateFriendStreaksForUser)(req.userId, today)
+            .catch((e) => console.error('friend-streak update failed:', e));
         res.json({
             alreadyCompleted: false,
             xpEarned,

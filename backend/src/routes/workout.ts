@@ -18,6 +18,7 @@ import {
   WORKOUT_REWARD_WRONG,
 } from '../data/workouts';
 import { computeStreakUpdate, todayStr } from '../services/streak';
+import { updateFriendStreaksForUser } from '../services/friendStreak';
 
 export const workoutRouter = Router();
 
@@ -118,6 +119,12 @@ workoutRouter.post('/answer', authenticate, async (req: AuthRequest, res: Respon
     );
 
     await client.query('COMMIT');
+
+    // Fire-and-forget: the workout counts as "active today", so bump shared
+    // friend streaks for any friend also active today.
+    updateFriendStreaksForUser(req.userId!, today)
+      .catch((e) => console.error('friend-streak update failed:', e));
+
     res.json({
       alreadyDone: false,
       correct,

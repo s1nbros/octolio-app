@@ -17,6 +17,7 @@ const auth_1 = require("../middleware/auth");
 const db_1 = require("../db");
 const workouts_1 = require("../data/workouts");
 const streak_1 = require("../services/streak");
+const friendStreak_1 = require("../services/friendStreak");
 exports.workoutRouter = (0, express_1.Router)();
 /* ── GET /api/workout/today ──────────────────────────────────
  * Returns today's question (without the answer) + whether the user
@@ -91,6 +92,10 @@ exports.workoutRouter.post('/answer', auth_1.authenticate, async (req, res) => {
              last_active = $5, last_workout_date = $5
        WHERE id = $6`, [newXp, newCoins, newStreak, newFreezes, today, req.userId]);
         await client.query('COMMIT');
+        // Fire-and-forget: the workout counts as "active today", so bump shared
+        // friend streaks for any friend also active today.
+        (0, friendStreak_1.updateFriendStreaksForUser)(req.userId, today)
+            .catch((e) => console.error('friend-streak update failed:', e));
         res.json({
             alreadyDone: false,
             correct,

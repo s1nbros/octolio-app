@@ -210,6 +210,26 @@ export async function initDb(): Promise<void> {
   await pool.query(`CREATE INDEX IF NOT EXISTS friendships_recipient_idx ON friendships(recipient_id, status)`);
   await pool.query(`CREATE INDEX IF NOT EXISTS friendships_requester_idx ON friendships(requester_id, status)`);
 
+  // Friend streaks — a shared streak between two friends that grows on every
+  // calendar day BOTH were active, and breaks if a day passes without both.
+  // The pair is stored normalized (user_low < user_high) so there is exactly
+  // one row per friendship regardless of who requested it.
+  //   last_incr_date — 'YYYY-MM-DD' the streak was last bumped (both active)
+  //   streak_count   — current run length; considered broken (effectively 0)
+  //                    on read once last_incr_date is older than yesterday
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS friend_streaks (
+      user_low INTEGER NOT NULL REFERENCES users(id),
+      user_high INTEGER NOT NULL REFERENCES users(id),
+      streak_count INTEGER NOT NULL DEFAULT 0,
+      best_streak INTEGER NOT NULL DEFAULT 0,
+      last_incr_date TEXT,
+      updated_at TIMESTAMP DEFAULT NOW(),
+      PRIMARY KEY (user_low, user_high),
+      CHECK (user_low < user_high)
+    )
+  `);
+
   // Notifications: in-app feed. read flag drives the unread badge.
   await pool.query(`
     CREATE TABLE IF NOT EXISTS notifications (

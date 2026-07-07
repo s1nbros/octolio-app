@@ -5,6 +5,8 @@ exports.detectCrossesAndNotify = detectCrossesAndNotify;
 const express_1 = require("express");
 const auth_1 = require("../middleware/auth");
 const db_1 = require("../db");
+const friendStreak_1 = require("../services/friendStreak");
+const streak_1 = require("../services/streak");
 exports.friendsRouter = (0, express_1.Router)();
 /* ─── Helper: push a notification row ──────────────────────────── */
 async function notify(userId, type, title, body, link, metadata) {
@@ -18,13 +20,26 @@ async function notify(userId, type, title, body, link, metadata) {
 exports.friendsRouter.get('/list', auth_1.authenticate, async (req, res) => {
     try {
         const pool = (0, db_1.getPool)();
-        const rows = (await pool.query(`SELECT u.id, u.name, u.xp, u.streak, u.avatar, f.created_at AS friend_since
+        const rows = (await pool.query(`SELECT u.id, u.name, u.xp, u.streak, u.avatar, f.created_at AS friend_since,
+              fs.streak_count AS fs_count, fs.last_incr_date AS fs_date
        FROM friendships f
        JOIN users u ON u.id = CASE WHEN f.requester_id = $1 THEN f.recipient_id ELSE f.requester_id END
+       LEFT JOIN friend_streaks fs
+         ON fs.user_low = LEAST($1, u.id) AND fs.user_high = GREATEST($1, u.id)
        WHERE f.status = 'accepted'
          AND (f.requester_id = $1 OR f.recipient_id = $1)
        ORDER BY u.xp DESC`, [req.userId])).rows;
-        res.json({ friends: rows });
+        const today = (0, streak_1.todayStr)();
+        const friends = rows.map((r) => ({
+            id: r.id,
+            name: r.name,
+            xp: r.xp,
+            streak: r.streak,
+            avatar: r.avatar,
+            friend_since: r.friend_since,
+            friend_streak: (0, friendStreak_1.effectiveStreak)(r.fs_count ?? 0, r.fs_date, today),
+        }));
+        res.json({ friends });
     }
     catch (err) {
         console.error('Friends list error:', err);
@@ -251,6 +266,7 @@ exports.friendsRouter.get('/preview/:id', auth_1.authenticate, async (req, res) 
         // Friendship status with the caller
         let friendshipStatus = 'none';
         let requestId = null;
+        let friendStreak = 0;
         if (id === req.userId) {
             friendshipStatus = 'self';
         }
@@ -260,8 +276,13 @@ exports.friendsRouter.get('/preview/:id', auth_1.authenticate, async (req, res) 
             OR (requester_id = $2 AND recipient_id = $1)`, [req.userId, id])).rows[0];
             if (f) {
                 requestId = f.id;
-                if (f.status === 'accepted')
+                if (f.status === 'accepted') {
                     friendshipStatus = 'friends';
+                    const fs = (await pool.query(`SELECT streak_count, last_incr_date FROM friend_streaks
+             WHERE user_low = LEAST($1, $2) AND user_high = GREATEST($1, $2)`, [req.userId, id])).rows[0];
+                    if (fs)
+                        friendStreak = (0, friendStreak_1.effectiveStreak)(fs.streak_count, fs.last_incr_date, (0, streak_1.todayStr)());
+                }
                 else if (f.status === 'pending') {
                     friendshipStatus = f.requester_id === req.userId ? 'pending_out' : 'pending_in';
                 }
@@ -281,6 +302,7 @@ exports.friendsRouter.get('/preview/:id', auth_1.authenticate, async (req, res) 
             memberSince: userRow.created_at,
             friendshipStatus,
             requestId,
+            friendStreak,
         });
     }
     catch (err) {
