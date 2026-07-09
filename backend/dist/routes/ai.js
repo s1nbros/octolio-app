@@ -13,6 +13,14 @@ const gemini = process.env.GEMINI_API_KEY ? new generative_ai_1.GoogleGenerative
 const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
 /** Free users get this many "Explain my mistake" AI calls per calendar day. Pro = unlimited. */
 exports.DAILY_FREE_EXPLAINS = 3;
+/** Map a provider error to a clean HTTP response — 429 quota/rate limits get their own code. */
+function sendAiError(res, err, label) {
+    const status = err?.status ?? err?.response?.status;
+    const detail = err?.error?.error?.message ?? err?.message ?? 'AI error';
+    const isRateLimit = status === 429 || /\b429\b|too many requests|quota|resource[_ ]?exhausted|rate limit/i.test(String(detail));
+    console.error(label, status, detail);
+    res.status(isRateLimit ? 429 : 500).json({ error: isRateLimit ? 'rate_limited' : detail });
+}
 const SYSTEM_PROMPT = `You are Octolio's AI financial advisor — a knowledgeable, friendly expert in personal finance.
 Your job: give clear, actionable, non-generic financial guidance.
 
@@ -56,10 +64,7 @@ exports.aiRouter.post('/chat', auth_1.authenticate, async (req, res) => {
         res.json({ text });
     }
     catch (err) {
-        const status = err?.status ?? err?.response?.status;
-        const detail = err?.error?.error?.message ?? err?.message ?? 'AI error';
-        console.error('AI chat error:', status, detail);
-        res.status(500).json({ error: detail });
+        sendAiError(res, err, 'AI chat error:');
     }
 });
 // ── AI "Explain my mistake" ──────────────────────────────────────────────
@@ -125,9 +130,6 @@ exports.aiRouter.post('/explain', auth_1.authenticate, async (req, res) => {
         res.json({ text, remaining, limit: exports.DAILY_FREE_EXPLAINS, unlimited: isPro });
     }
     catch (err) {
-        const status = err?.status ?? err?.response?.status;
-        const detail = err?.error?.error?.message ?? err?.message ?? 'AI error';
-        console.error('AI explain error:', status, detail);
-        res.status(500).json({ error: detail });
+        sendAiError(res, err, 'AI explain error:');
     }
 });

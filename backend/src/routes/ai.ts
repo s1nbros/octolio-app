@@ -14,6 +14,16 @@ const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
 /** Free users get this many "Explain my mistake" AI calls per calendar day. Pro = unlimited. */
 export const DAILY_FREE_EXPLAINS = 3;
 
+/** Map a provider error to a clean HTTP response — 429 quota/rate limits get their own code. */
+function sendAiError(res: Response, err: any, label: string): void {
+  const status = err?.status ?? err?.response?.status;
+  const detail = err?.error?.error?.message ?? err?.message ?? 'AI error';
+  const isRateLimit =
+    status === 429 || /\b429\b|too many requests|quota|resource[_ ]?exhausted|rate limit/i.test(String(detail));
+  console.error(label, status, detail);
+  res.status(isRateLimit ? 429 : 500).json({ error: isRateLimit ? 'rate_limited' : detail });
+}
+
 const SYSTEM_PROMPT = `You are Octolio's AI financial advisor — a knowledgeable, friendly expert in personal finance.
 Your job: give clear, actionable, non-generic financial guidance.
 
@@ -63,10 +73,7 @@ aiRouter.post('/chat', authenticate, async (req: AuthRequest, res: Response): Pr
 
     res.json({ text });
   } catch (err: any) {
-    const status = err?.status ?? err?.response?.status;
-    const detail = err?.error?.error?.message ?? err?.message ?? 'AI error';
-    console.error('AI chat error:', status, detail);
-    res.status(500).json({ error: detail });
+    sendAiError(res, err, 'AI chat error:');
   }
 });
 
@@ -153,9 +160,6 @@ aiRouter.post('/explain', authenticate, async (req: AuthRequest, res: Response):
 
     res.json({ text, remaining, limit: DAILY_FREE_EXPLAINS, unlimited: isPro });
   } catch (err: any) {
-    const status = err?.status ?? err?.response?.status;
-    const detail = err?.error?.error?.message ?? err?.message ?? 'AI error';
-    console.error('AI explain error:', status, detail);
-    res.status(500).json({ error: detail });
+    sendAiError(res, err, 'AI explain error:');
   }
 });
