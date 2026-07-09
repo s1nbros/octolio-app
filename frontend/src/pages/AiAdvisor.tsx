@@ -5,6 +5,71 @@ import { useLang } from '../contexts/LanguageContext';
 
 interface Msg { role: 'user' | 'assistant'; content: string; }
 
+/** Parse inline **bold** / *italic* into React nodes. */
+function renderInline(text: string, keyBase: string): React.ReactNode[] {
+  const nodes: React.ReactNode[] = [];
+  const regex = /(\*\*.+?\*\*|\*[^*\s].*?\*)/g;
+  let last = 0;
+  let m: RegExpExecArray | null;
+  let i = 0;
+  while ((m = regex.exec(text)) !== null) {
+    if (m.index > last) nodes.push(text.slice(last, m.index));
+    const tok = m[0];
+    if (tok.startsWith('**')) nodes.push(<strong key={`${keyBase}-${i}`}>{tok.slice(2, -2)}</strong>);
+    else nodes.push(<em key={`${keyBase}-${i}`}>{tok.slice(1, -1)}</em>);
+    last = m.index + tok.length;
+    i++;
+  }
+  if (last < text.length) nodes.push(text.slice(last));
+  return nodes;
+}
+
+/** Lightweight Markdown renderer for coach replies (headings, bullets, bold). */
+function FormattedMessage({ text }: { text: string }) {
+  const lines = text.split('\n');
+  return (
+    <div className="space-y-1.5">
+      {lines.map((raw, idx) => {
+        const line = raw.replace(/\s+$/, '');
+        if (!line.trim()) return <div key={idx} style={{ height: 4 }} />;
+
+        const heading = line.match(/^(#{1,6})\s+(.*)$/);
+        if (heading) {
+          return (
+            <p key={idx} className="font-bold mt-1" style={{ color: 'hsl(var(--c-fg))' }}>
+              {renderInline(heading[2], `h${idx}`)}
+            </p>
+          );
+        }
+
+        const bullet = line.match(/^(\s*)[-*]\s+(.*)$/);
+        if (bullet) {
+          const indent = Math.min(bullet[1].length, 8);
+          return (
+            <div key={idx} className="flex gap-2" style={{ paddingLeft: 2 + indent * 2 }}>
+              <span style={{ color: 'hsl(var(--c-primary))' }}>•</span>
+              <span className="flex-1">{renderInline(bullet[2], `b${idx}`)}</span>
+            </div>
+          );
+        }
+
+        const numbered = line.match(/^(\s*)(\d+)\.\s+(.*)$/);
+        if (numbered) {
+          const indent = Math.min(numbered[1].length, 8);
+          return (
+            <div key={idx} className="flex gap-2" style={{ paddingLeft: 2 + indent * 2 }}>
+              <span className="font-semibold" style={{ color: 'hsl(var(--c-primary))' }}>{numbered[2]}.</span>
+              <span className="flex-1">{renderInline(numbered[3], `n${idx}`)}</span>
+            </div>
+          );
+        }
+
+        return <p key={idx}>{renderInline(line, `p${idx}`)}</p>;
+      })}
+    </div>
+  );
+}
+
 const SUGGESTIONS: { en: string; bg: string }[] = [
   { en: 'How do I start an emergency fund?', bg: 'Как да започна авариен фонд?' },
   { en: 'Explain the 50/30/20 budgeting rule', bg: 'Обясни правилото 50/30/20 за бюджет' },
@@ -145,11 +210,13 @@ export function AiAdvisor() {
 
           {messages.map((m, i) => (
             <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <div className="max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap"
+              <div className="max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed"
                 style={m.role === 'user'
                   ? { background: 'hsl(var(--c-primary))', color: '#fff' }
                   : { background: 'var(--c-glass)', border: '1px solid var(--c-border)', color: 'hsl(var(--c-fg))' }}>
-                {m.content}
+                {m.role === 'user'
+                  ? <span className="whitespace-pre-wrap">{m.content}</span>
+                  : <FormattedMessage text={m.content} />}
               </div>
             </div>
           ))}

@@ -62,8 +62,11 @@ octolio-app/
         AiAdvisor.tsx       — AI Coach chat UI (/advisor). Pro-gated (free users get an
                               upsell wall); Pro users get a message list + input that POSTs
                               the transcript to /api/ai/chat (Gemini) and renders {text}.
-                              Suggestion chips seed the empty state. Nav link enabled for all
-                              (free → upsell) in both AppShell sidebar + Navbar mobile drawer.
+                              Assistant replies pass through a lightweight in-file Markdown
+                              renderer (FormattedMessage: **bold**, headings, -/* bullets,
+                              numbered lists) so raw md symbols aren't shown. Suggestion chips
+                              seed the empty state. Nav link enabled for all (free → upsell) in
+                              both AppShell sidebar + Navbar mobile drawer.
         Onboarding.tsx      — pro-vs-free plan picker (gated route)
         GeneratedLesson.tsx — AI-generated lesson runner
         Register.tsx        — debounced live availability hints (banned/taken)
