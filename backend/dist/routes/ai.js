@@ -10,7 +10,7 @@ exports.aiRouter = (0, express_1.Router)();
 // Both the Pro advisor (/chat) and the free "Explain my mistake" tutor (/explain)
 // run on Google Gemini's free tier.
 const gemini = process.env.GEMINI_API_KEY ? new generative_ai_1.GoogleGenerativeAI(process.env.GEMINI_API_KEY) : null;
-const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
+const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash-lite';
 /** Free users get this many "Explain my mistake" AI calls per calendar day. Pro = unlimited. */
 exports.DAILY_FREE_EXPLAINS = 3;
 /** Map a provider error to a clean HTTP response — 429 quota/rate limits get their own code. */

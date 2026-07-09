@@ -215,7 +215,7 @@ a dev-only orange stub instead of failing silently.
 | `EMAIL_DEBUG_TOKEN` | optional           | enables `/api/auth/email-diag`             |
 | `STRIPE_*`        | yes                  | Stripe checkout + webhook                   |
 | `GEMINI_API_KEY`  | yes for AI features  | free Google AI Studio key powering BOTH `/api/ai/chat` and `/api/ai/explain` |
-| `GEMINI_MODEL`    | optional             | overrides the Gemini model id (default `gemini-2.0-flash`) |
+| `GEMINI_MODEL`    | optional             | overrides the Gemini model id (default `gemini-2.5-flash-lite`) |
 | `ANTHROPIC_API_KEY` | no longer used     | app fully migrated off Anthropic to Gemini for AI |
 | `GOOGLE_CLIENT_ID` | yes if Google sign-in | OAuth 2.0 Web Client ID — audience for ID-token verification |
 
@@ -508,14 +508,14 @@ card + the portal-rendered answer modal. Updates xp/coins/streak in context on a
 - Accessible only to `is_pro` users
 - Route: `POST /api/ai/chat` — returns `{ text }` (plain JSON, not SSE). Body is
   `{ messages: [{role:'user'|'assistant', content}] }`; last 20 turns are sent.
-- **Runs on Google Gemini** (`gemini-2.0-flash` by default) via `GEMINI_API_KEY` — the
+- **Runs on Google Gemini** (`gemini-2.5-flash-lite` by default) via `GEMINI_API_KEY` — the
   advisor transcript is mapped to Gemini's format (`assistant` → `model`) with
   `SYSTEM_PROMPT` as the system instruction.
 - Free users see upsell wall with Stripe checkout button
 
 ### AI "Explain my mistake" (wrong-answer tutor)
 - After a wrong answer, a `🐙 Why was this wrong?` button appears; tapping it asks
-  **Google Gemini** (free tier — `gemini-2.0-flash` by default) to explain the mistake in
+  **Google Gemini** (free tier — `gemini-2.5-flash-lite` by default) to explain the mistake in
   ≤90 words, in the exercise's language. (Both AI endpoints — this one and the Pro
   `/chat` advisor — run on Gemini's free tier.)
 - Requires `GEMINI_API_KEY` (create a free key at aistudio.google.com). Optional
