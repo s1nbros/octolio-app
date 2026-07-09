@@ -82,7 +82,9 @@ export function AiAdvisor() {
         setError(
           data.error === 'AI service not configured'
             ? (lang === 'en' ? 'AI coach is temporarily unavailable.' : 'AI треньорът е временно недостъпен.')
-            : (lang === 'en' ? 'Something went wrong — try again.' : 'Нещо се обърка — опитай пак.')
+            : (data.error
+                ? `⚠ ${data.error}`
+                : (lang === 'en' ? 'Something went wrong — try again.' : 'Нещо се обърка — опитай пак.'))
         );
       } else {
         setMessages((m) => [...m, { role: 'assistant', content: data.text }]);
