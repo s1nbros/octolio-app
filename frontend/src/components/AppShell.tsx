@@ -414,9 +414,7 @@ function LeftSidebar() {
         <SidebarLink to="/tools" active={isActive('/tools')} label={lang === 'en' ? 'Tools' : 'Инструменти'} icon={<IconTools />} isNew={!seenTools} />
         <SidebarLink to="/league" active={isActive('/league')} label={labels.league} icon={<IconLeague />} />
         <SidebarLink to="/shop" active={isActive('/shop')} label={lang === 'en' ? 'Shop' : 'Магазин'} icon={<IconShop />} isNew={!seenShop} />
-        {user.is_pro && (
-          <SidebarLink to="/advisor" active={isActive('/advisor')} label={`✦ ${labels.advisor}`} icon={<IconAdvisor />} disabled />
-        )}
+        <SidebarLink to="/advisor" active={isActive('/advisor')} label={`✦ ${labels.advisor}`} icon={<IconAdvisor />} />
       </nav>
 
       {/* Bottom controls */}

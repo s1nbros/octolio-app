@@ -59,7 +59,11 @@ octolio-app/
                               ─ friends: <FriendsSection /> (replaces the old standalone /friends page)
                               ─ tab is sync'd to URL ?tab=... so deep links work
         League.tsx          — XP leaderboard; rows tap-to-open <UserProfileModal/>
-        AiAdvisor.tsx       — AI chat (Pro-only, SSE streaming)
+        AiAdvisor.tsx       — AI Coach chat UI (/advisor). Pro-gated (free users get an
+                              upsell wall); Pro users get a message list + input that POSTs
+                              the transcript to /api/ai/chat (Gemini) and renders {text}.
+                              Suggestion chips seed the empty state. Nav link enabled for all
+                              (free → upsell) in both AppShell sidebar + Navbar mobile drawer.
         Onboarding.tsx      — pro-vs-free plan picker (gated route)
         GeneratedLesson.tsx — AI-generated lesson runner
         Register.tsx        — debounced live availability hints (banned/taken)
