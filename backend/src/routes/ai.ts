@@ -14,14 +14,39 @@ const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash-lite';
 /** Free users get this many "Explain my mistake" AI calls per calendar day. Pro = unlimited. */
 export const DAILY_FREE_EXPLAINS = 3;
 
-/** Map a provider error to a clean HTTP response — 429 quota/rate limits get their own code. */
+/** Transient server-side errors (model overloaded / internal) worth retrying. NOT 429. */
+function isTransient(err: any): boolean {
+  const status = err?.status ?? err?.response?.status;
+  const msg = String(err?.error?.error?.message ?? err?.message ?? '');
+  return status === 503 || status === 500 || /\b50[03]\b|unavailable|overloaded|high demand|internal error/i.test(msg);
+}
+
+/** Call Gemini with a couple of backoff retries for transient 503/500 overloads. */
+async function generateWithRetry(model: any, request: any, attempts = 3): Promise<any> {
+  let lastErr: any;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      return await model.generateContent(request);
+    } catch (err) {
+      lastErr = err;
+      if (!isTransient(err) || i === attempts - 1) throw err;
+      await new Promise((r) => setTimeout(r, 400 * 2 ** i)); // 400ms, 800ms
+    }
+  }
+  throw lastErr;
+}
+
+/** Map a provider error to a clean HTTP response — quota + overload get their own codes. */
 function sendAiError(res: Response, err: any, label: string): void {
   const status = err?.status ?? err?.response?.status;
   const detail = err?.error?.error?.message ?? err?.message ?? 'AI error';
   const isRateLimit =
     status === 429 || /\b429\b|too many requests|quota|resource[_ ]?exhausted|rate limit/i.test(String(detail));
+  const isOverloaded = isTransient(err);
   console.error(label, status, detail);
-  res.status(isRateLimit ? 429 : 500).json({ error: isRateLimit ? 'rate_limited' : detail });
+  const code = isRateLimit ? 429 : isOverloaded ? 503 : 500;
+  const body = isRateLimit ? 'rate_limited' : isOverloaded ? 'overloaded' : detail;
+  res.status(code).json({ error: body });
 }
 
 const SYSTEM_PROMPT = `You are Octolio's AI financial advisor — a knowledgeable, friendly expert in personal finance.
@@ -68,7 +93,7 @@ aiRouter.post('/chat', authenticate, async (req: AuthRequest, res: Response): Pr
       systemInstruction: SYSTEM_PROMPT,
       generationConfig: { maxOutputTokens: 1024 },
     });
-    const result = await model.generateContent({ contents });
+    const result = await generateWithRetry(model, { contents });
     const text = result.response.text();
 
     res.json({ text });
@@ -137,7 +162,7 @@ aiRouter.post('/explain', authenticate, async (req: AuthRequest, res: Response):
       systemInstruction: EXPLAIN_SYSTEM,
       generationConfig: { maxOutputTokens: 400, temperature: 0.6 },
     });
-    const result = await model.generateContent(userMsg);
+    const result = await generateWithRetry(model, userMsg);
     const text = result.response.text().trim();
 
     if (!text) {

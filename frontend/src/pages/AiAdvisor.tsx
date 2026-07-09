@@ -151,6 +151,10 @@ export function AiAdvisor() {
               ? (lang === 'en'
                   ? 'The coach is busy right now (free usage limit). Please wait a minute and try again.'
                   : 'Треньорът е зает в момента (лимит на безплатно ползване). Изчакай минута и опитай пак.')
+              : data.error === 'overloaded'
+                ? (lang === 'en'
+                    ? 'The AI is briefly overloaded. Please try again in a moment.'
+                    : 'AI е претоварен за момент. Опитай пак след малко.')
               : (data.error
                   ? `⚠ ${data.error}`
                   : (lang === 'en' ? 'Something went wrong — try again.' : 'Нещо се обърка — опитай пак.'))
