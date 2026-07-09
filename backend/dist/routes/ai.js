@@ -6,11 +6,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DAILY_FREE_EXPLAINS = exports.aiRouter = void 0;
 const express_1 = require("express");
 const sdk_1 = __importDefault(require("@anthropic-ai/sdk"));
+const generative_ai_1 = require("@google/generative-ai");
 const auth_1 = require("../middleware/auth");
 const db_1 = require("../db");
 const streak_1 = require("../services/streak");
 exports.aiRouter = (0, express_1.Router)();
+// The Pro advisor (/chat) runs on Anthropic; the free "Explain my mistake"
+// tutor (/explain) runs on Google Gemini's free tier.
 const anthropic = new sdk_1.default({ apiKey: process.env.ANTHROPIC_API_KEY });
+const gemini = process.env.GEMINI_API_KEY ? new generative_ai_1.GoogleGenerativeAI(process.env.GEMINI_API_KEY) : null;
+const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
 /** Free users get this many "Explain my mistake" AI calls per calendar day. Pro = unlimited. */
 exports.DAILY_FREE_EXPLAINS = 3;
 const SYSTEM_PROMPT = `You are Octolio's AI financial advisor — a knowledgeable, friendly expert in personal finance.
@@ -78,7 +83,8 @@ exports.aiRouter.post('/explain', auth_1.authenticate, async (req, res) => {
         res.status(400).json({ error: 'context required' });
         return;
     }
-    if (!process.env.ANTHROPIC_API_KEY) {
+    if (!gemini) {
+        console.error('AI explain: GEMINI_API_KEY missing');
         res.status(500).json({ error: 'AI service not configured' });
         return;
     }
@@ -98,16 +104,17 @@ exports.aiRouter.post('/explain', auth_1.authenticate, async (req, res) => {
     try {
         const userMsg = `Exercise the learner got wrong:\n${context.slice(0, 4000)}` +
             (userAnswer ? `\n\nThe learner's (incorrect) answer: ${String(userAnswer).slice(0, 300)}` : '');
-        const response = await anthropic.messages.create({
-            model: 'claude-haiku-4-5-20251001',
-            max_tokens: 400,
-            system: EXPLAIN_SYSTEM,
-            messages: [{ role: 'user', content: userMsg }],
+        const model = gemini.getGenerativeModel({
+            model: GEMINI_MODEL,
+            systemInstruction: EXPLAIN_SYSTEM,
+            generationConfig: { maxOutputTokens: 400, temperature: 0.6 },
         });
-        const text = response.content
-            .map((block) => (block.type === 'text' ? block.text : ''))
-            .join('')
-            .trim();
+        const result = await model.generateContent(userMsg);
+        const text = result.response.text().trim();
+        if (!text) {
+            res.status(500).json({ error: 'empty response' });
+            return;
+        }
         let remaining = null;
         if (!isPro) {
             // Atomically bump the counter, resetting it when the calendar day has rolled over.

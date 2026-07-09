@@ -1,12 +1,17 @@
 import { Router, Response } from 'express';
 import Anthropic from '@anthropic-ai/sdk';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import { authenticate, AuthRequest } from '../middleware/auth';
 import { getPool } from '../db';
 import { todayStr } from '../services/streak';
 
 export const aiRouter = Router();
 
+// The Pro advisor (/chat) runs on Anthropic; the free "Explain my mistake"
+// tutor (/explain) runs on Google Gemini's free tier.
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const gemini = process.env.GEMINI_API_KEY ? new GoogleGenerativeAI(process.env.GEMINI_API_KEY) : null;
+const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
 
 /** Free users get this many "Explain my mistake" AI calls per calendar day. Pro = unlimited. */
 export const DAILY_FREE_EXPLAINS = 3;
@@ -86,7 +91,8 @@ aiRouter.post('/explain', authenticate, async (req: AuthRequest, res: Response):
     return;
   }
 
-  if (!process.env.ANTHROPIC_API_KEY) {
+  if (!gemini) {
+    console.error('AI explain: GEMINI_API_KEY missing');
     res.status(500).json({ error: 'AI service not configured' });
     return;
   }
@@ -118,17 +124,18 @@ aiRouter.post('/explain', authenticate, async (req: AuthRequest, res: Response):
       `Exercise the learner got wrong:\n${context.slice(0, 4000)}` +
       (userAnswer ? `\n\nThe learner's (incorrect) answer: ${String(userAnswer).slice(0, 300)}` : '');
 
-    const response = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 400,
-      system: EXPLAIN_SYSTEM,
-      messages: [{ role: 'user', content: userMsg }],
+    const model = gemini.getGenerativeModel({
+      model: GEMINI_MODEL,
+      systemInstruction: EXPLAIN_SYSTEM,
+      generationConfig: { maxOutputTokens: 400, temperature: 0.6 },
     });
+    const result = await model.generateContent(userMsg);
+    const text = result.response.text().trim();
 
-    const text = response.content
-      .map((block) => (block.type === 'text' ? block.text : ''))
-      .join('')
-      .trim();
+    if (!text) {
+      res.status(500).json({ error: 'empty response' });
+      return;
+    }
 
     let remaining: number | null = null;
     if (!isPro) {

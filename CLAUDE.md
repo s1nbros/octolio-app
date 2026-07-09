@@ -209,7 +209,9 @@ a dev-only orange stub instead of failing silently.
 | `APP_URL` / `FRONTEND_URL` | yes         | base URL used in email links               |
 | `SMTP_*`          | optional fallback    | only used if `RESEND_API_KEY` not set      |
 | `EMAIL_DEBUG_TOKEN` | optional           | enables `/api/auth/email-diag`             |
-| `STRIPE_*`, `ANTHROPIC_API_KEY` | yes      | for Stripe + AI advisor                    |
+| `STRIPE_*`, `ANTHROPIC_API_KEY` | yes      | for Stripe + Pro AI advisor (`/api/ai/chat`) |
+| `GEMINI_API_KEY`  | yes for Explain      | free Google AI Studio key powering `/api/ai/explain` |
+| `GEMINI_MODEL`    | optional             | overrides the Gemini model id (default `gemini-2.0-flash`) |
 | `GOOGLE_CLIENT_ID` | yes if Google sign-in | OAuth 2.0 Web Client ID — audience for ID-token verification |
 
 ## Key Business Rules
@@ -505,7 +507,12 @@ card + the portal-rendered answer modal. Updates xp/coins/streak in context on a
 
 ### AI "Explain my mistake" (wrong-answer tutor)
 - After a wrong answer, a `🐙 Why was this wrong?` button appears; tapping it asks
-  Claude Haiku to explain the mistake in ≤90 words, in the exercise's language.
+  **Google Gemini** (free tier — `gemini-2.0-flash` by default) to explain the mistake in
+  ≤90 words, in the exercise's language. (The Pro `/chat` advisor still uses Anthropic;
+  only this endpoint runs on Gemini so it can lean on Gemini's free quota.)
+- Requires `GEMINI_API_KEY` (create a free key at aistudio.google.com). Optional
+  `GEMINI_MODEL` overrides the model id. If `GEMINI_API_KEY` is unset the endpoint returns
+  `500 {error:'AI service not configured'}` and the button shows a "try again" message.
 - **Free users get `DAILY_FREE_EXPLAINS = 3`/calendar day; Pro is unlimited.** When a
   free user runs out, the button becomes a Pro upsell (→ Stripe checkout).
 - Route: `POST /api/ai/explain {context, userAnswer?}` (auth) — `context` is a compact,
