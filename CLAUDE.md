@@ -533,6 +533,10 @@ card + the portal-rendered answer modal. Updates xp/coins/streak in context on a
   `speed_round`, `boss_battle`, sliders, sims) which don't pause on a single wrong answer.
   To add to another type, render it above that component's "Continue →" button — no
   backend change needed.
+- The button **hides itself when the exercise already has a built-in `explanation`**
+  (`ExplainMistake` returns null in that case), so it only appears as a fallback on
+  exercises that ship no written explanation. Most authored content has an explanation, so
+  in practice the AI button shows only where one is missing.
 
 ## Deployment
 - Render: backend + frontend as separate services
