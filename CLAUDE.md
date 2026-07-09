@@ -209,9 +209,10 @@ a dev-only orange stub instead of failing silently.
 | `APP_URL` / `FRONTEND_URL` | yes         | base URL used in email links               |
 | `SMTP_*`          | optional fallback    | only used if `RESEND_API_KEY` not set      |
 | `EMAIL_DEBUG_TOKEN` | optional           | enables `/api/auth/email-diag`             |
-| `STRIPE_*`, `ANTHROPIC_API_KEY` | yes      | for Stripe + Pro AI advisor (`/api/ai/chat`) |
-| `GEMINI_API_KEY`  | yes for Explain      | free Google AI Studio key powering `/api/ai/explain` |
+| `STRIPE_*`        | yes                  | Stripe checkout + webhook                   |
+| `GEMINI_API_KEY`  | yes for AI features  | free Google AI Studio key powering BOTH `/api/ai/chat` and `/api/ai/explain` |
 | `GEMINI_MODEL`    | optional             | overrides the Gemini model id (default `gemini-2.0-flash`) |
+| `ANTHROPIC_API_KEY` | no longer used     | app fully migrated off Anthropic to Gemini for AI |
 | `GOOGLE_CLIENT_ID` | yes if Google sign-in | OAuth 2.0 Web Client ID — audience for ID-token verification |
 
 ## Key Business Rules
@@ -501,15 +502,18 @@ card + the portal-rendered answer modal. Updates xp/coins/streak in context on a
 
 ### AI Advisor
 - Accessible only to `is_pro` users
-- Route: `POST /api/ai/chat` — SSE stream
-- Model: `claude-haiku-4-5-20251001`
+- Route: `POST /api/ai/chat` — returns `{ text }` (plain JSON, not SSE). Body is
+  `{ messages: [{role:'user'|'assistant', content}] }`; last 20 turns are sent.
+- **Runs on Google Gemini** (`gemini-2.0-flash` by default) via `GEMINI_API_KEY` — the
+  advisor transcript is mapped to Gemini's format (`assistant` → `model`) with
+  `SYSTEM_PROMPT` as the system instruction.
 - Free users see upsell wall with Stripe checkout button
 
 ### AI "Explain my mistake" (wrong-answer tutor)
 - After a wrong answer, a `🐙 Why was this wrong?` button appears; tapping it asks
   **Google Gemini** (free tier — `gemini-2.0-flash` by default) to explain the mistake in
-  ≤90 words, in the exercise's language. (The Pro `/chat` advisor still uses Anthropic;
-  only this endpoint runs on Gemini so it can lean on Gemini's free quota.)
+  ≤90 words, in the exercise's language. (Both AI endpoints — this one and the Pro
+  `/chat` advisor — run on Gemini's free tier.)
 - Requires `GEMINI_API_KEY` (create a free key at aistudio.google.com). Optional
   `GEMINI_MODEL` overrides the model id. If `GEMINI_API_KEY` is unset the endpoint returns
   `500 {error:'AI service not configured'}` and the button shows a "try again" message.
@@ -546,17 +550,18 @@ card + the portal-rendered answer modal. Updates xp/coins/streak in context on a
 
 ## Important Technical Notes
 
-### Anthropic SDK Streaming (v0.30.x)
-Use `.on('text')` + `await stream.done()` pattern:
+### AI provider (Google Gemini)
+Both AI endpoints live in `backend/src/routes/ai.ts` and use the
+`@google/generative-ai` SDK (non-streaming — they return `{ text }` as plain JSON):
 ```typescript
-const stream = anthropic.messages.stream({ ... });
-stream.on('text', (text) => res.write(`data: ${JSON.stringify({ text })}\n\n`));
-await stream.done();
-res.write('data: [DONE]\n\n');
-res.end();
+const gemini = process.env.GEMINI_API_KEY ? new GoogleGenerativeAI(process.env.GEMINI_API_KEY) : null;
+const model = gemini.getGenerativeModel({ model: GEMINI_MODEL, systemInstruction, generationConfig: { maxOutputTokens } });
+const result = await model.generateContent(userMsg);        // or { contents } for multi-turn chat
+const text = result.response.text();
 ```
-**Do NOT** use `for await (chunk of stream)` — unreliable at this SDK version.
-Always call `res.flushHeaders()` before streaming to send SSE headers immediately.
+For multi-turn chat, map roles: `assistant` → `model`, `user` → `user`, and pass
+`{ contents: [{ role, parts: [{ text }] }] }`. The app was migrated off Anthropic;
+`ANTHROPIC_API_KEY` is no longer read.
 
 ### JSON files and tsc
 `tsc` does NOT copy non-`.ts` files. JSON data files must be explicitly copied in the build script.

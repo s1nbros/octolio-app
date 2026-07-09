@@ -1,19 +1,14 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DAILY_FREE_EXPLAINS = exports.aiRouter = void 0;
 const express_1 = require("express");
-const sdk_1 = __importDefault(require("@anthropic-ai/sdk"));
 const generative_ai_1 = require("@google/generative-ai");
 const auth_1 = require("../middleware/auth");
 const db_1 = require("../db");
 const streak_1 = require("../services/streak");
 exports.aiRouter = (0, express_1.Router)();
-// The Pro advisor (/chat) runs on Anthropic; the free "Explain my mistake"
-// tutor (/explain) runs on Google Gemini's free tier.
-const anthropic = new sdk_1.default({ apiKey: process.env.ANTHROPIC_API_KEY });
+// Both the Pro advisor (/chat) and the free "Explain my mistake" tutor (/explain)
+// run on Google Gemini's free tier.
 const gemini = process.env.GEMINI_API_KEY ? new generative_ai_1.GoogleGenerativeAI(process.env.GEMINI_API_KEY) : null;
 const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
 /** Free users get this many "Explain my mistake" AI calls per calendar day. Pro = unlimited. */
@@ -40,27 +35,30 @@ exports.aiRouter.post('/chat', auth_1.authenticate, async (req, res) => {
         res.status(403).json({ error: 'Pro subscription required' });
         return;
     }
-    if (!process.env.ANTHROPIC_API_KEY) {
-        console.error('AI chat: ANTHROPIC_API_KEY missing');
+    if (!gemini) {
+        console.error('AI chat: GEMINI_API_KEY missing');
         res.status(500).json({ error: 'AI service not configured' });
         return;
     }
     try {
-        const response = await anthropic.messages.create({
-            model: 'claude-haiku-4-5-20251001',
-            max_tokens: 1024,
-            system: SYSTEM_PROMPT,
-            messages: messages.slice(-20),
+        // Map the advisor transcript to Gemini's format ('assistant' → 'model').
+        const contents = messages.slice(-20).map((m) => ({
+            role: m.role === 'assistant' ? 'model' : 'user',
+            parts: [{ text: m.content }],
+        }));
+        const model = gemini.getGenerativeModel({
+            model: GEMINI_MODEL,
+            systemInstruction: SYSTEM_PROMPT,
+            generationConfig: { maxOutputTokens: 1024 },
         });
-        const text = response.content
-            .map((block) => (block.type === 'text' ? block.text : ''))
-            .join('');
+        const result = await model.generateContent({ contents });
+        const text = result.response.text();
         res.json({ text });
     }
     catch (err) {
         const status = err?.status ?? err?.response?.status;
         const detail = err?.error?.error?.message ?? err?.message ?? 'AI error';
-        console.error('AI chat error:', status, detail, err);
+        console.error('AI chat error:', status, detail);
         res.status(500).json({ error: detail });
     }
 });

@@ -18,10 +18,6 @@ export function ExplainMistake({ exercise, userAnswer }: { exercise: Exercise; u
   const [state, setState] = useState<'idle' | 'loading' | 'done' | 'error'>('idle');
   const [text, setText] = useState('');
 
-  // If the exercise already ships its own written explanation, the AI button is
-  // redundant — only offer it where there's no built-in explanation to fall back on.
-  if (exercise.explanation) return null;
-
   const isPro = !!user?.is_pro;
   const remaining = user?.ai_explains_remaining; // null/undefined = unlimited for pro
   const locked = !isPro && typeof remaining === 'number' && remaining <= 0 && state !== 'done';

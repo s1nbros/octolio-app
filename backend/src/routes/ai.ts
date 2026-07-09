@@ -1,5 +1,4 @@
 import { Router, Response } from 'express';
-import Anthropic from '@anthropic-ai/sdk';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { authenticate, AuthRequest } from '../middleware/auth';
 import { getPool } from '../db';
@@ -7,9 +6,8 @@ import { todayStr } from '../services/streak';
 
 export const aiRouter = Router();
 
-// The Pro advisor (/chat) runs on Anthropic; the free "Explain my mistake"
-// tutor (/explain) runs on Google Gemini's free tier.
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+// Both the Pro advisor (/chat) and the free "Explain my mistake" tutor (/explain)
+// run on Google Gemini's free tier.
 const gemini = process.env.GEMINI_API_KEY ? new GoogleGenerativeAI(process.env.GEMINI_API_KEY) : null;
 const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
 
@@ -42,29 +40,32 @@ aiRouter.post('/chat', authenticate, async (req: AuthRequest, res: Response): Pr
     return;
   }
 
-  if (!process.env.ANTHROPIC_API_KEY) {
-    console.error('AI chat: ANTHROPIC_API_KEY missing');
+  if (!gemini) {
+    console.error('AI chat: GEMINI_API_KEY missing');
     res.status(500).json({ error: 'AI service not configured' });
     return;
   }
 
   try {
-    const response = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1024,
-      system: SYSTEM_PROMPT,
-      messages: messages.slice(-20),
-    });
+    // Map the advisor transcript to Gemini's format ('assistant' → 'model').
+    const contents = messages.slice(-20).map((m) => ({
+      role: m.role === 'assistant' ? 'model' : 'user',
+      parts: [{ text: m.content }],
+    }));
 
-    const text = response.content
-      .map((block) => (block.type === 'text' ? block.text : ''))
-      .join('');
+    const model = gemini.getGenerativeModel({
+      model: GEMINI_MODEL,
+      systemInstruction: SYSTEM_PROMPT,
+      generationConfig: { maxOutputTokens: 1024 },
+    });
+    const result = await model.generateContent({ contents });
+    const text = result.response.text();
 
     res.json({ text });
   } catch (err: any) {
     const status = err?.status ?? err?.response?.status;
     const detail = err?.error?.error?.message ?? err?.message ?? 'AI error';
-    console.error('AI chat error:', status, detail, err);
+    console.error('AI chat error:', status, detail);
     res.status(500).json({ error: detail });
   }
 });
