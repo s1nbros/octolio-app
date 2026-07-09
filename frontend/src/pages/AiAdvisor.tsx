@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLang } from '../contexts/LanguageContext';
-import { FloatingOrbs } from '../components/FloatingOrbs';
 
 interface Msg { role: 'user' | 'assistant'; content: string; }
 
@@ -26,7 +25,7 @@ export function AiAdvisor() {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages, loading]);
 
-  // ── Free users: Pro upsell wall ──
+  // ── Free users: Pro upsell wall (fits inside the app shell, no full-screen hacks) ──
   if (!user?.is_pro) {
     const upgrade = async () => {
       if (!token) return;
@@ -40,28 +39,25 @@ export function AiAdvisor() {
       } catch { /* ignore */ }
     };
     return (
-      <div className="relative min-h-screen flex items-center justify-center px-4">
-        <FloatingOrbs />
-        <div className="relative max-w-md w-full animate-scale-in" style={{ zIndex: 1 }}>
-          <div className="glass-card rounded-3xl p-8 text-center">
-            <div className="text-5xl mb-4">🐙</div>
-            <h2 className="font-black text-2xl mb-2" style={{ color: 'hsl(var(--c-fg))' }}>
-              {lang === 'en' ? 'Your personal money coach' : 'Твоят личен финансов треньор'}
-            </h2>
-            <p className="text-sm mb-6" style={{ color: 'hsl(var(--c-fg-muted))' }}>
-              {lang === 'en'
-                ? 'Ask anything about budgeting, investing, debt or taxes and get clear, practical answers. Available with Octolio Pro.'
-                : 'Питай каквото искаш за бюджет, инвестиции, дългове или данъци и получи ясни, практични отговори. Достъпно с Octolio Pro.'}
-            </p>
-            <button className="btn-primary w-full mb-3" onClick={upgrade}>
-              ✦ {lang === 'en' ? 'Upgrade to Pro' : 'Надгради до Pro'}
+      <div className="max-w-md mx-auto py-10 sm:py-16 animate-scale-in">
+        <div className="glass-card rounded-3xl p-8 text-center">
+          <div className="text-5xl mb-4">🐙</div>
+          <h2 className="font-black text-2xl mb-2" style={{ color: 'hsl(var(--c-fg))' }}>
+            {lang === 'en' ? 'Your personal money coach' : 'Твоят личен финансов треньор'}
+          </h2>
+          <p className="text-sm mb-6" style={{ color: 'hsl(var(--c-fg-muted))' }}>
+            {lang === 'en'
+              ? 'Ask anything about budgeting, investing, debt or taxes and get clear, practical answers. Available with Octolio Pro.'
+              : 'Питай каквото искаш за бюджет, инвестиции, дългове или данъци и получи ясни, практични отговори. Достъпно с Octolio Pro.'}
+          </p>
+          <button className="btn-primary w-full mb-3" onClick={upgrade}>
+            ✦ {lang === 'en' ? 'Upgrade to Pro' : 'Надгради до Pro'}
+          </button>
+          <Link to="/modules">
+            <button className="btn-ghost w-full">
+              {lang === 'en' ? '← Back to Learn' : '← Към Учене'}
             </button>
-            <Link to="/modules">
-              <button className="btn-ghost w-full">
-                {lang === 'en' ? '← Back to Learn' : '← Към Учене'}
-              </button>
-            </Link>
-          </div>
+          </Link>
         </div>
       </div>
     );
@@ -98,35 +94,41 @@ export function AiAdvisor() {
   };
 
   return (
-    <div className="relative min-h-screen">
-      <FloatingOrbs />
-      <div className="relative max-w-2xl mx-auto px-4 sm:px-6 py-6 flex flex-col" style={{ zIndex: 1, minHeight: '100vh' }}>
-        {/* Header */}
-        <div className="flex items-center gap-3 mb-4 flex-shrink-0">
-          <div className="text-3xl">🐙</div>
-          <div>
-            <h1 className="font-black text-xl" style={{ color: 'hsl(var(--c-fg))' }}>
-              {lang === 'en' ? 'AI Money Coach' : 'AI Финансов треньор'}
-            </h1>
-            <p className="text-xs" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
-              {lang === 'en' ? 'Your personal finance guide' : 'Твоят личен финансов гид'}
-            </p>
-          </div>
+    // A bounded chat panel that lives inside the app shell's main column. Height
+    // tracks the viewport but caps out on big screens so it never becomes a
+    // stretched full-height HUD. max-w keeps line length readable.
+    <div className="w-full max-w-3xl mx-auto">
+      {/* Header */}
+      <div className="flex items-center gap-3 mb-4">
+        <div className="text-3xl">🐙</div>
+        <div>
+          <h1 className="font-black text-xl" style={{ color: 'hsl(var(--c-fg))' }}>
+            {lang === 'en' ? 'AI Money Coach' : 'AI Финансов треньор'}
+          </h1>
+          <p className="text-xs" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+            {lang === 'en' ? 'Your personal finance guide' : 'Твоят личен финансов гид'}
+          </p>
         </div>
+      </div>
 
+      {/* Chat card */}
+      <div
+        className="glass-card rounded-3xl flex flex-col overflow-hidden"
+        style={{ height: 'min(calc(100dvh - 190px), 680px)', minHeight: 380 }}
+      >
         {/* Messages */}
-        <div ref={scrollRef} className="flex-1 overflow-y-auto space-y-3 pb-4">
+        <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-3">
           {messages.length === 0 && !loading && (
-            <div className="glass-card rounded-2xl p-5 mt-2">
-              <p className="text-sm mb-3" style={{ color: 'hsl(var(--c-fg-muted))' }}>
+            <div className="h-full flex flex-col justify-center">
+              <p className="text-sm mb-4 text-center" style={{ color: 'hsl(var(--c-fg-muted))' }}>
                 {lang === 'en'
                   ? "👋 Hi! I'm your money coach. Ask me anything, or start with one of these:"
                   : '👋 Здравей! Аз съм твоят финансов треньор. Питай ме каквото искаш или започни с:'}
               </p>
-              <div className="flex flex-col gap-2">
+              <div className="grid sm:grid-cols-2 gap-2 max-w-xl mx-auto w-full">
                 {SUGGESTIONS.map((s, i) => (
                   <button key={i} onClick={() => send(s[lang])}
-                    className="text-left text-sm rounded-xl px-3 py-2.5 transition-all"
+                    className="text-left text-sm rounded-xl px-3 py-2.5 transition-all hover:brightness-110"
                     style={{ background: 'hsl(var(--c-primary)/0.08)', border: '1px solid hsl(var(--c-primary)/0.2)', color: 'hsl(var(--c-fg))' }}>
                     {s[lang]}
                   </button>
@@ -163,8 +165,8 @@ export function AiAdvisor() {
           )}
         </div>
 
-        {/* Input bar */}
-        <div className="flex-shrink-0 flex gap-2 pt-2">
+        {/* Input bar (pinned to the bottom of the card) */}
+        <div className="flex gap-2 p-3 border-t" style={{ borderColor: 'var(--c-border)' }}>
           <input
             type="text"
             className="input-field flex-1"
@@ -178,12 +180,13 @@ export function AiAdvisor() {
             {lang === 'en' ? 'Send' : 'Изпрати'}
           </button>
         </div>
-        <p className="text-[10px] text-center mt-2 flex-shrink-0" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
-          {lang === 'en'
-            ? 'AI can make mistakes. Not financial advice — consult a professional for big decisions.'
-            : 'AI може да греши. Това не е финансов съвет — консултирай се със специалист за важни решения.'}
-        </p>
       </div>
+
+      <p className="text-[10px] text-center mt-2.5" style={{ color: 'hsl(var(--c-fg-subtle))' }}>
+        {lang === 'en'
+          ? 'AI can make mistakes. Not financial advice — consult a professional for big decisions.'
+          : 'AI може да греши. Това не е финансов съвет — консултирай се със специалист за важни решения.'}
+      </p>
     </div>
   );
 }
