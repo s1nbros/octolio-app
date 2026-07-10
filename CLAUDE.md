@@ -505,6 +505,8 @@ card + the portal-rendered answer modal. Updates xp/coins/streak in context on a
   shares, avg_cost)`, `portfolio_trades` (log). Account is created lazily with `STARTING_CASH`.
 - Endpoints (`/api/portfolio/*`):
   - `GET /` → `{cash, startingCash, holdingsValue, totalValue, totalReturnPct, holdings[], market[]}`.
+    Each `market[]` asset includes a `spark: number[]` (last 24 days of price via `sparkFor`),
+    rendered as a per-row mini line chart (`Sparkline` in Portfolio.tsx) on holdings + market cards.
   - `POST /trade {assetId, side:'buy'|'sell', shares}` → transactional (FOR UPDATE on the
     account); buy checks cash (`insufficient_funds`), sell checks shares (`insufficient_shares`),
     updates `avg_cost` on buys, logs the trade.

@@ -4,7 +4,7 @@ import { useLang } from '../contexts/LanguageContext';
 
 interface MarketAsset {
   id: string; symbol: string; name: string; emoji: string;
-  category: string; price: number; changePct: number;
+  category: string; price: number; changePct: number; spark?: number[];
 }
 interface Holding {
   assetId: string; symbol: string; name: string; emoji: string;
@@ -18,6 +18,23 @@ interface PortfolioData {
 const eur = (n: number) => '€' + n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const pctColor = (p: number) => (p > 0 ? 'hsl(var(--c-green))' : p < 0 ? 'hsl(var(--c-red))' : 'hsl(var(--c-fg-muted))');
 const pctText = (p: number) => (p > 0 ? '+' : '') + p.toFixed(2) + '%';
+
+/** Tiny price-history line chart. Green when the series ends up, red when down. */
+function Sparkline({ data, width = 66, height = 26 }: { data?: number[]; width?: number; height?: number }) {
+  if (!data || data.length < 2) return <div style={{ width, height }} />;
+  const min = Math.min(...data);
+  const max = Math.max(...data);
+  const range = max - min || 1;
+  const stroke = data[data.length - 1] >= data[0] ? 'hsl(var(--c-green))' : 'hsl(var(--c-red))';
+  const pts = data
+    .map((v, i) => `${(i / (data.length - 1)) * width},${(height - 2) - ((v - min) / range) * (height - 4) + 2}`)
+    .join(' ');
+  return (
+    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" style={{ flexShrink: 0 }}>
+      <polyline points={pts} fill="none" stroke={stroke} strokeWidth={1.5} strokeLinejoin="round" strokeLinecap="round" />
+    </svg>
+  );
+}
 
 export function Portfolio() {
   const { token } = useAuth();
@@ -49,6 +66,7 @@ export function Portfolio() {
   if (!data) return null;
 
   const heldByAsset = new Map(data.holdings.map((h) => [h.assetId, h.shares]));
+  const sparkByAsset = new Map(data.market.map((m) => [m.id, m.spark]));
   const up = data.totalReturnPct >= 0;
 
   return (
@@ -100,7 +118,8 @@ export function Portfolio() {
                     {h.shares} @ {eur(h.avgCost)}
                   </p>
                 </div>
-                <div className="text-right">
+                <Sparkline data={sparkByAsset.get(h.assetId)} />
+                <div className="text-right w-20">
                   <p className="text-sm font-bold" style={{ color: 'hsl(var(--c-fg))' }}>{eur(h.value)}</p>
                   <p className="text-[11px] mono font-semibold" style={{ color: pctColor(h.plPct) }}>{pctText(h.plPct)}</p>
                 </div>
@@ -129,9 +148,12 @@ export function Portfolio() {
                   <p className="text-[10px] truncate" style={{ color: 'hsl(var(--c-fg-subtle))' }}>{m.name}</p>
                 </div>
               </div>
-              <div className="flex items-end justify-between">
-                <p className="text-sm font-bold mono" style={{ color: 'hsl(var(--c-fg))' }}>{eur(m.price)}</p>
-                <p className="text-[11px] mono font-semibold" style={{ color: pctColor(m.changePct) }}>{pctText(m.changePct)}</p>
+              <div className="flex items-center justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="text-sm font-bold mono" style={{ color: 'hsl(var(--c-fg))' }}>{eur(m.price)}</p>
+                  <p className="text-[11px] mono font-semibold" style={{ color: pctColor(m.changePct) }}>{pctText(m.changePct)}</p>
+                </div>
+                <Sparkline data={m.spark} width={76} height={30} />
               </div>
               {held > 0 && (
                 <p className="text-[10px] mt-1" style={{ color: 'hsl(var(--c-primary))' }}>

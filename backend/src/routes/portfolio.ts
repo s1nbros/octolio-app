@@ -72,6 +72,14 @@ export function priceOn(asset: Asset, day: number): number {
   return Math.max(0.01, asset.base * trend * (1 + wave + jitter));
 }
 
+const SPARK_DAYS = 24; // points of price history for the per-asset mini chart
+
+function sparkFor(a: Asset, day: number): number[] {
+  const out: number[] = [];
+  for (let d = day - SPARK_DAYS + 1; d <= day; d++) out.push(Math.round(priceOn(a, d) * 100) / 100);
+  return out;
+}
+
 function marketToday() {
   const day = dayNumber();
   return ASSETS.map((a) => {
@@ -85,6 +93,7 @@ function marketToday() {
       category: a.category,
       price: Math.round(price * 100) / 100,
       changePct: Math.round((price / prev - 1) * 10000) / 100,
+      spark: sparkFor(a, day),
     };
   });
 }
