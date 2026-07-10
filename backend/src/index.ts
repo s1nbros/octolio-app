@@ -24,6 +24,7 @@ import { wheelRouter } from './routes/wheel';
 import { workoutRouter } from './routes/workout';
 import { remindersRouter } from './routes/reminders';
 import { testoutRouter } from './routes/testout';
+import { portfolioRouter } from './routes/portfolio';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -58,6 +59,7 @@ app.use('/api/wheel', wheelRouter);
 app.use('/api/workout', workoutRouter);
 app.use('/api/reminders', remindersRouter);
 app.use('/api/testout', testoutRouter);
+app.use('/api/portfolio', portfolioRouter);
 
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });

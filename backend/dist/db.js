@@ -289,5 +289,36 @@ async function initDb() {
     )
   `);
     await pool.query(`CREATE INDEX IF NOT EXISTS module_chests_user_idx ON module_chests(user_id)`);
+    // Portfolio simulator — a virtual €10,000 trading account per user on a
+    // deterministic simulated market (no external price feed). Holdings + a trade
+    // log; prices are computed on the fly from the asset catalog, never stored.
+    await pool.query(`
+    CREATE TABLE IF NOT EXISTS portfolio_accounts (
+      user_id INTEGER PRIMARY KEY REFERENCES users(id),
+      cash NUMERIC(14,2) NOT NULL DEFAULT 10000,
+      created_at TIMESTAMP DEFAULT NOW()
+    )
+  `);
+    await pool.query(`
+    CREATE TABLE IF NOT EXISTS portfolio_holdings (
+      user_id INTEGER NOT NULL REFERENCES users(id),
+      asset_id TEXT NOT NULL,
+      shares NUMERIC(18,6) NOT NULL DEFAULT 0,
+      avg_cost NUMERIC(14,4) NOT NULL DEFAULT 0,
+      PRIMARY KEY (user_id, asset_id)
+    )
+  `);
+    await pool.query(`
+    CREATE TABLE IF NOT EXISTS portfolio_trades (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER NOT NULL REFERENCES users(id),
+      asset_id TEXT NOT NULL,
+      side TEXT NOT NULL,
+      shares NUMERIC(18,6) NOT NULL,
+      price NUMERIC(14,4) NOT NULL,
+      ts TIMESTAMP DEFAULT NOW()
+    )
+  `);
+    await pool.query(`CREATE INDEX IF NOT EXISTS portfolio_trades_user_idx ON portfolio_trades(user_id, ts DESC)`);
     console.log('Database initialized');
 }

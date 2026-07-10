@@ -55,6 +55,14 @@ function IconTools() {
     </svg>
   );
 }
+function IconPortfolio() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 3v18h18" />
+      <path d="M7 15l4-4 3 3 5-6" />
+    </svg>
+  );
+}
 function IconFriends() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -199,6 +207,7 @@ function MobileDrawer({
     { to: '/quests',  label: { en: 'Quests', bg: 'Куестове' }, icon: <IconHome />, active: isActive('/quests') },
     { to: '/review',  label: { en: 'Review', bg: 'Преглед' }, icon: <IconReview />, active: isActive('/review'), isNew: !seenReview },
     { to: '/tools',   label: { en: 'Tools', bg: 'Инструменти' }, icon: <IconTools />, active: isActive('/tools'), isNew: !seenTools },
+    { to: '/portfolio', label: { en: 'Portfolio', bg: 'Портфейл' }, icon: <IconPortfolio />, active: isActive('/portfolio') },
     { to: '/shop',    label: { en: 'Shop', bg: 'Магазин' }, icon: <IconShop />, active: isActive('/shop'), isNew: !seenShop },
     { to: '/league',  label: { en: 'League', bg: 'Лига' }, icon: <IconLeague />, active: isActive('/league') },
     { to: '/advisor', label: { en: '✦ AI Coach', bg: '✦ AI Коуч' }, icon: <IconAdvisor />, active: isActive('/advisor') },

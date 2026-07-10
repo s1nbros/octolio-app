@@ -16,6 +16,7 @@ import { Onboarding } from './pages/Onboarding';
 import { GeneratedLesson } from './pages/GeneratedLesson';
 import { AiAdvisor } from './pages/AiAdvisor';
 import { Tools } from './pages/Tools';
+import { Portfolio } from './pages/Portfolio';
 import { Review } from './pages/Review';
 import { Shop } from './pages/Shop';
 import { VerifyEmail } from './pages/VerifyEmail';
@@ -83,6 +84,7 @@ function AppRoutes() {
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/league" element={<ProtectedRoute><League /></ProtectedRoute>} />
           <Route path="/tools" element={<ProtectedRoute><Tools /></ProtectedRoute>} />
+          <Route path="/portfolio" element={<ProtectedRoute><Portfolio /></ProtectedRoute>} />
           <Route path="/review" element={<ProtectedRoute><Review /></ProtectedRoute>} />
           {/* Friends moved into Profile tab — keep the old URL working via redirect */}
           <Route path="/friends" element={<Navigate to="/profile?tab=friends" replace />} />

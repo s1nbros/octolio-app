@@ -58,6 +58,14 @@ function IconTools() {
     </svg>
   );
 }
+function IconPortfolio() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 3v18h18" />
+      <path d="M7 15l4-4 3 3 5-6" />
+    </svg>
+  );
+}
 function IconReview() {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -412,6 +420,7 @@ function LeftSidebar() {
         <SidebarLink to="/quests" active={isActive('/quests')} label={lang === 'en' ? 'Quests' : 'Куестове'} icon={<IconQuests />} />
         <SidebarLink to="/review" active={isActive('/review')} label={lang === 'en' ? 'Review' : 'Преглед'} icon={<IconReview />} badge={reviewDue} isNew={!seenReview} />
         <SidebarLink to="/tools" active={isActive('/tools')} label={lang === 'en' ? 'Tools' : 'Инструменти'} icon={<IconTools />} isNew={!seenTools} />
+        <SidebarLink to="/portfolio" active={isActive('/portfolio')} label={lang === 'en' ? 'Portfolio' : 'Портфейл'} icon={<IconPortfolio />} />
         <SidebarLink to="/league" active={isActive('/league')} label={labels.league} icon={<IconLeague />} />
         <SidebarLink to="/shop" active={isActive('/shop')} label={lang === 'en' ? 'Shop' : 'Магазин'} icon={<IconShop />} isNew={!seenShop} />
         <SidebarLink to="/advisor" active={isActive('/advisor')} label={`✦ ${labels.advisor}`} icon={<IconAdvisor />} />

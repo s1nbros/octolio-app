@@ -493,6 +493,27 @@ card + the portal-rendered answer modal. Updates xp/coins/streak in context on a
 - Columns on `users`: `goal TEXT`, `experience_level TEXT`, `daily_goal_min INTEGER DEFAULT 5`.
   Surfaced in `/me`. `AuthContext.saveOnboardingProfile()` updates them.
 
+### Portfolio simulator (`/portfolio`)
+- A virtual **€10,000** play-money trading account per user on a **simulated market**
+  (no external price feed). Backend: `backend/src/routes/portfolio.ts`.
+- **Prices are computed, never stored.** `priceOn(asset, day)` = base × trend(drift) ×
+  (1 + smooth sine wave + small deterministic daily jitter), keyed off the asset catalog
+  (`ASSETS`, 10 assets across stock/etf/bond/commodity/crypto) and the UTC day number. Every
+  user sees the same price on the same day; prices drift day-to-day. Day-over-day % change =
+  `priceOn(day)/priceOn(day-1) - 1`.
+- Tables: `portfolio_accounts (user_id PK, cash)`, `portfolio_holdings (user_id, asset_id,
+  shares, avg_cost)`, `portfolio_trades` (log). Account is created lazily with `STARTING_CASH`.
+- Endpoints (`/api/portfolio/*`):
+  - `GET /` → `{cash, startingCash, holdingsValue, totalValue, totalReturnPct, holdings[], market[]}`.
+  - `POST /trade {assetId, side:'buy'|'sell', shares}` → transactional (FOR UPDATE on the
+    account); buy checks cash (`insufficient_funds`), sell checks shares (`insufficient_shares`),
+    updates `avg_cost` on buys, logs the trade.
+- Frontend: `pages/Portfolio.tsx` — total-value summary, holdings list (tap → sell), market grid
+  (tap → buy), and a `TradeModal` (buy/sell toggle, qty + MAX, live cost/proceeds). Free for all
+  users. Nav link "Portfolio" in the AppShell sidebar + Navbar mobile drawer.
+- Not yet built: value-history sparkline (needs daily snapshots) and a portfolio leaderboard —
+  noted as follow-ups.
+
 ### Test-out (skip a module you already know)
 - Each unlocked, not-yet-completed module shows a `⚡ Test out to skip` button on its
   `SectionBanner` (Modules.tsx). It opens `TestOutModal`.
@@ -645,6 +666,9 @@ Key tables:
 - `friend_quests` — weekly co-op quest per friend pair. PK `(user_low, user_high, week_start)`
   with `CHECK(user_low < user_high)`. Columns: `goal`, `xp_low`, `xp_high`,
   `claimed_low`, `claimed_high`, `updated_at`.
+- `portfolio_accounts` — virtual trading account. PK `user_id`, `cash NUMERIC` (default 10000).
+- `portfolio_holdings` — PK `(user_id, asset_id)`, `shares`, `avg_cost`.
+- `portfolio_trades` — buy/sell log: `user_id`, `asset_id`, `side`, `shares`, `price`, `ts`.
 
 ### Email never blocks an API response
 All `sendVerificationEmail` / `sendPasswordResetEmail` calls go through the
@@ -776,6 +800,10 @@ Lessons + progress:
 Test-out (`/api/testout/*`):
 - `GET /:moduleId` — quiz (no answers) + eligibility
 - `POST /:moduleId {answers}` — grade; on pass, complete the whole module + flat XP bonus
+
+Portfolio simulator (`/api/portfolio/*`):
+- `GET /` — account + holdings + simulated market snapshot
+- `POST /trade {assetId, side, shares}` — buy/sell on the simulated market
 
 Spaced repetition (`/api/review/*`):
 - `POST /missed` `{moduleId, lessonId, exerciseId}` — upsert into box 1
