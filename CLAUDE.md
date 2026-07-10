@@ -493,6 +493,28 @@ card + the portal-rendered answer modal. Updates xp/coins/streak in context on a
 - Columns on `users`: `goal TEXT`, `experience_level TEXT`, `daily_goal_min INTEGER DEFAULT 5`.
   Surfaced in `/me`. `AuthContext.saveOnboardingProfile()` updates them.
 
+### Test-out (skip a module you already know)
+- Each unlocked, not-yet-completed module shows a `⚡ Test out to skip` button on its
+  `SectionBanner` (Modules.tsx). It opens `TestOutModal`.
+- Quiz is built server-side from the module's own MCQ-style exercises
+  (`buildTestOut` in `backend/src/routes/testout.ts`): `choice`, `true_false`,
+  `scenario_decision` (correct = the `isBest` choice), and sub-questions pulled from
+  `speed_round` / `boss_battle` configs (keyed `exerciseId#i`). Deterministic order so the
+  POST re-derives the exact same quiz to grade. Max 8 questions, needs `ceil(0.8×N)` right.
+- **Grading is server-side** — `correctIndex` never reaches the client.
+  - `GET /api/testout/:moduleId` → `{eligible, reason?, title, total, passNeeded, rewardXp,
+    questions:[{exerciseId, prompt, options}]}`. Ineligible reasons: `pro_required`,
+    `locked` (mirrors the frontend sequential-lock rule), `completed`, `no_quiz` (<4 Qs).
+  - `POST /api/testout/:moduleId {answers:{exerciseId:index}}` → grades; on pass, inside a
+    txn marks every lesson in the module complete (`progress` INSERT … ON CONFLICT DO
+    NOTHING, `xp_earned=0`), awards a flat `TESTOUT_XP=40` bonus (NOT full lesson XP, so it
+    can't be farmed), bumps the streak (shared streak service), and fires the friend
+    streak/quest + cross-XP hooks. Returns `{passed, score, total, passNeeded, xpAwarded,
+    totalXp, streak}`.
+- **Goal badge**: the module matching the user's onboarding `goal` shows a `⭐ FOR YOUR GOAL`
+  tag on its banner. Mapping in `Modules.tsx` `GOAL_MODULE` (budget→budgeting, save→saving,
+  debt→credit-debt, invest→investing, understand→money-mindset).
+
 ### Continue hero (dashboard)
 - `Modules.tsx` renders a `<ContinueHero>` at the top — the single obvious "what do I do next".
 - Shows the current lesson (module name + lesson title + XP + exercise count) with one big
@@ -750,6 +772,10 @@ Lessons + progress:
 - `GET /api/progress` — completion history + XP + streak
 - `POST /api/progress/energy/use` — deduct 3 energy (no-op for Pro)
 - `POST /api/progress/complete` — mark lesson done, bump XP + streak, auto-consume freezes
+
+Test-out (`/api/testout/*`):
+- `GET /:moduleId` — quiz (no answers) + eligibility
+- `POST /:moduleId {answers}` — grade; on pass, complete the whole module + flat XP bonus
 
 Spaced repetition (`/api/review/*`):
 - `POST /missed` `{moduleId, lessonId, exerciseId}` — upsert into box 1

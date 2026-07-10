@@ -6,8 +6,18 @@ import { FloatingOrbs } from '../components/FloatingOrbs';
 import { ChestModal } from '../components/ChestModal';
 import { ChestIcon } from '../components/ChestIcon';
 import { TodayPanel } from '../components/TodayPanel';
+import { TestOutModal } from '../components/TestOutModal';
 import { getGoal } from '../shared/onboardingData';
 import type { ModuleMeta, LessonMeta } from '../types';
+
+/** Which module best serves each onboarding goal (for the "for your goal" badge). */
+const GOAL_MODULE: Record<string, string> = {
+  budget: 'budgeting',
+  save: 'saving',
+  debt: 'credit-debt',
+  invest: 'investing',
+  understand: 'money-mindset',
+};
 
 /* Color palette per module color key */
 const COLORS: Record<string, { main: string; deep: string; soft: string }> = {
@@ -37,14 +47,22 @@ export function Modules() {
   const [loading, setLoading] = useState(true);
   const [chestStates, setChestStates] = useState<ChestState[]>([]);
   const [chestTarget, setChestTarget] = useState<{ moduleId: string; position: 'mid' | 'end' } | null>(null);
+  const [testOutModuleId, setTestOutModuleId] = useState<string | null>(null);
 
-  useEffect(() => {
+  const loadModules = useCallback(async () => {
     if (!token) return;
-    fetch('/api/modules', { headers: { Authorization: `Bearer ${token}` } })
-      .then((r) => r.json())
-      .then((data) => setModules(data.modules ?? []))
-      .finally(() => setLoading(false));
+    try {
+      const r = await fetch('/api/modules', { headers: { Authorization: `Bearer ${token}` } });
+      const data = await r.json();
+      setModules(data.modules ?? []);
+    } finally {
+      setLoading(false);
+    }
   }, [token]);
+
+  useEffect(() => { loadModules(); }, [loadModules]);
+
+  const goalModuleId = GOAL_MODULE[user?.goal ?? ''] ?? null;
 
   const loadChestInfo = useCallback(async () => {
     if (!token) return;
@@ -162,6 +180,9 @@ export function Modules() {
                   proLocked={moduleProLocked}
                   locked={moduleLocked}
                   lang={lang}
+                  goalMatch={mod.id === goalModuleId}
+                  canTestOut={!moduleBlocked && mod.lessons.some((l) => !l.completed)}
+                  onTestOut={() => setTestOutModuleId(mod.id)}
                 />
 
                 {/* Lesson + chest nodes path */}
@@ -224,6 +245,12 @@ export function Modules() {
         target={chestTarget}
         onClose={() => setChestTarget(null)}
         onOpened={() => loadChestInfo()}
+      />
+
+      <TestOutModal
+        moduleId={testOutModuleId}
+        onClose={() => setTestOutModuleId(null)}
+        onPassed={() => { loadModules(); loadChestInfo(); }}
       />
     </div>
   );
@@ -423,6 +450,9 @@ function SectionBanner({
   locked,
   proLocked,
   lang,
+  goalMatch,
+  canTestOut,
+  onTestOut,
 }: {
   mod: ModuleMeta;
   idx: number;
@@ -431,6 +461,9 @@ function SectionBanner({
   locked: boolean;
   proLocked: boolean;
   lang: 'en' | 'bg';
+  goalMatch: boolean;
+  canTestOut: boolean;
+  onTestOut: () => void;
 }) {
   const done = mod.lessons.filter((l) => l.completed).length;
   const total = mod.lessons.length;
@@ -467,6 +500,7 @@ function SectionBanner({
           >
             {lang === 'en' ? `Section ${idx + 1}` : `Раздел ${idx + 1}`}
             {proLocked && ' · ✦ PRO'}
+            {goalMatch && !blocked && (lang === 'en' ? ' · ⭐ FOR YOUR GOAL' : ' · ⭐ ЗА ТВОЯТА ЦЕЛ')}
           </p>
           <h2
             className="font-extrabold text-base md:text-lg leading-tight truncate"
@@ -490,6 +524,19 @@ function SectionBanner({
         )}
         {allDone && !blocked && <span className="text-xl ml-2">✓</span>}
       </div>
+
+      {/* Test-out — prove you know it and skip the module */}
+      {canTestOut && (
+        <div className="relative mt-3 flex justify-end">
+          <button
+            onClick={onTestOut}
+            className="text-[11px] font-bold px-3 py-1.5 rounded-full transition-all active:scale-95"
+            style={{ background: 'hsla(0,0%,100%,0.16)', color: '#fff', border: '1px solid hsla(0,0%,100%,0.3)' }}
+          >
+            ⚡ {lang === 'en' ? 'Test out to skip' : 'Прескочи с тест'}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

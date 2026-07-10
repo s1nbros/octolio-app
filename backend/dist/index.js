@@ -28,6 +28,7 @@ const shop_1 = require("./routes/shop");
 const wheel_1 = require("./routes/wheel");
 const workout_1 = require("./routes/workout");
 const reminders_1 = require("./routes/reminders");
+const testout_1 = require("./routes/testout");
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 3001;
 const allowedOrigins = process.env.ALLOWED_ORIGINS
@@ -55,6 +56,7 @@ app.use('/api/shop', shop_1.shopRouter);
 app.use('/api/wheel', wheel_1.wheelRouter);
 app.use('/api/workout', workout_1.workoutRouter);
 app.use('/api/reminders', reminders_1.remindersRouter);
+app.use('/api/testout', testout_1.testoutRouter);
 app.get('/api/health', (_req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
