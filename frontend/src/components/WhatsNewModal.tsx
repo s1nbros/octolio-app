@@ -4,7 +4,7 @@
  * the actual UI elements so the "screenshots" stay accurate and never
  * drift from the real app).
  *
- * Storage key:   octolio_seen_whatsnew_v3  (bump the version to re-show after an update)
+ * Storage key:   octolio_seen_whatsnew_v4  (bump the version to re-show after an update)
  * Trigger:       only for authenticated + onboarded users
  * Dismiss:       last slide → "Got it" button OR close (X)
  */
@@ -12,7 +12,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLang } from '../contexts/LanguageContext';
 
-const STORAGE_KEY = 'octolio_seen_whatsnew_v3';
+const STORAGE_KEY = 'octolio_seen_whatsnew_v4';
 
 interface Slide {
   badge: { en: string; bg: string };
@@ -22,78 +22,69 @@ interface Slide {
   accent: string;            // hsl(...) — colors the badge + dot
 }
 
-/* ─── Illustration 1: AI "Explain my mistake" ────────────────── */
-function ExplainShot() {
-  return (
-    <div className="w-full h-full flex items-center justify-center px-4">
-      <div className="w-full max-w-[280px] rounded-2xl p-4 space-y-2.5"
-        style={{ background: 'hsl(228, 24%, 12%)', border: '1px solid hsla(0,0%,100%,0.08)', boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}>
-        <div className="rounded-lg px-3 py-2" style={{ background: 'hsl(var(--c-red)/0.1)', border: '1px solid hsl(var(--c-red)/0.3)' }}>
-          <p className="text-[11px] font-bold" style={{ color: 'hsl(var(--c-red))' }}>✗ Not quite…</p>
-        </div>
-        <div className="rounded-lg px-3 py-2 flex items-center justify-center gap-1.5 text-[11px] font-bold"
-          style={{ background: 'hsl(var(--c-primary)/0.1)', color: 'hsl(var(--c-primary))', border: '1px solid hsl(var(--c-primary)/0.25)' }}>
-          🐙 Why was this wrong? <span className="font-normal opacity-70">(2 left today)</span>
-        </div>
-        <div className="rounded-lg px-3 py-2.5" style={{ background: 'hsl(var(--c-primary)/0.08)', border: '1px solid hsl(var(--c-primary)/0.25)' }}>
-          <p className="text-[10px] font-bold mb-1" style={{ color: 'hsl(var(--c-primary))' }}>🐙 Octolio explains</p>
-          <p className="text-[10px] leading-relaxed" style={{ color: 'hsl(var(--c-fg-muted))' }}>
-            Compound interest grows on your gains too — so the €100 you skipped isn't €100, it's what it'd become in 30 years…
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ─── Illustration 2: Friend streaks ─────────────────────────── */
-function FriendStreakShot() {
-  const Bubble = ({ letter, color }: { letter: string; color: string }) => (
-    <div className="rounded-full flex items-center justify-center font-black"
-      style={{ width: 60, height: 60, fontSize: 24, background: `${color}22`, color, border: `2px solid ${color}` }}>
-      {letter}
-    </div>
-  );
-  return (
-    <div className="relative flex flex-col items-center justify-center w-full h-full">
-      <div className="absolute inset-0 pointer-events-none"
-        style={{ background: 'radial-gradient(circle at 50% 42%, hsl(var(--c-orange) / 0.18), transparent 60%)' }} />
-      <div className="relative flex items-center gap-3">
-        <Bubble letter="Y" color="hsl(var(--c-primary))" />
-        <div className="text-3xl">🤝</div>
-        <Bubble letter="M" color="hsl(var(--c-green))" />
-      </div>
-      <div className="relative mt-4 px-3 py-1.5 rounded-full text-sm font-black"
-        style={{ background: 'hsl(var(--c-orange)/0.15)', color: 'hsl(var(--c-orange))', border: '1px solid hsl(var(--c-orange)/0.35)' }}>
-        🤝🔥 14-day friend streak
-      </div>
-    </div>
-  );
-}
-
-/* ─── Illustration 3: Weekly co-op quests ────────────────────── */
-function CoopQuestShot() {
+/* ─── Illustration 1: Portfolio simulator ────────────────────── */
+function PortfolioShot() {
   return (
     <div className="w-full h-full flex items-center justify-center px-4">
       <div className="w-full max-w-[280px] rounded-2xl p-4"
-        style={{ background: 'hsl(var(--c-primary)/0.06)', border: '1px solid hsl(var(--c-primary)/0.2)', boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}>
-        <p className="text-[10px] uppercase tracking-wider font-bold mb-3" style={{ color: 'hsl(var(--c-primary))' }}>
-          🤝 Weekly co-op quest
-        </p>
-        <div className="rounded-xl p-3" style={{ background: 'hsl(228,24%,12%)', border: '1px solid hsla(0,0%,100%,0.08)' }}>
-          <div className="flex items-center justify-between mb-1.5">
-            <p className="text-[12px] font-bold" style={{ color: 'hsl(var(--c-fg))' }}>You + Maria</p>
-            <span className="text-[10px] mono" style={{ color: 'hsl(var(--c-fg-subtle))' }}>500 / 500 XP</span>
+        style={{ background: 'hsl(228, 24%, 12%)', border: '1px solid hsla(0,0%,100%,0.08)', boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}>
+        <p className="text-[10px] uppercase tracking-widest font-bold" style={{ color: 'hsl(var(--c-fg-subtle))' }}>📈 Total value</p>
+        <p className="text-2xl font-black" style={{ color: 'hsl(var(--c-fg))' }}>€12,480</p>
+        <p className="text-[11px] font-bold mb-3" style={{ color: 'hsl(var(--c-green))' }}>▲ +24.8% all-time · Cash €2,110</p>
+        <div className="rounded-xl px-3 py-2 flex items-center gap-2" style={{ background: 'hsl(228,24%,15%)', border: '1px solid hsla(0,0%,100%,0.08)' }}>
+          <span className="text-xl">🌍</span>
+          <div className="flex-1 min-w-0">
+            <p className="text-[11px] font-bold" style={{ color: 'hsl(var(--c-fg))' }}>WRLD</p>
+            <p className="text-[9px] mono" style={{ color: 'hsl(var(--c-fg-subtle))' }}>10 @ €336.93</p>
           </div>
-          <div className="h-2 rounded-full overflow-hidden mb-2.5" style={{ background: 'hsl(var(--c-fg)/0.12)' }}>
-            <div className="h-full rounded-full" style={{ width: '100%', background: 'hsl(var(--c-green))' }} />
+          <div className="text-right">
+            <p className="text-[11px] font-bold" style={{ color: 'hsl(var(--c-fg))' }}>€3,690</p>
+            <p className="text-[9px] mono font-semibold" style={{ color: 'hsl(var(--c-green))' }}>+9.6%</p>
           </div>
-          <div className="flex items-center justify-between">
-            <span className="text-[9px] mono" style={{ color: 'hsl(var(--c-fg-subtle))' }}>You 280 · Maria 220</span>
-            <span className="text-[10px] font-black px-3 py-1 rounded-full" style={{ background: 'hsl(var(--c-green))', color: '#fff' }}>
-              Claim +120 XP · +25 🪙
-            </span>
-          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Illustration 2: Test-out ───────────────────────────────── */
+function TestOutShot() {
+  return (
+    <div className="relative flex flex-col items-center justify-center w-full h-full px-4">
+      <div className="absolute inset-0 pointer-events-none"
+        style={{ background: 'radial-gradient(circle at 50% 42%, hsl(var(--c-primary) / 0.16), transparent 60%)' }} />
+      <div className="relative w-full max-w-[280px] rounded-2xl p-4"
+        style={{ background: 'hsl(228, 24%, 12%)', border: '1px solid hsla(0,0%,100%,0.08)', boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}>
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-[12px] font-bold" style={{ color: 'hsl(var(--c-fg))' }}>💳 Credit & Debt</p>
+          <span className="text-[10px] font-black px-2.5 py-1 rounded-full"
+            style={{ background: 'hsla(0,0%,100%,0.14)', color: '#fff', border: '1px solid hsla(0,0%,100%,0.3)' }}>⚡ Test out</span>
+        </div>
+        <div className="rounded-xl px-3 py-2.5 text-center" style={{ background: 'hsl(var(--c-green)/0.12)', border: '1px solid hsl(var(--c-green)/0.3)' }}>
+          <p className="text-[13px] font-black" style={{ color: 'hsl(var(--c-green))' }}>7 / 8 correct 🎉</p>
+          <p className="text-[10px] font-semibold mt-0.5" style={{ color: 'hsl(var(--c-green))' }}>Module complete · +40 XP</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Illustration 3: AI Money Coach ─────────────────────────── */
+function CoachShot() {
+  return (
+    <div className="w-full h-full flex flex-col justify-center gap-2.5 px-5">
+      <div className="flex justify-end">
+        <div className="max-w-[80%] rounded-2xl px-3.5 py-2 text-[11px] font-medium"
+          style={{ background: 'hsl(var(--c-primary))', color: '#fff' }}>
+          Should I pay off debt or invest first?
+        </div>
+      </div>
+      <div className="flex justify-start">
+        <div className="max-w-[85%] rounded-2xl px-3.5 py-2.5 text-[11px] leading-relaxed"
+          style={{ background: 'hsl(228,24%,15%)', border: '1px solid hsla(0,0%,100%,0.08)', color: 'hsl(var(--c-fg-muted))' }}>
+          <span className="font-bold" style={{ color: 'hsl(var(--c-primary))' }}>🐙 </span>
+          Great question! First grab any employer 401(k) match — that's free money. Then clear
+          high-interest debt above ~8%, and invest the rest…
         </div>
       </div>
     </div>
@@ -133,28 +124,28 @@ export function WhatsNewModal() {
 
   const slides: Slide[] = [
     {
-      badge:        { en: 'AI TUTOR', bg: 'AI НАСТАВНИК' },
-      title:        { en: 'Explain my mistake', bg: 'Обясни грешката ми' },
-      body:         { en: 'Got one wrong? Tap 🐙 and Octolio explains exactly why — in plain words. Free every day, and unlimited with Pro.',
-                      bg: 'Сгреши ли? Натисни 🐙 и Octolio ти обяснява точно защо — просто и ясно. Безплатно всеки ден, неограничено с Pro.' },
-      illustration: <ExplainShot />,
+      badge:        { en: 'NEW', bg: 'НОВО' },
+      title:        { en: 'Portfolio Simulator', bg: 'Симулатор на портфейл' },
+      body:         { en: 'Practice investing risk-free with €10,000 in play money. Buy and sell stocks, ETFs, gold and crypto, and watch your portfolio grow.',
+                      bg: 'Тренирай инвестиране без риск с €10,000 виртуални пари. Купувай и продавай акции, ETF-и, злато и крипто и следи как расте портфейлът ти.' },
+      illustration: <PortfolioShot />,
+      accent:       'hsl(var(--c-green))',
+    },
+    {
+      badge:        { en: 'SKIP AHEAD', bg: 'ПРЕСКОЧИ НАПРЕД' },
+      title:        { en: 'Test out of modules', bg: 'Прескачай модули с тест' },
+      body:         { en: 'Already know a topic? Take a short quiz to test out — pass it and the whole module is marked complete, plus bonus XP.',
+                      bg: 'Вече знаеш темата? Направи кратък тест — премини го и целият модул се отбелязва като завършен, плюс бонус XP.' },
+      illustration: <TestOutShot />,
       accent:       'hsl(var(--c-primary))',
     },
     {
-      badge:        { en: 'LEARN TOGETHER', bg: 'УЧЕТЕ ЗАЕДНО' },
-      title:        { en: 'Friend streaks', bg: 'Приятелски серии' },
-      body:         { en: 'Practice on the same day as a friend and build a shared streak. Miss a day together and it resets — so keep each other going!',
-                      bg: 'Учи в същия ден като приятел и трупайте обща серия. Пропуснете ли ден заедно, тя се нулира — така че се мотивирайте!' },
-      illustration: <FriendStreakShot />,
+      badge:        { en: 'AI COACH', bg: 'AI КОУЧ' },
+      title:        { en: 'Chat with your money coach', bg: 'Говори с финансовия си треньор' },
+      body:         { en: 'Ask anything about budgeting, investing, debt or taxes and get clear, practical answers from your personal AI coach.',
+                      bg: 'Питай каквото искаш за бюджет, инвестиции, дългове или данъци и получи ясни, практични отговори от личния си AI треньор.' },
+      illustration: <CoachShot />,
       accent:       'hsl(var(--c-orange))',
-    },
-    {
-      badge:        { en: 'TEAM UP', bg: 'ОБЕДИНЕТЕ СЕ' },
-      title:        { en: 'Weekly co-op quests', bg: 'Седмични съвместни куестове' },
-      body:         { en: 'You and each friend share a weekly XP goal. Hit it together and you BOTH claim a reward — XP and coins.',
-                      bg: 'Ти и всеки приятел споделяте седмична XP цел. Постигнете я заедно и ДВАМАТА получавате награда — XP и монети.' },
-      illustration: <CoopQuestShot />,
-      accent:       'hsl(var(--c-green))',
     },
   ];
 

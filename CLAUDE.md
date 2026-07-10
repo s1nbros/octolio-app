@@ -431,11 +431,11 @@ gameplay-power gating. Three coupled systems:
 
 ### "What's new" announcement modal
 - `WhatsNewModal` pops up once per device after a user is authenticated + onboarded.
-- Storage key `octolio_seen_whatsnew_v3` — set on dismiss. **Bump the version
+- Storage key `octolio_seen_whatsnew_v4` — set on dismiss. **Bump the version
   (vN → vN+1) whenever you ship an update** to re-show the tour to everyone.
-- Current v3 slides announce: AI "Explain my mistake", Friend streaks, and Weekly
-  co-op quests. Illustrations are rendered live (mock explain card, paired avatars
-  with a 🤝🔥 badge, and a co-op quest card with progress bar).
+- Current v4 slides announce: Portfolio Simulator, Test-out of modules, and the AI
+  Money Coach. Illustrations are rendered live (mock portfolio card with a holding,
+  a test-out result card, and a coach chat exchange).
 - Mounted in `AppShell` so it only triggers on protected routes. 700ms delay so it
   doesn't pop the instant the page mounts.
 - Swipeable: touchstart/move/end with a 50px threshold; arrow keys ← → on desktop;
