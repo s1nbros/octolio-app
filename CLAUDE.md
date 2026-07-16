@@ -7,6 +7,12 @@ Octolio is a personal finance learning app (Duolingo-style) with:
 - AI Financial Advisor (Pro-only) powered by Claude Haiku
 
 ## Stack
+- **Mobile**: Expo SDK 52 (React Native 0.76) + Expo Router in `mobile/` — a native iOS/Android
+  frontend that reuses this same backend API. Auth token in `expo-secure-store`; builds via EAS.
+  See `mobile/README.md` (includes a store-compliance checklist). v1 = core learning loop
+  (auth, modules, lesson runner for theory/choice/true_false/fill_blank, streak/energy, profile
+  + account deletion). Pro upsell links to the web and is hidden on iOS by default
+  (`SHOW_PRO_UPGRADE` in `mobile/lib/config.ts`) to respect Apple anti-steering rules.
 - **Frontend**: React 18 + TypeScript + Vite, hosted on Render as static site
 - **Backend**: Node.js + Express + TypeScript, compiled to `dist/` and committed for Render deployment
 - **Database**: PostgreSQL on Neon, accessed via `pg`
@@ -790,7 +796,9 @@ connected experience with persistent state, instead of isolated questions.
 
 Auth + user (`/api/auth/*`):
 `/register`, `/verify-email`, `/resend-verification`, `/login`, `/forgot-password`, `/reset-password`,
-`/me`, `/onboarding`, `/check-name`, `/check-availability`, `/league`, `/email-diag`
+`/me`, `/onboarding`, `/check-name`, `/check-availability`, `/league`, `/email-diag`,
+`DELETE /account` (in-app account deletion — App Store 5.1.1(v); removes the user + all
+referencing rows in one transaction, optional password re-check)
 
 Lessons + progress:
 - `GET /api/modules` — list modules with completion + lock state

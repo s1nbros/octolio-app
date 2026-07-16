@@ -543,6 +543,60 @@ exports.authRouter.get('/me', auth_1.authenticate, async (req, res) => {
     }
 });
 /**
+ * DELETE /api/auth/account — permanent account deletion.
+ * Required by App Store guideline 5.1.1(v): apps that let users create an
+ * account must let them delete it in-app. Removes the user and every row that
+ * references them, in one transaction. If the account has a password and the
+ * caller supplies one, it's verified first.
+ */
+exports.authRouter.delete('/account', auth_1.authenticate, async (req, res) => {
+    const { password } = (req.body ?? {});
+    const pool = (0, db_1.getPool)();
+    const client = await pool.connect();
+    try {
+        const u = (await client.query('SELECT email, password_hash FROM users WHERE id = $1', [req.userId])).rows[0];
+        if (!u) {
+            res.status(404).json({ error: 'not_found' });
+            return;
+        }
+        if (u.password_hash && password) {
+            const ok = await bcryptjs_1.default.compare(password, u.password_hash);
+            if (!ok) {
+                res.status(400).json({ error: 'wrong_password' });
+                return;
+            }
+        }
+        await client.query('BEGIN');
+        const uid = req.userId;
+        // Delete every table that references users(id) before the user row itself.
+        await client.query('DELETE FROM progress WHERE user_id = $1', [uid]);
+        await client.query('DELETE FROM exercise_reviews WHERE user_id = $1', [uid]);
+        await client.query('DELETE FROM notifications WHERE user_id = $1', [uid]);
+        await client.query('DELETE FROM user_inventory WHERE user_id = $1', [uid]);
+        await client.query('DELETE FROM chest_opens WHERE user_id = $1', [uid]);
+        await client.query('DELETE FROM module_chests WHERE user_id = $1', [uid]);
+        await client.query('DELETE FROM wheel_prizes WHERE user_id = $1', [uid]);
+        await client.query('DELETE FROM friendships WHERE requester_id = $1 OR recipient_id = $1', [uid]);
+        await client.query('DELETE FROM friend_streaks WHERE user_low = $1 OR user_high = $1', [uid]);
+        await client.query('DELETE FROM friend_quests WHERE user_low = $1 OR user_high = $1', [uid]);
+        await client.query('DELETE FROM portfolio_trades WHERE user_id = $1', [uid]);
+        await client.query('DELETE FROM portfolio_holdings WHERE user_id = $1', [uid]);
+        await client.query('DELETE FROM portfolio_accounts WHERE user_id = $1', [uid]);
+        await client.query('DELETE FROM pending_registrations WHERE email = $1', [u.email]);
+        await client.query('DELETE FROM users WHERE id = $1', [uid]);
+        await client.query('COMMIT');
+        res.json({ ok: true });
+    }
+    catch (err) {
+        await client.query('ROLLBACK').catch(() => { });
+        console.error('Account delete error:', err);
+        res.status(500).json({ error: 'Server error' });
+    }
+    finally {
+        client.release();
+    }
+});
+/**
  * Save the goal-based onboarding profile. Called from the onboarding wizard
  * AFTER the user picks a goal + completes the diagnostic + chooses a daily
  * goal, but BEFORE they pick free/pro — so the profile persists regardless
