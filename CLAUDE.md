@@ -7,7 +7,7 @@ Octolio is a personal finance learning app (Duolingo-style) with:
 - AI Financial Advisor (Pro-only) powered by Claude Haiku
 
 ## Stack
-- **Mobile**: Expo SDK 52 (React Native 0.76) + Expo Router in `mobile/` — a native iOS/Android
+- **Mobile**: Expo SDK 54 (React Native 0.81, React 19) + Expo Router 6 in `mobile/` — a native iOS/Android
   frontend that reuses this same backend API. Auth token in `expo-secure-store`; builds via EAS.
   See `mobile/README.md` (includes a store-compliance checklist). v1 = core learning loop
   (auth, modules, lesson runner for theory/choice/true_false/fill_blank, streak/energy, profile

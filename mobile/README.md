@@ -4,8 +4,8 @@ Native iOS + Android app for Octolio. It reuses the **same backend API** as the 
 app (`octolio-app/backend`) — this project is only the mobile frontend.
 
 ## Stack
-- Expo SDK 52 (managed workflow) + Expo Router (file-based navigation)
-- TypeScript, React Native 0.76
+- Expo SDK 54 (managed workflow) + Expo Router 6 (file-based navigation)
+- TypeScript, React Native 0.81, React 19
 - Auth token stored in `expo-secure-store`
 - Builds & store submission via **EAS** (`eas build`, `eas submit`)
 
