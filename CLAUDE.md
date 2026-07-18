@@ -13,6 +13,11 @@ Octolio is a personal finance learning app (Duolingo-style) with:
   (auth, modules, lesson runner for theory/choice/true_false/fill_blank, streak/energy, profile
   + account deletion). Pro upsell links to the web and is hidden on iOS by default
   (`SHOW_PRO_UPGRADE` in `mobile/lib/config.ts`) to respect Apple anti-steering rules.
+  Design matches the web's mobile look: `mobile/lib/theme.ts` uses the web's exact
+  dark-theme HSL values (RN accepts hsl/hsla strings); the Learn screen replicates the
+  snake-path (Continue hero, gradient section banners, 3D lesson nodes, chest nodes) via
+  `expo-linear-gradient`. Default `API_BASE_URL` = the deployed backend
+  (`octolio-app-2.onrender.com`), overridable with `EXPO_PUBLIC_API_URL`.
 - **Frontend**: React 18 + TypeScript + Vite, hosted on Render as static site
 - **Backend**: Node.js + Express + TypeScript, compiled to `dist/` and committed for Render deployment
 - **Database**: PostgreSQL on Neon, accessed via `pg`
