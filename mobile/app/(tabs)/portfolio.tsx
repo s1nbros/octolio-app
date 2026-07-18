@@ -6,6 +6,7 @@ import { useAuth } from '../../lib/auth';
 import { api, ApiError } from '../../lib/api';
 import { Button } from '../../lib/ui';
 import { colors, radius, spacing } from '../../lib/theme';
+import { Aurora } from '../../components/Aurora';
 
 interface MarketAsset { id: string; symbol: string; name: string; emoji: string; category: string; price: number; changePct: number; spark?: number[]; }
 interface Holding { assetId: string; symbol: string; name: string; emoji: string; shares: number; avgCost: number; price: number; value: number; plPct: number; }
@@ -52,7 +53,8 @@ export default function PortfolioScreen() {
   const up = data.totalReturnPct >= 0;
 
   return (
-    <>
+    <View style={{ flex: 1, backgroundColor: colors.bg }}>
+      <Aurora />
       <ScrollView
         contentContainerStyle={{ padding: spacing.md, paddingTop: insets.top + spacing.md, paddingBottom: spacing.xl }}
         refreshControl={<RefreshControl refreshing={false} onRefresh={load} tintColor={colors.primary} />}
@@ -128,7 +130,7 @@ export default function PortfolioScreen() {
       </ScrollView>
 
       {trade && <TradeModal asset={trade.asset} held={trade.held} cash={data.cash} onClose={() => setTrade(null)} onDone={() => { setTrade(null); load(); }} />}
-    </>
+    </View>
   );
 }
 

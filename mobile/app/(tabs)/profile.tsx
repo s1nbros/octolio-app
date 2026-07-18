@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../../lib/auth';
 import { Button, Card } from '../../lib/ui';
 import { colors, radius, spacing } from '../../lib/theme';
+import { Aurora } from '../../components/Aurora';
 import { PRIVACY_URL, SHOW_PRO_UPGRADE, TERMS_URL, WEB_APP_URL } from '../../lib/config';
 
 const LEVELS = [
@@ -36,7 +37,9 @@ export default function Profile() {
   };
 
   return (
-    <ScrollView contentContainerStyle={{ padding: spacing.md, paddingTop: insets.top + spacing.md, paddingBottom: spacing.xl }}>
+    <View style={{ flex: 1, backgroundColor: colors.bg }}>
+      <Aurora />
+      <ScrollView contentContainerStyle={{ padding: spacing.md, paddingTop: insets.top + spacing.md, paddingBottom: spacing.xl }}>
       {/* Identity */}
       <View style={{ alignItems: 'center', marginBottom: spacing.lg }}>
         <View style={{ width: 84, height: 84, borderRadius: 42, backgroundColor: colors.primarySoft, alignItems: 'center', justifyContent: 'center', marginBottom: spacing.sm }}>
@@ -77,7 +80,8 @@ export default function Profile() {
         <Text style={{ color: colors.fgSubtle }}>·</Text>
         <Text style={{ color: colors.fgSubtle }} onPress={() => Linking.openURL(TERMS_URL)}>Terms</Text>
       </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
 

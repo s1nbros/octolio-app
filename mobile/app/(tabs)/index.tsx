@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -7,6 +7,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../../lib/auth';
 import { api } from '../../lib/api';
 import { colors, modulePalettes, LOCKED_PALETTE, radius, spacing } from '../../lib/theme';
+import { Aurora } from '../../components/Aurora';
+import { ChestReelModal } from '../../components/ChestReelModal';
 
 interface LessonMeta { id: string; title: { en: string }; icon?: string; xpReward: number; exerciseCount: number; completed: boolean; }
 interface ModuleMeta { id: string; title: { en: string }; icon: string; color: string; proOnly: boolean; lessons: LessonMeta[]; }
@@ -16,12 +18,13 @@ type Pal = { main: string; deep: string; soft: string };
 const SNAKE = [0, 55, 74, 55, 0, -55, -74, -55];
 
 export default function Learn() {
-  const { user, token, refreshUser, updateUser } = useAuth();
+  const { user, token, refreshUser } = useAuth();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [modules, setModules] = useState<ModuleMeta[]>([]);
   const [chests, setChests] = useState<ChestState[]>([]);
   const [loading, setLoading] = useState(true);
+  const [chestTarget, setChestTarget] = useState<{ moduleId: string; position: 'mid' | 'end' } | null>(null);
   const isPro = !!user?.is_pro;
 
   const load = useCallback(async () => {
@@ -59,21 +62,11 @@ export default function Learn() {
     return null;
   }, [modules, moduleLocked, isPro]);
 
-  const openChest = async (moduleId: string, position: 'mid' | 'end') => {
-    try {
-      const r = await api<{ reward: any; xpDelta: number }>('/api/chests/open', { method: 'POST', token, body: { moduleId, position } });
-      const xp = r.xpDelta ?? r.reward?.value ?? 0;
-      if (xp) updateUser({ xp: (user?.xp ?? 0) + xp });
-      Alert.alert('Chest opened! 🎉', xp ? `You won +${xp} XP` : 'Nice reward!');
-      load();
-    } catch { Alert.alert('Could not open chest', 'Try again in a moment.'); }
-  };
-
   if (loading) return <View style={{ flex: 1, backgroundColor: colors.bg, alignItems: 'center', justifyContent: 'center' }}><ActivityIndicator color={colors.primary} /></View>;
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.bg }}>
-      <Orbs />
+      <Aurora />
       <ScrollView
         contentContainerStyle={{ paddingHorizontal: spacing.md, paddingTop: insets.top + spacing.sm, paddingBottom: spacing.xl }}
         refreshControl={<RefreshControl refreshing={false} onRefresh={load} tintColor={colors.primary} />}
@@ -114,7 +107,7 @@ export default function Learn() {
                         onPress={() => { if (lessonLocked) return; proLocked ? router.push('/(tabs)/profile') : router.push(`/lesson/${mod.id}/${lesson.id}`); }} />
                       {chest && !blocked && (
                         <View style={{ marginTop: spacing.lg }}>
-                          <ChestNode state={chest} onPress={() => chest.status === 'available' && openChest(chest.moduleId, chest.position)} />
+                          <ChestNode state={chest} onPress={() => chest.status === 'available' && setChestTarget({ moduleId: chest.moduleId, position: chest.position })} />
                         </View>
                       )}
                     </View>
@@ -125,16 +118,8 @@ export default function Learn() {
           );
         })}
       </ScrollView>
-    </View>
-  );
-}
 
-function Orbs() {
-  return (
-    <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
-      <View style={{ position: 'absolute', top: -80, right: -60, width: 260, height: 260, borderRadius: 130, backgroundColor: colors.primary, opacity: 0.1 }} />
-      <View style={{ position: 'absolute', top: 300, left: -90, width: 240, height: 240, borderRadius: 120, backgroundColor: colors.green, opacity: 0.07 }} />
-      <View style={{ position: 'absolute', bottom: 40, right: -70, width: 220, height: 220, borderRadius: 110, backgroundColor: colors.purple, opacity: 0.08 }} />
+      <ChestReelModal target={chestTarget} onClose={() => setChestTarget(null)} onOpened={load} />
     </View>
   );
 }

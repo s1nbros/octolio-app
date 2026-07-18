@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, Animated, Easing, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -7,6 +7,8 @@ import { useAuth } from '../../../lib/auth';
 import { api, ApiError } from '../../../lib/api';
 import { Button } from '../../../lib/ui';
 import { colors, radius, spacing } from '../../../lib/theme';
+import { Aurora } from '../../../components/Aurora';
+import { FadeScaleIn, XpPop } from '../../../lib/anim';
 
 type Phase = 'loading' | 'intro' | 'exercise' | 'noenergy' | 'complete' | 'error';
 interface Exercise { id: string; type: string; xp: number; [k: string]: any; }
@@ -25,6 +27,13 @@ export default function LessonRunner() {
   const [index, setIndex] = useState(0);
   const [hearts, setHearts] = useState(3);
   const [xpEarned, setXpEarned] = useState(0);
+  const [xpPop, setXpPop] = useState({ amount: 0, trigger: 0 });
+  const progress = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (!lesson) return;
+    Animated.timing(progress, { toValue: index / lesson.exercises.length, duration: 400, easing: Easing.out(Easing.cubic), useNativeDriver: false }).start();
+  }, [index, lesson, progress]);
 
   useEffect(() => {
     api<{ lesson: Lesson }>(`/api/modules/${moduleId}/lessons/${lessonId}`, { token })
@@ -53,7 +62,10 @@ export default function LessonRunner() {
 
   const onAnswer = (correct: boolean, xp: number) => {
     const nextXp = correct ? xpEarned + xp : xpEarned;
-    if (correct) setXpEarned(nextXp);
+    if (correct) {
+      setXpEarned(nextXp);
+      if (xp > 0) setXpPop((p) => ({ amount: xp, trigger: p.trigger + 1 }));
+    }
     if (!correct) {
       const left = hearts - 1;
       setHearts(left);
@@ -109,19 +121,24 @@ export default function LessonRunner() {
   }
 
   const exercise = lesson.exercises[index];
-  const progress = (index / lesson.exercises.length) * 100;
 
   return (
-    <View style={{ flex: 1, paddingTop: insets.top }}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md, padding: spacing.md }}>
-        <Pressable onPress={() => router.back()}><Ionicons name="close" size={24} color={colors.fgMuted} /></Pressable>
-        <View style={{ flex: 1, height: 8, backgroundColor: colors.border, borderRadius: 4 }}>
-          <View style={{ width: `${progress}%`, height: 8, backgroundColor: colors.green, borderRadius: 4 }} />
+    <View style={{ flex: 1, backgroundColor: colors.bg, paddingTop: insets.top }}>
+      <Aurora />
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md, paddingHorizontal: spacing.md, paddingVertical: spacing.sm }}>
+        <Pressable onPress={() => router.back()} hitSlop={12}><Ionicons name="close" size={24} color={colors.fgMuted} /></Pressable>
+        <View style={{ flex: 1, height: 10, backgroundColor: colors.glass, borderRadius: 5, overflow: 'hidden' }}>
+          <Animated.View style={{ height: 10, backgroundColor: colors.green, borderRadius: 5, width: progress.interpolate({ inputRange: [0, 1], outputRange: ['0%', '100%'] }) }} />
         </View>
-        <Text style={{ color: colors.red, fontSize: 16 }}>{'❤'.repeat(hearts)}{'🤍'.repeat(3 - hearts)}</Text>
+        <Text style={{ fontSize: 16 }}>{'❤️'.repeat(hearts)}{'🤍'.repeat(3 - hearts)}</Text>
       </View>
-      <ScrollView contentContainerStyle={{ padding: spacing.md, paddingBottom: spacing.xl }} key={index}>
-        <ExerciseView exercise={exercise} onAnswer={onAnswer} />
+      <View><XpPop amount={xpPop.amount} trigger={xpPop.trigger} /></View>
+      <ScrollView contentContainerStyle={{ padding: spacing.md, paddingBottom: spacing.xl }} key={index} keyboardShouldPersistTaps="handled">
+        <FadeScaleIn>
+          <View style={{ backgroundColor: colors.bgCard, borderRadius: radius.xl, borderWidth: 1, borderColor: colors.border, padding: spacing.lg }}>
+            <ExerciseView exercise={exercise} onAnswer={onAnswer} />
+          </View>
+        </FadeScaleIn>
       </ScrollView>
     </View>
   );
@@ -321,5 +338,10 @@ function ScenarioBox({ text }: { text: string }) {
   );
 }
 function Center({ children }: { children: React.ReactNode }) {
-  return <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', padding: spacing.lg }}>{children}</View>;
+  return (
+    <View style={{ flex: 1, backgroundColor: colors.bg, alignItems: 'center', justifyContent: 'center', padding: spacing.lg }}>
+      <Aurora />
+      <FadeScaleIn style={{ width: '100%', alignItems: 'center' }}>{children}</FadeScaleIn>
+    </View>
+  );
 }
