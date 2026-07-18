@@ -15,10 +15,15 @@ import { Platform } from 'react-native';
  *  3. Production fallback   — the deployed backend (update once you know its URL).
  */
 const ENV_URL = process.env.EXPO_PUBLIC_API_URL;
-const DEV_DEFAULT = Platform.OS === 'android' ? 'http://10.0.2.2:3001' : 'http://localhost:3001';
-const PROD_DEFAULT = 'https://octolio.me';
 
-export const API_BASE_URL = ENV_URL || (__DEV__ ? DEV_DEFAULT : PROD_DEFAULT);
+// The deployed backend (owns the Neon database). This is the default so the app
+// connects to real data out of the box — on a simulator or a physical device.
+// To test against a LOCAL backend instead, set EXPO_PUBLIC_API_URL, e.g.:
+//   iOS sim → http://localhost:3001 · Android emu → http://10.0.2.2:3001
+//   device  → http://<your-LAN-IP>:3001
+const PROD_DEFAULT = 'https://octolio-app-2.onrender.com';
+
+export const API_BASE_URL = ENV_URL || PROD_DEFAULT;
 
 /** The web app — used for the subscription flow and legal pages. */
 export const WEB_APP_URL = 'https://octolio.me';
