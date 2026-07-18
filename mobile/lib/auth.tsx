@@ -19,6 +19,8 @@ export interface User {
   avatar?: string;
   goal?: string | null;
   daily_goal_min?: number | null;
+  /** Remaining free AI "explain my mistake" uses today; null = unlimited (Pro). */
+  ai_explains_remaining?: number | null;
 }
 
 interface AuthValue {

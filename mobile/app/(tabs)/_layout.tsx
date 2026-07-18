@@ -26,6 +26,10 @@ export default function TabsLayout() {
         options={{ title: 'Portfolio', tabBarIcon: ({ color, size }) => <Ionicons name="trending-up" size={size} color={color} /> }}
       />
       <Tabs.Screen
+        name="coach"
+        options={{ title: 'Coach', tabBarIcon: ({ color, size }) => <Ionicons name="chatbubble-ellipses" size={size} color={color} /> }}
+      />
+      <Tabs.Screen
         name="profile"
         options={{ title: 'Profile', tabBarIcon: ({ color, size }) => <Ionicons name="person-circle" size={size} color={color} /> }}
       />

@@ -8,6 +8,7 @@ import { api, ApiError } from '../../../lib/api';
 import { Button } from '../../../lib/ui';
 import { colors, radius, spacing } from '../../../lib/theme';
 import { Aurora } from '../../../components/Aurora';
+import { ExplainMistake } from '../../../components/ExplainMistake';
 import { FadeScaleIn, XpPop } from '../../../lib/anim';
 
 type Phase = 'loading' | 'intro' | 'exercise' | 'noenergy' | 'complete' | 'error';
@@ -184,7 +185,12 @@ function ExerciseView({ exercise, onAnswer }: { exercise: Exercise; onAnswer: (c
         ))}
         <Explanation checked={checked} state={state} text={en(exercise.explanation)} />
         {!checked ? <Button title="Check" onPress={check} disabled={sel === null} />
-          : state === 'wrong' ? <Button title="Continue" onPress={() => onAnswer(false, 0)} /> : null}
+          : state === 'wrong' ? (
+            <>
+              <ExplainMistake exercise={exercise} userAnswer={sel !== null ? en(exercise.options?.[sel]) : undefined} />
+              <Button title="Continue" onPress={() => onAnswer(false, 0)} />
+            </>
+          ) : null}
       </View>
     );
   }
@@ -210,7 +216,12 @@ function ExerciseView({ exercise, onAnswer }: { exercise: Exercise; onAnswer: (c
           ))}
         </View>
         <Explanation checked={checked} state={state} text={en(exercise.explanation)} />
-        {checked && state === 'wrong' ? <Button title="Continue" onPress={() => onAnswer(false, 0)} /> : null}
+        {checked && state === 'wrong' ? (
+          <>
+            <ExplainMistake exercise={exercise} userAnswer={sel === 0 ? 'True' : 'False'} />
+            <Button title="Continue" onPress={() => onAnswer(false, 0)} />
+          </>
+        ) : null}
       </View>
     );
   }
@@ -235,7 +246,12 @@ function ExerciseView({ exercise, onAnswer }: { exercise: Exercise; onAnswer: (c
         {checked && state === 'wrong' ? <Text style={{ color: colors.red, marginBottom: spacing.sm }}>Correct answer: {exercise.correctAnswer}{exercise.answerUnit ?? ''}</Text> : null}
         <Explanation checked={checked} state={state} text={en(exercise.explanation)} />
         {!checked ? <Button title="Check" onPress={check} disabled={!val.trim()} />
-          : state === 'wrong' ? <Button title="Continue" onPress={() => onAnswer(false, 0)} /> : null}
+          : state === 'wrong' ? (
+            <>
+              <ExplainMistake exercise={exercise} userAnswer={val || undefined} />
+              <Button title="Continue" onPress={() => onAnswer(false, 0)} />
+            </>
+          ) : null}
       </View>
     );
   }
@@ -262,7 +278,12 @@ function ExerciseView({ exercise, onAnswer }: { exercise: Exercise; onAnswer: (c
         {checked && state === 'wrong' ? <Text style={{ color: colors.red, marginBottom: spacing.sm }}>The answer is {unit}{answer.toLocaleString()}</Text> : null}
         <Explanation checked={checked} state={state} text={en(exercise.explanation)} />
         {!checked ? <Button title="Check" onPress={check} disabled={!val.trim()} />
-          : state === 'wrong' ? <Button title="Continue" onPress={() => onAnswer(false, 0)} /> : null}
+          : state === 'wrong' ? (
+            <>
+              <ExplainMistake exercise={exercise} userAnswer={val || undefined} />
+              <Button title="Continue" onPress={() => onAnswer(false, 0)} />
+            </>
+          ) : null}
       </View>
     );
   }
@@ -291,7 +312,12 @@ function ExerciseView({ exercise, onAnswer }: { exercise: Exercise; onAnswer: (c
           </View>
         ) : null}
         <Explanation checked={checked} state={state} text={en(exercise.explanation)} />
-        {checked && state === 'wrong' ? <Button title="Continue" onPress={() => onAnswer(false, 0)} /> : null}
+        {checked && state === 'wrong' ? (
+          <>
+            <ExplainMistake exercise={exercise} userAnswer={sel !== null ? en(choices[sel].label) : undefined} />
+            <Button title="Continue" onPress={() => onAnswer(false, 0)} />
+          </>
+        ) : null}
       </View>
     );
   }
