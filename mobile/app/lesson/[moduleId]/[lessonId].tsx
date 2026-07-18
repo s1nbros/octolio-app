@@ -223,6 +223,62 @@ function ExerciseView({ exercise, onAnswer }: { exercise: Exercise; onAnswer: (c
     );
   }
 
+  // Fill number (scenario + numeric answer with tolerance)
+  if (exercise.type === 'fill_number') {
+    const answer = exercise.fillNumberAnswer ?? 0;
+    const unit = exercise.fillNumberUnit ?? '';
+    const check = () => {
+      const n = parseFloat(val.replace(/[^0-9.\-]/g, ''));
+      if (isNaN(n)) return;
+      const tol = exercise.fillNumberTolerance ?? Math.abs(answer * 0.05);
+      const correct = Math.abs(n - answer) <= tol;
+      setState(correct ? 'correct' : 'wrong');
+      if (correct) setTimeout(() => onAnswer(true, exercise.xp), 900);
+    };
+    return (
+      <View>
+        {exercise.fillNumberScenario ? <ScenarioBox text={en(exercise.fillNumberScenario)} /> : null}
+        {exercise.question ? <Prompt text={en(exercise.question)} /> : null}
+        <TextInput value={val} onChangeText={setVal} keyboardType="numeric" editable={!checked} placeholder={`${unit}Your answer`}
+          placeholderTextColor={colors.fgSubtle}
+          style={{ height: 52, borderRadius: radius.md, backgroundColor: colors.bgElevated, borderWidth: 1, borderColor: colors.border, color: colors.fg, paddingHorizontal: spacing.md, fontSize: 18, marginBottom: spacing.md }} />
+        {checked && state === 'wrong' ? <Text style={{ color: colors.red, marginBottom: spacing.sm }}>The answer is {unit}{answer.toLocaleString()}</Text> : null}
+        <Explanation checked={checked} state={state} text={en(exercise.explanation)} />
+        {!checked ? <Button title="Check" onPress={check} disabled={!val.trim()} />
+          : state === 'wrong' ? <Button title="Continue" onPress={() => onAnswer(false, 0)} /> : null}
+      </View>
+    );
+  }
+
+  // Scenario decision (pick the best option)
+  if (exercise.type === 'scenario_decision') {
+    const choices: any[] = exercise.decisionChoices ?? [];
+    const pick = (i: number) => {
+      if (checked) return;
+      const correct = !!choices[i]?.isBest;
+      setSel(i);
+      setState(correct ? 'correct' : 'wrong');
+      if (correct) setTimeout(() => onAnswer(true, exercise.xp), 1100);
+    };
+    return (
+      <View>
+        <ScenarioBox text={en(exercise.decisionScenario)} />
+        {choices.map((c, i) => (
+          <OptionRow key={i} label={`${c.emoji ?? ''} ${en(c.label)}`.trim()} selected={sel === i}
+            state={checked ? (c.isBest ? 'correct' : i === sel ? 'wrong' : 'idle') : 'idle'}
+            disabled={checked} onPress={() => pick(i)} />
+        ))}
+        {checked && sel !== null ? (
+          <View style={{ backgroundColor: colors.bgElevated, borderRadius: radius.md, padding: spacing.md, marginBottom: spacing.md }}>
+            <Text style={{ color: colors.fgMuted, lineHeight: 21 }}>{en(choices[sel].outcome)}</Text>
+          </View>
+        ) : null}
+        <Explanation checked={checked} state={state} text={en(exercise.explanation)} />
+        {checked && state === 'wrong' ? <Button title="Continue" onPress={() => onAnswer(false, 0)} /> : null}
+      </View>
+    );
+  }
+
   // Fallback — richer interactive types are best on the web for now.
   return (
     <View>
@@ -254,6 +310,13 @@ function Explanation({ checked, state, text }: { checked: boolean; state: string
     <View style={{ backgroundColor: good ? colors.greenSoft : 'rgba(224,87,95,0.12)', borderRadius: radius.md, padding: spacing.md, marginBottom: spacing.md }}>
       <Text style={{ color: good ? colors.green : colors.red, fontWeight: '700', marginBottom: 4 }}>{good ? '✓ Correct' : '✗ Not quite'}</Text>
       <Text style={{ color: colors.fgMuted, lineHeight: 21 }}>{text}</Text>
+    </View>
+  );
+}
+function ScenarioBox({ text }: { text: string }) {
+  return (
+    <View style={{ backgroundColor: colors.primarySoft, borderRadius: radius.md, borderWidth: 1, borderColor: colors.border, padding: spacing.md, marginBottom: spacing.md }}>
+      <Text style={{ color: colors.fg, fontSize: 15, lineHeight: 22 }}>{text}</Text>
     </View>
   );
 }

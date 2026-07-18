@@ -16,12 +16,19 @@ npm install            # or: npx expo install  (aligns versions to the SDK)
 npx expo start         # press i (iOS sim), a (Android emulator), or scan QR in Expo Go
 ```
 
-### Pointing at a backend
-Edit `lib/config.ts` → `API_BASE_URL`:
-- Production: the Render backend (default).
-- iOS simulator (local backend): `http://localhost:3001`
-- Android emulator (local backend): `http://10.0.2.2:3001`
-- Physical device (local backend): your machine's LAN IP, e.g. `http://192.168.1.20:3001`
+### Pointing at a backend (the DB connection)
+The app never talks to Postgres directly — it calls the **shared Express backend**,
+which owns the Neon database. So "connect the database" = point the app at a backend.
+
+Set `EXPO_PUBLIC_API_URL` (copy `.env.example` → `.env`). If unset, `lib/config.ts`
+falls back to a sensible dev default:
+- iOS simulator + local backend → `http://localhost:3001`
+- Android emulator + local backend → `http://10.0.2.2:3001`
+- **Physical device** + local backend → set `EXPO_PUBLIC_API_URL=http://<your-LAN-IP>:3001`
+- Production → set `EXPO_PUBLIC_API_URL` to your deployed backend URL
+
+Run the backend locally (`cd ../backend && npm run dev`) — it's wired to Neon via
+`backend/.env`, so the app then reads/writes real data.
 
 ## Building for the stores
 ```bash
@@ -42,9 +49,13 @@ console app, with bundle id / package `me.octolio.app` (see `app.json`).
 - [ ] **App icon + splash** — add `assets/` and reference in `app.json` before building.
 - [ ] Push notifications, deep links, and the richer exercise/feature set are follow-ups.
 
-## v1 scope (this build)
-Auth (login / register / email verify), module list, a lesson runner
-(theory / choice / true_false / fill_blank with a graceful fallback for richer
-types), streak + energy, and a profile with account deletion. Everything else
-(shop, chests, wheel, friends, portfolio, AI coach, all 25 exercise types) is a
-follow-up.
+## Current scope
+Auth (login / register / email verify), module list, lesson runner
+(theory / choice / true_false / fill_blank / fill_number / scenario_decision, with
+a graceful fallback for richer types), streak + energy, a **Portfolio** tab
+(virtual trading against the same `/api/portfolio` backend), and a profile with
+account deletion.
+
+Still to port for full web parity: onboarding wizard, shop / chests / wheel,
+friends + quests, AI coach + "explain my mistake", test-out, daily workout, and
+the remaining interactive exercise types (drag-sort, sliders, sims, boss battles).

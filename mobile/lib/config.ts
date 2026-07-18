@@ -1,15 +1,24 @@
 import { Platform } from 'react-native';
 
 /**
- * Backend base URL. The mobile app reuses the exact same API as the web app.
+ * Backend base URL. The mobile app never touches Postgres directly — it talks to
+ * the SAME Express backend the web app uses, which owns the Neon database. That
+ * keeps DB credentials + all auth/validation on the server.
  *
- * - Production: the deployed Render backend.
- * - Local dev on a SIMULATOR: http://localhost:3001 works on iOS sim; Android
- *   emulator must use http://10.0.2.2:3001.
- * - Local dev on a PHYSICAL device: use your computer's LAN IP, e.g.
- *   http://192.168.1.20:3001 (localhost points at the phone itself).
+ * Resolution order:
+ *  1. EXPO_PUBLIC_API_URL  — set this for device testing + production builds.
+ *  2. Dev default          — a local backend (which is wired to Neon via backend/.env):
+ *       • iOS simulator      → http://localhost:3001
+ *       • Android emulator   → http://10.0.2.2:3001
+ *       • Physical device    → localhost won't reach your Mac; set EXPO_PUBLIC_API_URL
+ *                              to your LAN IP, e.g. http://192.168.1.20:3001
+ *  3. Production fallback   — the deployed backend (update once you know its URL).
  */
-export const API_BASE_URL = 'https://octolio-backend.onrender.com';
+const ENV_URL = process.env.EXPO_PUBLIC_API_URL;
+const DEV_DEFAULT = Platform.OS === 'android' ? 'http://10.0.2.2:3001' : 'http://localhost:3001';
+const PROD_DEFAULT = 'https://octolio.me';
+
+export const API_BASE_URL = ENV_URL || (__DEV__ ? DEV_DEFAULT : PROD_DEFAULT);
 
 /** The web app — used for the subscription flow and legal pages. */
 export const WEB_APP_URL = 'https://octolio.me';
