@@ -10,6 +10,7 @@ import { colors, modulePalettes, LOCKED_PALETTE, radius, spacing } from '../../l
 import { Aurora } from '../../components/Aurora';
 import { ChestReelModal } from '../../components/ChestReelModal';
 import { TodayWorkout } from '../../components/TodayWorkout';
+import { ReviewCard } from '../../components/ReviewCard';
 
 interface LessonMeta { id: string; title: { en: string }; icon?: string; xpReward: number; exerciseCount: number; completed: boolean; }
 interface ModuleMeta { id: string; title: { en: string }; icon: string; color: string; proOnly: boolean; lessons: LessonMeta[]; }
@@ -81,8 +82,9 @@ export default function Learn() {
           </View>
         </View>
 
-        {/* Daily Money Workout */}
+        {/* Daily Money Workout + due reviews */}
         <TodayWorkout />
+        <ReviewCard />
 
         {/* Continue hero */}
         <ContinueHero modules={modules} current={current} streak={user?.streak ?? 0}
