@@ -4,7 +4,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../../lib/auth';
 import { Button, Card } from '../../lib/ui';
 import { colors, radius, spacing } from '../../lib/theme';
+import { useRouter } from 'expo-router';
 import { Aurora } from '../../components/Aurora';
+import { OctopusAvatar } from '../../components/OctopusAvatar';
+import { emojiFor } from '../../lib/cosmetics';
 import { PRIVACY_URL, SHOW_PRO_UPGRADE, TERMS_URL, WEB_APP_URL } from '../../lib/config';
 
 const LEVELS = [
@@ -15,6 +18,7 @@ const levelOf = (xp: number) => [...LEVELS].reverse().find((l) => xp >= l.minXp)
 
 export default function Profile() {
   const { user, logout, deleteAccount } = useAuth();
+  const router = useRouter();
   const insets = useSafeAreaInsets();
   if (!user) return null;
 
@@ -42,10 +46,8 @@ export default function Profile() {
       <ScrollView contentContainerStyle={{ padding: spacing.md, paddingTop: insets.top + spacing.md, paddingBottom: spacing.xl }}>
       {/* Identity */}
       <View style={{ alignItems: 'center', marginBottom: spacing.lg }}>
-        <View style={{ width: 84, height: 84, borderRadius: 42, backgroundColor: colors.primarySoft, alignItems: 'center', justifyContent: 'center', marginBottom: spacing.sm }}>
-          <Text style={{ fontSize: 40 }}>🐙</Text>
-        </View>
-        <Text style={{ color: colors.fg, fontSize: 22, fontWeight: '800' }}>{user.name}</Text>
+        <OctopusAvatar size={120} hatEmoji={emojiFor(user.equipped_hat)} faceEmoji={emojiFor(user.equipped_face)} bodyEmoji={emojiFor(user.equipped_body)} />
+        <Text style={{ color: colors.fg, fontSize: 22, fontWeight: '800', marginTop: spacing.sm }}>{user.name}</Text>
         <Text style={{ color: colors.fgMuted, fontSize: 14 }}>{levelOf(user.xp).label}{user.is_pro ? ' · ✦ Pro' : ''}</Text>
       </View>
 
@@ -67,6 +69,11 @@ export default function Profile() {
           <Button title="Upgrade on the web" onPress={() => WebBrowser.openBrowserAsync(WEB_APP_URL)} />
         </Card>
       )}
+
+      {/* Shop */}
+      <View style={{ marginBottom: spacing.lg }}>
+        <Button title="🛍️  Shop — dress your octopus" onPress={() => router.push('/shop')} />
+      </View>
 
       {/* Account actions */}
       <View style={{ gap: spacing.sm, marginBottom: spacing.xl }}>

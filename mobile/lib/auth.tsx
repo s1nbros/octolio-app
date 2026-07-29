@@ -17,6 +17,9 @@ export interface User {
   streak_freezes?: number;
   coins?: number;
   avatar?: string;
+  equipped_hat?: string | null;
+  equipped_face?: string | null;
+  equipped_body?: string | null;
   goal?: string | null;
   daily_goal_min?: number | null;
   /** Remaining free AI "explain my mistake" uses today; null = unlimited (Pro). */
