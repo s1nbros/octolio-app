@@ -70,9 +70,10 @@ export default function Profile() {
         </Card>
       )}
 
-      {/* Shop */}
-      <View style={{ marginBottom: spacing.lg }}>
-        <Button title="🛍️  Shop — dress your octopus" onPress={() => router.push('/shop')} />
+      {/* Social + Shop */}
+      <View style={{ gap: spacing.sm, marginBottom: spacing.lg }}>
+        <Button title="👥  Friends" onPress={() => router.push('/friends')} />
+        <Button title="🛍️  Shop — dress your octopus" variant="ghost" onPress={() => router.push('/shop')} />
       </View>
 
       {/* Account actions */}
