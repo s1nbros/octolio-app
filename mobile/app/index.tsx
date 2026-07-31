@@ -3,5 +3,6 @@ import { useAuth } from '../lib/auth';
 
 export default function Index() {
   const { user } = useAuth();
-  return <Redirect href={user ? '/(tabs)' : '/(auth)/login'} />;
+  if (!user) return <Redirect href="/(auth)/login" />;
+  return <Redirect href={user.onboarding_done ? '/(tabs)' : '/onboarding'} />;
 }

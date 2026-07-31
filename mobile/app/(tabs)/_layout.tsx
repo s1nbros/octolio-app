@@ -6,6 +6,7 @@ import { colors } from '../../lib/theme';
 export default function TabsLayout() {
   const { user } = useAuth();
   if (!user) return <Redirect href="/(auth)/login" />;
+  if (!user.onboarding_done) return <Redirect href="/onboarding" />;
 
   return (
     <Tabs

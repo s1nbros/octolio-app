@@ -19,6 +19,7 @@ function RootNavigator() {
       <Stack.Screen name="index" />
       <Stack.Screen name="(auth)" />
       <Stack.Screen name="(tabs)" />
+      <Stack.Screen name="onboarding" />
       <Stack.Screen name="lesson/[moduleId]/[lessonId]" options={{ animation: 'slide_from_right' }} />
       <Stack.Screen name="review" options={{ animation: 'slide_from_right' }} />
       <Stack.Screen name="shop" options={{ animation: 'slide_from_right' }} />
