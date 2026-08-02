@@ -22,6 +22,7 @@ export interface User {
   equipped_body?: string | null;
   goal?: string | null;
   daily_goal_min?: number | null;
+  wheel_spun?: boolean;
   /** Remaining free AI "explain my mistake" uses today; null = unlimited (Pro). */
   ai_explains_remaining?: number | null;
 }

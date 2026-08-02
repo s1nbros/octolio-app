@@ -11,6 +11,7 @@ import { Aurora } from '../../components/Aurora';
 import { ChestReelModal } from '../../components/ChestReelModal';
 import { TodayWorkout } from '../../components/TodayWorkout';
 import { ReviewCard } from '../../components/ReviewCard';
+import { WheelOfLuck } from '../../components/WheelOfLuck';
 
 interface LessonMeta { id: string; title: { en: string }; icon?: string; xpReward: number; exerciseCount: number; completed: boolean; }
 interface ModuleMeta { id: string; title: { en: string }; icon: string; color: string; proOnly: boolean; lessons: LessonMeta[]; }
@@ -126,6 +127,7 @@ export default function Learn() {
       </ScrollView>
 
       <ChestReelModal target={chestTarget} onClose={() => setChestTarget(null)} onOpened={load} />
+      <WheelOfLuck />
     </View>
   );
 }
