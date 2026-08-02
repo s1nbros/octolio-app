@@ -632,12 +632,19 @@ is re-authored in React Native primitives (`View`/`Text`/`StyleSheet`, no DOM/Ta
 ### Ported screens / features (parity with web)
 - **Onboarding wizard** — goal → 3-Q diagnostic (→ level) → daily-time → Money Plan → Start
   (`/api/auth/onboarding-profile` + `/onboarding`). Data mirror: `lib/onboarding.ts`.
-- **Learn dashboard** (`(tabs)/index.tsx`) — aurora bg, Daily Workout card, Review card,
-  Continue hero, and the snake-path (gradient section banners + 3D lesson nodes + chest nodes),
-  all via `expo-linear-gradient`. Mounts the **Wheel of Luck** (one-time) + **chest reel**.
+- **Learn dashboard** (`(tabs)/index.tsx`) — aurora bg, a `NotificationBell` (unread badge) in the
+  header, Daily Workout card, Review card, Continue hero, and the snake-path (gradient section
+  banners + 3D lesson nodes + chest nodes), all via `expo-linear-gradient`. Each eligible module
+  banner has a **⚡ Test out** button (`components/TestOutModal.tsx` → `/api/testout/*`). Mounts
+  the **Wheel of Luck** (one-time) + **chest reel**.
 - **Lesson runner** (`app/lesson/...`) — energy/hearts, animated progress, XP pop, glass card.
-  Uses the shared `components/ExerciseView.tsx` (theory/choice/true_false/fill_blank/fill_number/
-  scenario_decision + a fallback for richer types) with the 🐙 **Explain my mistake** button.
+  Uses the shared `components/ExerciseView.tsx` with the 🐙 **Explain my mistake** button.
+  **Exercise types native (11):** theory, choice, true_false, fill_blank, fill_number,
+  scenario_decision (in `ExerciseView.tsx`) + sort_items, match_terms, order_items, swipe_sort,
+  speed_round (in `components/exerciseTypes.tsx`). All other types render a graceful "best on web"
+  fallback — see the roadmap below.
+- **Notifications** — `components/NotificationBell.tsx` (badge via `/unread-count`) +
+  `app/notifications.tsx` feed (mark read / read-all).
 - **Review** (`app/review.tsx` + dashboard `ReviewCard`) — spaced repetition via
   `/api/review/{due,done,stats}`, reusing `ExerciseView`.
 - **League** — `/api/auth/league` leaderboard with medals + your row.
@@ -667,11 +674,20 @@ is re-authored in React Native primitives (`View`/`Text`/`StyleSheet`, no DOM/Ta
 - Follow-ups tracked in `mobile/README.md`: loot-box odds disclosure, privacy/data-safety forms,
   app icon/splash.
 
-### Not yet ported (roadmap)
-Notifications feed, test-out quiz, the Quests page (client-derived), and the remaining ~17
-richer interactive exercise types (drag-sort, sliders, sims, stock_chart, boss_battle,
-swipe_sort, speed_round, life_sim, etc.) — these currently show the graceful "best on web"
-fallback in the lesson runner.
+### Not yet ported (roadmap — what to continue with)
+The remaining work is mostly the **calculator/simulator-heavy exercise types**, which still hit
+the "best on web" fallback in `ExerciseView.tsx`. Port each as a component in
+`components/exerciseTypes.tsx` and add a routing line in `ExerciseView` (same pattern as
+sort_items/etc.). Suggested batches:
+1. Slider/allocation: `budget_slider`, `portfolio_pie`, `coverage_calc`, `tax_brackets`
+   (need RN sliders — `@react-native-community/slider`, install via `npx expo install`).
+2. Sim/calc: `debt_payoff`, `compound_sim`, `income_streams`, `unit_price`, `risk_matrix`.
+3. Chart/game: `stock_chart` (react-native-svg line chart), `boss_battle`, `rat_race`, `life_sim`.
+Also still to do: the **Quests page** (web derives it client-side from `/api/modules` +
+`/api/progress`); **Google/Apple sign-in** (adding one requires both, per Apple 4.8); the
+`mobile/README.md` compliance follow-ups (loot-box odds text, privacy/data-safety forms, app
+icon + splash before an EAS build). Validate every change with `npx tsc --noEmit` +
+`npx expo export --platform ios` (see the tooling notes above).
 
 ## Deployment
 - Render: backend + frontend as separate services
