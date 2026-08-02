@@ -3,6 +3,7 @@ import { Pressable, Text, TextInput, View } from 'react-native';
 import { Button } from '../lib/ui';
 import { ExplainMistake } from './ExplainMistake';
 import { colors, radius, spacing } from '../lib/theme';
+import { MatchTerms, OrderItems, SortItems, SpeedRound, SwipeSort } from './exerciseTypes';
 
 export interface Exercise { id: string; type: string; xp: number; [k: string]: any; }
 export const en = (v: any): string => (v && typeof v === 'object' ? v.en ?? '' : v ?? '');
@@ -180,6 +181,12 @@ export function ExerciseView({ exercise, onAnswer }: { exercise: Exercise; onAns
       </View>
     );
   }
+
+  if (exercise.type === 'sort_items') return <SortItems exercise={exercise} onAnswer={onAnswer} />;
+  if (exercise.type === 'match_terms') return <MatchTerms exercise={exercise} onAnswer={onAnswer} />;
+  if (exercise.type === 'order_items') return <OrderItems exercise={exercise} onAnswer={onAnswer} />;
+  if (exercise.type === 'swipe_sort') return <SwipeSort exercise={exercise} onAnswer={onAnswer} />;
+  if (exercise.type === 'speed_round') return <SpeedRound exercise={exercise} onAnswer={onAnswer} />;
 
   return (
     <View>
