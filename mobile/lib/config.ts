@@ -25,6 +25,11 @@ const PROD_DEFAULT = 'https://octolio-app-2.onrender.com';
 
 export const API_BASE_URL = ENV_URL || PROD_DEFAULT;
 
+// Boot diagnostic — printed once to the Metro terminal so it's obvious which
+// backend the bundle is actually talking to (EXPO_PUBLIC_API_URL is inlined at
+// build time from the shell that started `expo start`, not from a file).
+console.log(`[octolio] API_BASE_URL = ${API_BASE_URL}${ENV_URL ? ' (from EXPO_PUBLIC_API_URL)' : ' (prod default)'}`);
+
 /** The web app — used for the subscription flow and legal pages. */
 export const WEB_APP_URL = 'https://octolio.me';
 
