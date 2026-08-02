@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { LayoutChangeEvent, Pressable, Text, View } from 'react-native';
+import Svg, { Circle, Defs, LinearGradient, Line as SvgLine, Path, Stop } from 'react-native-svg';
 import { Button } from '../lib/ui';
+import { ExplainMistake } from './ExplainMistake';
 import { colors, radius, spacing } from '../lib/theme';
 
 const en = (v: any): string => (v && typeof v === 'object' ? v.en ?? '' : v ?? '');
@@ -255,6 +257,301 @@ export function SpeedRound({ exercise, onAnswer }: { exercise: any; onAnswer: An
           <Text style={{ color: colors.fg }}>{en(o)}</Text>
         </Pressable>
       ))}
+    </View>
+  );
+}
+
+/* ── rpg_scenario: branching-story financial decision ──────── */
+export function RpgScenario({ exercise, onAnswer }: { exercise: any; onAnswer: Answer }) {
+  const choices: any[] = exercise.choices ?? [];
+  const [chosen, setChosen] = useState<number | null>(null);
+  const selected = chosen !== null ? choices[chosen] : null;
+
+  const pick = (i: number) => {
+    if (chosen !== null) return;
+    setChosen(i);
+    if (choices[i]?.isGood) setTimeout(() => onAnswer(true, exercise.xp), 2000);
+  };
+
+  return (
+    <View>
+      <View style={{ flexDirection: 'row', gap: spacing.sm, backgroundColor: colors.primarySoft, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.border, padding: spacing.md, marginBottom: spacing.md }}>
+        <Text style={{ fontSize: 30 }}>{exercise.avatar ?? '🧑'}</Text>
+        <Text style={{ color: colors.fg, fontSize: 15, lineHeight: 22, flex: 1 }}>{en(exercise.scenario)}</Text>
+      </View>
+      <Text style={{ color: colors.fgSubtle, fontSize: 11, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: spacing.sm }}>What do you do?</Text>
+      {choices.map((c, i) => {
+        const isPicked = chosen === i;
+        const border = isPicked ? (c.isGood ? colors.green : colors.red) : colors.border;
+        return (
+          <Pressable key={i} disabled={chosen !== null} onPress={() => pick(i)}
+            style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.md, borderRadius: radius.md, borderWidth: 1.5, borderColor: border, backgroundColor: isPicked ? (c.isGood ? colors.greenSoft : colors.redSoft) : colors.card, opacity: chosen !== null && !isPicked ? 0.4 : 1, marginBottom: spacing.sm }}>
+            <Text style={{ fontSize: 20 }}>{c.emoji}</Text>
+            <Text style={{ color: colors.fg, fontSize: 14, fontWeight: '600', flex: 1 }}>{en(c.label)}</Text>
+            {isPicked ? <Text style={{ fontSize: 18 }}>{c.isGood ? '✅' : '❌'}</Text> : null}
+          </Pressable>
+        );
+      })}
+      {selected ? (
+        <View style={{ backgroundColor: selected.isGood ? colors.greenSoft : colors.redSoft, borderRadius: radius.md, borderWidth: 1, borderColor: selected.isGood ? colors.green : colors.red, padding: spacing.md, marginTop: spacing.xs }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
+            <Text style={{ fontSize: 16, marginRight: 6 }}>{selected.isGood ? '💡' : '⚠️'}</Text>
+            <Text style={{ color: selected.isGood ? colors.green : colors.red, fontWeight: '800', fontSize: 14 }}>{selected.isGood ? 'Good move!' : 'Ouch...'}</Text>
+            {selected.cashFlowChange ? (
+              <Text style={{ marginLeft: 'auto', fontWeight: '800', color: selected.cashFlowChange > 0 ? colors.green : colors.red }}>
+                {selected.cashFlowChange > 0 ? '+' : ''}€{Math.abs(selected.cashFlowChange)}
+              </Text>
+            ) : null}
+          </View>
+          <Text style={{ color: colors.fgMuted, fontSize: 14, lineHeight: 21 }}>{en(selected.consequence)}</Text>
+        </View>
+      ) : null}
+      {selected && !selected.isGood ? (
+        <View style={{ marginTop: spacing.md }}>
+          <ExplainMistake exercise={exercise} userAnswer={en(selected.label)} />
+          <Button title="Continue" onPress={() => onAnswer(false, 0)} />
+        </View>
+      ) : null}
+    </View>
+  );
+}
+
+/* ── boss_battle: module capstone duel ─────────────────────── */
+const PLAYER_HP = 3;
+export function BossBattle({ exercise, onAnswer }: { exercise: any; onAnswer: Answer }) {
+  const cfg = exercise.bossBattle ?? {};
+  const questions: any[] = cfg.questions ?? [];
+  const bossMaxHp = Math.max(1, questions.length - 2);
+  const [phase, setPhase] = useState<'intro' | 'battle' | 'won' | 'lost'>('intro');
+  const [qIdx, setQIdx] = useState(0);
+  const [picked, setPicked] = useState<number | null>(null);
+  const [bossHp, setBossHp] = useState(bossMaxHp);
+  const [hearts, setHearts] = useState(PLAYER_HP);
+
+  const reset = () => { setPhase('battle'); setQIdx(0); setPicked(null); setBossHp(bossMaxHp); setHearts(PLAYER_HP); };
+  const q = questions[qIdx];
+
+  const advance = () => {
+    setPicked(null);
+    if (qIdx + 1 >= questions.length) setPhase(bossHp <= 0 ? 'won' : 'lost');
+    else setQIdx((n) => n + 1);
+  };
+
+  const pick = (i: number) => {
+    if (picked !== null) return;
+    setPicked(i);
+    if (i === q.correctIndex) {
+      const nextBoss = bossHp - 1;
+      setBossHp(nextBoss);
+      setTimeout(() => { if (nextBoss <= 0) setPhase('won'); else advance(); }, 800);
+    } else {
+      const nextHearts = hearts - 1;
+      setHearts(nextHearts);
+      if (nextHearts <= 0) setTimeout(() => setPhase('lost'), 900);
+    }
+  };
+
+  if (phase === 'intro') {
+    return (
+      <View style={{ alignItems: 'center' }}>
+        <Text style={{ color: colors.red, fontSize: 11, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 1, marginBottom: spacing.sm }}>⚔️ Boss Battle</Text>
+        <Text style={{ fontSize: 64, marginBottom: spacing.sm }}>{cfg.boss?.emoji}</Text>
+        <Text style={{ color: colors.fg, fontSize: 24, fontWeight: '900', marginBottom: spacing.sm, textAlign: 'center' }}>{en(cfg.boss?.name)}</Text>
+        <Text style={{ color: colors.fgMuted, fontSize: 14, lineHeight: 21, textAlign: 'center', marginBottom: spacing.lg }}>{en(cfg.intro)}</Text>
+        <View style={{ alignSelf: 'stretch' }}><Button title="Begin battle ⚔️" onPress={() => setPhase('battle')} /></View>
+      </View>
+    );
+  }
+  if (phase === 'won') {
+    return (
+      <View style={{ alignItems: 'center' }}>
+        <Text style={{ fontSize: 56, marginBottom: spacing.sm }}>{cfg.badge?.emoji}</Text>
+        <Text style={{ color: colors.green, fontSize: 11, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 }}>Victory · badge earned</Text>
+        <Text style={{ color: colors.fg, fontSize: 24, fontWeight: '900', marginBottom: spacing.sm, textAlign: 'center' }}>{en(cfg.badge?.label)}</Text>
+        <Text style={{ color: colors.fgMuted, fontSize: 14, marginBottom: spacing.lg, textAlign: 'center' }}>You defeated {en(cfg.boss?.name)}!</Text>
+        <View style={{ alignSelf: 'stretch' }}><Button title="Claim reward →" onPress={() => onAnswer(true, exercise.xp)} /></View>
+      </View>
+    );
+  }
+  if (phase === 'lost') {
+    return (
+      <View style={{ alignItems: 'center' }}>
+        <Text style={{ fontSize: 56, marginBottom: spacing.sm, opacity: 0.6 }}>{cfg.boss?.emoji}</Text>
+        <Text style={{ color: colors.red, fontSize: 20, fontWeight: '800', marginBottom: 4 }}>The boss got you!</Text>
+        <Text style={{ color: colors.fgMuted, fontSize: 14, marginBottom: spacing.lg, textAlign: 'center' }}>Shake it off and try again — you know this.</Text>
+        <View style={{ alignSelf: 'stretch' }}><Button title="↻ Try again" onPress={reset} /></View>
+      </View>
+    );
+  }
+
+  const revealed = picked !== null;
+  const wasWrong = revealed && picked !== q.correctIndex;
+  const bossPct = (bossHp / bossMaxHp) * 100;
+  return (
+    <View>
+      <View style={{ backgroundColor: colors.redSoft, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.red, padding: spacing.md, marginBottom: spacing.md }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginBottom: spacing.sm }}>
+          <Text style={{ fontSize: 28 }}>{cfg.boss?.emoji}</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={{ color: colors.fg, fontWeight: '800', fontSize: 14 }} numberOfLines={1}>{en(cfg.boss?.name)}</Text>
+            <View style={{ height: 9, borderRadius: 5, marginTop: 4, backgroundColor: colors.glass, overflow: 'hidden' }}>
+              <View style={{ height: 9, width: `${bossPct}%`, backgroundColor: colors.red, borderRadius: 5 }} />
+            </View>
+          </View>
+        </View>
+        <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 3 }}>
+          {Array.from({ length: PLAYER_HP }).map((_, i) => (
+            <Text key={i} style={{ fontSize: 16, opacity: i < hearts ? 1 : 0.25 }}>❤️</Text>
+          ))}
+        </View>
+      </View>
+      <Text style={{ color: colors.fgSubtle, fontSize: 11, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 6 }}>Hit {qIdx + 1}</Text>
+      <Text style={{ color: colors.fg, fontSize: 16, fontWeight: '700', lineHeight: 23, marginBottom: spacing.md }}>{en(q?.q)}</Text>
+      {(q?.options ?? []).map((opt: any, i: number) => {
+        const isCorrect = revealed && i === q.correctIndex;
+        const isWrongPick = revealed && i === picked && picked !== q.correctIndex;
+        const border = isCorrect ? colors.green : isWrongPick ? colors.red : colors.border;
+        return (
+          <Pressable key={i} disabled={revealed} onPress={() => pick(i)}
+            style={{ flexDirection: 'row', alignItems: 'center', padding: spacing.md, borderRadius: radius.md, borderWidth: 1.5, borderColor: border, backgroundColor: isCorrect ? colors.greenSoft : isWrongPick ? colors.redSoft : colors.card, marginBottom: spacing.sm }}>
+            <Text style={{ color: colors.fg, fontSize: 14, fontWeight: '600', flex: 1 }}>{en(opt)}</Text>
+            {isCorrect ? <Text>✓</Text> : isWrongPick ? <Text>✗</Text> : null}
+          </Pressable>
+        );
+      })}
+      {wasWrong && hearts > 0 ? (
+        <View>
+          {q.explanation ? (
+            <View style={{ backgroundColor: colors.redSoft, borderRadius: radius.md, borderWidth: 1, borderColor: colors.red, padding: spacing.md, marginTop: spacing.xs, marginBottom: spacing.md }}>
+              <Text style={{ color: colors.fgMuted, fontSize: 14, lineHeight: 21 }}>{en(q.explanation)}</Text>
+            </View>
+          ) : null}
+          <Button title="Continue →" onPress={advance} />
+        </View>
+      ) : null}
+    </View>
+  );
+}
+
+/* ── stock_chart: tap-the-point / identify-pattern price chart ─ */
+export function StockChart({ exercise, onAnswer }: { exercise: any; onAnswer: Answer }) {
+  const cfg = exercise.stockChart ?? {};
+  const prices: number[] = cfg.prices ?? [];
+  const labels: string[] = cfg.labels ?? prices.map((_, i) => `${i + 1}`);
+  const mode = cfg.mode;
+  const [pointIdx, setPointIdx] = useState<number | null>(null);
+  const [optionIdx, setOptionIdx] = useState<number | null>(null);
+  const [submitted, setSubmitted] = useState(false);
+  const [chartW, setChartW] = useState(0);
+
+  const min = useMemo(() => Math.min(...prices), [prices]);
+  const max = useMemo(() => Math.max(...prices), [prices]);
+  const range = max - min || 1;
+  const H = 200;
+  const padX = 10;
+  const padY = 12;
+  const xAt = (i: number) => padX + (i / Math.max(1, prices.length - 1)) * (chartW - padX * 2);
+  const yAt = (v: number) => H - padY - ((v - min) / range) * (H - padY * 2);
+  const path = prices.map((v, i) => `${i === 0 ? 'M' : 'L'}${xAt(i).toFixed(1)} ${yAt(v).toFixed(1)}`).join(' ');
+  const areaPath = chartW ? `${path} L${xAt(prices.length - 1).toFixed(1)} ${H} L${xAt(0).toFixed(1)} ${H} Z` : '';
+  const trendUp = prices[prices.length - 1] > prices[0];
+  const trendColor = trendUp ? colors.green : colors.red;
+
+  const isCorrect = mode === 'identify_point'
+    ? pointIdx !== null && Math.abs(pointIdx - (cfg.correctPointIndex ?? 0)) <= (cfg.pointTolerance ?? 1)
+    : optionIdx === cfg.correctPatternIndex;
+
+  const submit = () => {
+    if (mode === 'identify_point' ? pointIdx === null : optionIdx === null) return;
+    setSubmitted(true);
+    const ok = mode === 'identify_point'
+      ? pointIdx !== null && Math.abs(pointIdx - (cfg.correctPointIndex ?? 0)) <= (cfg.pointTolerance ?? 1)
+      : optionIdx === cfg.correctPatternIndex;
+    if (ok) setTimeout(() => onAnswer(true, exercise.xp), 1600);
+  };
+
+  const tapChart = (evt: any) => {
+    if (submitted || mode !== 'identify_point' || !chartW) return;
+    const x = evt.nativeEvent.locationX;
+    let nearest = 0, best = Infinity;
+    for (let i = 0; i < prices.length; i++) { const d = Math.abs(xAt(i) - x); if (d < best) { best = d; nearest = i; } }
+    setPointIdx(nearest);
+  };
+
+  return (
+    <View>
+      {cfg.scenario ? (
+        <View style={{ backgroundColor: colors.primarySoft, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.border, padding: spacing.md, marginBottom: spacing.md }}>
+          <Text style={{ color: colors.fg, fontSize: 15, lineHeight: 22 }}>{en(cfg.scenario)}</Text>
+        </View>
+      ) : null}
+      <Prompt text={en(cfg.question)} />
+      <View style={{ backgroundColor: colors.glass, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.border, padding: spacing.sm, marginBottom: spacing.md }}>
+        <Pressable onPress={tapChart} onLayout={(e: LayoutChangeEvent) => setChartW(e.nativeEvent.layout.width)}>
+          {chartW > 0 ? (
+            <Svg width={chartW} height={H}>
+              <Defs>
+                <LinearGradient id="scGrad" x1="0" y1="0" x2="0" y2="1">
+                  <Stop offset="0" stopColor={trendColor} stopOpacity={0.3} />
+                  <Stop offset="1" stopColor={trendColor} stopOpacity={0} />
+                </LinearGradient>
+              </Defs>
+              {[0.25, 0.5, 0.75].map((p) => (
+                <SvgLine key={p} x1={padX} y1={H * p} x2={chartW - padX} y2={H * p} stroke={colors.fgSubtle} strokeWidth={0.5} strokeDasharray="3 3" opacity={0.4} />
+              ))}
+              <Path d={areaPath} fill="url(#scGrad)" />
+              <Path d={path} fill="none" stroke={trendColor} strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" />
+              {pointIdx !== null ? (
+                <>
+                  <SvgLine x1={xAt(pointIdx)} y1={padY} x2={xAt(pointIdx)} y2={H - padY} stroke={colors.primary} strokeWidth={1.2} strokeDasharray="4 4" />
+                  <Circle cx={xAt(pointIdx)} cy={yAt(prices[pointIdx])} r={5} fill={colors.primary} stroke="#fff" strokeWidth={1.5} />
+                </>
+              ) : null}
+              {submitted && mode === 'identify_point' && cfg.correctPointIndex !== undefined ? (
+                <Circle cx={xAt(cfg.correctPointIndex)} cy={yAt(prices[cfg.correctPointIndex])} r={6} fill="none" stroke={colors.green} strokeWidth={2} />
+              ) : null}
+            </Svg>
+          ) : <View style={{ height: H }} />}
+        </Pressable>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 }}>
+          <Text style={{ color: colors.fgMuted, fontSize: 12 }}>{labels[0]}</Text>
+          {pointIdx !== null ? <Text style={{ color: colors.primary, fontSize: 12, fontWeight: '800' }}>{labels[pointIdx]} · €{prices[pointIdx].toLocaleString()}</Text> : null}
+          <Text style={{ color: colors.fgMuted, fontSize: 12 }}>{labels[labels.length - 1]}</Text>
+        </View>
+      </View>
+      {mode === 'identify_point' && !submitted && pointIdx === null && cfg.pointPrompt ? (
+        <Text style={{ color: colors.fgSubtle, fontSize: 12, textAlign: 'center', marginBottom: spacing.sm }}>💡 {en(cfg.pointPrompt)}</Text>
+      ) : null}
+      {mode === 'identify_pattern' ? (
+        <View style={{ marginBottom: spacing.sm }}>
+          {(cfg.patternOptions ?? []).map((opt: any, i: number) => {
+            const sel = optionIdx === i;
+            const isCorrectOpt = submitted && i === cfg.correctPatternIndex;
+            const isWrongOpt = submitted && sel && i !== cfg.correctPatternIndex;
+            const border = isCorrectOpt ? colors.green : isWrongOpt ? colors.red : sel ? colors.primary : colors.border;
+            return (
+              <Pressable key={i} disabled={submitted} onPress={() => setOptionIdx(i)}
+                style={{ padding: spacing.md, borderRadius: radius.md, borderWidth: 1.5, borderColor: border, backgroundColor: isCorrectOpt ? colors.greenSoft : isWrongOpt ? colors.redSoft : sel ? colors.primarySoft : colors.card, marginBottom: spacing.sm }}>
+                <Text style={{ color: colors.fg, fontSize: 14, fontWeight: '600' }}>{en(opt)}</Text>
+              </Pressable>
+            );
+          })}
+        </View>
+      ) : null}
+      {submitted ? (
+        <View style={{ backgroundColor: isCorrect ? colors.greenSoft : colors.redSoft, borderRadius: radius.md, borderWidth: 1, borderColor: isCorrect ? colors.green : colors.red, padding: spacing.md, marginBottom: spacing.md }}>
+          <Text style={{ color: isCorrect ? colors.green : colors.red, fontWeight: '800', fontSize: 14, marginBottom: exercise.explanation ? 4 : 0 }}>{isCorrect ? '✓ Sharp eye!' : '✗ Not quite'}</Text>
+          {exercise.explanation ? <Text style={{ color: colors.fgMuted, fontSize: 14, lineHeight: 21 }}>{en(exercise.explanation)}</Text> : null}
+        </View>
+      ) : null}
+      {!submitted ? (
+        <Button title="Check →" onPress={submit} disabled={mode === 'identify_point' ? pointIdx === null : optionIdx === null} />
+      ) : !isCorrect ? (
+        <>
+          <ExplainMistake exercise={exercise} />
+          <Button title="Continue →" onPress={() => onAnswer(false, 0)} />
+        </>
+      ) : null}
     </View>
   );
 }

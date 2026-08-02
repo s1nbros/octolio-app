@@ -3,14 +3,16 @@ import { Pressable, Text, TextInput, View } from 'react-native';
 import { Button } from '../lib/ui';
 import { ExplainMistake } from './ExplainMistake';
 import { colors, radius, spacing } from '../lib/theme';
-import { MatchTerms, OrderItems, SortItems, SpeedRound, SwipeSort } from './exerciseTypes';
+import { BossBattle, MatchTerms, OrderItems, RpgScenario, SortItems, SpeedRound, StockChart, SwipeSort } from './exerciseTypes';
 
 export interface Exercise { id: string; type: string; xp: number; [k: string]: any; }
 export const en = (v: any): string => (v && typeof v === 'object' ? v.en ?? '' : v ?? '');
 
 /** Renders a single exercise and reports the result via onAnswer. Shared by the
  *  lesson runner and the spaced-repetition review flow. Supports theory, choice,
- *  true_false, fill_blank, fill_number, scenario_decision; richer types fall back. */
+ *  true_false, fill_blank, fill_number, scenario_decision, sort_items, match_terms,
+ *  order_items, swipe_sort, speed_round, rpg_scenario, boss_battle, stock_chart;
+ *  calculator/slider-heavy types still fall back. */
 export function ExerciseView({ exercise, onAnswer }: { exercise: Exercise; onAnswer: (correct: boolean, xp: number) => void }) {
   const [sel, setSel] = useState<number | null>(null);
   const [val, setVal] = useState('');
@@ -187,6 +189,9 @@ export function ExerciseView({ exercise, onAnswer }: { exercise: Exercise; onAns
   if (exercise.type === 'order_items') return <OrderItems exercise={exercise} onAnswer={onAnswer} />;
   if (exercise.type === 'swipe_sort') return <SwipeSort exercise={exercise} onAnswer={onAnswer} />;
   if (exercise.type === 'speed_round') return <SpeedRound exercise={exercise} onAnswer={onAnswer} />;
+  if (exercise.type === 'rpg_scenario') return <RpgScenario exercise={exercise} onAnswer={onAnswer} />;
+  if (exercise.type === 'boss_battle') return <BossBattle exercise={exercise} onAnswer={onAnswer} />;
+  if (exercise.type === 'stock_chart') return <StockChart exercise={exercise} onAnswer={onAnswer} />;
 
   return (
     <View>
