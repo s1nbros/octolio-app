@@ -7,17 +7,9 @@ Octolio is a personal finance learning app (Duolingo-style) with:
 - AI Financial Advisor (Pro-only) powered by Claude Haiku
 
 ## Stack
-- **Mobile**: Expo SDK 54 (React Native 0.81, React 19) + Expo Router 6 in `mobile/` — a native iOS/Android
-  frontend that reuses this same backend API. Auth token in `expo-secure-store`; builds via EAS.
-  See `mobile/README.md` (includes a store-compliance checklist). v1 = core learning loop
-  (auth, modules, lesson runner for theory/choice/true_false/fill_blank, streak/energy, profile
-  + account deletion). Pro upsell links to the web and is hidden on iOS by default
-  (`SHOW_PRO_UPGRADE` in `mobile/lib/config.ts`) to respect Apple anti-steering rules.
-  Design matches the web's mobile look: `mobile/lib/theme.ts` uses the web's exact
-  dark-theme HSL values (RN accepts hsl/hsla strings); the Learn screen replicates the
-  snake-path (Continue hero, gradient section banners, 3D lesson nodes, chest nodes) via
-  `expo-linear-gradient`. Default `API_BASE_URL` = the deployed backend
-  (`octolio-app-2.onrender.com`), overridable with `EXPO_PUBLIC_API_URL`.
+- **Mobile**: Expo SDK 54 (React Native 0.81, React 19) + Expo Router 6 in `mobile/` — a native
+  iOS/Android frontend that reuses this same backend API (no server code duplicated). See the
+  dedicated **"Mobile app"** section below and `mobile/README.md` (store-compliance checklist).
 - **Frontend**: React 18 + TypeScript + Vite, hosted on Render as static site
 - **Backend**: Node.js + Express + TypeScript, compiled to `dist/` and committed for Render deployment
 - **Database**: PostgreSQL on Neon, accessed via `pg`
@@ -604,6 +596,82 @@ card + the portal-rendered answer modal. Updates xp/coins/streak in context on a
   (`ExplainMistake` returns null in that case), so it only appears as a fallback on
   exercises that ship no written explanation. Most authored content has an explanation, so
   in practice the AI button shows only where one is missing.
+
+## Mobile app (`mobile/` — Expo / React Native)
+
+A native iOS + Android app that is a **second frontend for the same backend**. It never
+touches Postgres — it calls the exact same `/api/*` endpoints the web app uses. Only the UI
+is re-authored in React Native primitives (`View`/`Text`/`StyleSheet`, no DOM/Tailwind/CSS).
+
+### Stack & tooling
+- Expo SDK 54, React Native 0.81, React 19, TypeScript, **Expo Router 6** (file-based nav).
+- `react-native-svg` (aurora bg, octopus mascot, wheel), `expo-linear-gradient` (banners/nodes),
+  `expo-secure-store` (auth token), `expo-web-browser` (Pro upsell / legal links).
+- Builds/submission via **EAS** (`eas build` / `eas submit`); bundle id / package `me.octolio.app`.
+- **Validate without a device**: `cd mobile && npx tsc --noEmit` (typecheck) and
+  `npx expo export --platform ios --output-dir /tmp/x` (bundles the whole app — catches import/
+  route errors). Both are the standard checks used when adding to the app.
+
+### Backend connection (the "database")
+- `mobile/lib/config.ts` → `API_BASE_URL = EXPO_PUBLIC_API_URL || 'https://octolio-app-2.onrender.com'`
+  (the deployed backend, which owns Neon). Set `EXPO_PUBLIC_API_URL` (see `mobile/.env.example`)
+  to point at a local backend for dev — iOS sim `http://localhost:3001`, Android emu
+  `http://10.0.2.2:3001`, physical device `http://<LAN-IP>:3001`.
+- `mobile/lib/api.ts` — tiny fetch wrapper (`api(path, {method, body, token})`), throws `ApiError`.
+- `mobile/lib/auth.tsx` — `AuthProvider`/`useAuth`: token in secure-store, `/api/auth/me` hydrate,
+  `login`/`register`/`verifyEmail`/`logout`/`refreshUser`/`updateUser`/`deleteAccount`.
+
+### Navigation (Expo Router)
+- Root `app/_layout.tsx` (AuthProvider + Stack). `app/index.tsx` redirects by auth +
+  `onboarding_done` (→ `/onboarding` if not done). Gates repeat in `(auth)/_layout` and
+  `(tabs)/_layout` so new users can't skip onboarding.
+- **Bottom tabs** (`app/(tabs)/`): `index` (Learn), `league`, `portfolio`, `coach`, `profile`.
+- **Standalone routes**: `app/onboarding.tsx`, `app/lesson/[moduleId]/[lessonId].tsx`,
+  `app/review.tsx`, `app/shop.tsx`, `app/friends.tsx`, plus `app/(auth)/{login,register,verify}`.
+
+### Ported screens / features (parity with web)
+- **Onboarding wizard** — goal → 3-Q diagnostic (→ level) → daily-time → Money Plan → Start
+  (`/api/auth/onboarding-profile` + `/onboarding`). Data mirror: `lib/onboarding.ts`.
+- **Learn dashboard** (`(tabs)/index.tsx`) — aurora bg, Daily Workout card, Review card,
+  Continue hero, and the snake-path (gradient section banners + 3D lesson nodes + chest nodes),
+  all via `expo-linear-gradient`. Mounts the **Wheel of Luck** (one-time) + **chest reel**.
+- **Lesson runner** (`app/lesson/...`) — energy/hearts, animated progress, XP pop, glass card.
+  Uses the shared `components/ExerciseView.tsx` (theory/choice/true_false/fill_blank/fill_number/
+  scenario_decision + a fallback for richer types) with the 🐙 **Explain my mistake** button.
+- **Review** (`app/review.tsx` + dashboard `ReviewCard`) — spaced repetition via
+  `/api/review/{due,done,stats}`, reusing `ExerciseView`.
+- **League** — `/api/auth/league` leaderboard with medals + your row.
+- **Portfolio** — `/api/portfolio` value/holdings/market + buy/sell sheet + per-asset sparklines.
+- **AI Coach** — Pro-gated chat on `/api/ai/chat` (Gemini) with a RN markdown renderer
+  (`lib/markdown.tsx`); free users get an upsell.
+- **Profile** — octopus mascot (`components/OctopusAvatar.tsx`, react-native-svg) wearing equipped
+  cosmetics, stats, **account deletion** (`DELETE /api/auth/account`), Friends + Shop entries.
+- **Shop** (`app/shop.tsx`) — live mascot preview + buy/equip/unequip across slots
+  (`/api/shop/*`); catalog emoji mirror in `lib/cosmetics.ts`.
+- **Friends** (`app/friends.tsx`) — list (🤝🔥 friend streaks), requests, search/add, and the
+  weekly **co-op quests** (`/api/friends/*`).
+- **Daily Workout** (`components/TodayWorkout.tsx`), **Wheel of Luck** (`components/WheelOfLuck.tsx`),
+  **Chest reel** (`components/ChestReelModal.tsx`) — the CS:GO-style 60-tile reel.
+
+### Shared building blocks
+- `lib/theme.ts` — the web's EXACT dark-theme HSL values (RN accepts hsl/hsla strings) +
+  `modulePalettes` for the snake path. `components/Aurora.tsx` — the radial-blob background.
+  `lib/anim.tsx` — `FadeScaleIn`/`FadeInUp`/`XpPop` (RN `Animated`, mirrors the web keyframes).
+
+### Store compliance (built in)
+- **In-app account deletion** (Apple 5.1.1(v)) — Profile → Delete account.
+- **No in-app purchase of digital goods** — Pro upsell links to web and is **hidden on iOS by
+  default** via `SHOW_PRO_UPGRADE` (`lib/config.ts`); flip on only when steering is allowed.
+- **Email/password-only auth** in v1 — sidesteps the "Sign in with Apple required" rule (adding
+  Google sign-in would require adding Apple too).
+- Follow-ups tracked in `mobile/README.md`: loot-box odds disclosure, privacy/data-safety forms,
+  app icon/splash.
+
+### Not yet ported (roadmap)
+Notifications feed, test-out quiz, the Quests page (client-derived), and the remaining ~17
+richer interactive exercise types (drag-sort, sliders, sims, stock_chart, boss_battle,
+swipe_sort, speed_round, life_sim, etc.) — these currently show the graceful "best on web"
+fallback in the lesson runner.
 
 ## Deployment
 - Render: backend + frontend as separate services
