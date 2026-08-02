@@ -12,6 +12,8 @@ import { ChestReelModal } from '../../components/ChestReelModal';
 import { TodayWorkout } from '../../components/TodayWorkout';
 import { ReviewCard } from '../../components/ReviewCard';
 import { WheelOfLuck } from '../../components/WheelOfLuck';
+import { TestOutModal } from '../../components/TestOutModal';
+import { NotificationBell } from '../../components/NotificationBell';
 
 interface LessonMeta { id: string; title: { en: string }; icon?: string; xpReward: number; exerciseCount: number; completed: boolean; }
 interface ModuleMeta { id: string; title: { en: string }; icon: string; color: string; proOnly: boolean; lessons: LessonMeta[]; }
@@ -28,6 +30,7 @@ export default function Learn() {
   const [chests, setChests] = useState<ChestState[]>([]);
   const [loading, setLoading] = useState(true);
   const [chestTarget, setChestTarget] = useState<{ moduleId: string; position: 'mid' | 'end' } | null>(null);
+  const [testOutModuleId, setTestOutModuleId] = useState<string | null>(null);
   const isPro = !!user?.is_pro;
 
   const load = useCallback(async () => {
@@ -77,9 +80,10 @@ export default function Learn() {
         {/* Header */}
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: spacing.md }}>
           <Text style={{ color: colors.fg, fontSize: 22, fontWeight: '800' }}>Learn</Text>
-          <View style={{ flexDirection: 'row', gap: spacing.sm }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
             <Chip icon="flame" color={colors.orange} value={`${user?.streak ?? 0}`} />
             <Chip icon="flash" color={colors.primary} value={isPro ? '∞' : `${user?.energy ?? 0}`} />
+            <NotificationBell />
           </View>
         </View>
 
@@ -102,6 +106,11 @@ export default function Learn() {
           return (
             <View key={mod.id} style={{ marginBottom: spacing.xl }}>
               <SectionBanner mod={mod} idx={mi} pal={pal} blocked={blocked} proLocked={proLocked} locked={locked} done={done} />
+              {!blocked && done < mod.lessons.length && (
+                <Pressable onPress={() => setTestOutModuleId(mod.id)} style={{ alignSelf: 'flex-end', marginTop: spacing.sm, backgroundColor: colors.glass, borderWidth: 1, borderColor: colors.border, borderRadius: radius.pill, paddingHorizontal: 14, paddingVertical: 6 }}>
+                  <Text style={{ color: colors.fg, fontWeight: '700', fontSize: 12 }}>⚡ Test out to skip</Text>
+                </Pressable>
+              )}
               <View style={{ alignItems: 'center', marginTop: spacing.lg, gap: spacing.lg }}>
                 {mod.lessons.map((lesson, li) => {
                   const lessonLocked = blocked || (li > 0 && !mod.lessons[li - 1].completed && !lesson.completed);
@@ -127,6 +136,7 @@ export default function Learn() {
       </ScrollView>
 
       <ChestReelModal target={chestTarget} onClose={() => setChestTarget(null)} onOpened={load} />
+      <TestOutModal moduleId={testOutModuleId} onClose={() => setTestOutModuleId(null)} onPassed={load} />
       <WheelOfLuck />
     </View>
   );

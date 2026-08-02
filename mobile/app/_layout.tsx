@@ -24,6 +24,7 @@ function RootNavigator() {
       <Stack.Screen name="review" options={{ animation: 'slide_from_right' }} />
       <Stack.Screen name="shop" options={{ animation: 'slide_from_right' }} />
       <Stack.Screen name="friends" options={{ animation: 'slide_from_right' }} />
+      <Stack.Screen name="notifications" options={{ animation: 'slide_from_right' }} />
     </Stack>
   );
 }
