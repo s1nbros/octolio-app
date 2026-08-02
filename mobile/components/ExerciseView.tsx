@@ -3,7 +3,7 @@ import { Pressable, Text, TextInput, View } from 'react-native';
 import { Button } from '../lib/ui';
 import { ExplainMistake } from './ExplainMistake';
 import { colors, radius, spacing } from '../lib/theme';
-import { BossBattle, MatchTerms, OrderItems, RpgScenario, SortItems, SpeedRound, StockChart, SwipeSort } from './exerciseTypes';
+import { BossBattle, BudgetSlider, CoverageCalc, MatchTerms, OrderItems, PortfolioPie, RpgScenario, SortItems, SpeedRound, StockChart, SwipeSort, TaxBrackets } from './exerciseTypes';
 
 export interface Exercise { id: string; type: string; xp: number; [k: string]: any; }
 export const en = (v: any): string => (v && typeof v === 'object' ? v.en ?? '' : v ?? '');
@@ -11,8 +11,9 @@ export const en = (v: any): string => (v && typeof v === 'object' ? v.en ?? '' :
 /** Renders a single exercise and reports the result via onAnswer. Shared by the
  *  lesson runner and the spaced-repetition review flow. Supports theory, choice,
  *  true_false, fill_blank, fill_number, scenario_decision, sort_items, match_terms,
- *  order_items, swipe_sort, speed_round, rpg_scenario, boss_battle, stock_chart;
- *  calculator/slider-heavy types still fall back. */
+ *  order_items, swipe_sort, speed_round, rpg_scenario, boss_battle, stock_chart,
+ *  budget_slider, portfolio_pie, coverage_calc, tax_brackets; a few sim/calc
+ *  types still fall back. */
 export function ExerciseView({ exercise, onAnswer }: { exercise: Exercise; onAnswer: (correct: boolean, xp: number) => void }) {
   const [sel, setSel] = useState<number | null>(null);
   const [val, setVal] = useState('');
@@ -192,6 +193,10 @@ export function ExerciseView({ exercise, onAnswer }: { exercise: Exercise; onAns
   if (exercise.type === 'rpg_scenario') return <RpgScenario exercise={exercise} onAnswer={onAnswer} />;
   if (exercise.type === 'boss_battle') return <BossBattle exercise={exercise} onAnswer={onAnswer} />;
   if (exercise.type === 'stock_chart') return <StockChart exercise={exercise} onAnswer={onAnswer} />;
+  if (exercise.type === 'budget_slider') return <BudgetSlider exercise={exercise} onAnswer={onAnswer} />;
+  if (exercise.type === 'portfolio_pie') return <PortfolioPie exercise={exercise} onAnswer={onAnswer} />;
+  if (exercise.type === 'coverage_calc') return <CoverageCalc exercise={exercise} onAnswer={onAnswer} />;
+  if (exercise.type === 'tax_brackets') return <TaxBrackets exercise={exercise} onAnswer={onAnswer} />;
 
   return (
     <View>
