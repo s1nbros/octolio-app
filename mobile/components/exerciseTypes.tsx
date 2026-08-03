@@ -1327,3 +1327,255 @@ export function RiskMatrix({ exercise, onAnswer }: { exercise: any; onAnswer: An
     </View>
   );
 }
+
+/* ── rat_race: escape-the-rat-race cashflow game ───────────── */
+function StatTile({ label, value, color }: { label: string; value: string; color: string }) {
+  return (
+    <View style={{ flex: 1, alignItems: 'center', backgroundColor: colors.glass, borderRadius: radius.md, borderWidth: 1, borderColor: colors.border, padding: spacing.sm }}>
+      <Text style={{ color: colors.fgSubtle, fontSize: 10, textAlign: 'center' }}>{label}</Text>
+      <Text style={{ color, fontSize: 14, fontWeight: '900' }} numberOfLines={1}>{value}</Text>
+    </View>
+  );
+}
+export function RatRace({ exercise, onAnswer }: { exercise: any; onAnswer: Answer }) {
+  const profile = exercise.ratRaceProfile ?? {};
+  const opportunities: any[] = profile.opportunities ?? [];
+  const [month, setMonth] = useState(0);
+  const [cash, setCash] = useState(0);
+  const [passiveIncome, setPassiveIncome] = useState(0);
+  const [chosen, setChosen] = useState<number[]>([]);
+  const [phase, setPhase] = useState<'intro' | 'play' | 'result'>('intro');
+  const [log, setLog] = useState<string[]>([]);
+  const totalExpenses = (profile.expenses ?? []).reduce((s: number, e: any) => s + e.amount, 0);
+  const monthlyCashFlow = (profile.monthlyIncome ?? 0) + passiveIncome - totalExpenses;
+  const isOnFastTrack = passiveIncome >= totalExpenses;
+
+  const advanceMonth = () => {
+    setCash((c) => c + monthlyCashFlow);
+    setLog((l) => [`Month ${month + 1}: Cash flow €${monthlyCashFlow >= 0 ? '+' : ''}${monthlyCashFlow}`, ...l.slice(0, 4)]);
+    setMonth((m) => m + 1);
+    if (month >= 5) setPhase('result');
+  };
+  const pick = (i: number) => {
+    const opp = opportunities[i];
+    if (chosen.includes(i) || cash < opp.cost) return;
+    setCash((c) => c - opp.cost);
+    setPassiveIncome((p) => p + opp.monthlyPassive);
+    setChosen((prev) => [...prev, i]);
+    setLog((l) => [`Invested in ${en(opp.label)}! +€${opp.monthlyPassive}/mo passive`, ...l.slice(0, 4)]);
+  };
+
+  if (phase === 'intro') {
+    return (
+      <View>
+        <View style={{ backgroundColor: colors.primarySoft, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.border, padding: spacing.md, marginBottom: spacing.md }}>
+          <View style={{ alignItems: 'center', marginBottom: spacing.md }}>
+            <Text style={{ fontSize: 44 }}>{profile.avatar}</Text>
+            <Text style={{ color: colors.fg, fontSize: 18, fontWeight: '800' }}>{en(profile.name)}</Text>
+            <Text style={{ color: colors.fgMuted, fontSize: 14 }}>{en(profile.job)}</Text>
+          </View>
+          <View style={{ flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.sm }}>
+            <View style={{ flex: 1, alignItems: 'center', backgroundColor: colors.greenSoft, borderRadius: radius.md, borderWidth: 1, borderColor: colors.green, padding: spacing.sm }}>
+              <Text style={{ color: colors.fgSubtle, fontSize: 11 }}>Monthly Income</Text>
+              <Text style={{ color: colors.green, fontSize: 20, fontWeight: '900' }}>€{profile.monthlyIncome}</Text>
+            </View>
+            <View style={{ flex: 1, alignItems: 'center', backgroundColor: colors.redSoft, borderRadius: radius.md, borderWidth: 1, borderColor: colors.red, padding: spacing.sm }}>
+              <Text style={{ color: colors.fgSubtle, fontSize: 11 }}>Monthly Expenses</Text>
+              <Text style={{ color: colors.red, fontSize: 20, fontWeight: '900' }}>€{totalExpenses}</Text>
+            </View>
+          </View>
+          {(profile.expenses ?? []).map((e: any, i: number) => (
+            <View key={i} style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 4, borderBottomWidth: 1, borderBottomColor: colors.border }}>
+              <Text style={{ color: colors.fgMuted, fontSize: 12 }}>{e.emoji} {en(e.label)}</Text>
+              <Text style={{ color: colors.fgMuted, fontSize: 12 }}>€{e.amount}</Text>
+            </View>
+          ))}
+        </View>
+        <Text style={{ color: colors.fgMuted, fontSize: 14, textAlign: 'center', marginBottom: spacing.md }}>🎯 Goal: Build passive income to escape the Rat Race! You have 6 months.</Text>
+        <Button title="▶ Start Simulation" onPress={() => setPhase('play')} />
+      </View>
+    );
+  }
+  if (phase === 'result') {
+    const escaped = isOnFastTrack;
+    return (
+      <View style={{ alignItems: 'center' }}>
+        <Text style={{ fontSize: 56, marginBottom: spacing.sm }}>{escaped ? '🏆' : '😓'}</Text>
+        <Text style={{ color: colors.fg, fontSize: 20, fontWeight: '800', marginBottom: spacing.md, textAlign: 'center' }}>{escaped ? 'You escaped the Rat Race!' : 'Still in the Rat Race...'}</Text>
+        <View style={{ flexDirection: 'row', gap: spacing.sm, alignSelf: 'stretch', marginBottom: spacing.md }}>
+          <StatTile label="Cash Saved" value={`€${cash}`} color={colors.green} />
+          <StatTile label="Passive/mo" value={`€${passiveIncome}`} color={colors.purple} />
+          <StatTile label="Cash Flow" value={`€${monthlyCashFlow}`} color={monthlyCashFlow >= 0 ? colors.green : colors.red} />
+        </View>
+        <Text style={{ color: colors.fgMuted, fontSize: 14, textAlign: 'center', marginBottom: spacing.md }}>{escaped ? 'Passive income covers all expenses. Work is now optional!' : `Passive income €${passiveIncome} vs expenses €${totalExpenses}. Keep investing!`}</Text>
+        <View style={{ alignSelf: 'stretch' }}><Button title="Continue →" onPress={() => onAnswer(escaped, escaped ? exercise.xp : Math.floor(exercise.xp * 0.6))} /></View>
+      </View>
+    );
+  }
+  return (
+    <View>
+      <View style={{ flexDirection: 'row', gap: spacing.xs, marginBottom: spacing.md }}>
+        <StatTile label="Month" value={`${month}/6`} color={colors.primary} />
+        <StatTile label="Cash" value={`€${cash}`} color={cash >= 0 ? colors.green : colors.red} />
+        <StatTile label="Passive" value={`€${passiveIncome}`} color={colors.purple} />
+        <StatTile label="Flow" value={`${monthlyCashFlow >= 0 ? '+' : ''}€${monthlyCashFlow}`} color={monthlyCashFlow >= 0 ? colors.green : colors.red} />
+      </View>
+      {isOnFastTrack ? (
+        <View style={{ backgroundColor: colors.greenSoft, borderRadius: radius.md, borderWidth: 1, borderColor: colors.green, padding: spacing.md, marginBottom: spacing.md }}>
+          <Text style={{ color: colors.green, fontWeight: '800', fontSize: 14, textAlign: 'center' }}>🚀 You're on the FAST TRACK!</Text>
+        </View>
+      ) : null}
+      <Text style={{ color: colors.fgSubtle, fontSize: 11, fontWeight: '700', textTransform: 'uppercase', marginBottom: 6 }}>Investment Opportunities</Text>
+      {opportunities.map((opp, i) => {
+        const bought = chosen.includes(i);
+        const canAfford = cash >= opp.cost && !bought;
+        return (
+          <Pressable key={i} disabled={!canAfford} onPress={() => pick(i)}
+            style={{ padding: spacing.md, borderRadius: radius.md, borderWidth: 1, borderColor: bought ? colors.green : colors.border, backgroundColor: bought ? colors.greenSoft : colors.card, opacity: !canAfford && !bought ? 0.45 : 1, marginBottom: spacing.sm, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <Text style={{ fontSize: 18 }}>{opp.emoji}</Text>
+            <Text style={{ color: colors.fg, fontSize: 14, fontWeight: '600', flex: 1 }}>{en(opp.label)}</Text>
+            {bought ? (
+              <Text style={{ color: colors.green, fontSize: 12, fontWeight: '800' }}>✓ +€{opp.monthlyPassive}/mo</Text>
+            ) : (
+              <View style={{ alignItems: 'flex-end' }}>
+                <Text style={{ color: colors.red, fontSize: 12 }}>€{opp.cost}</Text>
+                {opp.monthlyPassive > 0 ? <Text style={{ color: colors.green, fontSize: 12 }}>+€{opp.monthlyPassive}/mo</Text> : null}
+              </View>
+            )}
+          </Pressable>
+        );
+      })}
+      {log.length > 0 ? (
+        <View style={{ backgroundColor: colors.glass, borderRadius: radius.md, borderWidth: 1, borderColor: colors.border, padding: spacing.md, marginBottom: spacing.md }}>
+          {log.map((l, i) => <Text key={i} style={{ color: i === 0 ? colors.fgMuted : colors.fgSubtle, fontSize: 12 }}>{l}</Text>)}
+        </View>
+      ) : null}
+      <Button title={`⏩ End Month ${month + 1}`} onPress={advanceMonth} />
+    </View>
+  );
+}
+
+/* ── life_sim: age 22→60 connected-decision capstone ───────── */
+interface SimState { cash: number; investments: number; debt: number; monthlySurplus: number; monthlyInvest: number; happiness: number; wisdom: number; }
+const lsNetWorth = (s: SimState) => Math.round(s.cash + s.investments - s.debt);
+function lsGrow(principal: number, monthly: number, annualReturn: number, years: number): number {
+  const r = annualReturn;
+  const lump = principal * Math.pow(1 + r, years);
+  const annual = monthly * 12;
+  const series = r > 0 ? annual * ((Math.pow(1 + r, years) - 1) / r) : annual * years;
+  return lump + series;
+}
+const lsFmt = (n: number) => Math.round(n).toLocaleString('en-US').replace(/,/g, ' ');
+export function LifeSim({ exercise, onAnswer }: { exercise: any; onAnswer: Answer }) {
+  const cfg = exercise.lifeSim ?? {};
+  const stages: any[] = cfg.stages ?? [];
+  const [stageIdx, setStageIdx] = useState(0);
+  const [picked, setPicked] = useState<number | null>(null);
+  const [finished, setFinished] = useState(false);
+  const [state, setState] = useState<SimState>(() => ({ cash: cfg.startCash ?? 0, investments: 0, debt: 0, monthlySurplus: cfg.monthlySurplus ?? 0, monthlyInvest: 0, happiness: 50, wisdom: 0 }));
+  const stage = stages[stageIdx] ?? {};
+  const chosen = picked !== null ? stage.choices?.[picked] : null;
+
+  const applyChoice = (i: number) => {
+    if (picked !== null) return;
+    const c = stage.choices[i];
+    setState((s) => {
+      const next = { ...s };
+      if (c.investMultiplier !== undefined) next.investments *= c.investMultiplier;
+      if (c.cashOutInvestments) { next.cash += next.investments; next.investments = 0; next.monthlyInvest = 0; }
+      next.cash += c.cashDelta ?? 0;
+      next.investments += c.investDelta ?? 0;
+      next.debt += c.debtDelta ?? 0;
+      next.monthlySurplus += c.monthlySurplusDelta ?? 0;
+      next.monthlyInvest = Math.max(0, next.monthlyInvest + (c.monthlyInvestDelta ?? 0));
+      next.monthlyInvest = Math.min(next.monthlyInvest, Math.max(0, next.monthlySurplus));
+      next.happiness = Math.max(0, Math.min(100, next.happiness + (c.happinessDelta ?? 0)));
+      next.debt = Math.max(0, next.debt);
+      next.cash = Math.max(0, next.cash);
+      if (c.wise) next.wisdom += 1;
+      return next;
+    });
+    setPicked(i);
+  };
+  const advance = () => {
+    const years = stage.yearsToNext;
+    setState((s) => {
+      const next = { ...s };
+      next.investments = lsGrow(s.investments, s.monthlyInvest, cfg.annualReturn, years);
+      const idleMonthly = Math.max(0, s.monthlySurplus - s.monthlyInvest);
+      next.cash += idleMonthly * 12 * years;
+      if (next.debt > 0) next.debt *= Math.pow(1 + cfg.debtApr, years);
+      return next;
+    });
+    if (stageIdx + 1 < stages.length) { setStageIdx((i) => i + 1); setPicked(null); }
+    else setFinished(true);
+  };
+  const ending = useMemo(() => {
+    if (!finished) return null;
+    const nw = lsNetWorth(state);
+    const sorted = [...(cfg.endings ?? [])].sort((a, b) => b.minNetWorth - a.minNetWorth);
+    return sorted.find((e) => nw >= e.minNetWorth) ?? sorted[sorted.length - 1];
+  }, [finished, state, cfg.endings]);
+
+  if (finished && ending) {
+    const nw = lsNetWorth(state);
+    return (
+      <View style={{ alignItems: 'center' }}>
+        <Text style={{ fontSize: 56, marginBottom: spacing.sm }}>{ending.emoji}</Text>
+        <Text style={{ color: colors.green, fontSize: 11, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 1 }}>The result</Text>
+        <Text style={{ color: colors.fg, fontSize: 22, fontWeight: '800', marginBottom: spacing.md, textAlign: 'center' }}>{en(ending.title)}</Text>
+        <View style={{ alignSelf: 'stretch', backgroundColor: colors.greenSoft, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.green, padding: spacing.lg, alignItems: 'center', marginBottom: spacing.md }}>
+          <Text style={{ color: colors.green, fontSize: 11, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 1 }}>Net worth</Text>
+          <Text style={{ color: colors.green, fontSize: 34, fontWeight: '900' }}>€{lsFmt(nw)}</Text>
+        </View>
+        <View style={{ flexDirection: 'row', gap: spacing.sm, alignSelf: 'stretch', marginBottom: spacing.md }}>
+          <StatTile label="Invested" value={`€${lsFmt(state.investments)}`} color={colors.primary} />
+          <StatTile label="Cash" value={`€${lsFmt(state.cash)}`} color={colors.fg} />
+          <StatTile label="Debt" value={`€${lsFmt(state.debt)}`} color={colors.red} />
+        </View>
+        <Text style={{ color: colors.fgMuted, fontSize: 14, lineHeight: 21, textAlign: 'center', marginBottom: spacing.sm }}>{en(ending.message)}</Text>
+        <Text style={{ color: colors.fgMuted, fontSize: 13, marginBottom: spacing.md }}>😊 {Math.round(state.happiness)}/100   🧠 {state.wisdom}/{stages.length}</Text>
+        <View style={{ alignSelf: 'stretch' }}><Button title="Finish →" onPress={() => onAnswer(true, exercise.xp)} /></View>
+      </View>
+    );
+  }
+
+  const nw = lsNetWorth(state);
+  return (
+    <View>
+      <View style={{ flexDirection: 'row', gap: spacing.xs, marginBottom: spacing.md }}>
+        <StatTile label="Age" value={`${stage.age}`} color={colors.fg} />
+        <StatTile label="Net worth" value={`€${lsFmt(nw)}`} color={nw >= 0 ? colors.green : colors.red} />
+        <StatTile label="Invested" value={`€${lsFmt(state.investments)}`} color={colors.fg} />
+        <StatTile label="Debt" value={`€${lsFmt(state.debt)}`} color={state.debt > 0 ? colors.red : colors.fg} />
+      </View>
+      <View style={{ flexDirection: 'row', gap: 5, marginBottom: spacing.md }}>
+        {stages.map((_, i) => <View key={i} style={{ flex: 1, height: 4, borderRadius: 2, backgroundColor: i <= stageIdx ? colors.primary : colors.bgElevated }} />)}
+      </View>
+      <View style={{ backgroundColor: colors.primarySoft, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.border, padding: spacing.md, marginBottom: spacing.md, flexDirection: 'row', gap: spacing.sm }}>
+        <Text style={{ fontSize: 30 }}>{stage.emoji ?? '🧑'}</Text>
+        <View style={{ flex: 1 }}>
+          <Text style={{ color: colors.primary, fontSize: 11, fontWeight: '800', textTransform: 'uppercase', marginBottom: 2 }}>Age {stage.age} · {en(stage.title)}</Text>
+          <Text style={{ color: colors.fg, fontSize: 14, lineHeight: 21 }}>{en(stage.scenario)}</Text>
+        </View>
+      </View>
+      {(stage.choices ?? []).map((c: any, i: number) => {
+        const isPicked = picked === i;
+        return (
+          <Pressable key={i} disabled={picked !== null} onPress={() => applyChoice(i)}
+            style={{ padding: spacing.md, borderRadius: radius.md, borderWidth: 1.5, borderColor: isPicked ? (c.wise ? colors.green : colors.orange) : colors.border, backgroundColor: isPicked ? (c.wise ? colors.greenSoft : colors.orangeSoft) : colors.card, opacity: picked !== null && !isPicked ? 0.4 : 1, marginBottom: spacing.sm, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <Text style={{ fontSize: 20 }}>{c.emoji ?? '•'}</Text>
+            <Text style={{ color: colors.fg, fontSize: 14, fontWeight: '600', flex: 1 }}>{en(c.label)}</Text>
+          </Pressable>
+        );
+      })}
+      {chosen ? (
+        <View style={{ backgroundColor: chosen.wise ? colors.greenSoft : colors.orangeSoft, borderRadius: radius.md, borderWidth: 1, borderColor: chosen.wise ? colors.green : colors.orange, padding: spacing.md, marginBottom: spacing.md }}>
+          <Text style={{ color: chosen.wise ? colors.green : colors.orange, fontWeight: '800', fontSize: 14, marginBottom: 4 }}>{chosen.wise ? '💡 Smart move' : '🤔 Hmm…'}</Text>
+          <Text style={{ color: colors.fgMuted, fontSize: 14, lineHeight: 21 }}>{en(chosen.outcome)}</Text>
+        </View>
+      ) : null}
+      {chosen ? <Button title={stageIdx + 1 < stages.length ? `${stage.yearsToNext} years later →` : 'See your result →'} onPress={advance} /> : null}
+    </View>
+  );
+}
