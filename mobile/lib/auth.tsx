@@ -3,6 +3,19 @@ import * as SecureStore from 'expo-secure-store';
 import { api } from './api';
 
 const TOKEN_KEY = 'octolio_token';
+// Set once the user finishes onboarding on THIS device, so the wizard never
+// re-appears even if the completion POST was slow or failed. Cleared on logout
+// so a different account on the same device still gets its own onboarding.
+const ONBOARDED_KEY = 'octolio_onboarded';
+
+/** Apply the local "already onboarded" flag so a fresh /me that still reports
+ *  onboarding_done:false (e.g. the completion write never reached the server)
+ *  doesn't strand the user back in the survey on every launch. */
+async function withLocalOnboarded(u: User): Promise<User> {
+  if (u.onboarding_done) return u;
+  const done = (await SecureStore.getItemAsync(ONBOARDED_KEY)) === '1';
+  return done ? { ...u, onboarding_done: true } : u;
+}
 
 export interface User {
   id: number;
@@ -38,6 +51,8 @@ interface AuthValue {
   refreshUser: () => Promise<void>;
   updateUser: (patch: Partial<User>) => void;
   deleteAccount: (password?: string) => Promise<void>;
+  /** Persist that onboarding is done on this device (survives failed server writes). */
+  markOnboarded: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthValue | null>(null);
@@ -55,7 +70,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const loadMe = useCallback(async (t: string) => {
     const data = await api<{ user: User }>('/api/auth/me', { token: t });
-    setUser(data.user);
+    setUser(await withLocalOnboarded(data.user));
   }, []);
 
   // Boot: restore token + hydrate the user.
@@ -76,7 +91,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       body: { email, password, rememberMe: true },
     });
     await persistToken(data.token);
-    setUser(data.user);
+    setUser(await withLocalOnboarded(data.user));
   }, [persistToken]);
 
   const register = useCallback(async (name: string, email: string, password: string) => {
@@ -93,13 +108,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       body: { email, code },
     });
     await persistToken(data.token);
-    setUser(data.user);
+    setUser(await withLocalOnboarded(data.user));
   }, [persistToken]);
 
   const logout = useCallback(async () => {
     setUser(null);
     await persistToken(null);
+    await SecureStore.deleteItemAsync(ONBOARDED_KEY);
   }, [persistToken]);
+
+  /** Mark onboarding complete on this device — optimistic + persisted, so the
+   *  survey never re-appears even if the server write is slow or fails. */
+  const markOnboarded = useCallback(async () => {
+    await SecureStore.setItemAsync(ONBOARDED_KEY, '1');
+    setUser((u) => (u ? { ...u, onboarding_done: true } : u));
+  }, []);
 
   const refreshUser = useCallback(async () => {
     if (!token) return;
@@ -114,10 +137,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await api('/api/auth/account', { method: 'DELETE', token, body: password ? { password } : undefined });
     setUser(null);
     await persistToken(null);
+    await SecureStore.deleteItemAsync(ONBOARDED_KEY);
   }, [token, persistToken]);
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, verifyEmail, logout, refreshUser, updateUser, deleteAccount }}>
+    <AuthContext.Provider value={{ user, token, loading, login, register, verifyEmail, logout, refreshUser, updateUser, deleteAccount, markOnboarded }}>
       {children}
     </AuthContext.Provider>
   );

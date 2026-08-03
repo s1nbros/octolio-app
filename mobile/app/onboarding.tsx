@@ -14,7 +14,7 @@ type Phase = 'goal' | 'diagnostic' | 'daily' | 'plan';
 const TOTAL_STEPS = 1 + DIAGNOSTIC.length + 1 + 1;
 
 export default function Onboarding() {
-  const { token, refreshUser } = useAuth();
+  const { token, refreshUser, markOnboarded } = useAuth();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [phase, setPhase] = useState<Phase>('goal');
@@ -40,12 +40,14 @@ export default function Onboarding() {
   const finish = async () => {
     if (busy || !token) return;
     setBusy(true);
-    try {
-      await api('/api/auth/onboarding-profile', { method: 'POST', token, body: { goal, experienceLevel: level, dailyGoalMin: minutes ?? 5 } });
-      await api('/api/auth/onboarding', { method: 'POST', token });
-      await refreshUser();
-      router.replace('/(tabs)');
-    } catch { setBusy(false); }
+    // Mark done locally FIRST so the survey never re-appears, even if the
+    // network is flaky — then persist to the server best-effort and move on.
+    await markOnboarded();
+    api('/api/auth/onboarding-profile', { method: 'POST', token, body: { goal, experienceLevel: level, dailyGoalMin: minutes ?? 5 } }).catch(() => {});
+    api('/api/auth/onboarding', { method: 'POST', token })
+      .then(() => refreshUser())
+      .catch(() => {});
+    router.replace('/(tabs)');
   };
 
   const goalObj = GOALS.find((g) => g.id === goal);
