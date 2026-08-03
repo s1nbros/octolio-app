@@ -3,7 +3,7 @@ import { Pressable, Text, TextInput, View } from 'react-native';
 import { Button } from '../lib/ui';
 import { ExplainMistake } from './ExplainMistake';
 import { colors, radius, spacing } from '../lib/theme';
-import { BossBattle, BudgetSlider, CoverageCalc, MatchTerms, OrderItems, PortfolioPie, RpgScenario, SortItems, SpeedRound, StockChart, SwipeSort, TaxBrackets } from './exerciseTypes';
+import { BossBattle, BudgetSlider, CompoundSim, CoverageCalc, DebtPayoff, IncomeStreams, MatchTerms, OrderItems, PortfolioPie, RiskMatrix, RpgScenario, SortItems, SpeedRound, StockChart, SwipeSort, TaxBrackets, UnitPrice } from './exerciseTypes';
 
 export interface Exercise { id: string; type: string; xp: number; [k: string]: any; }
 export const en = (v: any): string => (v && typeof v === 'object' ? v.en ?? '' : v ?? '');
@@ -12,8 +12,9 @@ export const en = (v: any): string => (v && typeof v === 'object' ? v.en ?? '' :
  *  lesson runner and the spaced-repetition review flow. Supports theory, choice,
  *  true_false, fill_blank, fill_number, scenario_decision, sort_items, match_terms,
  *  order_items, swipe_sort, speed_round, rpg_scenario, boss_battle, stock_chart,
- *  budget_slider, portfolio_pie, coverage_calc, tax_brackets; a few sim/calc
- *  types still fall back. */
+ *  budget_slider, portfolio_pie, coverage_calc, tax_brackets, debt_payoff,
+ *  compound_sim, income_streams, unit_price, risk_matrix; only the big board
+ *  games (rat_race, life_sim) still fall back. */
 export function ExerciseView({ exercise, onAnswer }: { exercise: Exercise; onAnswer: (correct: boolean, xp: number) => void }) {
   const [sel, setSel] = useState<number | null>(null);
   const [val, setVal] = useState('');
@@ -197,6 +198,11 @@ export function ExerciseView({ exercise, onAnswer }: { exercise: Exercise; onAns
   if (exercise.type === 'portfolio_pie') return <PortfolioPie exercise={exercise} onAnswer={onAnswer} />;
   if (exercise.type === 'coverage_calc') return <CoverageCalc exercise={exercise} onAnswer={onAnswer} />;
   if (exercise.type === 'tax_brackets') return <TaxBrackets exercise={exercise} onAnswer={onAnswer} />;
+  if (exercise.type === 'debt_payoff') return <DebtPayoff exercise={exercise} onAnswer={onAnswer} />;
+  if (exercise.type === 'compound_sim') return <CompoundSim exercise={exercise} onAnswer={onAnswer} />;
+  if (exercise.type === 'income_streams') return <IncomeStreams exercise={exercise} onAnswer={onAnswer} />;
+  if (exercise.type === 'unit_price') return <UnitPrice exercise={exercise} onAnswer={onAnswer} />;
+  if (exercise.type === 'risk_matrix') return <RiskMatrix exercise={exercise} onAnswer={onAnswer} />;
 
   return (
     <View>

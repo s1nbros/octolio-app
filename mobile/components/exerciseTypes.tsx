@@ -924,3 +924,406 @@ export function TaxBrackets({ exercise, onAnswer }: { exercise: any; onAnswer: A
     </View>
   );
 }
+
+/* ── debt_payoff: pick snowball / avalanche / even ─────────── */
+type DebtStrategy = 'snowball' | 'avalanche' | 'even';
+function simulateDebt(debts: any[], extraPayment: number, strategy: DebtStrategy): { months: number; totalInterest: number } {
+  const ds = debts.map((d) => ({ ...d }));
+  let totalInterest = 0, months = 0;
+  const MAX_MONTHS = 600;
+  while (ds.some((d) => d.balance > 0.01) && months < MAX_MONTHS) {
+    months++;
+    for (const d of ds) { if (d.balance > 0) { const interest = d.balance * (d.apr / 100 / 12); d.balance += interest; totalInterest += interest; } }
+    let availableExtra = extraPayment;
+    for (const d of ds) { if (d.balance > 0) d.balance -= Math.min(d.balance, d.minPayment); }
+    if (availableExtra > 0) {
+      let order = ds.map((_, i) => i).filter((i) => ds[i].balance > 0.01);
+      if (strategy === 'snowball') order.sort((a, b) => ds[a].balance - ds[b].balance);
+      else if (strategy === 'avalanche') order.sort((a, b) => ds[b].apr - ds[a].apr);
+      if (strategy === 'even') {
+        const active = order.length;
+        if (active > 0) { const each = availableExtra / active; for (const i of order) ds[i].balance -= Math.min(ds[i].balance, each); }
+      } else {
+        for (const i of order) { if (availableExtra <= 0) break; const pay = Math.min(ds[i].balance, availableExtra); ds[i].balance -= pay; availableExtra -= pay; }
+      }
+    }
+  }
+  return { months, totalInterest: Math.round(totalInterest) };
+}
+const DEBT_STRATS: Record<DebtStrategy, { label: string; emoji: string; desc: string }> = {
+  snowball: { label: 'Snowball', emoji: '⛄', desc: 'Pay smallest balance first — quick wins for motivation' },
+  avalanche: { label: 'Avalanche', emoji: '🏔️', desc: 'Pay highest APR first — saves the most interest' },
+  even: { label: 'Split evenly', emoji: '⚖️', desc: 'Spread extra payment across all debts' },
+};
+export function DebtPayoff({ exercise, onAnswer }: { exercise: any; onAnswer: Answer }) {
+  const cfg = exercise.debtPayoff ?? {};
+  const debts: any[] = cfg.debts ?? [];
+  const [strategy, setStrategy] = useState<DebtStrategy | null>(null);
+  const [submitted, setSubmitted] = useState(false);
+  const results = useMemo(() => ({
+    snowball: simulateDebt(debts, cfg.extraPayment ?? 0, 'snowball'),
+    avalanche: simulateDebt(debts, cfg.extraPayment ?? 0, 'avalanche'),
+    even: simulateDebt(debts, cfg.extraPayment ?? 0, 'even'),
+  }), [cfg]);
+  const totalDebt = debts.reduce((s, d) => s + d.balance, 0);
+  const isCorrect = strategy === cfg.correctStrategy;
+
+  return (
+    <View>
+      {cfg.scenario ? (
+        <View style={{ backgroundColor: colors.orangeSoft, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.orange, padding: spacing.md, marginBottom: spacing.md }}>
+          <Text style={{ color: colors.fg, fontSize: 15, lineHeight: 22 }}>{en(cfg.scenario)}</Text>
+        </View>
+      ) : null}
+      <View style={{ backgroundColor: colors.glass, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.border, padding: spacing.md, marginBottom: spacing.md }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 }}>
+          <Text style={{ color: colors.fgSubtle, fontSize: 11, fontWeight: '800', textTransform: 'uppercase' }}>Your Debts</Text>
+          <Text style={{ color: colors.red, fontSize: 11, fontWeight: '800' }}>Total: €{totalDebt.toLocaleString()}</Text>
+        </View>
+        {debts.map((d, i) => (
+          <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 5 }}>
+            <Text style={{ fontSize: 18 }}>{d.emoji}</Text>
+            <Text style={{ color: colors.fg, fontSize: 14, fontWeight: '600', flex: 1 }}>{en(d.label)}</Text>
+            <Text style={{ color: colors.fgMuted, fontSize: 12 }}>€{d.balance.toLocaleString()} · {d.apr}%</Text>
+          </View>
+        ))}
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 6, paddingTop: 6, borderTopWidth: 1, borderTopColor: colors.border }}>
+          <Text style={{ fontSize: 18 }}>💪</Text>
+          <Text style={{ color: colors.fg, fontSize: 14, fontWeight: '600', flex: 1 }}>Extra payment available</Text>
+          <Text style={{ color: colors.green, fontSize: 12, fontWeight: '800' }}>+€{cfg.extraPayment}/mo</Text>
+        </View>
+      </View>
+      <Prompt text={en(cfg.question)} />
+      {(['snowball', 'avalanche', 'even'] as DebtStrategy[]).map((s) => {
+        const info = DEBT_STRATS[s];
+        const sel = strategy === s;
+        const isCorrectS = submitted && s === cfg.correctStrategy;
+        const isWrongS = submitted && sel && s !== cfg.correctStrategy;
+        const border = isCorrectS ? colors.green : isWrongS ? colors.red : sel ? colors.primary : colors.border;
+        const r = results[s];
+        return (
+          <Pressable key={s} disabled={submitted} onPress={() => setStrategy(s)}
+            style={{ padding: spacing.md, borderRadius: radius.md, borderWidth: 1.5, borderColor: border, backgroundColor: isCorrectS ? colors.greenSoft : isWrongS ? colors.redSoft : sel ? colors.primarySoft : colors.card, marginBottom: spacing.sm }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 2 }}>
+              <Text style={{ fontSize: 20 }}>{info.emoji}</Text>
+              <Text style={{ color: colors.fg, fontSize: 14, fontWeight: '800', flex: 1 }}>{info.label}</Text>
+              {submitted ? <Text style={{ color: colors.fgMuted, fontSize: 11, fontWeight: '700' }}>{Math.floor(r.months / 12)}y {r.months % 12}m · €{r.totalInterest.toLocaleString()}</Text> : null}
+            </View>
+            <Text style={{ color: colors.fgMuted, fontSize: 12 }}>{info.desc}</Text>
+          </Pressable>
+        );
+      })}
+      {submitted ? (
+        <ResultBox good={isCorrect} title={isCorrect ? `✓ ${DEBT_STRATS[cfg.correctStrategy as DebtStrategy].label} wins!` : `✗ The optimal choice was: ${DEBT_STRATS[cfg.correctStrategy as DebtStrategy].label}`}>
+          {exercise.explanation ? <Text style={{ color: colors.fgMuted, fontSize: 14, lineHeight: 21 }}>{en(exercise.explanation)}</Text> : null}
+        </ResultBox>
+      ) : null}
+      {!submitted ? (
+        <Button title="Run Simulation →" onPress={() => { if (strategy) { setSubmitted(true); if (isCorrect) setTimeout(() => onAnswer(true, exercise.xp), 1800); } }} disabled={strategy === null} />
+      ) : !isCorrect ? (
+        <>
+          <ExplainMistake exercise={exercise} userAnswer={strategy ? DEBT_STRATS[strategy].label : undefined} />
+          <Button title="Continue →" onPress={() => onAnswer(false, 0)} />
+        </>
+      ) : null}
+    </View>
+  );
+}
+
+/* ── compound_sim: explore compound interest ───────────────── */
+function calcFV(principal: number, monthly: number, rate: number, years: number): number {
+  const r = rate / 100 / 12, n = years * 12;
+  if (r === 0) return principal + monthly * n;
+  return principal * Math.pow(1 + r, n) + monthly * ((Math.pow(1 + r, n) - 1) / r);
+}
+export function CompoundSim({ exercise, onAnswer }: { exercise: any; onAnswer: Answer }) {
+  const cfg = exercise.compoundConfig ?? {};
+  const [principal, setPrincipal] = useState<number>(cfg.defaultPrincipal ?? 1000);
+  const [monthly, setMonthly] = useState<number>(cfg.defaultMonthly ?? 100);
+  const [rate, setRate] = useState<number>(cfg.defaultRate ?? 7);
+  const [years, setYears] = useState<number>(cfg.defaultYears ?? 20);
+  const [revealed, setRevealed] = useState(false);
+  const [chartW, setChartW] = useState(0);
+
+  const fv = calcFV(principal, monthly, rate, years);
+  const totalContrib = principal + monthly * years * 12;
+  const totalGrowth = fv - totalContrib;
+  const growthPct = totalContrib > 0 ? Math.round((fv / totalContrib - 1) * 100) : 0;
+  const pts = useMemo(() => { const a: number[] = []; for (let y = 0; y <= years; y++) a.push(calcFV(principal, monthly, rate, y)); return a; }, [principal, monthly, rate, years]);
+  const maxVal = pts[pts.length - 1] || 1;
+  const H = 70;
+  const xAt = (i: number) => (i / Math.max(1, pts.length - 1)) * chartW;
+  const yAt = (v: number) => H - (v / maxVal) * (H - 5);
+  const path = chartW ? pts.map((v, i) => `${i === 0 ? 'M' : 'L'}${xAt(i).toFixed(1)} ${yAt(v).toFixed(1)}`).join(' ') : '';
+  const area = chartW ? `${path} L${xAt(pts.length - 1).toFixed(1)} ${H} L0 ${H} Z` : '';
+
+  const sliders = [
+    { label: 'Starting amount', value: principal, set: setPrincipal, min: 0, max: 50000, step: 500, money: true, color: colors.primary },
+    { label: 'Monthly investment', value: monthly, set: setMonthly, min: 0, max: 2000, step: 50, money: true, color: colors.green },
+    { label: 'Annual return', value: rate, set: setRate, min: 1, max: 15, step: 0.5, money: false, unit: '%', color: colors.purple },
+    { label: 'Time horizon', value: years, set: setYears, min: 1, max: 50, step: 1, money: false, unit: 'yrs', color: colors.orange },
+  ];
+
+  return (
+    <View>
+      <Text style={{ color: colors.fgMuted, fontSize: 14, textAlign: 'center', marginBottom: spacing.md }}>🔮 Adjust the sliders to see the power of compound interest!</Text>
+      {sliders.map((s) => (
+        <View key={s.label} style={{ marginBottom: spacing.xs }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Text style={{ color: colors.fg, fontSize: 14, fontWeight: '600' }}>{s.label}</Text>
+            <Text style={{ color: s.color, fontSize: 14, fontWeight: '800' }}>{s.money ? `€${s.value.toLocaleString()}` : `${s.value} ${s.unit}`}</Text>
+          </View>
+          <Track min={s.min} max={s.max} step={s.step} value={s.value} onChange={(v) => s.set(v)} color={s.color} />
+        </View>
+      ))}
+      <View onLayout={(e: LayoutChangeEvent) => setChartW(e.nativeEvent.layout.width)} style={{ backgroundColor: colors.glass, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.border, padding: spacing.sm, marginBottom: spacing.md }}>
+        {chartW > 0 ? (
+          <Svg width={chartW} height={H}>
+            <Defs>
+              <LinearGradient id="cmpGrad" x1="0" y1="0" x2="0" y2="1">
+                <Stop offset="0" stopColor={colors.green} stopOpacity={0.3} />
+                <Stop offset="1" stopColor={colors.green} stopOpacity={0} />
+              </LinearGradient>
+            </Defs>
+            <Path d={area} fill="url(#cmpGrad)" />
+            <Path d={path} fill="none" stroke={colors.green} strokeWidth={2} strokeLinejoin="round" />
+          </Svg>
+        ) : <View style={{ height: H }} />}
+      </View>
+      <View style={{ flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.md }}>
+        {[{ l: 'You invest', v: totalContrib, c: colors.fgMuted }, { l: 'Market adds', v: totalGrowth, c: colors.purple }, { l: 'Final value', v: fv, c: colors.green }].map((t) => (
+          <View key={t.l} style={{ flex: 1, alignItems: 'center', backgroundColor: colors.glass, borderRadius: radius.md, borderWidth: 1, borderColor: colors.border, padding: spacing.sm }}>
+            <Text style={{ color: colors.fgSubtle, fontSize: 11, textAlign: 'center', marginBottom: 2 }}>{t.l}</Text>
+            <Text style={{ color: t.c, fontSize: 15, fontWeight: '900' }}>€{Math.round(t.v).toLocaleString()}</Text>
+          </View>
+        ))}
+      </View>
+      {growthPct > 0 ? (
+        <View style={{ backgroundColor: colors.greenSoft, borderRadius: radius.md, borderWidth: 1, borderColor: colors.green, padding: spacing.md, marginBottom: spacing.md }}>
+          <Text style={{ color: colors.green, fontSize: 14, fontWeight: '700', textAlign: 'center' }}>🚀 Your money grows {growthPct}% — compound interest did {Math.round((totalGrowth / fv) * 100)}% of the work!</Text>
+        </View>
+      ) : null}
+      {!revealed ? (
+        <Button title="✓ I understand compound interest!" onPress={() => { setRevealed(true); setTimeout(() => onAnswer(true, exercise.xp), 600); }} />
+      ) : (
+        <Text style={{ color: colors.green, fontWeight: '700', textAlign: 'center' }}>✓ Great! Moving on...</Text>
+      )}
+    </View>
+  );
+}
+
+/* ── income_streams: pick a mix that hits the target ───────── */
+export function IncomeStreams({ exercise, onAnswer }: { exercise: any; onAnswer: Answer }) {
+  const cfg = exercise.incomeStreams ?? {};
+  const streams: any[] = cfg.streams ?? [];
+  const [selected, setSelected] = useState<number[]>([]);
+  const [submitted, setSubmitted] = useState(false);
+  const totalIncome = selected.reduce((s, i) => s + streams[i].hoursPerWeek * streams[i].eurPerHour * 4, 0);
+  const totalHours = selected.reduce((s, i) => s + streams[i].hoursPerWeek, 0);
+  const incomePct = Math.min(100, (totalIncome / (cfg.targetIncome || 1)) * 100);
+  const hoursPct = Math.min(100, (totalHours / (cfg.maxHoursPerWeek || 1)) * 100);
+  const meetsTarget = totalIncome >= cfg.targetIncome;
+  const fitsHours = totalHours <= cfg.maxHoursPerWeek;
+  const correctCount = selected.length >= cfg.minPicks && selected.length <= cfg.maxPicks;
+  const isCorrect = meetsTarget && fitsHours && correctCount;
+  const toggle = (i: number) => { if (submitted) return; setSelected((p) => p.includes(i) ? p.filter((x) => x !== i) : p.length < cfg.maxPicks ? [...p, i] : p); };
+
+  return (
+    <View>
+      {cfg.scenario ? (
+        <View style={{ backgroundColor: colors.primarySoft, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.border, padding: spacing.md, marginBottom: spacing.md }}>
+          <Text style={{ color: colors.fg, fontSize: 15, lineHeight: 22 }}>{en(cfg.scenario)}</Text>
+        </View>
+      ) : null}
+      <Prompt text={en(cfg.question)} />
+      <View style={{ flexDirection: 'row', gap: spacing.md, backgroundColor: colors.glass, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.border, padding: spacing.md, marginBottom: spacing.md }}>
+        <View style={{ flex: 1 }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
+            <Text style={{ color: colors.fgSubtle, fontSize: 12 }}>Income / mo</Text>
+            <Text style={{ color: meetsTarget ? colors.green : colors.fg, fontSize: 12, fontWeight: '800' }}>€{Math.round(totalIncome)} / €{cfg.targetIncome}</Text>
+          </View>
+          <View style={{ height: 8, borderRadius: 4, backgroundColor: colors.bgElevated, overflow: 'hidden' }}><View style={{ height: 8, width: `${incomePct}%`, backgroundColor: meetsTarget ? colors.green : colors.primary }} /></View>
+        </View>
+        <View style={{ flex: 1 }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
+            <Text style={{ color: colors.fgSubtle, fontSize: 12 }}>Hours / wk</Text>
+            <Text style={{ color: fitsHours ? colors.fg : colors.red, fontSize: 12, fontWeight: '800' }}>{totalHours}h / {cfg.maxHoursPerWeek}h</Text>
+          </View>
+          <View style={{ height: 8, borderRadius: 4, backgroundColor: colors.bgElevated, overflow: 'hidden' }}><View style={{ height: 8, width: `${hoursPct}%`, backgroundColor: fitsHours ? colors.orange : colors.red }} /></View>
+        </View>
+      </View>
+      <Text style={{ color: colors.fgSubtle, fontSize: 12, marginBottom: spacing.sm }}>Pick {cfg.minPicks}–{cfg.maxPicks} streams that hit the target without busting your hour budget.</Text>
+      {streams.map((s, i) => {
+        const sel = selected.includes(i);
+        const monthly = s.hoursPerWeek * s.eurPerHour * 4;
+        return (
+          <Pressable key={i} disabled={submitted} onPress={() => toggle(i)}
+            style={{ padding: spacing.md, borderRadius: radius.md, borderWidth: 1.5, borderColor: sel ? colors.primary : colors.border, backgroundColor: sel ? colors.primarySoft : colors.card, marginBottom: spacing.sm }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 2 }}>
+              <Text style={{ fontSize: 20 }}>{s.emoji}</Text>
+              <Text style={{ color: colors.fg, fontSize: 14, fontWeight: '800', flex: 1 }}>{en(s.label)}</Text>
+              <Text style={{ color: colors.green, fontSize: 12, fontWeight: '800' }}>€{monthly}/mo</Text>
+            </View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <Text style={{ color: colors.fgMuted, fontSize: 11 }}>{s.hoursPerWeek}h/wk · €{s.eurPerHour}/h</Text>
+              <Text style={{ color: colors.orange, fontSize: 11 }}>{'★'.repeat(s.scalability)}{'☆'.repeat(5 - s.scalability)}</Text>
+            </View>
+            {s.note ? <Text style={{ color: colors.fgSubtle, fontSize: 11, marginTop: 2 }}>{en(s.note)}</Text> : null}
+          </Pressable>
+        );
+      })}
+      {submitted ? (
+        <ResultBox good={isCorrect} title={isCorrect ? '✓ Solid mix!' : !meetsTarget ? `✗ Income too low: €${Math.round(totalIncome)} of €${cfg.targetIncome}` : !fitsHours ? `✗ Too many hours: ${totalHours}h of ${cfg.maxHoursPerWeek}h max` : `✗ Pick ${cfg.minPicks}–${cfg.maxPicks} streams`}>
+          {exercise.explanation ? <Text style={{ color: colors.fgMuted, fontSize: 14, lineHeight: 21 }}>{en(exercise.explanation)}</Text> : null}
+        </ResultBox>
+      ) : null}
+      {!submitted ? (
+        <Button title="Lock in mix →" onPress={() => { if (selected.length) { setSubmitted(true); if (isCorrect) setTimeout(() => onAnswer(true, exercise.xp), 1800); } }} disabled={selected.length === 0} />
+      ) : !isCorrect ? (
+        <Button title="Continue →" onPress={() => onAnswer(false, 0)} />
+      ) : null}
+    </View>
+  );
+}
+
+/* ── unit_price: pick the best price-per-unit ──────────────── */
+export function UnitPrice({ exercise, onAnswer }: { exercise: any; onAnswer: Answer }) {
+  const cfg = exercise.unitPrice ?? {};
+  const options: any[] = cfg.options ?? [];
+  const [picked, setPicked] = useState<number | null>(null);
+  const [submitted, setSubmitted] = useState(false);
+  const perUnit = options.map((o) => o.price / o.quantity);
+  let cheapestIdx = 0;
+  for (let i = 1; i < perUnit.length; i++) if (perUnit[i] < perUnit[cheapestIdx]) cheapestIdx = i;
+  const isCorrect = picked === cheapestIdx;
+  const maxPerUnit = Math.max(...perUnit, 0.0001);
+  const fmt = (v: number) => (v < 1 ? `€${v.toFixed(3)}` : `€${v.toFixed(2)}`);
+
+  return (
+    <View>
+      {cfg.scenario ? (
+        <View style={{ backgroundColor: colors.primarySoft, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.border, padding: spacing.md, marginBottom: spacing.md }}>
+          <Text style={{ color: colors.fg, fontSize: 15, lineHeight: 22 }}>{en(cfg.scenario)}</Text>
+        </View>
+      ) : null}
+      <Prompt text={en(cfg.question)} />
+      {options.map((o, i) => {
+        const sel = picked === i;
+        const isCheapest = submitted && i === cheapestIdx;
+        const isWrong = submitted && sel && !isCorrect;
+        const border = isCheapest ? colors.green : isWrong ? colors.red : sel ? colors.primary : colors.border;
+        const pct = (perUnit[i] / maxPerUnit) * 100;
+        return (
+          <Pressable key={i} disabled={submitted} onPress={() => setPicked(i)}
+            style={{ padding: spacing.md, borderRadius: radius.md, borderWidth: 1.5, borderColor: border, backgroundColor: isCheapest ? colors.greenSoft : isWrong ? colors.redSoft : sel ? colors.primarySoft : colors.card, marginBottom: spacing.sm }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <Text style={{ fontSize: 20 }}>{o.emoji}</Text>
+              <Text style={{ color: colors.fg, fontSize: 14, fontWeight: '800', flex: 1 }}>{en(o.label)}</Text>
+              <Text style={{ color: colors.fgMuted, fontSize: 12 }}>€{o.price.toFixed(2)} / {o.quantity}{cfg.unit}</Text>
+            </View>
+            {submitted ? (
+              <>
+                <View style={{ height: 8, borderRadius: 4, backgroundColor: colors.bgElevated, overflow: 'hidden', marginTop: 6 }}>
+                  <View style={{ height: 8, width: `${pct}%`, backgroundColor: i === cheapestIdx ? colors.green : colors.orange }} />
+                </View>
+                <Text style={{ color: i === cheapestIdx ? colors.green : colors.fgMuted, fontSize: 11, fontWeight: '700', marginTop: 3 }}>{fmt(perUnit[i])}/{cfg.unit}{i === cheapestIdx ? ' · best deal' : ''}</Text>
+              </>
+            ) : null}
+            {o.note ? <Text style={{ color: colors.fgSubtle, fontSize: 11, marginTop: 2 }}>{en(o.note)}</Text> : null}
+          </Pressable>
+        );
+      })}
+      {submitted ? (
+        <ResultBox good={isCorrect} title={isCorrect ? `✓ Best deal: ${fmt(perUnit[cheapestIdx])}/${cfg.unit}` : `✗ Best deal: ${en(options[cheapestIdx].label)} (${fmt(perUnit[cheapestIdx])}/${cfg.unit})`}>
+          {exercise.explanation ? <Text style={{ color: colors.fgMuted, fontSize: 14, lineHeight: 21 }}>{en(exercise.explanation)}</Text> : null}
+        </ResultBox>
+      ) : null}
+      {!submitted ? (
+        <Button title="Pick the best deal →" onPress={() => { if (picked !== null) { setSubmitted(true); if (isCorrect) setTimeout(() => onAnswer(true, exercise.xp), 1600); } }} disabled={picked === null} />
+      ) : !isCorrect ? (
+        <Button title="Continue →" onPress={() => onAnswer(false, 0)} />
+      ) : null}
+    </View>
+  );
+}
+
+/* ── risk_matrix: sort risks into a 2×2 impact/likelihood grid ─ */
+const RISK_QUADRANTS = [
+  { strategy: 'Accept', label: 'Low impact · Low chance', emoji: '🤷', color: colors.green },
+  { strategy: 'Mitigate', label: 'Low impact · High chance', emoji: '🛠️', color: colors.orange },
+  { strategy: 'Transfer (insure)', label: 'High impact · Low chance', emoji: '📜', color: colors.primary },
+  { strategy: 'Avoid', label: 'High impact · High chance', emoji: '🚫', color: colors.red },
+];
+export function RiskMatrix({ exercise, onAnswer }: { exercise: any; onAnswer: Answer }) {
+  const cfg = exercise.riskMatrix ?? {};
+  const risks: any[] = cfg.risks ?? [];
+  const [placements, setPlacements] = useState<number[]>(() => risks.map(() => -1));
+  const [activeRisk, setActiveRisk] = useState<number | null>(null);
+  const [submitted, setSubmitted] = useState(false);
+  const allPlaced = placements.every((p) => p !== -1);
+  const correctCount = placements.filter((p, i) => p === risks[i].correctQuadrant).length;
+  const isCorrect = correctCount === risks.length;
+  const unplaced = risks.map((_, i) => i).filter((i) => placements[i] === -1);
+  const place = (riskIdx: number, q: number) => { if (submitted) return; setPlacements((prev) => { const n = prev.slice(); n[riskIdx] = q; return n; }); setActiveRisk(null); };
+
+  return (
+    <View>
+      {cfg.scenario ? (
+        <View style={{ backgroundColor: colors.primarySoft, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.border, padding: spacing.md, marginBottom: spacing.md }}>
+          <Text style={{ color: colors.fg, fontSize: 15, lineHeight: 22 }}>{en(cfg.scenario)}</Text>
+        </View>
+      ) : null}
+      <Prompt text={en(cfg.question)} />
+      {unplaced.length > 0 ? (
+        <View style={{ backgroundColor: colors.glass, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.border, padding: spacing.md, marginBottom: spacing.md }}>
+          <Text style={{ color: colors.fgSubtle, fontSize: 11, textTransform: 'uppercase', marginBottom: 8 }}>Tap a risk, then tap a quadrant</Text>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm }}>
+            {unplaced.map((i) => {
+              const sel = activeRisk === i;
+              return (
+                <Pressable key={i} disabled={submitted} onPress={() => setActiveRisk(sel ? null : i)}
+                  style={{ paddingHorizontal: 12, paddingVertical: 8, borderRadius: radius.pill, borderWidth: 1.5, borderColor: sel ? colors.primary : colors.border, backgroundColor: sel ? colors.primarySoft : colors.bgElevated }}>
+                  <Text style={{ color: sel ? colors.primary : colors.fg, fontSize: 12, fontWeight: '800' }}>{risks[i].emoji} {en(risks[i].label)}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        </View>
+      ) : null}
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, marginBottom: spacing.md }}>
+        {[0, 1, 2, 3].map((q) => {
+          const info = RISK_QUADRANTS[q];
+          const placed = risks.map((_, i) => i).filter((i) => placements[i] === q);
+          const canDrop = activeRisk !== null && !submitted;
+          return (
+            <Pressable key={q} disabled={submitted || activeRisk === null} onPress={() => { if (activeRisk !== null) place(activeRisk, q); }}
+              style={{ width: '48%', minHeight: 108, borderRadius: radius.lg, borderWidth: 1.5, borderStyle: canDrop ? 'dashed' : 'solid', borderColor: canDrop ? info.color : colors.border, backgroundColor: colors.glass, padding: spacing.sm }}>
+              <Text style={{ color: info.color, fontSize: 11, fontWeight: '800', textTransform: 'uppercase' }}>{info.emoji} {info.strategy}</Text>
+              <Text style={{ color: colors.fgSubtle, fontSize: 10, marginBottom: 6 }}>{info.label}</Text>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4 }}>
+                {placed.map((i) => {
+                  const ok = submitted ? placements[i] === risks[i].correctQuadrant : null;
+                  return (
+                    <View key={i} style={{ paddingHorizontal: 6, paddingVertical: 3, borderRadius: radius.pill, borderWidth: 1, borderColor: submitted ? (ok ? colors.green : colors.red) : colors.border, backgroundColor: colors.bgElevated }}>
+                      <Text style={{ color: submitted ? (ok ? colors.green : colors.red) : colors.fg, fontSize: 10, fontWeight: '700' }}>{risks[i].emoji} {en(risks[i].label)}{submitted && !ok ? ` → ${RISK_QUADRANTS[risks[i].correctQuadrant].emoji}` : ''}</Text>
+                    </View>
+                  );
+                })}
+              </View>
+            </Pressable>
+          );
+        })}
+      </View>
+      {submitted ? (
+        <ResultBox good={isCorrect} title={isCorrect ? '✓ All risks placed correctly!' : `✗ ${correctCount} of ${risks.length} placed correctly`}>
+          {exercise.explanation ? <Text style={{ color: colors.fgMuted, fontSize: 14, lineHeight: 21 }}>{en(exercise.explanation)}</Text> : null}
+        </ResultBox>
+      ) : null}
+      {!submitted ? (
+        <Button title={allPlaced ? 'Check matrix →' : `Place all risks (${unplaced.length} left)`} onPress={() => { if (allPlaced) { setSubmitted(true); if (isCorrect) setTimeout(() => onAnswer(true, exercise.xp), 1800); } }} disabled={!allPlaced} />
+      ) : !isCorrect ? (
+        <Button title="Continue →" onPress={() => onAnswer(false, 0)} />
+      ) : null}
+    </View>
+  );
+}
