@@ -639,10 +639,14 @@ is re-authored in React Native primitives (`View`/`Text`/`StyleSheet`, no DOM/Ta
   the **Wheel of Luck** (one-time) + **chest reel**.
 - **Lesson runner** (`app/lesson/...`) — energy/hearts, animated progress, XP pop, glass card.
   Uses the shared `components/ExerciseView.tsx` with the 🐙 **Explain my mistake** button.
-  **Exercise types native (11):** theory, choice, true_false, fill_blank, fill_number,
+  **Exercise types native (ALL 25):** theory, choice, true_false, fill_blank, fill_number,
   scenario_decision (in `ExerciseView.tsx`) + sort_items, match_terms, order_items, swipe_sort,
-  speed_round (in `components/exerciseTypes.tsx`). All other types render a graceful "best on web"
-  fallback — see the roadmap below.
+  speed_round, rpg_scenario, boss_battle, stock_chart, budget_slider, portfolio_pie,
+  coverage_calc, tax_brackets, debt_payoff, compound_sim, income_streams, unit_price, risk_matrix,
+  rat_race, life_sim (all in `components/exerciseTypes.tsx`). The "best on web" fallback in
+  `ExerciseView.tsx` is now only a safety net for unknown/future types. Slider-based types use
+  `@react-native-community/slider` (a **native module** — needs an EAS/dev build, not Expo Go);
+  charts/sparklines/pies use `react-native-svg`.
 - **Notifications** — `components/NotificationBell.tsx` (badge via `/unread-count`) +
   `app/notifications.tsx` feed (mark read / read-all).
 - **Review** (`app/review.tsx` + dashboard `ReviewCard`) — spaced repetition via
@@ -675,19 +679,28 @@ is re-authored in React Native primitives (`View`/`Text`/`StyleSheet`, no DOM/Ta
   app icon/splash.
 
 ### Not yet ported (roadmap — what to continue with)
-The remaining work is mostly the **calculator/simulator-heavy exercise types**, which still hit
-the "best on web" fallback in `ExerciseView.tsx`. Port each as a component in
-`components/exerciseTypes.tsx` and add a routing line in `ExerciseView` (same pattern as
-sort_items/etc.). Suggested batches:
-1. Slider/allocation: `budget_slider`, `portfolio_pie`, `coverage_calc`, `tax_brackets`
-   (need RN sliders — `@react-native-community/slider`, install via `npx expo install`).
-2. Sim/calc: `debt_payoff`, `compound_sim`, `income_streams`, `unit_price`, `risk_matrix`.
-3. Chart/game: `stock_chart` (react-native-svg line chart), `boss_battle`, `rat_race`, `life_sim`.
-Also still to do: the **Quests page** (web derives it client-side from `/api/modules` +
-`/api/progress`); **Google/Apple sign-in** (adding one requires both, per Apple 4.8); the
-`mobile/README.md` compliance follow-ups (loot-box odds text, privacy/data-safety forms, app
-icon + splash before an EAS build). Validate every change with `npx tsc --noEmit` +
-`npx expo export --platform ios` (see the tooling notes above).
+**All 25 exercise types are now ported** (see the Lesson-runner note above) — the exercise-porting
+roadmap is complete. Remaining work:
+- The **Quests page** (web derives it client-side from `/api/modules` + `/api/progress`).
+- **Google/Apple sign-in** (adding one requires both, per Apple 4.8).
+- The `mobile/README.md` compliance follow-ups (loot-box odds text, privacy/data-safety forms, app
+  icon + splash before an EAS build).
+- Because slider types pull in the **native** `@react-native-community/slider`, the app now needs an
+  EAS/dev build (`eas build --profile development` or `expo run:ios`) to run — plain Expo Go won't
+  include the native module.
+
+Validate every change with `npx tsc --noEmit` + `npx expo export --platform ios` (see the tooling
+notes above).
+
+### Boot resilience (mobile)
+- `lib/api.ts` gives every request a **15s timeout** (AbortController) so an unreachable
+  `EXPO_PUBLIC_API_URL` (e.g. a stale LAN IP) can't strand the boot screen on an infinite spinner —
+  it surfaces a clear `ApiError` instead. `lib/config.ts` logs the resolved `API_BASE_URL` once at
+  boot to the Metro terminal (the value is inlined at build time from the shell that ran `expo start`).
+- **Onboarding shows once per device.** `lib/auth.tsx` persists an `ONBOARDED_KEY` flag on completion
+  (`markOnboarded()`) and re-applies it via `withLocalOnboarded()` on every `/me`, so a failed/slow
+  `/api/auth/onboarding` write can't force the survey to reappear on relaunch. Cleared on logout +
+  account deletion so a different account on the same device still gets its own onboarding.
 
 ## Deployment
 - Render: backend + frontend as separate services
