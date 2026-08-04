@@ -680,8 +680,10 @@ is re-authored in React Native primitives (`View`/`Text`/`StyleSheet`, no DOM/Ta
 
 ### Not yet ported (roadmap — what to continue with)
 **All 25 exercise types are now ported** (see the Lesson-runner note above) — the exercise-porting
-roadmap is complete. Remaining work:
-- The **Quests page** (web derives it client-side from `/api/modules` + `/api/progress`).
+roadmap is complete. The **Quests page** is also ported (`app/quests.tsx`, standalone route reached
+via `components/QuestsCard.tsx` on the Learn dashboard): level ring (react-native-svg) + stats row +
+4 daily quests, all derived client-side from `/api/modules` + `/api/progress`, mirroring the web
+`Quests.tsx` + `DailyQuests.tsx`. Remaining work:
 - **Google/Apple sign-in** (adding one requires both, per Apple 4.8).
 - The `mobile/README.md` compliance follow-ups (loot-box odds text, privacy/data-safety forms, app
   icon + splash before an EAS build).

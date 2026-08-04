@@ -11,6 +11,7 @@ import { Aurora } from '../../components/Aurora';
 import { ChestReelModal } from '../../components/ChestReelModal';
 import { TodayWorkout } from '../../components/TodayWorkout';
 import { ReviewCard } from '../../components/ReviewCard';
+import { QuestsCard } from '../../components/QuestsCard';
 import { WheelOfLuck } from '../../components/WheelOfLuck';
 import { TestOutModal } from '../../components/TestOutModal';
 import { NotificationBell } from '../../components/NotificationBell';
@@ -90,6 +91,7 @@ export default function Learn() {
         {/* Daily Money Workout + due reviews */}
         <TodayWorkout />
         <ReviewCard />
+        <QuestsCard />
 
         {/* Continue hero */}
         <ContinueHero modules={modules} current={current} streak={user?.streak ?? 0}

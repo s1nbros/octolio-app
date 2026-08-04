@@ -22,6 +22,7 @@ function RootNavigator() {
       <Stack.Screen name="onboarding" />
       <Stack.Screen name="lesson/[moduleId]/[lessonId]" options={{ animation: 'slide_from_right' }} />
       <Stack.Screen name="review" options={{ animation: 'slide_from_right' }} />
+      <Stack.Screen name="quests" options={{ animation: 'slide_from_right' }} />
       <Stack.Screen name="shop" options={{ animation: 'slide_from_right' }} />
       <Stack.Screen name="friends" options={{ animation: 'slide_from_right' }} />
       <Stack.Screen name="notifications" options={{ animation: 'slide_from_right' }} />
