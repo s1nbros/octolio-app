@@ -1,9 +1,11 @@
 import Svg, { Circle, Defs, Ellipse, G, LinearGradient, Path, RadialGradient, Stop } from 'react-native-svg';
+import { Bob } from '../lib/anim';
 
 /** Octolio brand mark — mint octopus holding a gold star-coin with an up-arrow
- *  tentacle (growth). Vector recreation of the app icon; scales crisply. */
-export function OctolioLogo({ size = 140 }: { size?: number }) {
-  return (
+ *  tentacle (growth). Vector recreation of the app icon; scales crisply.
+ *  One arm on the left (the up-arrow), one on the right (the coin). Idle-bobs. */
+export function OctolioLogo({ size = 140, animate = true }: { size?: number; animate?: boolean }) {
+  const svg = (
     <Svg viewBox="0 0 220 210" width={size} height={size * (210 / 220)}>
       <Defs>
         <LinearGradient id="ol_body" x1="0" y1="0" x2="0" y2="1">
@@ -32,12 +34,12 @@ export function OctolioLogo({ size = 140 }: { size?: number }) {
       {/* coin arm (right, behind head) */}
       <Path d="M148 104 Q178 100 184 80" fill="none" stroke="#5cc7a7" strokeWidth={13} strokeLinecap="round" />
 
-      {/* bottom tentacles (mint → lavender tips) */}
+      {/* bottom tentacles (mint → lavender tips) — no left-side leg, so the
+          up-arrow reads as the single left arm */}
       <G fill="url(#ol_tip)">
-        <Path d="M62 132 Q50 168 62 196 Q78 178 72 146 Z" />
-        <Path d="M86 142 Q78 182 92 200 Q106 186 100 150 Z" />
-        <Path d="M114 142 Q116 182 130 200 Q140 184 128 150 Z" />
-        <Path d="M138 134 Q150 170 156 194 Q168 174 152 144 Z" />
+        <Path d="M84 144 Q76 182 90 200 Q104 186 98 152 Z" />
+        <Path d="M110 146 Q112 184 126 200 Q136 184 124 152 Z" />
+        <Path d="M136 136 Q148 170 154 194 Q166 174 150 146 Z" />
       </G>
 
       {/* head */}
@@ -65,4 +67,5 @@ export function OctolioLogo({ size = 140 }: { size?: number }) {
       <Path d="M184 50 L187.06 57.79 L195.41 58.29 L188.95 63.61 L191.05 71.71 L184 67.2 L176.95 71.71 L179.05 63.61 L172.59 58.29 L180.94 57.79 Z" fill="#cf9235" />
     </Svg>
   );
+  return animate ? <Bob amount={9} rotate={1.5} duration={2000}>{svg}</Bob> : svg;
 }
