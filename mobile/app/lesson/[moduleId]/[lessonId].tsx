@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Animated, Easing, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Animated, Easing, Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -19,6 +19,9 @@ export default function LessonRunner() {
   const { token, updateUser, refreshUser } = useAuth();
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
+  // Gently scale hero elements down on smaller phones (baseline ≈ iPhone 12/13/14 width).
+  const s = Math.max(0.82, Math.min(1, width / 390));
 
   const [lesson, setLesson] = useState<Lesson | null>(null);
   const [phase, setPhase] = useState<Phase>('loading');
@@ -74,14 +77,26 @@ export default function LessonRunner() {
     else setIndex(next);
   };
 
+  // Guard the mid-lesson exit — tapping ✕ shouldn't silently discard progress + spent energy.
+  const confirmExit = () => {
+    Alert.alert(
+      'End lesson?',
+      "Your progress in this lesson won't be saved, and the energy you spent won't be refunded.",
+      [
+        { text: 'Keep going', style: 'cancel' },
+        { text: 'End lesson', style: 'destructive', onPress: () => router.back() },
+      ],
+    );
+  };
+
   if (phase === 'loading') return <Center><ActivityIndicator color={colors.primary} /></Center>;
   if (phase === 'error' || !lesson) return <Center><Text style={{ color: colors.red }}>Couldn't load this lesson.</Text><Button title="Back" variant="ghost" onPress={() => router.back()} /></Center>;
 
   if (phase === 'intro') {
     return (
       <Center>
-        <Text style={{ fontSize: 56 }}>{lesson.icon || '📘'}</Text>
-        <Text style={{ color: colors.fg, fontSize: 24, fontWeight: '800', marginTop: spacing.sm, textAlign: 'center' }}>{en(lesson.title)}</Text>
+        <Text style={{ fontSize: 56 * s }}>{lesson.icon || '📘'}</Text>
+        <Text style={{ color: colors.fg, fontSize: 24 * s, fontWeight: '800', marginTop: spacing.sm, textAlign: 'center' }}>{en(lesson.title)}</Text>
         {lesson.description ? <Text style={{ color: colors.fgMuted, textAlign: 'center', marginTop: 6 }}>{en(lesson.description)}</Text> : null}
         <Text style={{ color: colors.fgSubtle, marginTop: spacing.md }}>{lesson.exercises.length} exercises · +{lesson.xpReward} XP · ❤❤❤</Text>
         <View style={{ height: spacing.lg }} />
@@ -109,8 +124,8 @@ export default function LessonRunner() {
   if (phase === 'complete') {
     return (
       <Center>
-        <Text style={{ fontSize: 56 }}>🎉</Text>
-        <Text style={{ color: colors.fg, fontSize: 24, fontWeight: '800', marginTop: spacing.sm }}>Lesson complete!</Text>
+        <Text style={{ fontSize: 56 * s }}>🎉</Text>
+        <Text style={{ color: colors.fg, fontSize: 24 * s, fontWeight: '800', marginTop: spacing.sm }}>Lesson complete!</Text>
         <Text style={{ color: colors.green, fontWeight: '700', marginTop: 6 }}>+{xpEarned || lesson.xpReward} XP</Text>
         <View style={{ height: spacing.lg }} />
         <Button title="Continue" onPress={() => router.back()} />
@@ -124,15 +139,15 @@ export default function LessonRunner() {
     <View style={{ flex: 1, backgroundColor: colors.bg, paddingTop: insets.top }}>
       <Aurora />
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.md, paddingHorizontal: spacing.md, paddingVertical: spacing.sm }}>
-        <Pressable onPress={() => router.back()} hitSlop={12}><Ionicons name="close" size={24} color={colors.fgMuted} /></Pressable>
+        <Pressable onPress={confirmExit} hitSlop={12}><Ionicons name="close" size={24} color={colors.fgMuted} /></Pressable>
         <View style={{ flex: 1, height: 10, backgroundColor: colors.glass, borderRadius: 5, overflow: 'hidden' }}>
           <Animated.View style={{ height: 10, backgroundColor: colors.green, borderRadius: 5, width: progress.interpolate({ inputRange: [0, 1], outputRange: ['0%', '100%'] }) }} />
         </View>
         <Text style={{ fontSize: 16 }}>{'❤️'.repeat(hearts)}{'🤍'.repeat(3 - hearts)}</Text>
       </View>
       <View><XpPop amount={xpPop.amount} trigger={xpPop.trigger} /></View>
-      <ScrollView contentContainerStyle={{ padding: spacing.md, paddingBottom: spacing.xl }} key={index} keyboardShouldPersistTaps="handled">
-        <FadeScaleIn>
+      <ScrollView contentContainerStyle={{ padding: spacing.md, paddingBottom: spacing.xl, alignItems: 'center' }} key={index} keyboardShouldPersistTaps="handled">
+        <FadeScaleIn style={{ width: '100%', maxWidth: 560 }}>
           <View style={{ backgroundColor: colors.bgCard, borderRadius: radius.xl, borderWidth: 1, borderColor: colors.border, padding: spacing.lg }}>
             <ExerciseView exercise={exercise} onAnswer={onAnswer} />
           </View>
