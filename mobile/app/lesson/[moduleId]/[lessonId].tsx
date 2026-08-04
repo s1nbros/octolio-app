@@ -9,7 +9,7 @@ import { Button } from '../../../lib/ui';
 import { colors, radius, spacing } from '../../../lib/theme';
 import { Aurora } from '../../../components/Aurora';
 import { ExerciseView, en, type Exercise } from '../../../components/ExerciseView';
-import { FadeScaleIn, XpPop } from '../../../lib/anim';
+import { FadeScaleIn, Pop, useShake, XpPop } from '../../../lib/anim';
 
 type Phase = 'loading' | 'intro' | 'exercise' | 'noenergy' | 'complete' | 'error';
 interface Lesson { id: string; title: { en: string }; description?: { en: string }; icon?: string; xpReward: number; exercises: Exercise[]; }
@@ -30,6 +30,7 @@ export default function LessonRunner() {
   const [xpEarned, setXpEarned] = useState(0);
   const [xpPop, setXpPop] = useState({ amount: 0, trigger: 0 });
   const progress = useRef(new Animated.Value(0)).current;
+  const heart = useShake();
 
   useEffect(() => {
     if (!lesson) return;
@@ -68,6 +69,7 @@ export default function LessonRunner() {
       if (xp > 0) setXpPop((p) => ({ amount: xp, trigger: p.trigger + 1 }));
     }
     if (!correct) {
+      heart.shake();
       const left = hearts - 1;
       setHearts(left);
       if (left <= 0) { setIndex(0); setHearts(3); setXpEarned(0); return; }
@@ -124,7 +126,7 @@ export default function LessonRunner() {
   if (phase === 'complete') {
     return (
       <Center>
-        <Text style={{ fontSize: 56 * s }}>🎉</Text>
+        <Pop><Text style={{ fontSize: 56 * s }}>🎉</Text></Pop>
         <Text style={{ color: colors.fg, fontSize: 24 * s, fontWeight: '800', marginTop: spacing.sm }}>Lesson complete!</Text>
         <Text style={{ color: colors.green, fontWeight: '700', marginTop: 6 }}>+{xpEarned || lesson.xpReward} XP</Text>
         <View style={{ height: spacing.lg }} />
@@ -143,7 +145,7 @@ export default function LessonRunner() {
         <View style={{ flex: 1, height: 10, backgroundColor: colors.glass, borderRadius: 5, overflow: 'hidden' }}>
           <Animated.View style={{ height: 10, backgroundColor: colors.green, borderRadius: 5, width: progress.interpolate({ inputRange: [0, 1], outputRange: ['0%', '100%'] }) }} />
         </View>
-        <Text style={{ fontSize: 16 }}>{'❤️'.repeat(hearts)}{'🤍'.repeat(3 - hearts)}</Text>
+        <Animated.View style={heart.style}><Text style={{ fontSize: 16 }}>{'❤️'.repeat(hearts)}{'🤍'.repeat(3 - hearts)}</Text></Animated.View>
       </View>
       <View><XpPop amount={xpPop.amount} trigger={xpPop.trigger} /></View>
       <ScrollView contentContainerStyle={{ padding: spacing.md, paddingBottom: spacing.xl, alignItems: 'center' }} key={index} keyboardShouldPersistTaps="handled">

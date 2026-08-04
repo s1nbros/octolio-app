@@ -46,6 +46,37 @@ export function Bob({ children, style, amount = 6, rotate = 0, duration = 2200 }
   return <Animated.View style={[style, { transform }]}>{children}</Animated.View>;
 }
 
+/** A spring "pop" — scales in with a bouncy overshoot. Great for celebratory
+ *  emoji/badges. Re-fires whenever `trigger` changes (fires once on mount). */
+export function Pop({ children, style, trigger = 0 }: { children: ReactNode; style?: ViewStyle; trigger?: number }) {
+  const v = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    v.setValue(0);
+    Animated.spring(v, { toValue: 1, friction: 4.5, tension: 120, useNativeDriver: true }).start();
+  }, [v, trigger]);
+  return (
+    <Animated.View style={[style, { opacity: v.interpolate({ inputRange: [0, 0.6, 1], outputRange: [0, 1, 1] }), transform: [{ scale: v.interpolate({ inputRange: [0, 1], outputRange: [0.4, 1] }) }] }]}>
+      {children}
+    </Animated.View>
+  );
+}
+
+/** A quick left/right wobble. Drive it by bumping `trigger` (e.g. on a wrong answer). */
+export function useShake() {
+  const v = useRef(new Animated.Value(0)).current;
+  const shake = () => {
+    v.setValue(0);
+    Animated.sequence([
+      Animated.timing(v, { toValue: 1, duration: 55, useNativeDriver: true }),
+      Animated.timing(v, { toValue: -1, duration: 55, useNativeDriver: true }),
+      Animated.timing(v, { toValue: 0.6, duration: 55, useNativeDriver: true }),
+      Animated.timing(v, { toValue: 0, duration: 55, useNativeDriver: true }),
+    ]).start();
+  };
+  const style = { transform: [{ translateX: v.interpolate({ inputRange: [-1, 1], outputRange: [-5, 5] }) }] };
+  return { shake, style };
+}
+
 /** The web's `xp-pop` — a "+N XP" that pops up and fades. Render when `trigger` changes. */
 export function XpPop({ amount, trigger }: { amount: number; trigger: number }) {
   const v = useRef(new Animated.Value(0)).current;

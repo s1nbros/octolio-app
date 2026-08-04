@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import { Button } from '../lib/ui';
 import { ExplainMistake } from './ExplainMistake';
+import { Bob, FadeScaleIn } from '../lib/anim';
 import { colors, radius, spacing } from '../lib/theme';
 import { BossBattle, BudgetSlider, CompoundSim, CoverageCalc, DebtPayoff, IncomeStreams, LifeSim, MatchTerms, OrderItems, PortfolioPie, RatRace, RiskMatrix, RpgScenario, SortItems, SpeedRound, StockChart, SwipeSort, TaxBrackets, UnitPrice } from './exerciseTypes';
 
@@ -20,19 +21,40 @@ export function ExerciseView({ exercise, onAnswer }: { exercise: Exercise; onAns
   const [sel, setSel] = useState<number | null>(null);
   const [val, setVal] = useState('');
   const [state, setState] = useState<'idle' | 'correct' | 'wrong'>('idle');
+  const [slideIdx, setSlideIdx] = useState(0);
   const checked = state !== 'idle';
 
   if (exercise.type === 'theory') {
+    const slides: any[] = exercise.slides ?? [];
+    const slide = slides[slideIdx];
+    const isLast = slideIdx >= slides.length - 1;
+    if (!slide) return <Button title="Continue" onPress={() => onAnswer(true, 0)} />;
     return (
       <View>
-        {(exercise.slides ?? []).map((s: any, i: number) => (
-          <View key={i} style={{ backgroundColor: colors.card, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.border, padding: spacing.lg, marginBottom: spacing.md }}>
-            {s.emoji || s.icon ? <Text style={{ fontSize: 36, marginBottom: spacing.sm }}>{s.emoji || s.icon}</Text> : null}
-            {s.title ? <Text style={{ color: colors.fg, fontSize: 18, fontWeight: '800', marginBottom: 6 }}>{en(s.title)}</Text> : null}
-            <Text style={{ color: colors.fgMuted, fontSize: 15, lineHeight: 22 }}>{en(s.body ?? s.content ?? s.text)}</Text>
+        {slides.length > 1 ? (
+          <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 6, marginBottom: spacing.lg }}>
+            {slides.map((_, i) => (
+              <View key={i} style={{ height: 6, borderRadius: 3, width: i === slideIdx ? 24 : 6, backgroundColor: i <= slideIdx ? colors.primary : colors.border }} />
+            ))}
           </View>
-        ))}
-        <Button title="Continue" onPress={() => onAnswer(true, 0)} />
+        ) : null}
+        <FadeScaleIn key={slideIdx}>
+          <View style={{ minHeight: 120, marginBottom: spacing.lg }}>
+            {slide.emoji || slide.icon ? (
+              <Bob amount={7} duration={1800} style={{ alignSelf: 'center', marginBottom: spacing.md }}>
+                <Text style={{ fontSize: 52 }}>{slide.emoji || slide.icon}</Text>
+              </Bob>
+            ) : null}
+            {slide.title ? <Text style={{ color: colors.fg, fontSize: 20, fontWeight: '800', marginBottom: spacing.sm, textAlign: 'center' }}>{en(slide.title)}</Text> : null}
+            <Text style={{ color: colors.fgMuted, fontSize: 15, lineHeight: 23 }}>{en(slide.body ?? slide.content ?? slide.text)}</Text>
+            {slide.highlight ? (
+              <View style={{ backgroundColor: colors.greenSoft, borderRadius: radius.md, borderWidth: 1, borderColor: colors.green, padding: spacing.md, marginTop: spacing.md }}>
+                <Text style={{ color: colors.green, fontSize: 14, fontWeight: '600', lineHeight: 21 }}>{en(slide.highlight)}</Text>
+              </View>
+            ) : null}
+          </View>
+        </FadeScaleIn>
+        <Button title={isLast ? '✓ Got it!' : 'Next →'} onPress={() => (isLast ? onAnswer(true, 0) : setSlideIdx((i) => i + 1))} />
       </View>
     );
   }
@@ -65,30 +87,52 @@ export function ExerciseView({ exercise, onAnswer }: { exercise: Exercise; onAns
   }
 
   if (exercise.type === 'true_false') {
+    const isTrue = exercise.isTrue;
+    const correctAns = state === 'correct';
     const pick = (v: boolean) => {
-      const correct = v === exercise.isTrue;
+      if (checked) return;
+      const correct = v === isTrue;
       setSel(v ? 0 : 1);
       setState(correct ? 'correct' : 'wrong');
-      if (correct) setTimeout(() => onAnswer(true, exercise.xp), 900);
+      if (correct) setTimeout(() => onAnswer(true, exercise.xp), 1500);
+    };
+    const tfBtn = (v: boolean, emoji: string, label: string) => {
+      const chosen = checked && sel === (v ? 0 : 1);
+      const isThisCorrect = v === isTrue;
+      const border = chosen ? (correctAns ? colors.green : colors.red) : checked && isThisCorrect ? colors.green : colors.border;
+      const bg = chosen ? (correctAns ? colors.greenSoft : colors.redSoft) : checked && isThisCorrect ? colors.greenSoft : colors.glass;
+      const fg = chosen ? (correctAns ? colors.green : colors.red) : colors.fg;
+      return (
+        <Pressable key={label} disabled={checked} onPress={() => pick(v)}
+          style={{ flex: 1, paddingVertical: spacing.lg, borderRadius: radius.lg, borderWidth: 2, borderColor: border, backgroundColor: bg, alignItems: 'center' }}>
+          <Text style={{ fontSize: 30, marginBottom: 4 }}>{emoji}</Text>
+          <Text style={{ color: fg, fontWeight: '800', fontSize: 15, letterSpacing: 1 }}>{label}</Text>
+        </Pressable>
+      );
     };
     return (
       <View>
-        <Prompt text={en(exercise.statement)} />
-        <View style={{ flexDirection: 'row', gap: spacing.sm }}>
-          {[{ v: true, t: 'True' }, { v: false, t: 'False' }].map(({ v, t }) => (
-            <Pressable key={t} disabled={checked} onPress={() => pick(v)}
-              style={{ flex: 1, padding: spacing.lg, borderRadius: radius.md, borderWidth: 1.5, alignItems: 'center',
-                borderColor: checked && v === exercise.isTrue ? colors.green : colors.border, backgroundColor: colors.card }}>
-              <Text style={{ color: colors.fg, fontWeight: '800' }}>{t}</Text>
-            </Pressable>
-          ))}
+        <View style={{ backgroundColor: colors.primarySoft, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.border, padding: spacing.lg, marginBottom: spacing.lg, alignItems: 'center' }}>
+          <Text style={{ color: colors.fgSubtle, fontSize: 12, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 1, marginBottom: spacing.sm }}>True or False?</Text>
+          <Text style={{ color: colors.fg, fontSize: 17, fontWeight: '700', lineHeight: 25, textAlign: 'center' }}>“{en(exercise.statement)}”</Text>
         </View>
-        <Explanation checked={checked} state={state} text={en(exercise.explanation)} />
+        <View style={{ flexDirection: 'row', gap: spacing.md, marginBottom: spacing.md }}>
+          {tfBtn(true, '✅', 'TRUE')}
+          {tfBtn(false, '❌', 'FALSE')}
+        </View>
+        {checked ? (
+          <View style={{ backgroundColor: correctAns ? colors.greenSoft : colors.redSoft, borderRadius: radius.md, borderWidth: 1, borderColor: correctAns ? colors.green : colors.red, padding: spacing.md }}>
+            <Text style={{ color: correctAns ? colors.green : colors.red, fontWeight: '800', fontSize: 14, marginBottom: exercise.explanation ? 4 : 0 }}>
+              {correctAns ? (isTrue ? '💡 Fact confirmed!' : '💡 Myth busted!') : '⚠️ Not quite...'}
+            </Text>
+            {exercise.explanation ? <Text style={{ color: colors.fgMuted, fontSize: 14, lineHeight: 21 }}>{en(exercise.explanation)}</Text> : null}
+          </View>
+        ) : null}
         {checked && state === 'wrong' ? (
-          <>
+          <View style={{ marginTop: spacing.md }}>
             <ExplainMistake exercise={exercise} userAnswer={sel === 0 ? 'True' : 'False'} />
-            <Button title="Continue" onPress={() => onAnswer(false, 0)} />
-          </>
+            <Button title="Continue →" onPress={() => onAnswer(false, 0)} />
+          </View>
         ) : null}
       </View>
     );

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -16,14 +16,38 @@ interface Catalog { coins: number; equipped: { hat: string | null; face: string 
 const SLOTS: ('hat' | 'face' | 'body')[] = ['hat', 'face', 'body'];
 const en = (v: any) => (v && typeof v === 'object' ? v.en : v);
 
+const XP_PER_COIN = 2;   // 2 XP = 1 coin (mirror of backend catalog.ts)
+const MIN_XP = 100;      // floor on a single exchange
+
 export default function Shop() {
-  const { token, refreshUser } = useAuth();
+  const { token, refreshUser, user, updateUser } = useAuth();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const [data, setData] = useState<Catalog | null>(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState<string | null>(null);
+  const [xpInput, setXpInput] = useState('');
   const equippedEmoji = (slot: 'hat' | 'face' | 'body') => data?.items.find((i) => i.slot === slot && i.equipped)?.emoji ?? null;
+
+  const userXp = user?.xp ?? 0;
+  const xpNum = parseInt(xpInput.replace(/[^0-9]/g, ''), 10) || 0;
+  const coinsOut = Math.floor(xpNum / XP_PER_COIN);
+  const canExchange = xpNum >= MIN_XP && xpNum <= userXp && !busy;
+  const maxExchangeable = Math.floor(userXp / XP_PER_COIN) * XP_PER_COIN; // largest even ≤ xp
+
+  const exchange = async () => {
+    if (!canExchange) return;
+    setBusy('exchange');
+    try {
+      const r = await api<{ xp: number; coins: number }>('/api/shop/exchange', { method: 'POST', token, body: { xpAmount: xpNum } });
+      updateUser({ xp: r.xp, coins: r.coins });
+      setXpInput('');
+      await load();
+    } catch (e) {
+      const c = e instanceof ApiError ? e.data?.error : '';
+      Alert.alert('Could not exchange', c === 'insufficient_xp' ? 'You don’t have that much XP.' : c === 'invalid_amount' ? `Minimum is ${MIN_XP} XP.` : 'Try again in a moment.');
+    } finally { setBusy(null); }
+  };
 
   const load = useCallback(async () => {
     if (!token) return;
@@ -101,7 +125,31 @@ export default function Shop() {
           </View>
         ))}
 
-        <Text style={{ color: colors.fgSubtle, fontSize: 12, textAlign: 'center' }}>Earn coins by trading XP on the web, or from chests.</Text>
+        {/* Trade XP → coins */}
+        <View style={{ backgroundColor: colors.bgCard, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.border, padding: spacing.md, marginTop: spacing.sm }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: spacing.sm }}>
+            <Text style={{ color: colors.fg, fontWeight: '800', fontSize: 15 }}>💱 Trade XP for coins</Text>
+            <Text style={{ color: colors.fgSubtle, fontSize: 12 }}>{userXp.toLocaleString()} XP</Text>
+          </View>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
+            <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', backgroundColor: colors.bgElevated, borderRadius: radius.md, borderWidth: 1, borderColor: colors.border, paddingHorizontal: spacing.md }}>
+              <TextInput value={xpInput} onChangeText={(t) => setXpInput(t.replace(/[^0-9]/g, ''))} keyboardType="numeric"
+                placeholder={`${MIN_XP}+`} placeholderTextColor={colors.fgSubtle}
+                style={{ flex: 1, color: colors.fg, fontSize: 16, paddingVertical: 12 }} />
+              <Pressable onPress={() => setXpInput(String(maxExchangeable))} disabled={maxExchangeable < MIN_XP} hitSlop={8}>
+                <Text style={{ color: maxExchangeable < MIN_XP ? colors.fgSubtle : colors.primary, fontWeight: '800', fontSize: 12 }}>MAX</Text>
+              </Pressable>
+            </View>
+            <View style={{ alignItems: 'center', minWidth: 56 }}>
+              <Text style={{ color: colors.green, fontWeight: '900', fontSize: 16 }}>🪙 {coinsOut}</Text>
+            </View>
+          </View>
+          <Pressable onPress={exchange} disabled={!canExchange}
+            style={{ backgroundColor: colors.primary, borderRadius: radius.md, paddingVertical: 13, alignItems: 'center', marginTop: spacing.sm, opacity: canExchange ? 1 : 0.5 }}>
+            {busy === 'exchange' ? <ActivityIndicator color={colors.white} /> : <Text style={{ color: colors.white, fontWeight: '800' }}>Exchange</Text>}
+          </Pressable>
+          <Text style={{ color: colors.fgSubtle, fontSize: 11, textAlign: 'center', marginTop: 8 }}>{XP_PER_COIN} XP = 1 🪙 · min {MIN_XP} XP · you can also earn coins from chests</Text>
+        </View>
       </ScrollView>
     </View>
   );

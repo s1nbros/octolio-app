@@ -66,52 +66,70 @@ export function SortItems({ exercise, onAnswer }: { exercise: any; onAnswer: Ans
   );
 }
 
-/* ── match_terms: tap term then its definition ─────────────── */
+/* ── match_terms: tap a term, then tap its definition ──────── */
 export function MatchTerms({ exercise, onAnswer }: { exercise: any; onAnswer: Answer }) {
   const pairs: any[] = exercise.matchPairs ?? [];
-  const defs = useMemo(() => shuffle(pairs.map((p, i) => ({ text: p.definition, orig: i }))), [exercise.id]);
+  const defOrder = useMemo(() => shuffle(pairs.map((_, i) => i)), [exercise.id]);
   const [sel, setSel] = useState<number | null>(null);
   const [match, setMatch] = useState<Record<number, number>>({});
-  const [checked, setChecked] = useState<null | boolean>(null);
-  const used = new Set(Object.values(match));
+  const [submitted, setSubmitted] = useState(false);
+  const matchedTerms = new Set(Object.keys(match).map(Number));
+  const usedDefs = new Set(Object.values(match));
+  const allMatched = Object.keys(match).length === pairs.length;
+  const correctCount = Object.entries(match).filter(([t, d]) => Number(t) === d).length;
+  const isPassing = pairs.length > 0 && correctCount / pairs.length >= 0.7;
+  const allCorrect = correctCount === pairs.length;
 
-  const tapDef = (orig: number) => {
-    if (checked !== null || sel === null || used.has(orig)) return;
-    const next = { ...match, [sel]: orig };
-    setMatch(next); setSel(null);
-    if (Object.keys(next).length === pairs.length) {
-      const correct = pairs.every((_, i) => next[i] === i);
-      setChecked(correct);
-      if (correct) setTimeout(() => onAnswer(true, exercise.xp), 800);
-    }
+  const tapTerm = (i: number) => { if (submitted || matchedTerms.has(i)) return; setSel(sel === i ? null : i); };
+  const tapDef = (d: number) => {
+    if (submitted || usedDefs.has(d) || sel === null) return;
+    setMatch((prev) => ({ ...prev, [sel]: d }));
+    setSel(null);
   };
+  const submit = () => { setSubmitted(true); if (isPassing) setTimeout(() => onAnswer(true, exercise.xp), 1600); };
 
   return (
     <View>
-      <Prompt text={en(exercise.question) || 'Match each term to its definition.'} />
-      <View style={{ flexDirection: 'row', gap: spacing.sm }}>
-        <View style={{ flex: 1, gap: spacing.sm }}>
-          {pairs.map((p, i) => {
-            const matched = match[i] !== undefined;
-            return (
-              <Pressable key={i} disabled={checked !== null || matched} onPress={() => setSel(i)}
-                style={{ padding: spacing.sm, borderRadius: radius.sm, borderWidth: 1.5, borderColor: sel === i ? colors.primary : matched ? colors.green : colors.border, backgroundColor: colors.card, opacity: matched ? 0.6 : 1 }}>
-                <Text style={{ color: colors.fg, fontSize: 13 }}>{en(p.term)}</Text>
-              </Pressable>
-            );
-          })}
+      <Text style={{ color: colors.fgMuted, fontSize: 14, textAlign: 'center', marginBottom: spacing.md }}>🔗 Tap a term, then tap its matching definition</Text>
+
+      <Text style={{ color: colors.fgSubtle, fontSize: 11, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: spacing.sm }}>Terms</Text>
+      {pairs.map((p, i) => {
+        const isSel = sel === i;
+        const matched = matchedTerms.has(i);
+        const good = submitted && match[i] === i;
+        const border = submitted && matched ? (good ? colors.green : colors.red) : isSel ? colors.primary : matched ? colors.primary : colors.border;
+        return (
+          <Pressable key={`t${i}`} disabled={submitted || matched} onPress={() => tapTerm(i)}
+            style={{ paddingVertical: 12, paddingHorizontal: spacing.md, borderRadius: radius.md, borderWidth: 1.5, borderColor: border, backgroundColor: isSel ? colors.primarySoft : colors.glass, opacity: matched && !submitted ? 0.55 : 1, marginBottom: spacing.sm, flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={{ color: submitted && matched ? (good ? colors.green : colors.red) : isSel ? colors.primary : colors.fg, fontSize: 14, fontWeight: '700', flex: 1 }}>{en(p.term)}</Text>
+            {submitted && matched ? <Text>{good ? '✓' : '✗'}</Text> : null}
+          </Pressable>
+        );
+      })}
+
+      <Text style={{ color: colors.fgSubtle, fontSize: 11, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 0.5, marginTop: spacing.sm, marginBottom: spacing.sm }}>Definitions</Text>
+      {defOrder.map((d) => {
+        const used = usedDefs.has(d);
+        const canClick = sel !== null && !used && !submitted;
+        return (
+          <Pressable key={`d${d}`} disabled={!canClick} onPress={() => tapDef(d)}
+            style={{ paddingVertical: 12, paddingHorizontal: spacing.md, borderRadius: radius.md, borderWidth: 1.5, borderColor: canClick ? colors.primary : colors.border, backgroundColor: colors.bgElevated, opacity: used ? 0.45 : 1, marginBottom: spacing.sm }}>
+            <Text style={{ color: colors.fgMuted, fontSize: 13, lineHeight: 19 }}>{en(pairs[d].definition)}</Text>
+          </Pressable>
+        );
+      })}
+
+      {submitted ? (
+        <View style={{ backgroundColor: allCorrect ? colors.greenSoft : colors.orangeSoft, borderRadius: radius.md, borderWidth: 1, borderColor: allCorrect ? colors.green : colors.orange, padding: spacing.md, marginTop: spacing.sm, marginBottom: spacing.sm }}>
+          <Text style={{ color: allCorrect ? colors.green : colors.orange, fontWeight: '800', fontSize: 14 }}>{allCorrect ? '✓ Perfect matches!' : `${correctCount}/${pairs.length} correct`}</Text>
         </View>
-        <View style={{ flex: 1.3, gap: spacing.sm }}>
-          {defs.map((d) => (
-            <Pressable key={d.orig} disabled={checked !== null || used.has(d.orig)} onPress={() => tapDef(d.orig)}
-              style={{ padding: spacing.sm, borderRadius: radius.sm, borderWidth: 1.5, borderColor: used.has(d.orig) ? colors.green : colors.border, backgroundColor: colors.bgElevated, opacity: used.has(d.orig) ? 0.6 : 1 }}>
-              <Text style={{ color: colors.fgMuted, fontSize: 12 }}>{en(d.text)}</Text>
-            </Pressable>
-          ))}
-        </View>
-      </View>
-      {checked === false && <ResultBar correct={false} onContinue={() => onAnswer(false, 0)} />}
-      {checked === true && <ResultBar correct onContinue={() => {}} />}
+      ) : null}
+
+      {!submitted ? (
+        <Button title="Check Matches →" onPress={submit} disabled={!allMatched} />
+      ) : !isPassing ? (
+        <Button title="Continue →" onPress={() => onAnswer(false, 0)} />
+      ) : null}
     </View>
   );
 }
