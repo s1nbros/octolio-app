@@ -26,20 +26,22 @@ export function OctolioLogo({ size = 140, animate = true }: { size?: number; ani
         </RadialGradient>
       </Defs>
 
-      {/* up-arrow tentacle (left) */}
-      <Path d="M74 120 Q54 126 48 146" fill="none" stroke="#79cfb5" strokeWidth={13} strokeLinecap="round" />
-      <Path d="M48 150 L48 106" fill="none" stroke="#79cfb5" strokeWidth={13} strokeLinecap="round" />
-      <Path d="M32 122 L48 104 L64 122" fill="none" stroke="#79cfb5" strokeWidth={13} strokeLinecap="round" strokeLinejoin="round" />
+      {/* left arm — a raised tentacle that rises into an up-arrow (growth),
+          mirroring the coin arm on the right so the octopus reads balanced */}
+      <Path d="M54 104 Q26 100 22 80" fill="none" stroke="#79cfb5" strokeWidth={13} strokeLinecap="round" />
+      <Path d="M22 84 L22 56" fill="none" stroke="#79cfb5" strokeWidth={13} strokeLinecap="round" />
+      <Path d="M10 70 L22 54 L34 70" fill="none" stroke="#79cfb5" strokeWidth={13} strokeLinecap="round" strokeLinejoin="round" />
 
       {/* coin arm (right, behind head) */}
-      <Path d="M148 104 Q178 100 184 80" fill="none" stroke="#5cc7a7" strokeWidth={13} strokeLinecap="round" />
+      <Path d="M146 104 Q174 100 178 80" fill="none" stroke="#5cc7a7" strokeWidth={13} strokeLinecap="round" />
 
-      {/* bottom tentacles (mint → lavender tips) — no left-side leg, so the
-          up-arrow reads as the single left arm */}
+      {/* bottom legs (mint → lavender tips) — a balanced 4, with the bottom-left
+          leg restored to mirror the bottom-right */}
       <G fill="url(#ol_tip)">
-        <Path d="M84 144 Q76 182 90 200 Q104 186 98 152 Z" />
-        <Path d="M110 146 Q112 184 126 200 Q136 184 124 152 Z" />
-        <Path d="M136 136 Q148 170 154 194 Q166 174 150 146 Z" />
+        <Path d="M62 138 Q50 172 44 196 Q34 176 50 148 Z" />
+        <Path d="M86 144 Q78 182 92 200 Q106 186 100 152 Z" />
+        <Path d="M114 144 Q116 182 130 200 Q140 184 128 152 Z" />
+        <Path d="M138 138 Q150 172 156 196 Q166 176 150 148 Z" />
       </G>
 
       {/* head */}
