@@ -26,22 +26,20 @@ export function OctolioLogo({ size = 140, animate = true }: { size?: number; ani
         </RadialGradient>
       </Defs>
 
-      {/* left arm — a raised tentacle that rises into an up-arrow (growth),
-          mirroring the coin arm on the right so the octopus reads balanced */}
-      <Path d="M54 104 Q26 100 22 80" fill="none" stroke="#79cfb5" strokeWidth={13} strokeLinecap="round" />
-      <Path d="M22 84 L22 56" fill="none" stroke="#79cfb5" strokeWidth={13} strokeLinecap="round" />
-      <Path d="M10 70 L22 54 L34 70" fill="none" stroke="#79cfb5" strokeWidth={13} strokeLinecap="round" strokeLinejoin="round" />
+      {/* left arm — a normal resting tentacle that reaches out and curls down
+          (no raised arrow), balancing the coin arm on the right */}
+      <Path d="M54 104 Q24 106 20 128 Q18 142 30 146" fill="none" stroke="#79cfb5" strokeWidth={13} strokeLinecap="round" strokeLinejoin="round" />
 
       {/* coin arm (right, behind head) */}
       <Path d="M146 104 Q174 100 178 80" fill="none" stroke="#5cc7a7" strokeWidth={13} strokeLinecap="round" />
 
-      {/* bottom legs (mint → lavender tips) — a balanced 4, with the bottom-left
-          leg restored to mirror the bottom-right */}
+      {/* bottom legs (mint → lavender tips) — a full, even set of 4; the
+          bottom-left leg is now as wide as the center ones */}
       <G fill="url(#ol_tip)">
-        <Path d="M62 138 Q50 172 44 196 Q34 176 50 148 Z" />
-        <Path d="M86 144 Q78 182 92 200 Q106 186 100 152 Z" />
-        <Path d="M114 144 Q116 182 130 200 Q140 184 128 152 Z" />
-        <Path d="M138 138 Q150 172 156 196 Q166 176 150 148 Z" />
+        <Path d="M66 144 Q58 182 72 200 Q86 186 80 152 Z" />
+        <Path d="M92 146 Q86 184 100 202 Q114 186 106 154 Z" />
+        <Path d="M118 146 Q120 184 134 202 Q144 186 130 154 Z" />
+        <Path d="M140 138 Q152 172 158 196 Q168 176 152 148 Z" />
       </G>
 
       {/* head */}
