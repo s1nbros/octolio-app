@@ -9,7 +9,7 @@ import { colors, radius, spacing } from '../../lib/theme';
 import { Aurora } from '../../components/Aurora';
 import { OctopusAvatar } from '../../components/OctopusAvatar';
 import { emojiFor } from '../../lib/cosmetics';
-import { PRIVACY_URL, SHOW_PRO_UPGRADE, TERMS_URL, WEB_APP_URL } from '../../lib/config';
+import { PRIVACY_URL, TERMS_URL, WEB_APP_URL } from '../../lib/config';
 
 const LEVELS = [
   { label: 'Apprentice', minXp: 0 }, { label: 'Saver', minXp: 300 }, { label: 'Analyst', minXp: 700 },
@@ -80,14 +80,17 @@ export default function Profile() {
           <StatCard icon="🪙" label="Coins" value={`${user.coins ?? 0}`} color={colors.green} />
         </View>
 
-        {/* Pro upsell — sends to the web to subscribe. Hidden on iOS by default
-            (see SHOW_PRO_UPGRADE in lib/config.ts for the store-rules reasoning). */}
-        {SHOW_PRO_UPGRADE && !user.is_pro ? (
-          <Pressable onPress={() => WebBrowser.openBrowserAsync(WEB_APP_URL)}
-            style={{ backgroundColor: colors.primarySoft, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.primary, padding: spacing.md, marginBottom: spacing.lg }}>
+        {/* Pro upsell — sends to the web to subscribe. */}
+        {!user.is_pro ? (
+          <View style={{ backgroundColor: colors.primarySoft, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.primary, padding: spacing.md, marginBottom: spacing.lg }}>
             <Text style={{ color: colors.fg, fontWeight: '800', fontSize: 16, marginBottom: 2 }}>✦ Octolio Pro</Text>
-            <Text style={{ color: colors.fgMuted, fontSize: 13 }}>Unlock all modules, the AI coach and unlimited energy.</Text>
-          </Pressable>
+            <Text style={{ color: colors.fgMuted, fontSize: 13, marginBottom: spacing.md }}>Unlock all modules, the AI coach and unlimited energy.</Text>
+            <Pressable onPress={() => WebBrowser.openBrowserAsync(WEB_APP_URL)}
+              style={{ backgroundColor: colors.primary, borderRadius: radius.md, paddingVertical: 12, alignItems: 'center' }}>
+              <Text style={{ color: colors.white, fontWeight: '800' }}>✦ Go Pro</Text>
+            </Pressable>
+            <Text style={{ color: colors.fgSubtle, fontSize: 11, textAlign: 'center', marginTop: 8 }}>Opens octolio.me to subscribe.</Text>
+          </View>
         ) : null}
 
         {/* Menu */}

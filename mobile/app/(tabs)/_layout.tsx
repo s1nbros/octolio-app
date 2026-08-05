@@ -32,7 +32,12 @@ export default function TabsLayout() {
       />
       <Tabs.Screen
         name="coach"
-        options={{ title: 'Coach', tabBarIcon: ({ color, size }) => <Ionicons name="chatbubble-ellipses" size={size} color={color} /> }}
+        options={{
+          title: 'Coach',
+          tabBarIcon: ({ color, size }) => <Ionicons name="chatbubble-ellipses" size={size} color={color} />,
+          tabBarBadge: user.is_pro ? undefined : 'PRO',
+          tabBarBadgeStyle: { backgroundColor: colors.primary, color: colors.white, fontSize: 9, fontWeight: '800', lineHeight: 14 },
+        }}
       />
       <Tabs.Screen
         name="profile"

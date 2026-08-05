@@ -8,7 +8,7 @@ import { colors, radius, spacing } from '../../lib/theme';
 import { Aurora } from '../../components/Aurora';
 import { Markdown } from '../../lib/markdown';
 import { Button } from '../../lib/ui';
-import { SHOW_PRO_UPGRADE, WEB_APP_URL } from '../../lib/config';
+import { WEB_APP_URL } from '../../lib/config';
 
 interface Msg { role: 'user' | 'assistant'; content: string; }
 
@@ -33,16 +33,20 @@ export default function Coach() {
     return (
       <View style={{ flex: 1, backgroundColor: colors.bg, alignItems: 'center', justifyContent: 'center', padding: spacing.lg }}>
         <Aurora />
-        <Text style={{ fontSize: 52 }}>🐙</Text>
-        <Text style={{ color: colors.fg, fontSize: 22, fontWeight: '800', marginTop: spacing.sm, textAlign: 'center' }}>Your personal money coach</Text>
-        <Text style={{ color: colors.fgMuted, textAlign: 'center', marginTop: 6, marginBottom: spacing.lg }}>
-          Ask anything about budgeting, investing, debt or taxes and get clear, practical answers. Available with Octolio Pro.
-        </Text>
-        {SHOW_PRO_UPGRADE && (
-          <View style={{ width: '100%' }}>
-            <Button title="✦ Upgrade on the web" onPress={() => WebBrowser.openBrowserAsync(WEB_APP_URL)} />
+        <View style={{ width: '100%', maxWidth: 380, alignItems: 'center', backgroundColor: colors.bgCard, borderRadius: radius.xl, borderWidth: 1, borderColor: colors.border, padding: spacing.lg }}>
+          <Text style={{ fontSize: 52 }}>🐙</Text>
+          <View style={{ backgroundColor: colors.primary, borderRadius: radius.pill, paddingHorizontal: 12, paddingVertical: 4, marginTop: spacing.sm }}>
+            <Text style={{ color: colors.white, fontSize: 12, fontWeight: '800', letterSpacing: 1 }}>✦ PRO ONLY</Text>
           </View>
-        )}
+          <Text style={{ color: colors.fg, fontSize: 22, fontWeight: '800', marginTop: spacing.md, textAlign: 'center' }}>The AI Money Coach is a Pro feature</Text>
+          <Text style={{ color: colors.fgMuted, textAlign: 'center', marginTop: 8, marginBottom: spacing.lg, lineHeight: 21 }}>
+            Ask anything about budgeting, investing, debt or taxes and get clear, practical answers — with Octolio Pro.
+          </Text>
+          <View style={{ width: '100%' }}>
+            <Button title="✦ Go Pro" onPress={() => WebBrowser.openBrowserAsync(WEB_APP_URL)} />
+          </View>
+          <Text style={{ color: colors.fgSubtle, fontSize: 12, marginTop: 10, textAlign: 'center' }}>Opens octolio.me to subscribe.</Text>
+        </View>
       </View>
     );
   }

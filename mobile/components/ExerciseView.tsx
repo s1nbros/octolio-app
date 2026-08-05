@@ -269,10 +269,12 @@ function Prompt({ text }: { text: string }) {
 }
 function OptionRow({ label, selected, state, disabled, onPress }: { label: string; selected: boolean; state: 'idle' | 'correct' | 'wrong'; disabled: boolean; onPress: () => void }) {
   const border = state === 'correct' ? colors.green : state === 'wrong' ? colors.red : selected ? colors.primary : colors.border;
+  const bg = state === 'correct' ? colors.greenSoft : state === 'wrong' ? colors.redSoft : selected ? colors.primarySoft : colors.glass;
   return (
     <Pressable disabled={disabled} onPress={onPress}
-      style={{ padding: spacing.md, borderRadius: radius.md, borderWidth: 1.5, borderColor: border, backgroundColor: colors.card, marginBottom: spacing.sm }}>
-      <Text style={{ color: colors.fg, fontSize: 15 }}>{label}</Text>
+      style={{ paddingVertical: 15, paddingHorizontal: spacing.md, borderRadius: radius.md, borderWidth: 1.5, borderColor: border, backgroundColor: bg, marginBottom: spacing.sm, flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
+      <Text style={{ color: colors.fg, fontSize: 15, fontWeight: '600', flex: 1, lineHeight: 21 }}>{label}</Text>
+      {state === 'correct' ? <Text style={{ color: colors.green, fontWeight: '900' }}>✓</Text> : state === 'wrong' ? <Text style={{ color: colors.red, fontWeight: '900' }}>✗</Text> : null}
     </Pressable>
   );
 }
@@ -280,8 +282,8 @@ function Explanation({ checked, state, text }: { checked: boolean; state: string
   if (!checked || !text) return null;
   const good = state === 'correct';
   return (
-    <View style={{ backgroundColor: good ? colors.greenSoft : 'rgba(224,87,95,0.12)', borderRadius: radius.md, padding: spacing.md, marginBottom: spacing.md }}>
-      <Text style={{ color: good ? colors.green : colors.red, fontWeight: '700', marginBottom: 4 }}>{good ? '✓ Correct' : '✗ Not quite'}</Text>
+    <View style={{ backgroundColor: good ? colors.greenSoft : colors.redSoft, borderRadius: radius.md, borderWidth: 1, borderColor: good ? colors.green : colors.red, padding: spacing.md, marginBottom: spacing.md }}>
+      <Text style={{ color: good ? colors.green : colors.red, fontWeight: '800', marginBottom: 4 }}>{good ? '💡 Correct!' : '⚠️ Not quite'}</Text>
       <Text style={{ color: colors.fgMuted, lineHeight: 21 }}>{text}</Text>
     </View>
   );

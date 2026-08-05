@@ -87,6 +87,33 @@ export default function Shop() {
           <OctopusAvatar size={150} hatEmoji={equippedEmoji('hat')} faceEmoji={equippedEmoji('face')} bodyEmoji={equippedEmoji('body')} />
         </View>
 
+        {/* Trade XP → coins — up top so it's easy to find */}
+        <View style={{ backgroundColor: colors.primarySoft, borderRadius: radius.lg, borderWidth: 1.5, borderColor: colors.primary, padding: spacing.md, marginBottom: spacing.lg }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: spacing.sm }}>
+            <Text style={{ color: colors.fg, fontWeight: '800', fontSize: 16 }}>💱 Trade XP for coins</Text>
+            <Text style={{ color: colors.fgMuted, fontSize: 13, fontWeight: '700' }}>{userXp.toLocaleString()} XP</Text>
+          </View>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
+            <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', backgroundColor: colors.bgElevated, borderRadius: radius.md, borderWidth: 1, borderColor: colors.border, paddingHorizontal: spacing.md }}>
+              <TextInput value={xpInput} onChangeText={(t) => setXpInput(t.replace(/[^0-9]/g, ''))} keyboardType="numeric"
+                placeholder={`${MIN_XP}+ XP`} placeholderTextColor={colors.fgSubtle}
+                style={{ flex: 1, color: colors.fg, fontSize: 16, paddingVertical: 12 }} />
+              <Pressable onPress={() => setXpInput(String(maxExchangeable))} disabled={maxExchangeable < MIN_XP} hitSlop={8}>
+                <Text style={{ color: maxExchangeable < MIN_XP ? colors.fgSubtle : colors.primary, fontWeight: '800', fontSize: 12 }}>MAX</Text>
+              </Pressable>
+            </View>
+            <Ionicons name="arrow-forward" size={18} color={colors.fgSubtle} />
+            <View style={{ alignItems: 'center', minWidth: 58 }}>
+              <Text style={{ color: colors.green, fontWeight: '900', fontSize: 17 }}>🪙 {coinsOut}</Text>
+            </View>
+          </View>
+          <Pressable onPress={exchange} disabled={!canExchange}
+            style={{ backgroundColor: colors.primary, borderRadius: radius.md, paddingVertical: 13, alignItems: 'center', marginTop: spacing.sm, opacity: canExchange ? 1 : 0.5 }}>
+            {busy === 'exchange' ? <ActivityIndicator color={colors.white} /> : <Text style={{ color: colors.white, fontWeight: '800' }}>Exchange</Text>}
+          </Pressable>
+          <Text style={{ color: colors.fgSubtle, fontSize: 11, textAlign: 'center', marginTop: 8 }}>{XP_PER_COIN} XP = 1 🪙 · min {MIN_XP} XP · also earn coins from chests</Text>
+        </View>
+
         {SLOTS.map((slot) => (
           <View key={slot} style={{ marginBottom: spacing.lg }}>
             <Text style={{ color: colors.fgSubtle, fontSize: 12, fontWeight: '700', letterSpacing: 1, textTransform: 'uppercase', marginBottom: spacing.sm }}>{slot}</Text>
@@ -125,31 +152,6 @@ export default function Shop() {
           </View>
         ))}
 
-        {/* Trade XP → coins */}
-        <View style={{ backgroundColor: colors.bgCard, borderRadius: radius.lg, borderWidth: 1, borderColor: colors.border, padding: spacing.md, marginTop: spacing.sm }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: spacing.sm }}>
-            <Text style={{ color: colors.fg, fontWeight: '800', fontSize: 15 }}>💱 Trade XP for coins</Text>
-            <Text style={{ color: colors.fgSubtle, fontSize: 12 }}>{userXp.toLocaleString()} XP</Text>
-          </View>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
-            <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', backgroundColor: colors.bgElevated, borderRadius: radius.md, borderWidth: 1, borderColor: colors.border, paddingHorizontal: spacing.md }}>
-              <TextInput value={xpInput} onChangeText={(t) => setXpInput(t.replace(/[^0-9]/g, ''))} keyboardType="numeric"
-                placeholder={`${MIN_XP}+`} placeholderTextColor={colors.fgSubtle}
-                style={{ flex: 1, color: colors.fg, fontSize: 16, paddingVertical: 12 }} />
-              <Pressable onPress={() => setXpInput(String(maxExchangeable))} disabled={maxExchangeable < MIN_XP} hitSlop={8}>
-                <Text style={{ color: maxExchangeable < MIN_XP ? colors.fgSubtle : colors.primary, fontWeight: '800', fontSize: 12 }}>MAX</Text>
-              </Pressable>
-            </View>
-            <View style={{ alignItems: 'center', minWidth: 56 }}>
-              <Text style={{ color: colors.green, fontWeight: '900', fontSize: 16 }}>🪙 {coinsOut}</Text>
-            </View>
-          </View>
-          <Pressable onPress={exchange} disabled={!canExchange}
-            style={{ backgroundColor: colors.primary, borderRadius: radius.md, paddingVertical: 13, alignItems: 'center', marginTop: spacing.sm, opacity: canExchange ? 1 : 0.5 }}>
-            {busy === 'exchange' ? <ActivityIndicator color={colors.white} /> : <Text style={{ color: colors.white, fontWeight: '800' }}>Exchange</Text>}
-          </Pressable>
-          <Text style={{ color: colors.fgSubtle, fontSize: 11, textAlign: 'center', marginTop: 8 }}>{XP_PER_COIN} XP = 1 🪙 · min {MIN_XP} XP · you can also earn coins from chests</Text>
-        </View>
       </ScrollView>
     </View>
   );

@@ -76,7 +76,7 @@ export function OctopusAvatar({ size = 120, hatEmoji, faceEmoji, bodyEmoji, anim
       </Svg>
 
       {/* Cosmetic slots */}
-      {hatEmoji ? <Slot emoji={hatEmoji} top={s * -0.18} fontSize={s * 0.52} /> : null}
+      {hatEmoji ? <Slot emoji={hatEmoji} top={s * -0.25} fontSize={s * 0.52} /> : null}
       {faceEmoji ? <Slot emoji={faceEmoji} top={s * 0.13} fontSize={s * 0.34} /> : null}
       {bodyEmoji ? <Slot emoji={bodyEmoji} bottom={s * 0.02} fontSize={s * 0.38} /> : null}
     </View>
