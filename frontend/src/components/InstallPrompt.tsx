@@ -68,7 +68,7 @@ export function InstallPrompt() {
   };
 
   return (
-    <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 60, display: 'flex', justifyContent: 'center', padding: '0 12px 12px', pointerEvents: 'none' }}>
+    <div className="fixed left-0 right-0 z-[60] flex justify-center px-3 pb-3 bottom-[76px] md:bottom-0" style={{ pointerEvents: 'none' }}>
       <div className="glass-card animate-fade-up" style={{ pointerEvents: 'auto', maxWidth: 440, width: '100%', borderRadius: 16, padding: 14, display: 'flex', alignItems: 'center', gap: 12, boxShadow: '0 10px 34px rgba(0,0,0,0.45)' }}>
         <img src="/pwa-192x192.png" width={46} height={46} style={{ borderRadius: 12, flexShrink: 0 }} alt="Octolio" />
         <div style={{ flex: 1, minWidth: 0 }}>

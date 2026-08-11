@@ -261,9 +261,9 @@ export function Lesson() {
       <div className="relative min-h-screen">
         <FloatingOrbs />
 
-        <div className="relative max-w-2xl mx-auto px-4 sm:px-6 md:px-8 py-8 md:py-10" style={{ zIndex: 1 }}>
+        <div className="relative max-w-2xl mx-auto px-3 sm:px-6 md:px-8 py-4 sm:py-8 md:py-10" style={{ zIndex: 1 }}>
           {/* Top bar */}
-          <div className="flex items-center gap-4 mb-8">
+          <div className="flex items-center gap-2.5 sm:gap-4 mb-5 sm:mb-8">
             {/* Back — opens exit confirm modal */}
             <button
               className="text-sm p-2 rounded-lg transition-all"
@@ -301,7 +301,7 @@ export function Lesson() {
           </div>
 
           {/* Exercise card */}
-          <div className="glass-card rounded-3xl p-6 sm:p-8 md:p-10">
+          <div className="glass-card rounded-3xl p-4 sm:p-6 md:p-10 overflow-hidden">
             <ExerciseRenderer
               key={`${currentExerciseIndex}-${exercise.id}`}
               exercise={exercise}

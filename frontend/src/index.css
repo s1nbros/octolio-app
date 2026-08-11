@@ -106,6 +106,9 @@ html.light {
 @layer base {
   html { scroll-behavior: smooth; }
 
+  /* Never allow sideways scroll on mobile — content must fit the viewport width. */
+  html, body { overflow-x: hidden; max-width: 100%; }
+
   body {
     font-family: 'Inter', system-ui, sans-serif;
     font-feature-settings: "cv11";

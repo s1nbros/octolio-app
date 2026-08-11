@@ -343,6 +343,10 @@ export function Navbar() {
   // Defensive: close drawer if route changes while it's open
   useEffect(() => { setDrawerOpen(false); }, [location.pathname]);
 
+  // Full-screen lessons: hide the top bar entirely so the exercise fills the
+  // screen (the lesson has its own compact ✕ / progress / hearts header).
+  if (inLesson) return null;
+
   return (
     <>
     {/* Top bar — mobile + sm only. AppShell handles md+ with its own sidebar. */}

@@ -9,6 +9,7 @@ import { NotificationBell } from './NotificationBell';
 import { CoinIcon } from './CoinIcon';
 import { WhatsNewModal } from './WhatsNewModal';
 import { InstallPrompt } from './InstallPrompt';
+import { BottomNav } from './BottomNav';
 import { WheelOfLuck } from './WheelOfLuck';
 import { PrizeRevealPopup, type PrizeResult } from './PrizeRevealPopup';
 import { getLevel } from '../types';
@@ -539,12 +540,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <StatsBar />
         </header>
 
-        {/* Content + right rail layout */}
-        <div className="flex gap-6 px-4 sm:px-6 md:px-6 lg:px-8 py-4 md:py-6">
+        {/* Content + right rail layout. Extra bottom padding on mobile so the
+            fixed bottom tab bar never covers the last bit of content. */}
+        <div className="flex gap-6 px-4 sm:px-6 md:px-6 lg:px-8 pt-4 pb-28 md:py-6">
           <main className="flex-1 min-w-0">{children}</main>
           <RightRail />
         </div>
       </div>
+
+      {/* Mobile bottom tab bar (5 fundamental pages). Desktop uses the sidebar. */}
+      <BottomNav />
 
       {/* First-visit-after-update announcement */}
       <WhatsNewModal />
