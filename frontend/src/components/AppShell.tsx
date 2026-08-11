@@ -8,6 +8,7 @@ import { ProWidget, LeagueWidget, MoneyFactWidget, StreakWidget, DailyQuestsTeas
 import { NotificationBell } from './NotificationBell';
 import { CoinIcon } from './CoinIcon';
 import { WhatsNewModal } from './WhatsNewModal';
+import { InstallPrompt } from './InstallPrompt';
 import { WheelOfLuck } from './WheelOfLuck';
 import { PrizeRevealPopup, type PrizeResult } from './PrizeRevealPopup';
 import { getLevel } from '../types';
@@ -547,6 +548,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       {/* First-visit-after-update announcement */}
       <WhatsNewModal />
+
+      {/* Add-to-home-screen nudge (PWA install) */}
+      <InstallPrompt />
 
       {/* One-time Wheel of Luck.
           Show the spinning wheel while: gate=true, no prize yet, not closed.
