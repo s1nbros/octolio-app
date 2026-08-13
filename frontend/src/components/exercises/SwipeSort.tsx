@@ -31,8 +31,10 @@ export function SwipeSort({ exercise, onAnswer }: Props) {
     animatingRef.current = true;
     const correct = (side === 'right') === card.isRight;
     if (correct) setCorrectCount((c) => c + 1);
-    // Fling the card off-screen.
-    setDrag(side === 'right' ? 600 : -600);
+    // Recenter the card (instead of flinging it off-screen) so the ✓/✗ result
+    // stays clearly visible while it's shown.
+    startX.current = null;
+    setDrag(0);
     setFlash({ correct, explanation: card.explanation?.[lang] });
 
     window.setTimeout(() => {
@@ -45,7 +47,7 @@ export function SwipeSort({ exercise, onAnswer }: Props) {
       } else {
         setIdx(next);
       }
-    }, 950);
+    }, correct ? 950 : 1650); // linger on a miss so the explanation can be read
   };
 
   // ── Pointer drag ──
@@ -133,7 +135,11 @@ export function SwipeSort({ exercise, onAnswer }: Props) {
           {card.emoji && <span className="text-4xl mb-2">{card.emoji}</span>}
           <span className="text-lg font-bold" style={{ color: 'hsl(var(--c-fg))' }}>{card.label[lang]}</span>
           {flash && (
-            <span className="mt-2 text-2xl">{flash.correct ? '✓' : '✗'}</span>
+            <span className="mt-2 flex items-center gap-1.5 text-base font-extrabold animate-scale-in"
+              style={{ color: flash.correct ? 'hsl(var(--c-green))' : 'hsl(var(--c-red))' }}>
+              <span className="text-2xl">{flash.correct ? '✓' : '✗'}</span>
+              {flash.correct ? (lang === 'en' ? 'Correct!' : 'Вярно!') : (lang === 'en' ? 'Wrong' : 'Грешно')}
+            </span>
           )}
         </div>
       </div>

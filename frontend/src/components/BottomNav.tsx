@@ -33,25 +33,39 @@ export function BottomNav() {
     <nav
       className="md:hidden fixed bottom-0 left-0 right-0 z-40"
       style={{
-        background: 'hsla(228, 26%, 9%, 0.92)',
-        backdropFilter: 'blur(14px)',
-        WebkitBackdropFilter: 'blur(14px)',
-        borderTop: '1px solid var(--c-border)',
+        background: 'hsla(228, 28%, 8%, 0.85)',
+        backdropFilter: 'saturate(180%) blur(18px)',
+        WebkitBackdropFilter: 'saturate(180%) blur(18px)',
+        borderTop: '1px solid hsla(0,0%,100%,0.07)',
+        boxShadow: '0 -6px 24px hsla(0,0%,0%,0.28)',
         paddingBottom: 'env(safe-area-inset-bottom)',
       }}
     >
-      <div className="flex items-stretch justify-around h-16">
+      <div className="flex items-stretch justify-around px-1.5 pt-2 pb-1.5">
         {TABS.map(({ to, label, Icon, match }) => {
           const active = match(pathname);
+          const color = active ? 'hsl(var(--c-primary))' : 'hsl(var(--c-fg-subtle))';
           return (
             <Link
               key={to}
               to={to}
-              className="flex flex-col items-center justify-center gap-0.5 flex-1 active:scale-95 transition-transform"
-              style={{ color: active ? 'hsl(var(--c-primary))' : 'hsl(var(--c-fg-subtle))' }}
+              className="flex-1 flex flex-col items-center gap-1 active:scale-90 transition-transform duration-150"
             >
-              <Icon />
-              <span className="text-[10px] font-bold tracking-tight">{label[lang]}</span>
+              <span
+                className="flex items-center justify-center rounded-2xl transition-all duration-200"
+                style={{
+                  width: 56,
+                  height: 30,
+                  color,
+                  background: active ? 'hsl(var(--c-primary)/0.16)' : 'transparent',
+                  transform: active ? 'translateY(-1px)' : 'none',
+                }}
+              >
+                <Icon />
+              </span>
+              <span className="text-[10px] font-extrabold tracking-tight" style={{ color }}>
+                {label[lang]}
+              </span>
             </Link>
           );
         })}

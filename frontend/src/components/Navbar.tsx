@@ -428,6 +428,19 @@ export function Navbar() {
                 )}
               </div>
 
+              {/* AI Coach */}
+              <Link to="/advisor" aria-label="AI Coach"
+                className="liquid-glass-pill relative w-9 h-9 rounded-full flex items-center justify-center transition-all active:scale-95"
+                style={{ color: location.pathname.startsWith('/advisor') ? 'hsl(var(--c-primary))' : 'hsl(var(--c-fg-muted))' }}>
+                <IconAdvisor />
+                {!user.is_pro && (
+                  <span className="absolute -top-1 -right-1 text-[7px] font-black leading-none px-1 py-0.5 rounded-full"
+                    style={{ background: 'hsl(var(--c-primary))', color: '#fff', letterSpacing: '0.02em' }}>
+                    PRO
+                  </span>
+                )}
+              </Link>
+
               {/* Notification bell */}
               <NotificationBell variant="mobile" />
 
